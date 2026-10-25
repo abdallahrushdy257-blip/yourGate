@@ -1,0 +1,140 @@
+.moneyreceiptreports {
+  width: 80%;
+  margin: auto;
+  margin-top: 100px;
+  direction: rtl !important;
+
+
+}
+
+
+.Moneyreceiptreports-form {
+  display: flex;
+  width: 80%;
+  margin: auto;
+  gap: 50px;
+
+
+}
+
+.btn-Moneyreceiptreports-form {
+
+  margin-top: 43px;
+}
+
+.Moneyreceiptreports-mainform {
+  margin-bottom: 100px;
+}
+
+.Moneyreceiptreports-formbody {
+  display: flex;
+  justify-content: flex-end;
+  gap: 100px;
+}
+
+img.barCode- {
+  width: 16%;
+}
+
+
+.Moneyreceiptreports-modal .modal-dialog {
+  max-width: 1000px !important;
+  display: flex !important;
+  justify-content: center !important;
+
+}
+
+.Moneyreceiptreports-modal .modal-content {
+  height: 750px !important;
+
+
+}
+
+.Moneyreceiptreports-modal .modal-header {
+  justify-content: space-between !important;
+  direction: rtl !important;
+
+}
+
+.Moneyreceiptreports-modal .modal-body {
+  direction: var(--revtranslate-direction) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+
+}
+
+.Moneyreceiptreports-modal .modal-footer {
+  display: flex !important;
+  justify-content: center !important;
+
+}
+
+.icons-Excel {
+  display: flex;
+  gap: 10px;
+  width: 80%;
+  margin: auto;
+  margin-bottom: 18px;
+}
+
+.export-icon,
+.print-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 22px;
+  /* تصغير حجم الأيقونة */
+  padding: 15px;
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+  width: 40px;
+  /* حجم متناسق للمربع */
+  height: 40px;
+}
+
+.export-icon {
+  color: var(--textclotext-color);
+  background-color: transparent;
+  margin-top: 35px;
+}
+
+.export-icon:hover {
+  color: var(--textclotext-color);
+  background-color: var(--btn-hovertrash);
+}
+
+.print-icon {
+  color: var(--textclotext-color);
+  background-color: transparent;
+  margin-top: 35px;
+
+}
+
+.print-icon:hover {
+  color: var(--textclotext-color);
+  background-color: var(--btn-hovertrash);
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 20%;
+  margin-top: 25px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 14px;
+  color: var(--textclotext-color);
+  margin-bottom: 5px;
+  direction: var(--revtranslate-direction) !important;
+
+}
+
+.search-box input {
+  padding-left: 30px;
+}

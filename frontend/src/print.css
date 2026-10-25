@@ -1,0 +1,176 @@
+.theader,
+.tfooter {
+  display: none !important;
+}
+
+.printNone td {
+  display: none;
+}
+
+.printfootercol {
+  direction: rtl;
+}
+
+/* thead tr:nth-child(1),
+.footerPrint {
+  display: none !important;
+} */
+
+.print-logo {
+  display: block;
+}
+.footerPrint {
+  display: none !important;
+}
+
+@media print {
+  .right-sidebar.visible,
+  .payDetailssecSubmit,
+  .projectTable-checksCon,
+  .selectionCon,
+  .print-disabled,
+  .caseblock {
+    display: none !important;
+  }
+
+  .sidebar-open .page-container {
+    width: 100% !important;
+  }
+
+  thead tr:nth-child(1),
+  .footerPrint {
+    display: contents !important;
+  }
+
+  .theader,
+  .tfooter {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+    left: 0;
+    height: 100px;
+    color: #000;
+  }
+    .theader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    background: white;
+    z-index: 1000;
+    display: flex !important;
+    margin: 0 !important;
+    padding: 10px 20px !important;
+    border-bottom: 1px solid #00000025;
+  }
+
+  .tfooter {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 140px;
+    background: white;
+    z-index: 1000;
+    display: flex !important;
+    margin: 0 !important;
+    padding: 10px 20px !important;
+    border-top: 1px solid #00000010;
+  }
+  .print-headercol {
+    margin: auto;
+  }
+
+@page {
+  size: A4 portrait;
+  margin: 0;
+  color: #000;
+  
+}
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+  .mainTitle {
+    /* margin-bottom: 40px;
+    font-size: 24px; */
+    display: none;
+  }
+  /* ✅ تحسين عرض الجدول */
+  .table-scroll {
+    overflow: visible !important;
+  }
+  .printTabel-container {
+    width: 95%;
+    margin: auto;
+  }
+  table.printTabel {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: auto; /* يمنع تقطيع الجدول بين الصفحات */
+    font-size: 12px;
+    table-layout: auto !important; /* ← ده الأساس */
+    
+  }
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  th,
+  td {
+    border: 1px solid #000;
+    padding: 6px 8px;
+    text-align: center;
+    vertical-align: middle;
+    word-break: break-word; /* يكسر الكلمة الطويلة */
+    white-space: normal; /* يخلي الكلام يلف */
+    max-width: 180px; /* تمنع الخلية من التمدد الزايد */
+  }
+  table.printTabel .printTabelHead th {
+   word-break: normal; /* يكسر الكلمة الطويلة */
+   white-space: normal; /* يخلي الكلام يلف */
+  font-size: 12px;
+ }
+  tbody *,
+  thead *,
+  tfoot * {
+    color: black !important;
+  }
+  /* ✅ منع التقطيع بين الصفحات */
+  tr,
+  td,
+  th {
+    page-break-inside: avoid !important;
+  }
+
+  tr {
+    border: none !important;
+  }
+
+  thead tr:nth-child(2) {
+    border: 1px solid var(--border-color) !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .rmtit,
+  .newContainer,
+  .tablepagination-container {
+    display: none;
+  }
+  .printContainer {
+  margin: 180px auto 110px auto !important;
+  page-break-inside: avoid;
+  width: 100%;
+}
+  .page-break {
+    page-break-after: always; /* عمل بريك بعد هذا العنصر */
+  }
+}

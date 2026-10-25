@@ -1,0 +1,32 @@
+.statementofaccount {
+    width: 80%;
+    margin: auto;
+    direction: rtl;
+}
+
+.statementofaccountForm {
+    width: 70%;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-direction: column;
+    margin-top: 5%;
+}
+/* code bellow by mohamed hany  */
+.employpaper-model .statementofaccountForm {
+    width: 90%;
+}
+.employpaper-model .statementofaccountForm textarea {
+    max-height: 42px;
+}
+/* code up by mohamed hany  */
+
+
+.radioContainer3 {
+    display: flex;
+    width: 502px;
+    align-items: baseline;
+    justify-content: space-evenly;
+}

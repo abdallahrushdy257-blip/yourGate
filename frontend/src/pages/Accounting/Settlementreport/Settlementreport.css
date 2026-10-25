@@ -1,0 +1,91 @@
+.settlementreport {
+    width: 80%;
+    margin: auto;
+    margin-top: 100px;
+}
+
+.settlementreport-form {
+    display: flex;
+    width: 80%;
+    margin: auto;
+    align-items: center;
+    direction: rtl;
+    margin-bottom: 20px;
+}
+
+.btn-settlementreport-form {
+    width: 20%;
+    margin-top: 43px;
+}
+
+.form-settlementreport1 {
+    display: flex;
+    justify-content: flex-end;
+    gap: 94px;
+}
+
+.settlementBtn {}
+
+
+
+.sett-modal .modal-dialog {
+    max-width: 2000px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.sett-modal .modal-content {
+    height: 800px;
+}
+
+.sett-modal .modal-header {
+    border-bottom: 2px solid var(--border-color);
+    padding: 1.2rem 1.5rem;
+    direction: rtl !important;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+
+.sett-modal .modal-title-custom {
+    font-size: 1.4rem;
+    font-weight: 600;
+    display: flex;
+    gap: 20px;
+}
+
+.icon-addclint {
+    margin-top: 7px;
+}
+
+.sett-modal .modal-body {
+    padding: 1.5rem 2rem;
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; */
+}
+
+.sett-modal .form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.sett-modal .modal-footer {
+    border-top: 2px solid var(--border-color);
+    padding: 1rem 1.5rem;
+}
+
+.addset {
+    margin-top: 35px;
+}
+
+.settwidth {
+    width: 100%;
+}
+
+.modalTit {
+    width: auto;
+}

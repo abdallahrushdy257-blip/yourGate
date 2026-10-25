@@ -1,0 +1,45 @@
+.addnewclientContaner {
+  width: 60%;
+  margin: auto;
+}
+
+.addnewclientContanerForm {
+  direction: rtl;
+  margin-top: 5%;
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.clientRadios {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 130px;
+  margin-top: 20px;
+}
+
+.radioContainer {
+  width: 150px;
+}
+
+.addClientsInputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+
+.addClientBtn {
+    margin: auto;
+    margin-top: 2%;
+}
+
+.addsubli {
+    margin-top: 10%;
+}

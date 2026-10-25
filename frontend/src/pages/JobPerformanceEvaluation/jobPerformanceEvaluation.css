@@ -1,0 +1,55 @@
+.JobPerformanceEvaluation {
+  width: 80%;
+  margin: auto;
+}
+
+.JobPerformanceEvaluation-inputsCon {
+  display: grid;
+  gap: 1rem;
+  direction: rtl;
+  margin-top: 5%;
+}
+
+.JobPerformanceEvaluation-inputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  padding: 1%;
+}
+
+.kpi-button {
+  background: #a3ccfe;
+  transition: 0.5s;
+  padding: 1%;
+  border: none;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+.kpi-button:hover {
+  background: #c9e1ff;
+}
+
+@media (max-width: 768px) {
+  .JobPerformanceEvaluation-inputs {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .JobPerformanceEvaluation-inputsCon {
+    margin-top: 2%;
+    width: 100%;
+    padding: 0 5%;
+  }
+
+  .kpi-button {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .JobPerformanceEvaluation {
+    width: 100%;
+  }
+}

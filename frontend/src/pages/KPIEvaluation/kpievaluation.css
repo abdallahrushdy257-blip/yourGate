@@ -1,0 +1,61 @@
+.kpievaluation {
+  margin: auto;
+  width: 80%;
+}
+
+.kpievaluation-inputs {
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 5%;
+  direction: rtl;
+}
+
+.kpievaluation-input {
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2%;
+  width: 100%;
+}
+
+.addnotekpi {
+  font-size: 25px;
+  margin-top: 1%;
+  transition: 0.5s;
+}
+
+.addnotekpi:hover {
+  transform: scale(1.2);
+}
+
+.addnotekpitext {
+  font-size: 18px;
+  margin-top: 30px;
+}
+
+.addnotekpi,
+.closenotekpi {
+  cursor: pointer;
+  margin: 20px 15px 0;
+  transition: 0.5s;
+}
+
+.closenotekpi:hover {
+  transform: scale(1.3);
+}
+
+.addnotekpitext {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+@media (max-width: 768px) {
+  .kpievaluation-input {
+    flex-direction: column
+  }
+}

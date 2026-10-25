@@ -1,0 +1,263 @@
+.AccountingEntry-container {
+  margin: auto;
+  width: 80%;
+}
+
+/* .AccountingEntry {
+  width: 80%;
+  margin: auto;
+} */
+
+.AccountingEntry {
+  margin-top: 50px;
+  direction: rtl;
+  width: 100%;
+}
+
+.date-accounting-num {
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  direction: rtl;
+
+}
+
+.table-header {
+  margin-top: 33px;
+
+}
+.table-header4 {
+  direction: rtl !important;
+  width: 90%; 
+}
+
+.date-accounting {
+  display: flex;
+  gap: 70px;
+}
+
+.btn-add {
+  display: flex;
+  gap: 5px;
+}
+
+
+
+
+
+.transferbtn {
+  margin: auto;
+
+  margin-top: 25px;
+}
+
+.accounting-table {
+  width: 100%;
+  border-collapse: collapse;
+  direction: rtl;
+  margin-bottom: 17px;
+}
+
+.accounting-table th,
+.accounting-table td {
+  padding: 12px;
+  text-align: center;
+}
+
+.tow th,
+.tow td {
+  padding: 12px;
+  text-align: center;
+  width: 150px;
+}
+
+.accounting-table th {
+  background-color: var(--printTabelHeadbackground--color);
+  font-weight: bold;
+  padding: 20px;
+}
+
+.accounting-table td {
+  background-color: var(--printTabelbackground--color);
+  padding: 25px;
+}
+
+.droplist-acc {
+  border-radius: 7px;
+}
+
+
+.input21:focus {
+  outline: none;
+}
+
+/* trash butom */
+.btn-trash {
+  background-color: var(--btn-trash);
+  color: #ff4d4d;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn-trash:hover {
+  background-color: var(--btn-hovertrash);
+}
+
+.css-b62m3t-container {
+  position: relative;
+  box-sizing: border-box;
+  color: black;
+}
+
+.react-select__control {
+  width: 200px;
+  /* Set the width */
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.react-select__menu {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+button.addrowInvoice.transferbtn {
+  width: 141px;
+  padding: 6px;
+  margin-bottom: 25px;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  margin: 10px 0;
+  background-color: transparent !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.success-message {
+  color: green;
+  text-align: center;
+  margin: 10px 0;
+  background-color: transparent !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.closed-field {
+
+  background-color: transparent;
+  border: 3px solid;
+  border-color: var(--border-color);
+  border-radius: 50px;
+  padding: .375rem .75rem;
+  color: var(--text-color) !important;
+  width: 50%;
+  cursor: not-allowed;
+  margin-bottom: 6px;
+  margin: auto;
+}
+
+.input21 {
+  background-color: transparent;
+  border: 3px solid;
+  border-color: var(--border-color);
+  border-radius: 50px;
+  padding: .375rem .75rem;
+  color: var(--text-color) !important;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background-color 0.3s, border-color 0.3s;
+  margin-bottom: 6px;
+  margin: auto;
+  direction: var(--revtranslate-direction);
+}
+
+.save-transferbtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.body-accounting {
+  text-align: center !important;
+}
+
+
+.form-AccountingEntry {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px;
+  margin-bottom: 15px;
+}
+
+/* .modal-dialog.modal-dialog-centered */
+
+.AccountingEntrymod {
+  overflow: auto;
+  width: 90%;
+  margin: auto;
+  padding-left: 10px;
+}
+
+.test {
+  margin-bottom: unset !important;
+}
+
+.newwid {
+  width: auto !important;
+}
+
+.tableEntry {
+  direction: rtl;
+}
+
+.haead-big {
+  direction: rtl !important;
+}
+
+
+
+
+
+
+
+/*****************/
+
+.addEnt {
+  display: flex;
+  justify-content: start;
+}
+
+
+.entmodalTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+}
+
+.enthead {
+  width: 100%;
+  margin: 29px auto;
+  align-items: baseline;
+}
+
+.accountingModal .modal-content {
+  margin: unset !important;
+}
+
+
+.tableEntry td {
+  width: 300px;
+}
+
+
+.AccountingEntry-container .actions-container {
+  margin-top: unset;
+}

@@ -1,0 +1,140 @@
+.balance-sheet-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--background-color);
+    direction: rtl;
+    color: var(--text-color);
+  }
+  
+  .report-header {
+    text-align: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--buttonbackground-color);
+    padding-bottom: 10px;
+  }
+  
+  .report-header h1 {
+    color: var(--buttonbackground-color);
+    margin-bottom: 5px;
+  }
+  
+  .section {
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background-color: var(--card--background);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow: hidden;
+  }
+  
+  .section-titleRepo {
+    background-color: var(--dropdownbackground--color);
+    padding: 12px 15px;
+    cursor: pointer;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-color);
+    transition: .2s;
+  }
+  
+  .section-titleRepo:hover {
+    background-color: var(--dropdownbackgroundhover--color);
+    color: var(--dropdownbackgroundhover--textcolor);
+  }
+  
+  .section-titleRepo .arrow {
+    transition: transform 0.3s ease;
+    display: inline-block;
+    margin-right: auto;
+    margin-left: 10px;
+  }
+  
+  .section-titleRepo .arrow.open {
+    transform: rotate(180deg);
+  }
+  
+  .section-contentRepo {
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    animation: fadeIn 0.5s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .section-contentRepo h3 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    color: var(--text-color);
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 5px;
+  }
+  
+  .section-contentRepo h3:first-child {
+    margin-top: 0;
+  }
+  
+  .report-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 5px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .report-item:last-child {
+    border-bottom: none;
+  }
+  
+  .report-item span:first-child {
+    color: var(--text-color);
+  }
+  
+  .report-item span:last-child {
+    font-weight: bold;
+    color: var(--buttonbackground-color);
+    min-width: 120px;
+    text-align: left;
+    direction: ltr;
+  }
+  
+  .total-section {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 2px solid var(--text-color);
+  }
+  
+  .total-section.sub-total {
+    border-top: 1px solid var(--border-color);
+  }
+  
+  .total-section .report-item span {
+    font-weight: bold;
+  }
+  
+  .total-section .report-item span:first-child {
+    color: var(--text-color);
+  }
+  
+  .total-section .report-item span:last-child {
+    color: var(--text-color);
+  }
+  
+
+  .bolder {
+    font-size: 18px;
+  }
+
+
+
+  .repoSub {
+    margin-top: 30px;
+    font-size: 19px;
+    font-weight: 800;
+  }

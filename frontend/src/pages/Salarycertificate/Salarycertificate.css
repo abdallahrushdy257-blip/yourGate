@@ -1,0 +1,41 @@
+.salarycertificate {
+  width: 80%;
+  margin: auto;
+  text-align: center;
+}
+
+.salarycertificate-con {
+  direction: rtl;
+  width: 100%;
+  margin-top: 5%;
+}
+
+.salarycertificate-date {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1%;
+}
+
+.cerdate {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.salarycertificate-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5%;
+}
+
+@media (max-width: 768px) {
+  .salarycertificate-date {
+    flex-direction: column;
+  }
+
+  .salarycertificate-input {
+    flex-direction: column;
+  }
+}

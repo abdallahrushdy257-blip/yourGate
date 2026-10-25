@@ -1,0 +1,146 @@
+.createManege-inputs {
+  direction: rtl;
+  width: 90%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  gap: 5%;
+  margin-top: 3%;
+  flex-wrap: wrap;
+}
+
+.case-name {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 5%;
+}
+.case-name input,
+.case-name select {
+  height: 46px;
+}
+.createManage-button {
+  background: rgba(163, 204, 254, 1) !important;
+  border: none !important;
+  color: black !important;
+  width: 20%;
+  padding: 1% 0 !important;
+  border-radius: 15px !important;
+  transition: 0.5s;
+}
+
+.createManage-button:hover {
+  background: #c9e1ff !important;
+}
+
+.register-textbox::placeholder {
+  text-align: center;
+  color: rgb(149, 151, 155) !important;
+  padding-top: 20px;
+}
+
+.highlight-placeholder span {
+  color: #ff5722;
+}
+
+@media (max-width: 768px) {
+  .createManege-inputs {
+    width: 90%;
+    gap: 20px;
+  }
+
+  .case-name {
+    width: 100%;
+    margin-top: 5%;
+    align-items: center;
+  }
+
+  .createManege-inputs .form-group {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .createManege-inputs div {
+    margin-bottom: 10px;
+  }
+
+  .register-textbox,
+  .register-select,
+  .register-radio {
+    width: 100% !important;
+  }
+
+  .radioCon {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .createManege-desc {
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .createManege-button {
+    width: 20% !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .createManege-inputs {
+    width: 100%;
+    gap: 15px;
+  }
+
+  .createManege-inputs div {
+    align-items: center;
+  }
+
+  .register-textbox,
+  .register-select,
+  .register-radio {
+    width: 100% !important;
+  }
+
+  .case-name {
+    margin-top: 2%;
+  }
+
+  .radioCon {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 480px) {
+    .createManege-desc {
+      width: 100% !important;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+    }
+    .radiodatecon {
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .createManege-button {
+    width: 20% !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+.radioCon {
+  width: 50%;
+}
+
+.radiodatecon {
+  display: flex;
+  width: 95%;
+}
+
+

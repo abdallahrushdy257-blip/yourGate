@@ -1,0 +1,118 @@
+.inventoryreport {
+  width: 80%;
+  margin: auto;
+}
+
+.inventoryreportCon {
+  direction: rtl;
+  margin-top: 5%;
+}
+
+.inventoryreportInputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 80%;
+  margin: auto;
+}
+
+.inventoryreportTable {
+  width: 80%;
+}
+
+.scrollRepo {
+  overflow-x: hidden;
+  margin-top: 5%;
+}
+
+@media (max-width: 772px) {
+  .scrollRepo {
+    overflow-x: auto;
+  }
+  .receiptTabel {
+    min-width: 600px;
+  }
+
+  .receiptTabel th,
+  .receiptTabel td {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
+
+.generalPrintRepo {
+  width: 150px !important;
+  margin: auto !important;
+  display: block;
+  margin-top: 50px !important;
+  color: var(--buttontext-color) !important;
+  background: var(--buttonbackground-color) !important;
+  border: none !important;
+}
+
+.fromToRepo {
+  padding-bottom: 10px;
+}
+
+@media print {
+  .inventoryreport {
+    width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    color: #000 !important;
+  }
+
+  .inventoryreportCon {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ReceiptTabelCon {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+  }
+
+  .receiptTabel {
+    width: 100%;
+    border: 1px solid #000;
+    /* border-spacing: 0; */
+    font-size: 12px;
+  }
+
+  .receiptTabel-thead th {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: left;
+    font-weight: bold;
+    border: 1px solid #000;
+    color: #000 !important;
+  }
+
+  .receiptTabel-tbody td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    /* text-align: left; */
+  }
+
+  .print-btn-container {
+    display: none;
+  }
+
+  .title-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .title-container h1 {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+}

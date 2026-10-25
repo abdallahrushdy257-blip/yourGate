@@ -1,0 +1,26 @@
+.additemForm {
+  margin: auto;
+  margin-top: 5%;
+  width: 80%;
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.additemrow {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+
+.additemTable {
+    margin-top: 3% !important;
+    width: 100% !important;
+}

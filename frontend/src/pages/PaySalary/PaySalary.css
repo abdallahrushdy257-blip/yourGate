@@ -1,0 +1,19 @@
+.paysalary {
+  width: 60% !important;
+  margin: auto;
+}
+
+.pay-btnCon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.taxContainerpay {
+  width: 80%;
+  display: flex;
+  margin: auto;
+  align-items: center;
+  justify-content: space-around;
+  gap: 5px;
+}

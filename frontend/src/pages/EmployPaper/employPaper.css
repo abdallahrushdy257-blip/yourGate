@@ -1,0 +1,38 @@
+.AddEmpPaperCon {
+  width: min(100%, 900px);
+  margin: auto;
+  direction: rtl;
+  margin-top: 5%;
+}
+
+.AddEmpPaperRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  justify-content: center;
+  align-items: start;
+}
+
+.addPaperBtn {
+  margin: auto;
+  display: block;
+}
+
+.employpaper-model .statementofaccountForm {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .AddEmpPaperRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .AddEmpPaperCon {
+    width: 100%;
+    padding: 0 0.25rem;
+  }
+}

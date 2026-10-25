@@ -1,0 +1,25 @@
+.pricelist_row {
+    /* width: 1200px; */
+    margin: auto;
+    display: flex;
+    margin-top: 5%;
+    flex-direction: row-reverse;
+    gap: 30px;
+    width: 80%;
+    flex-wrap: wrap;
+}
+
+.pricestable {
+    width: 100%;
+}
+
+.pricestable td {
+    padding: 0;
+    width: 200px;
+}
+
+.over-flow {
+    overflow-x: auto;
+    width: 80%;
+    margin: auto;
+}

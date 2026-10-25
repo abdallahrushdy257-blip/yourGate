@@ -1,0 +1,31 @@
+.datareview {
+  width: 50%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.reviewIconcon {
+  margin-top: 20%;
+  background: var(--reviewbackground--color);
+  padding: 30px;
+  border-radius: 20px;
+}
+
+.reviewIcon {
+  color: var(--text-color);
+  font-size: 200px;
+}
+
+.reviewLogin {
+  background: var(--reviewbackground--color);
+  padding: 8px;
+  border-radius: 9px;
+  width: 90px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-color);
+}

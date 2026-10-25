@@ -1,0 +1,100 @@
+.Additem {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  margin: auto;
+  margin-top: 51px;
+}
+
+.form-additem {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  direction: rtl !important;
+}
+
+.form-additem-s {
+  margin-top: 20px;
+
+  gap: 200px;
+  width: 70%;
+  margin: auto;
+}
+
+.btn-additem {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.date-addatem {
+  width: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  direction: rtl;
+  
+}
+
+.date-addatemm {
+  width: 20%;
+  display: flex;
+  gap: 10px;
+}
+
+.check-expiry {
+  width: 108px;
+}
+
+.additem-table td {
+  width: 150px;
+}
+
+.additem-table .dlete-itmm {
+  width: 70px;
+}
+
+.table-quantity td {
+  width: 180px;
+}
+
+/* .table-quantity{
+  width: 80% !important;
+} */
+
+.table-quantity .quantity {
+  width: 20%;
+}
+
+.table-quantity .delet-quantity {
+  width: 50px;
+}
+
+.add-row {
+  direction: rtl;
+  margin-bottom: 14px;
+}
+
+
+.AddBeneficiaryContainer {
+  width: 80%;
+  margin: auto;
+}
+
+
+.additemRow , .additemRow span {
+  margin: 30px 0 !important;
+}
+
+
+.table-quantity {
+  margin-top: 0 !important;
+}
+
+table .select-component {
+  margin: auto;
+}

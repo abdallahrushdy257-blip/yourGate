@@ -1,0 +1,16 @@
+.attendanceDeparture {
+    width: 80%;
+    margin: auto;
+}
+
+.attendanceDeparture-form {
+    direction: rtl;
+    /* width: 30%; */
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 5%;
+    flex-direction: column;
+}

@@ -1,0 +1,10 @@
+.investigationsContainer {
+    width: 80%;
+    margin: auto;
+    margin-top: 5%;
+    direction: rtl;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+}

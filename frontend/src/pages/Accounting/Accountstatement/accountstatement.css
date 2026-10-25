@@ -1,0 +1,26 @@
+.Accountstatement {
+    margin: auto;
+    width: 80%;
+    margin-top: 100px;
+    direction: rtl !important;
+
+}
+
+.type-user {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: auto;
+    gap: 50px;
+}
+
+
+
+.Accountstatement-form {
+    display: flex;
+    width: 80%;
+    margin: auto;
+    gap: 50px;
+    margin-top: 50px;
+
+}

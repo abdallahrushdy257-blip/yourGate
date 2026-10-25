@@ -1,0 +1,35 @@
+.spinnerContainer {
+    width: 80%;
+    margin: 5% auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.waitSpinner {
+    margin: auto;
+    width: 50%;
+    text-align: center;
+    font-size: 18px;
+}
+
+
+.spinner {
+    width: 300px !important;
+    height: 300px;
+    border-radius: 50%;
+    position: relative;
+    background: conic-gradient(rgb(106 106 217) 25% 25%, rgb(1 91 255 / 8%) 75% 0%);
+    animation: rotate 1.5s linear infinite;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(-360deg);
+    }
+}

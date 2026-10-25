@@ -1,0 +1,143 @@
+/* General Styles */
+.review-title {
+  font-weight: 500 !important;
+}
+
+.review-icon {
+  margin-left: 10px;
+}
+
+.review-form-conatiner {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  gap: 60px;
+  margin: auto;
+}
+
+.text-left-important {
+  text-align: left !important;
+}
+
+.review-textbox {
+  text-align: right;
+  background-color: transparent !important;
+  border-radius: 20px !important;
+  color: #ffff !important;
+  font-family: "cairo" !important;
+  border: 3px solid rgba(70, 72, 79, 1) !important;
+}
+
+.review-label {
+  text-align: right !important;
+  display: block !important;
+  font-family: "cairo" !important;
+  font-weight: 600;
+}
+
+.review-button {
+  background: rgb(92, 151, 223) !important;
+  font-family: "cairo" !important;
+  font-weight: 600 !important;
+  transition: 0.5s;
+  border: none !important;
+  margin-top: 20px !important;
+  margin: 2%;
+  padding: 15px !important;
+  border-radius: 25px !important;
+}
+
+.review-button:hover {
+  color: rgb(0, 0, 0) !important;
+  background: #c9e1ff !important;
+  border: none;
+}
+
+input:disabled,
+textarea:disabled {
+  background-color: #f0f0f0;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+#review-button2 {
+  background: rgba(163, 204, 254, 0.2) !important;
+  color: #ffff;
+}
+
+#review-button2:hover {
+  background: rgba(236, 239, 241, 0.582) !important;
+  color: #000000;
+}
+
+.review-container {
+  width: 85%;
+}
+
+.countdown-text {
+  font-family: "cairo" !important;
+  font-weight: 600;
+  color: #0066cc;
+  margin-top: 10px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .review-form-conatiner {
+    width: 90%;
+    gap: 20px;
+  }
+
+  .review-textbox,
+  .review-button {
+    width: 100% !important;
+  }
+
+  .review-title {
+    font-size: 1.5rem;
+  }
+
+  .review-label {
+    font-size: 0.9rem;
+  }
+
+  .countdown-text {
+    font-size: 0.8rem;
+  }
+
+  .review-button {
+    margin-top: 10px;
+    padding: 1.5% !important;
+  }
+
+  #review-button2 {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .review-form-conatiner {
+    width: 90%;
+    gap: 15px;
+  }
+
+  .review-title {
+    font-size: 1.2rem;
+  }
+
+  .review-textbox,
+  .review-button {
+    width: 100% !important;
+  }
+
+  .review-label {
+    font-size: 0.8rem;
+  }
+
+  .countdown-text {
+    font-size: 0.7rem;
+  }
+}

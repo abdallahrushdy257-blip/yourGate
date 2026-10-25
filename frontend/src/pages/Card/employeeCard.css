@@ -1,0 +1,492 @@
+.addCardPhoto {
+  margin: auto;
+  width: 80%;
+  margin-top: 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.empCard {
+  background: white;
+  color: var(--text-color);
+  width: 500px;
+  height: 300px;
+  padding: 25px;
+  direction: var(--revtranslate-direction) !important;
+}
+
+.cardcover {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  right: 0;
+}
+
+.empCard {
+  position: relative;
+}
+
+.empCardContent {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 30px;
+}
+
+.empCardContent img {
+  width: 20%;
+}
+
+.empCardContent h3 {
+  color: black;
+}
+
+.empCardContent-sec {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* width: 90%; */
+  padding: 10px;
+}
+
+.empCardContent-sec img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.empCardContent-sec .empCardText {
+  color: black;
+  margin: 0;
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.cardInfos {
+  direction: ltr;
+}
+
+.empCardTextContainer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  direction: rtl;
+  color: black;
+  padding: 2px;
+}
+
+.empCardTextContainer p {
+  font-size: 18px !important;
+}
+
+.empCardTextContainer span {
+  color: black;
+}
+
+.custom-shape-divider-top-1743075515 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+
+.custom-shape-divider-top-1743075515 svg {
+  position: relative;
+  display: block;
+  width: calc(112% + 1.3px);
+  height: 30px;
+}
+
+.custom-shape-divider-top-1743075515 .shape-fill {
+  fill: var(--border-color) !important;
+}
+
+/** For tablet devices **/
+@media (min-width: 768px) and (max-width: 1023px) {
+  .custom-shape-divider-top-1743075515 svg {
+    width: calc(219% + 1.3px);
+    height: 86px;
+  }
+}
+
+/** For mobile devices **/
+@media (max-width: 767px) {
+  .custom-shape-divider-top-1743075515 svg {
+    width: calc(100% + 1.3px);
+    height: 40px;
+  }
+}
+
+.custom-shape-divider-top-1743075562 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+
+.custom-shape-divider-top-1743075562 svg {
+  position: relative;
+  display: block;
+  width: calc(112% + 1.3px);
+  height: 30px;
+}
+
+.custom-shape-divider-top-1743075562 .shape-fill {
+  fill: #aec9ab;
+}
+
+/** For tablet devices **/
+@media (min-width: 768px) and (max-width: 1023px) {
+  .custom-shape-divider-top-1743075562 svg {
+    width: calc(219% + 1.3px);
+    height: 74px;
+  }
+}
+
+/** For mobile devices **/
+@media (max-width: 767px) {
+  .custom-shape-divider-top-1743075562 svg {
+    width: calc(100% + 1.3px);
+    height: 40px;
+  }
+}
+
+.custom-shape-divider-bottom-1743075810 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+  color: #aec9ab;
+}
+
+.custom-shape-divider-bottom-1743075810 svg {
+  position: relative;
+  display: block;
+  width: calc(112% + 1.3px);
+  height: 30px;
+}
+
+.custom-shape-divider-bottom-1743075810 .shape-fill {
+  fill: #aec9ab !important;
+}
+
+/** For tablet devices **/
+@media (min-width: 768px) and (max-width: 1023px) {
+  .custom-shape-divider-bottom-1743075810 svg {
+    width: calc(278% + 1.3px);
+    height: 88px;
+  }
+}
+
+/** For mobile devices **/
+@media (max-width: 767px) {
+  .custom-shape-divider-bottom-1743075810 svg {
+    width: calc(100% + 1.3px);
+    height: 40px;
+  }
+}
+
+.custom-shape-divider-bottom-1743075874 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+
+.custom-shape-divider-bottom-1743075874 svg {
+  position: relative;
+  display: block;
+  width: calc(112% + 1.3px);
+  height: 30px;
+}
+
+.custom-shape-divider-bottom-1743075874 .shape-fill {
+  fill: #aec9ab;
+}
+
+/** For tablet devices **/
+@media (min-width: 768px) and (max-width: 1023px) {
+  .custom-shape-divider-bottom-1743075874 svg {
+    width: calc(278% + 1.3px);
+    height: 78px;
+  }
+}
+
+/** For mobile devices **/
+@media (max-width: 767px) {
+  .custom-shape-divider-bottom-1743075874 svg {
+    width: calc(100% + 1.3px);
+    height: 40px;
+  }
+}
+
+/* ================== */
+
+
+/* --- General Styling --- */
+
+.loading-message {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #555;
+  padding: 50px;
+}
+
+.card-viewer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  padding: 40px 20px;
+  flex-wrap: wrap;
+  /* Allows cards to stack on smaller screens */
+  direction: rtl;
+  /* For right-to-left layout */
+}
+
+.employee-card {
+  width: 500px;
+  height: 300px;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.employee-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Wave Shapes --- */
+.wave-container {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  line-height: 0;
+  z-index: 0;
+  transform: rotateX(-180deg);
+}
+
+.top-wave {
+  top: -1px;
+  /* Slight adjustment to prevent gaps */
+}
+
+.bottom-wave {
+  bottom: -1px;
+  /* Slight adjustment to prevent gaps */
+}
+
+.wave-container svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 65px;
+}
+
+.top-wave .shape-fill {
+  fill: #b3c0b3;
+}
+
+.bottom-wave .shape-fill {
+  fill: #b3c0b3;
+}
+
+/* --- Card Content --- */
+.card-content {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 1;
+  position: relative;
+}
+
+/* --- Front Card Specifics --- */
+.front-content {
+  gap: 15px;
+}
+
+.company-logo-card {
+  max-width: 60px;
+  height: auto;
+  filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.company-name-card {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2c4b72;
+  /* Dark Blue from your image */
+  margin: 0;
+}
+
+/* --- Back Card Specifics --- */
+.back-content {
+  justify-content: space-around;
+  width: 100%;
+}
+
+.back-top-section {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  gap: 8px;
+}
+
+.employee-photo {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+  background-color: #eee;
+}
+
+.employee-name {
+  font-size: 19px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.back-bottom-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.qr-code-container {
+  padding: 6px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.employee-details {
+  text-align: right;
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.employee-details p {
+  margin: 5px 0;
+}
+
+.employee-details strong {
+  color: #2c4b72;
+  /* Dark Blue */
+  margin-left: 8px;
+}
+
+/* Responsive Design for smaller screens */
+@media (max-width: 1100px) {
+  .card-viewer-container {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 540px) {
+  .employee-card {
+    width: 90vw;
+    height: auto;
+    padding-bottom: 20px;
+    padding-top: 20px;
+  }
+
+  .company-name-card {
+    font-size: 1.5rem;
+  }
+
+  .employee-name {
+    font-size: 1.2rem;
+  }
+
+  .back-bottom-section {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .employee-details {
+    text-align: center;
+  }
+}
+
+.palette-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.color-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  display: block;
+  color: var(--text-color, #333);
+}
+
+.color-input {
+  appearance: none;
+  width: 60px;
+  height: 35px;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+.color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 6px;
+}
+
+.color-picker-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cardfrist {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardlogo {}

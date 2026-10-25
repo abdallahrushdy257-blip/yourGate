@@ -1,0 +1,82 @@
+table.printTabel thead th::nth-child(1) {
+    border-top-right-radius: 25px !important;
+    border-bottom-right-radius: 25px !important;
+    background-color:blue;
+}
+table.printTabel tbody th::nth-child(1) {
+    border-top-right-radius: 25px !important;
+    border-bottom-right-radius: 25px !important;
+    background-color:red;
+}
+table.printTabel thead th::last-child {
+    border-top-left-radius: 25px !important;
+    border-bottom-left-radius: 25px !important;
+    background-color:blue;
+}
+table.g tbody th::last-child {
+    border-top-left-radius: 25px !important;
+    border-bottom-left-radius: 25px !important;
+    background-color:red;
+}
+@media print {
+    body {
+        background-color: white !important;
+        color: black !important;
+    }
+
+    .no-print, 
+    .navbar, 
+    .right-sidebar, 
+    .newContainer, 
+    .tablepagination-container, 
+    .table-header-action,
+    .table-un-printable-ellipse {
+        display: none !important;
+    }
+
+    .printTabel-container {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    table.printTabel {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 1px solid #000 !important;
+        font-size: 12px !important;
+    }
+
+    table.printTabel th, 
+    table.printTabel td {
+        border: 1px solid #000 !important;
+        padding: 8px !important;
+        text-align: center !important;
+        color: black !important;
+        background-color: transparent !important;
+    }
+
+    .printTabelHead th {
+        background-color: #f2f2f2 !important;
+        font-weight: bold !important;
+    }
+
+    .theader, .tfooter {
+        width: 100% !important;
+        color: black !important;
+    }
+
+    /* Force landscape if needed, but usually portrait is better for reports */
+    @page {
+        size: auto;
+        margin: 10mm;
+    }
+}
+
+.table-un-printable-ellipse {
+    display: block;
+}
+
+
+
+

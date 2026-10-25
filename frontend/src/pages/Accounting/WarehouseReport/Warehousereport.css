@@ -1,0 +1,53 @@
+.Warehousereport {
+    width: 80%;
+    margin: auto;
+    margin-top: 100px;
+    direction: rtl !important;
+
+}
+
+.warehouse-report {
+    margin: 25px auto;
+    width: 80%;
+}
+
+
+.small-modall .modal-dialog {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 500px;
+}
+
+.small-modall .modal-content {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 400px;
+}
+
+.small-modall .modal-body {
+    width: 80%;
+
+
+}
+
+.small-modall .modal-header {
+    width: 100%;
+}
+
+.small-modall .modal-footer {
+    width: 100%;
+
+}
+
+.table-Warehousereport {
+    width: 100%;
+    margin: auto;
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.table-Warehousereport thead {
+    background-color: #f8f9fa;
+}

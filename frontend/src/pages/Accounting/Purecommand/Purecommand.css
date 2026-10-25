@@ -1,0 +1,70 @@
+.Purecommand {
+  width: 90% !important;
+  direction: rtl !important;
+
+
+
+}
+
+.form-Purecommand {
+  display: flex;
+  justify-content: space-around;
+}
+
+.fbffbf td {
+  width: 150px;
+  padding: 15px;
+}
+
+.fbffbf .dlete-row {
+  width: 50px;
+}
+
+.Purecommand-modal .modal-content {
+  height: 750px !important;
+
+
+}
+
+.Purecommand-modal .modal-header {
+  justify-content: space-between !important;
+  direction: rtl !important;
+
+}
+
+.Purecommand-modal .modal-body {
+  direction: var(--revtranslate-direction) !important;
+  display: flex !important;
+  justify-content: center !important;
+  overflow-y: auto !important;
+
+
+}
+
+.Purecommand-modal .modal-footer {
+  display: flex !important;
+  justify-content: center !important;
+
+}
+
+.InvoiceNOanddisbursement {
+  width: 20%;
+  display: flex !important;
+  justify-content: space-between !important;
+}
+
+
+.asks {
+  direction: rtl;
+}
+
+
+.Invoicesinput {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.chooseaccountrow2 {
+  direction: ltr;
+}

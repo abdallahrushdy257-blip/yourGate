@@ -1,0 +1,16 @@
+.paymentdata {
+    width: 100%;
+    margin: auto;
+}
+
+
+.dataCont {
+    width: 80%;
+    display: flex;
+    align-items: center;
+    margin: 50px auto;
+    justify-content: center;
+    gap: 50px;
+    flex-wrap: wrap;
+    direction: rtl;
+}

@@ -1,0 +1,22 @@
+.right-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: #111;
+  transition: transform 0.3s ease;
+  z-index: 999999;
+}
+
+.right-sidebar.hidden {
+  transform: translateX(100%);
+}
+
+.right-sidebar.visible {
+  transform: translateX(0);
+}
+
+:root {
+    --sidebar-width: 250px;
+}

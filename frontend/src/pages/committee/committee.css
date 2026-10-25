@@ -1,0 +1,18 @@
+.add-committee-form{
+    width: 50%;
+    margin: 20px auto;
+}
+
+.committee-members{
+    margin: 20px 0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 15px;
+    max-height: 200px;
+    text-align: start !important;
+    overflow-y: auto;
+}   
+
+.addClientBtn{
+    margin-left: 35%;
+}

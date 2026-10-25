@@ -1,0 +1,79 @@
+.generalemployeereports {
+  margin: auto;
+  width: 80%;
+}
+
+.generalemployeereportsinputs {
+  width: 100%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 5%;
+}
+
+.generalemployeereportsinput {
+  width: 700px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 45px;
+  padding: 0.3%;
+}
+
+.genralrepoplace {
+  width: 140px;
+  text-align: center;
+  border: 3px solid rgba(70, 72, 79, 1);
+  height: 140px;
+}
+
+.genralrepoplacecont {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.generalPrint {
+  background: #c9e1ff;
+  transition: 0.5s;
+  border: none !important;
+  padding: 15px;
+  width: auto;
+  margin: 3% 0;
+  border-radius: 10px;
+}
+
+.generalPrint:hover {
+  background: #c9e1ff;
+}
+
+@media print {
+  .generalPrint {
+    display: none;
+  }
+
+  .generalemployeereports {
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column !important;
+    margin-right: 450px;
+  }
+
+  .generalemployeereportsinputlast  {
+    margin-top: 50px;
+  }
+
+
+  .navbar-custom.sidebar-closed,
+  .navbar-custom.sidebar-open {
+    display: none;
+  }
+
+}

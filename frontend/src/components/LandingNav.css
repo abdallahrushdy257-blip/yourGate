@@ -1,0 +1,13 @@
+.themeToggleBtn {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 20px;
+  margin-left: 15px;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.themeToggleBtn:hover {
+  transform: rotate(20deg) scale(1.1);
+}

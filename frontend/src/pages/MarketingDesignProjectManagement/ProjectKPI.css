@@ -1,0 +1,26 @@
+.kpi-row {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  margin: 10px auto;
+  direction: rtl;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: var(--background-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 80%
+}
+
+.status.ok {
+  color: green;
+}
+
+.status.warning {
+  color: orange;
+}
+
+.status.risk {
+  color: red;
+}

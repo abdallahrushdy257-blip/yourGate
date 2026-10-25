@@ -1,0 +1,289 @@
+.AddBeneficiaryContainer {
+    width: 80%;
+    margin: auto;
+    margin-top: 3%;
+    direction: rtl;
+
+}
+
+.AddBeneficiaryContainerRow {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .AddBeneficiaryContainerRow {
+        flex-direction: column;
+    }
+}
+
+.titleaddcon {
+    width: 73%;
+    margin: auto;
+    margin-top: 20px;
+}
+
+.duplicatedContent3 {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.addClientsInputs5 {
+    width: 100%;
+    margin: unset;
+}
+
+.duplicatedContent3 {
+    margin-top: 15px;
+}
+
+.direc {
+    direction: rtl !important;
+}
+
+
+.duplicatedContent2 {
+    border-bottom: 1px solid var(--border-color)
+}
+
+
+
+
+
+
+ul#beneficiary-tabs {
+    border-bottom: none;
+    justify-content: center;
+}
+
+
+
+button#beneficiary-tabs-tab-tab1,
+button#beneficiary-tabs-tab-tab2,
+button#beneficiary-tabs-tab-tab3 {
+    border: none !important;
+    border-bottom: 1px solid transparent !important;
+
+}
+
+.nav-tabs .nav-item.show .nav-link,
+button#beneficiary-tabs-tab-tab1.active,
+button#beneficiary-tabs-tab-tab2.active,
+button#beneficiary-tabs-tab-tab3.active {
+    color: unset !important;
+    background-color: unset !important;
+    /* border: none !important; */
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+
+
+
+button#beneficiary-tabs-tab-tab1,
+button#beneficiary-tabs-tab-tab2,
+button#beneficiary-tabs-tab-tab3 {
+
+    color: var(--text-color) !important;
+}
+
+
+.contenthouse {
+    margin-top: 50px;
+}
+
+
+.AddBeneficiaryContainerRowbtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+}
+
+
+.addillness {
+    display: inline-block;
+    border: 3px solid var(--border-color);
+    color: var(--text-color);
+    padding: 4px 10px;
+    border-radius: 5px;
+    transition: .5s;
+    cursor: pointer;
+}
+
+.addillness2 {
+    margin-right: 20px;
+}
+
+.addillness:hover {
+    background-color: var(--text-color);
+    color: var(--background-color);
+}
+
+
+.duplicatedContent {
+    width: 100%;
+}
+
+
+.CaseStudySection {
+    width: 90%;
+    margin: auto;
+    direction: rtl;
+}
+
+
+.caseblock {
+    background: linear-gradient(to right, rgb(17, 56, 138), rgb(45, 176, 236));
+    /* border: 2px solid rgb(17, 56, 138); */
+    height: 80px;
+    width: 90%;
+    margin: 50px auto;
+    /* border-top-right-radius: 13px;
+    border-top-left-radius: 13px; */
+}
+
+
+.AddBeneficiaryContainerRow2 {
+    margin-bottom: 30px;
+}
+
+
+.myTabs2 {
+    direction: ltr;
+    width: 80%;
+    margin: 10px auto 36px;
+    justify-content: space-evenly;
+}
+
+.loantab2 {
+    background: var(--buttonbackground-color);
+    border-radius: 50%;
+    width: 40px !important;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: var(--buttontext-color);
+    border: none !important;
+    transition: .5s;
+    margin-top: 20px;
+}
+
+
+.loantab2.active,
+.loantab2:hover {
+    transform: scale(1.09);
+    background: var(--buttonbackgroundhover-color);
+}
+
+.line {
+    background: var(--buttonbackground-color);
+    height: 1px;
+    width: 63%;
+    margin: auto;
+    position: absolute;
+    right: 18%;
+    bottom: 18px;
+    z-index: -1;
+}
+
+.divre {
+    position: relative;
+}
+
+@media (max-width:750px) {
+    .line {
+        display: none;
+    }
+}
+
+.AddBeneficiaryContainerRow2{
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr) !important;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 10px;
+}
+
+
+.housingData {
+    width: 100% !important;
+    margin: 15px auto;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.housing-form-container {
+    width: 85%;
+    margin: 30px auto;
+    background-color: var(--card--background);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.dark-mode .housing-form-container {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.housing-expense-row {
+    padding: 20px;
+    border-radius: 16px;
+    width: 100%;
+    margin: 15px auto;
+    background-color: var(--background-color);
+    border: 1px dashed var(--border-color);
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.housing-title-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.housing-title-section h5 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+}
+
+
+.helthTable th {
+    background-color: var(--health-background);
+}
+
+
+.archive-report2
+{
+    display: inherit !important;
+}
+
+.archive-report2 span {
+    width: auto !important;
+}
+
+.editBeneficiary {
+    border:none !important ;
+}

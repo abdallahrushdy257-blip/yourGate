@@ -1,0 +1,466 @@
+.CustomerReport {
+  margin: auto;
+  width: 80%;
+  margin-top: 100px;
+}
+
+.form-CustomerReport {
+  display: flex;
+  direction: rtl;
+  gap: 20px;
+}
+
+.date-CustomerReport {
+  display: flex;
+  margin-top: 25px;
+}
+
+.custom-modal-alt .modal-dialog {
+  margin-top: 50px;
+  max-width: 2000px !important;
+  overflow: hidden;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.fade.custom-modal-alt.modal.show {
+  overflow: hidden;
+}
+
+.modal-header .btn-close {
+  margin: 0 !important;
+}
+
+.add-client-modal .modal-dialog {
+  max-width: 600px !important;
+  height: 100% !important;
+
+}
+
+/* .add-client-modal .modal-content {
+  height: 100% !important;
+} */
+
+.custom-modal-alt .modal-dialog {
+  max-width: 80%;
+  /* عرض أكبر للمحتوى */
+  margin: 1.75rem auto;
+  /* توسيط عمودي وأفقي */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-modal-alt .modal-content {
+  border-radius: 10px;
+  /* حواف مدورة */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  /* ظل خفيف */
+}
+
+.custom-modal-alt .modal-content {
+  border-radius: 10px;
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
+  font-family: "cairo" !important;
+  direction: rtl;
+  /* height: 800px !important; */
+  width: 80% !important;
+}
+
+.custom-modal-alt .modal-header {
+  background-color: var(--background-color) !important;
+  padding: 15px 20px;
+  border-color: var(--border-color);
+  color: var(--text-color) !important;
+  justify-content: space-between;
+  direction: var(--revtranslate-direction) !important;
+}
+
+.closeModal {
+  font-size: 20px;
+  color: var(--border-color);
+}
+
+.custom-modal-alt .modal-title {
+  font-size: 26px;
+  font-weight: bold;
+  text-align: start;
+}
+
+.custom-modal-alt .modal-body {
+  padding: 25px;
+  font-size: 18px;
+}
+
+.custom-modal-alt .modal-footer {
+  border-color: var(--border-color);
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center;
+}
+
+
+
+
+
+
+
+
+.custom-modal-alt .modal-footer .btn {
+  border-radius: 5px;
+  padding: 12px 25px;
+}
+
+.custom-modal-alt .modal-footer .btn-secondary {
+  background-color: var(--buttonbackground-color);
+  color: var(--buttontext-color);
+}
+
+.custom-modal-alt .modal-footer .btn-primary {
+  background-color: var(--buttonbackground-color);
+  color: var(--buttontext-color);
+}
+
+.custom-modal-alt .modal-footer .btn:hover {
+  opacity: 0.85;
+}
+
+/* --------------------------------------- */
+.table-customer-report {
+  direction: rtl;
+  text-align: center;
+
+
+}
+
+.head-cusromer-Table {
+  background-color: var(--table-acchead);
+  text-align: center;
+
+}
+
+.table-customer-report-body {
+  background-color: var(--table-accbody);
+}
+
+.pagination-numbers {
+  margin-top: 75px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.custom-modal-alt .modal-body {
+  padding: 25px;
+  font-size: 18px;
+  overflow-y: auto;
+  max-height: calc(100% - 120px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pagination-numbers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-top: 15px;
+  position: sticky;
+  bottom: 0;
+  padding: 10px 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.pagination-numbers .pagination-button,
+.pagination-numbers .pagination-arrow {
+  padding: 5px 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.pagination-numbers .pagination-button.active {
+  background-color: var(--buttonbackgroundhover-color);
+  color: var(--buttontext-color);
+}
+
+/* .pagination-numbers .pagination-button:hover,
+.pagination-numbers .pagination-arrow:hover {
+  background-color: #0056b3;
+  color: white;
+} */
+
+.pagination-numbers .pagination-arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+
+svg.svg-inline--fa.fa-eye.eye {
+  background-color: var(--btn-trash);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+svg.svg-inline--fa.fa-eye.eye:hover {
+  background-color: var(--btn-hovertrash);
+}
+
+.edit-icon {
+  color: var(--text-color);
+  cursor: pointer;
+  margin: 0 5px;
+  transition: color 0.3s;
+  padding: 7px;
+  border-radius: 10px;
+}
+
+
+
+.edit-icon:hover {
+  background-color: var(--btn-hovertrash);
+}
+
+
+
+.action-button {
+  color: var(--border-color);
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.delete-icon {
+  color: var(--text-color);
+  cursor: pointer;
+  margin: 0 5px;
+  transition: color 0.3s;
+}
+
+.edit-icon,
+.delete-icon,
+.details-icon {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.details-icon {
+  color: var(--text-color);
+  background-color: var(--btn-trash);
+}
+
+.details-icon:hover {
+  background-color: var(--btn-hovertrash);
+}
+
+.delete-icon:hover {
+  background-color: var(--btn-hovertrash);
+}
+
+/* ====================================== */
+/* delete modal */
+.delete-confirmation-modal .modal-content {
+  border-radius: 10px;
+  border: none;
+}
+
+.delete-confirmation-modal .modal-body {
+  padding: 2rem;
+}
+
+.delete-confirmation-modal h5 {
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding: 15px;
+}
+
+.delete-confirmation-modal .btn-danger {
+  background-color: var(--buttonbackground-color);
+  color: var(--buttontext-color);
+  border-color: var(--border-color);
+}
+
+.delete-confirmation-modal .btn-danger:hover {
+  background-color: var(--buttonbackgroundhover-color);
+}
+
+.icon-container {
+  background: rgba(220, 53, 69, 0.1);
+  border-radius: 50%;
+  padding: 1rem;
+  display: inline-block;
+}
+
+.custom-exclamation {
+  color: var(--border-color);
+  font-size: 2.5rem;
+  filter: brightness(1.2);
+}
+
+/* ============= */
+/* اضافه عميل */
+/* Add Client Modal Styling */
+.add-client-modal .modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  height: 100%;
+}
+
+.add-client-modal .modal-header {
+  border-bottom: 2px solid var(--border-color);
+  padding: 1.2rem 1.5rem;
+  direction: rtl !important;
+  display: flex;
+  justify-content: space-between;
+
+}
+
+
+.add-client-modal .modal-title-custom {
+  font-size: 1.4rem;
+  font-weight: 600;
+  display: flex;
+  gap: 20px;
+}
+
+.icon-addclint {
+  margin-top: 7px;
+}
+
+.add-client-modal .modal-body-custom {
+  padding: 1.5rem 2rem;
+  display: flex;
+  /* justify-content: center; */
+  /* align-items: center; */
+  gap: 20px;
+}
+
+.add-client-modal .form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.add-client-modal .modal-footer {
+  border-top: 2px solid var(--border-color);
+  padding: 1rem 1.5rem;
+}
+
+.input-des-addclint {
+  display: flex;
+  justify-content: center;
+}
+
+.add-clint-btn {
+  background-color: transparent !important;
+  border-color: var(--border-color) !important;
+  border: 1px solid !important;
+  color: var(--text-color) !important;
+  border-radius: 4px !important;
+  padding: 5px 2px !important;
+}
+
+.add-clint-btn-con {
+  direction: rtl;
+  margin-top: 33px;
+
+}
+
+.add-clint-btn:hover {
+  background-color: var(--table-acchead) !important;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .add-client-modal .modal-content {
+    margin: 1rem;
+  }
+
+  .add-client-modal .modal-body-custom {
+    padding: 1rem;
+  }
+
+  .add-client-modal .modal-title-custom {
+    font-size: 1.2rem;
+  }
+}
+
+.tableEntry {
+  direction: rtl;
+}
+
+.head-dedtal {
+  direction: rtl !important;
+
+}
+
+/* مودل التعديل */
+
+.edit-client-modal .modal-dialog {
+  max-width: 600px !important;
+}
+
+.edit-client-modal .modal-content {}
+
+.edit-client-modal .modal-header {
+  border-bottom: 2px solid var(--border-color);
+  padding: 1.2rem 1.5rem;
+  direction: rtl !important;
+  display: flex;
+  justify-content: space-between;
+
+}
+
+
+.edit-client-modal .modal-title-custom {
+  font-size: 1.4rem;
+  font-weight: 600;
+  display: flex;
+  gap: 20px;
+}
+
+.icon-addclint {
+  margin-top: 7px;
+}
+
+.edit-client-modal .modal-body {
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.edit-client-modal .form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.edit-client-modal .modal-footer {
+  border-top: 2px solid var(--border-color);
+  padding: 1rem 1.5rem;
+}
+
+.EditSupplier-form {
+  text-align: center;
+}

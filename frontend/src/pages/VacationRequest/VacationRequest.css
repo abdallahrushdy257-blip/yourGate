@@ -1,0 +1,76 @@
+.vacationRequest-container {
+  width: 80%;
+  margin: auto;
+}
+
+.vacation-request-modal .modal-dialog {
+  max-width: min(900px, 96vw);
+}
+
+.vacation-request-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.vacation-request-form-grid > div {
+  width: 100%;
+}
+
+.vacation-request-form-grid .responParent,
+.vacation-request-form-grid .register-textbox,
+.vacation-request-form-grid .custom-datepicker {
+  width: 100% !important;
+}
+
+.management-tabs .active{
+  background-color: var(--buttonbackground-color) !important;
+}
+.vaca-times {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  gap: 5%;
+  margin-bottom: 5%;
+  flex-direction: column;
+  width: 57%;
+}
+
+.vacationInputs,
+.rediosCon {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  direction: rtl !important;
+
+}
+
+.rediosCon {
+  margin-top: 4%;
+
+}
+
+@media (max-width: 768px) {
+
+  .vaca-times,
+  .rediosCon {
+    flex-direction: column;
+  }
+
+  .vacationInputs {
+    width: 100%;
+  }
+
+  .vacation-request-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vacationRequest-container {
+    width: 100%;
+  }
+}

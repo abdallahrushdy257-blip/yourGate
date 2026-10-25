@@ -1,0 +1,91 @@
+.permissions-container {
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.permissions-main-table {
+    width: 90%;
+    border-collapse: collapse;
+    margin: auto;
+}
+
+.permissions-section {
+    background-color: var(--card--background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.permissions-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.permissions-header {
+    background-color: var(--reviewbackground--color);
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.permissions-subheader {
+    background-color: var(--navbar-color);
+    color: var(--text-color);
+    font-size: 16px;
+}
+
+.permissions-row {
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.3s ease;
+}
+
+.permissions-row:hover {
+    background-color: var(--sidebar-color);
+}
+
+.permissions-label {
+    text-align: right;
+    padding: 10px;
+    font-weight: 500;
+}
+
+.permissions-checkbox {
+    margin: auto;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--checkborder-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.permissions-button-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.permissions-save-button {
+    background-color: var(--buttonbackground-color) !important;
+    color: var(--buttontext-color) !important;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.permissions-save-button:hover {
+    background-color: var(--buttonbackgroundhover-color) !important;
+}
+
+
+
+.permissions-tabs {
+    display: flex;
+    justify-content: center;
+    direction: rtl;
+    flex-wrap: wrap;
+}

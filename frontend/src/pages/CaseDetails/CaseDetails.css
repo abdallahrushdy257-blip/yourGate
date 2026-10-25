@@ -1,0 +1,22 @@
+.backCon {
+    position: relative;
+}
+
+.backBtn {
+    position: absolute;
+    margin: 5%;
+}
+
+.dropdown-menu {
+    z-index: 9999 !important;
+    transform: translate3d(-100px, 50px, 0px) !important;
+}
+
+.status-incomplete {
+    background-color: transparent;
+    border: 1px solid red;
+    border-radius: 4px;
+    padding: 2px 6px;
+    color: red;
+    display: inline-block;
+}

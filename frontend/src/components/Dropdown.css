@@ -1,0 +1,198 @@
+/* Main sidebar section item */
+.text-with-choices {
+  margin: 3px 6px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  direction: rtl;
+}
+
+.clickable-text {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 0 !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  user-select: none;
+}
+
+.clickable-text:hover {
+  background-color: var(--hover-bg-color);
+  color: var(--primary-color);
+}
+
+.clickable-text.active-head {
+  background-color: var(--input-background);
+  color: var(--primary-color);
+}
+
+.menu-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-name {
+  white-space: nowrap;
+}
+
+.sideIcon {
+  font-size: 15px;
+  width: 18px;
+  text-align: center;
+  color: var(--accent-color);
+  margin-left: 4px;
+}
+
+.arrow-icon {
+  font-size: 11px;
+  transition: transform 0.25s ease;
+  opacity: 0.6;
+}
+
+.arrow-icon.rotate {
+  transform: rotate(180deg);
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+/* Choices container with smooth accordion expand/collapse */
+.choices-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  opacity: 0;
+}
+
+.choices-wrapper.open {
+  max-height: 1600px;
+  opacity: 1;
+}
+
+.choices-inner {
+  padding: 6px 12px 6px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-right: 2px solid var(--border-color);
+  margin-right: 18px;
+  margin-top: 3px;
+  margin-bottom: 6px;
+}
+
+.clickdiv {
+  padding-bottom: 2px;
+}
+
+/* Submenu group (Category like المانحون, الموردون) */
+.submenu-group {
+  margin: 3px 0;
+}
+
+.clickable-submenu {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--label-color);
+  cursor: pointer;
+  background-color: rgba(200, 146, 74, 0.06);
+  transition: all 0.2s ease;
+  user-select: none;
+  margin: 0 !important;
+}
+
+.clickable-submenu:hover {
+  background-color: rgba(200, 146, 74, 0.15);
+  color: var(--primary-color);
+}
+
+.clickable-submenu.submenu-active {
+  background-color: rgba(200, 146, 74, 0.2);
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.submenu-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.submenu-icon {
+  font-size: 12px;
+  color: var(--accent-color);
+}
+
+.sub-arrow {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  opacity: 0.6;
+}
+
+.sub-arrow.sub-rotate {
+  transform: rotate(-90deg);
+  opacity: 1;
+}
+
+/* Sub choices (Final links) */
+.sub-choices {
+  display: flex;
+  flex-direction: column;
+  padding-right: 12px;
+  margin-top: 3px;
+  gap: 2px;
+}
+
+.sidebar-subelement {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px !important;
+  border-radius: 6px;
+  font-size: 12.5px !important;
+  color: var(--text-color) !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  margin: 1px 0 !important;
+}
+
+.sidebar-subelement:hover {
+  background-color: var(--hover-bg-color);
+  color: var(--primary-color) !important;
+  transform: translateX(-4px);
+  margin-right: 0 !important;
+}
+
+.sidebar-subelement.active-link {
+  background-color: var(--accent-color) !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+.sidebar-subelement.active-link .subelement-bullet {
+  background-color: #fff !important;
+}
+
+.subelement-bullet {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+}
+
+.direct-link {
+  margin: 2px 0 !important;
+  font-weight: 600;
+}

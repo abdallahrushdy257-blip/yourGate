@@ -1,0 +1,291 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap');
+
+/* الحاوية الرئيسية */
+.certificate-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 120vh;
+}
+
+/* الشهادة */
+.certificate {
+  width: 1123px;
+  height: 794px;
+  background: #ffffff;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* الإطار الخارجي */
+.certificate-border {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+}
+
+.certificate-inner-border {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  border: 3px solid #d4af37;
+  position: relative;
+  padding: 50px;
+}
+
+/* الزخارف في الأركان */
+.corner-decoration {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-style: solid;
+  border-color: #d4af37;
+}
+
+.corner-decoration.top-left {
+  top: 30px;
+  left: 30px;
+  border-width: 3px 0 0 3px;
+  border-radius: 8px 0 0 0;
+}
+
+.corner-decoration.top-right {
+  top: 30px;
+  right: 30px;
+  border-width: 3px 3px 0 0;
+  border-radius: 0 8px 0 0;
+}
+
+.corner-decoration.bottom-left {
+  bottom: 30px;
+  left: 30px;
+  border-width: 0 0 3px 3px;
+  border-radius: 0 0 0 8px;
+}
+
+.corner-decoration.bottom-right {
+  bottom: 30px;
+  right: 30px;
+  border-width: 0 3px 3px 0;
+  border-radius: 0 0 8px 0;
+}
+
+/* المحتوى */
+.certificate-content {
+  text-align: center;
+  direction: rtl;
+  font-family: 'Amiri', serif;
+}
+
+/* الهيدر */
+.certificate-header {
+  margin-bottom: 2rem;
+}
+
+.organization-logo {
+  margin-bottom: 1rem;
+}
+
+.logo-circle {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+}
+
+.certificate-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 1rem 0;
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 2px;
+}
+
+.title-underline {
+  width: 200px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  margin: 0 auto;
+}
+
+/* الجسم */
+.certificate-body {
+  margin: 3rem 0;
+}
+
+.intro-text {
+  font-size: 1.6rem;
+  color: #374151;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+
+.volunteer-name-wrapper {
+  margin: 2rem 0;
+}
+
+.volunteer-name {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin: 0;
+  font-family: 'Cairo', sans-serif;
+}
+
+.name-underline {
+  width: 300px;
+  height: 3px;
+  background: #d4af37;
+  margin: 0.5rem auto;
+}
+
+.main-text {
+  font-size: 1.5rem;
+  line-height: 2.2;
+  color: #1f2937;
+  margin: 2rem 0;
+  padding: 0 3rem;
+}
+
+.highlight-date {
+  color: #1e3a8a;
+  font-weight: 700;
+  font-family: 'Cairo', sans-serif;
+}
+
+.appreciation-text {
+  font-size: 1.3rem;
+  line-height: 1.8;
+  color: #4b5563;
+  margin-top: 2rem;
+  font-style: italic;
+}
+
+/* الفوتر */
+.certificate-footer {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: -4rem;
+  padding: 0 2rem;
+}
+
+.signature-section {
+  flex: 1;
+  text-align: center;
+}
+
+.signature-line {
+  width: 150px;
+  height: 2px;
+  background: #1e3a8a;
+  margin: 0 auto 0.5rem;
+}
+
+.signature-label {
+  font-size: 1.1rem;
+  color: #374151;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.date-text {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-top: 0.3rem;
+  font-family: 'Cairo', sans-serif;
+}
+
+.stamp-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.official-stamp {
+  position: relative;
+}
+
+.stamp-circle {
+  width: 120px;
+  height: 120px;
+  border: 3px dashed #dc2626;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-15deg);
+  color: #dc2626;
+  font-size: 1rem;
+  font-weight: 700;
+  opacity: 0.7;
+  font-family: 'Cairo', sans-serif;
+}
+
+/* زر التحميل */
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  color: white;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(30, 58, 138, 0.4);
+  font-family: 'Cairo', sans-serif;
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 58, 138, 0.6);
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+}
+
+.download-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .certificate {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 900px) {
+  .certificate {
+    transform: scale(0.6);
+  }
+}
+
+@media print {
+  .download-btn {
+    display: none;
+  }
+  
+  .certificate-wrapper {
+    background: white;
+    padding: 0;
+  }
+}

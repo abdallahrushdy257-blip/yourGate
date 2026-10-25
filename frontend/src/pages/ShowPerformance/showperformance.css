@@ -1,0 +1,22 @@
+.showPerformance {
+  width: 80%;
+  margin: auto;
+}
+
+.showPerformanceinputs-container {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 5%;
+}
+
+.showPerformanceinputs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5%;
+  width: 100%;
+}

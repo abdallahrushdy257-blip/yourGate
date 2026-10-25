@@ -1,0 +1,247 @@
+.addCardPhoto {
+    margin: auto;
+    width: 80%;
+    margin-top: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.empCard {
+    background: white;
+    color: var(--text-color);
+    width: 500px;
+    height: 300px;
+    padding: 25px;
+}
+
+.cardcover {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    right: 0;
+}
+
+
+
+.empCard {
+    position: relative;
+}
+
+.empCardContent {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 30px;
+}
+
+.empCardContent img {
+    width: 20%;
+}
+
+.empCardContent h3 {
+    color: black;
+}
+
+.empCardContent-sec {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    padding: 10px;
+}
+
+.empCardContent-sec img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+
+.empCardContent-sec .empCardText {
+    color: black;
+    margin: 0;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.cardInfos {
+    direction: ltr;
+    text-align: end;
+}
+
+.empCardTextContainer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+    direction: rtl;
+    color: black;
+    padding: 2px;
+}
+
+.empCardTextContainer p {
+    font-size: 18px !important;
+}
+
+.empCardTextContainer span {
+    color: black;
+}
+
+
+
+
+
+
+
+.custom-shape-divider-top-1743075515 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
+
+.custom-shape-divider-top-1743075515 svg {
+    position: relative;
+    display: block;
+    width: calc(112% + 1.3px);
+    height: 30px;
+}
+
+.custom-shape-divider-top-1743075515 .shape-fill {
+    fill: #CAC8FF;
+}
+
+/** For tablet devices **/
+@media (min-width: 768px) and (max-width: 1023px) {
+    .custom-shape-divider-top-1743075515 svg {
+        width: calc(219% + 1.3px);
+        height: 86px;
+    }
+}
+
+/** For mobile devices **/
+@media (max-width: 767px) {
+    .custom-shape-divider-top-1743075515 svg {
+        width: calc(100% + 1.3px);
+        height: 40px;
+    }
+}
+
+.custom-shape-divider-top-1743075562 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
+
+.custom-shape-divider-top-1743075562 svg {
+    position: relative;
+    display: block;
+    width: calc(112% + 1.3px);
+    height: 30px;
+}
+
+.custom-shape-divider-top-1743075562 .shape-fill {
+    fill: #262469;
+}
+
+/** For tablet devices **/
+@media (min-width: 768px) and (max-width: 1023px) {
+    .custom-shape-divider-top-1743075562 svg {
+        width: calc(219% + 1.3px);
+        height: 74px;
+    }
+}
+
+/** For mobile devices **/
+@media (max-width: 767px) {
+    .custom-shape-divider-top-1743075562 svg {
+        width: calc(100% + 1.3px);
+        height: 40px;
+    }
+}
+
+.custom-shape-divider-bottom-1743075810 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
+
+.custom-shape-divider-bottom-1743075810 svg {
+    position: relative;
+    display: block;
+    width: calc(112% + 1.3px);
+    height: 30px;
+}
+
+.custom-shape-divider-bottom-1743075810 .shape-fill {
+    fill: #CAC8FF;
+}
+
+/** For tablet devices **/
+@media (min-width: 768px) and (max-width: 1023px) {
+    .custom-shape-divider-bottom-1743075810 svg {
+        width: calc(278% + 1.3px);
+        height: 88px;
+    }
+}
+
+/** For mobile devices **/
+@media (max-width: 767px) {
+    .custom-shape-divider-bottom-1743075810 svg {
+        width: calc(100% + 1.3px);
+        height: 40px;
+    }
+}
+
+.custom-shape-divider-bottom-1743075874 {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    transform: rotate(180deg);
+}
+
+.custom-shape-divider-bottom-1743075874 svg {
+    position: relative;
+    display: block;
+    width: calc(112% + 1.3px);
+    height: 30px;
+}
+
+.custom-shape-divider-bottom-1743075874 .shape-fill {
+    fill: #262469;
+}
+
+/** For tablet devices **/
+@media (min-width: 768px) and (max-width: 1023px) {
+    .custom-shape-divider-bottom-1743075874 svg {
+        width: calc(278% + 1.3px);
+        height: 78px;
+    }
+}
+
+/** For mobile devices **/
+@media (max-width: 767px) {
+    .custom-shape-divider-bottom-1743075874 svg {
+        width: calc(100% + 1.3px);
+        height: 40px;
+    }
+}

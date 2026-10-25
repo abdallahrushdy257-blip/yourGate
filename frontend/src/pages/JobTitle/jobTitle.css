@@ -1,0 +1,92 @@
+.jobtitle-page-container {
+  width: 90%;
+  margin: 20px auto;
+  direction: rtl;
+}
+
+.jobtitle-container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.jobTitle-form {
+  width: 100%;
+}
+
+.jobTitle-inputs {
+  width: 100%;
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  direction: rtl;
+}
+
+.jobTitleRow {
+  display: contents;
+}
+
+.jobTitleAlertcont {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.jobTitleAlertcont .error {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: right;
+  width: 100%;
+}
+
+.jobtitle-submit {
+  width: 150px;
+  padding: 10px;
+  border: none;
+  border-radius: 15px;
+  font-weight: 700;
+  background: #a3ccfe;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.jobtitle-submit:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.spinner-border {
+  margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+  .jobtitle-container {
+    width: 95%;
+  }
+
+  .jobTitle-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .jobtitle-submit {
+    width: 160px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .jobtitle-page-container {
+    width: 100%;
+    margin: 10px auto;
+  }
+
+  .jobtitle-submit {
+    width: 100%;
+  }
+}

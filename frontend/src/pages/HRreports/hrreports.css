@@ -1,0 +1,355 @@
+.tabs {
+  display: flex;
+  border-bottom: 2px solid #ddd;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s;
+  border: 3px solid transparent;
+  border-radius: 5px;
+  color: var(--text--color);
+
+  /* width: 205px; */
+}
+
+.tab-content {
+  margin-top: 20px;
+}
+
+.Hrtabs {
+  direction: rtl;
+}
+
+.Hrtab {
+  color: var(--hrtabs-color);
+  font-weight: 600;
+}
+
+.tab-button.active {
+  /* background-color: var(--hractivetabs-background); */
+  border: 3px solid var(--border-color);
+  color: var(--text--color);
+}
+
+button.dropdown-item.dropdown-itemHR {
+  font-weight: 600;
+}
+
+.HRtab-content {
+  margin-top: 5%;
+}
+
+.hrreports-container {
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+.vac-custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  direction: rtl;
+  overflow-x: unset;
+}
+
+.vac-custom-table th {
+  padding: 1%;
+  font-weight: 300;
+  font-size: 20px;
+  background-color: var(--printTabelHeadbackground--color);
+  color: var(--text--color);
+  font-weight: 600;
+}
+
+.vac-custom-table td {
+  padding: 0.7%;
+  position: relative;
+  color: var(--text--color);
+  text-align: center;
+}
+
+.vac-custom-table tr {
+  /* border: var(--printTabel--border); */
+}
+
+.vac-custom-table th:first-child {
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.vac-custom-table th:last-child {
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.selectionCon {
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  padding-top: 3%;
+  gap: 5%;
+  width: 80%;
+  margin: auto;
+}
+
+.nameselection-con {
+  padding: 2%;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.empSelect {
+  border-radius: 10px;
+  transition: 0.5s;
+  padding: 1px 11px;
+  background: var(--dropdownbackground--color) !important;
+  border: var(--tablebuttons--border);
+  color: var(--text--color);
+}
+
+.empSelect-option {
+  background: var(--dropdownbackground--color) !important;
+  border: var(--tablebuttons--border);
+  color: var(--text--color);
+}
+
+.vacdateselection {
+  padding: 5px;
+  border-radius: 5px;
+  background: var(--dropdownbackground--color) !important;
+  border: var(--tablebuttons--border);
+  color: var(--text--color);
+  transition: 0.5s;
+}
+
+.vacdateselection:hover {
+  transform: scale(1.08);
+  background: #3d6494;
+}
+
+.accept-button {
+  background: #233c5a;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.reject-button {
+  background-color: rgb(218, 194, 194);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.accept-button:hover,
+.reject-button:hover {
+  opacity: 0.8;
+}
+
+.Hrrepotoggel::after {
+  display: none !important;
+}
+
+.Hrrepotoggel {
+  background: none !important;
+  border: none !important;
+  padding: 0;
+  font-size: 20px;
+  color: var(--text--color) !important;
+}
+
+.Hrrepotoggel:focus {
+  outline: none;
+}
+
+.dropdown-menu {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.dropdown-item {
+  background-color: transparent;
+  border: none;
+  padding: 10px;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.accept-button,
+.reject-button {
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+}
+
+.accept-button {
+  background: #233c5a;
+  color: white;
+}
+
+.reject-button {
+  background: #233c5a;
+  color: white;
+}
+
+.vacations-table-container {
+  margin: auto;
+}
+
+.mytable-responsive {
+  direction: rtl;
+  -webkit-overflow-scrolling: touch;
+  width: 80%;
+  margin: auto;
+}
+
+@media (max-width: 768px) {
+
+  .vac-custom-table th,
+  .vac-custom-table td {
+    font-size: 13px;
+  }
+
+  .vac-custom-table {
+    min-width: 450px;
+  }
+
+  .vac-custom-table td,
+  .vac-custom-table th {
+    padding: 0.5rem;
+  }
+
+  .Hrrepotoggel {
+    font-size: 13px;
+  }
+
+  .selectionCon {
+    flex-direction: column;
+    align-items: unset;
+  }
+
+  .vacdateselection {
+    width: 70%;
+  }
+
+  .mytable-responsive {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 1024px) {
+
+  .vac-custom-table th,
+  .vac-custom-table td {
+    font-size: 15px;
+  }
+
+  .vac-custom-table {
+    min-width: 550px;
+  }
+}
+
+.Hrtabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: auto;
+  width: 60%;
+  flex-wrap: wrap;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-buttonHR {
+  border: 3px solid var(--border-color);
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text--color);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--card--background) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 3px solid var(--border-color);
+  z-index: 10;
+  padding: 5px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-itemHR {
+  padding: 10px 15px !important;
+  width: 100%;
+  text-align: left;
+  /* background: #f4f4f4; */
+  color: var(--text--color);
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.dropdown-itemHR:hover {
+  transform: scale(1.1);
+}
+
+.dropdown-itemHR.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.salary-table-container {
+  width: 80%;
+  margin: auto;
+}
+
+
+.filterStartDatelabel {
+  font-weight: 600 !important;
+}
+
+
+
+
+
+
+
+
+
+.adddis {
+  margin: auto;
+  margin-top: 50px;
+  display: block;
+  background-color: var(--buttonbackground-color);
+  border-radius: 5px;
+  padding: 10px;
+  width: 80px;
+  color: var(--buttontext-color) !important;
+}
+
+
+
+.paperModal .modal-content{
+  overflow: auto;
+}

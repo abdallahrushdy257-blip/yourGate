@@ -1,0 +1,327 @@
+.addnewemployee {
+  margin: auto;
+  width: 80%;
+  text-align: center;
+  direction: rtl;
+}
+
+.addnewemployee-tabs {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+  position: relative;
+  direction: rtl !important;
+}
+
+.addemp-tab {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 5px;
+  border-radius: 25px;
+  background-color: var(--buttonbackground-color);
+  color: var(--buttontext-color);
+  cursor: pointer;
+  z-index: 1 !important;
+  border-radius: 50%;
+  font-weight: 600;
+  transition: 0.5s;
+}
+
+.addemp-tab.disabled {
+  cursor: not-allowed;
+}
+
+.addemp-tab.active {
+  cursor: default;
+  transform: scale(1.1);
+}
+
+.addHr {
+  position: absolute;
+  top: 22px;
+  /* border: 5px solid; */
+  width: 100%;
+  margin: auto;
+  z-index: -1;
+  position: absolute;
+  background-color: var(--buttonbackground-color);
+}
+
+.addnewemployee-content {
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.addempTitle {
+  direction: ltr;
+}
+
+.addnewemployee-form1 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+  margin: auto;
+  margin-top: 3%;
+  direction: rtl;
+}
+
+.addnewemployee-sec1 {
+  width: 100%;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.addnewemployee-btn {
+  width: 150px;
+  padding: 0.8%;
+  border: none;
+  border-radius: 15px;
+  font-weight: 700;
+  background: #a3ccfe;
+  transition: 0.5s;
+  margin-top: 2%;
+}
+
+.addnewemployee-btn:hover {
+  background: #c9e1ff;
+}
+
+.addnewemployee-sec2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  gap: 16px;
+  margin-top: 3%;
+  direction: rtl;
+}
+
+.addnewemployee-sec3 {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.taxContainer {
+  width: 80%;
+  display: flex;
+  margin: auto;
+  align-items: center;
+  justify-content: space-around;
+}
+
+
+
+.socialWelfare {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%;
+}
+
+.socialWelfareError {
+  width: 80%;
+}
+
+@media (max-width: 768px) {
+  .addnewemployee {
+    width: 90%;
+  }
+
+  /* .addnewemployee-tabs { */
+    /* flex-direction: column; */
+  /* } */
+
+  .addemp-tab {
+    margin: 5px 0;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .addnewemployee-form1,
+  .addnewemployee-sec2 {
+    grid-template-columns: 1fr;
+    margin-top: 2%;
+  }
+
+  .addnewemployee-sec1 {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .addnewemployee-btn {
+    width: 100%;
+    padding: 1%;
+    font-size: 16px;
+  }
+
+  .addnewemployee-sec3 {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .addnewemployee {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .addemp-tab {
+    font-size: 12px;
+  }
+
+  .addnewemployee-btn {
+    font-size: 14px;
+    padding: 1.2%;
+  }
+
+  .addnewemployee-sec1 {
+    width: 100%;
+  }
+
+  .addnewemployee-form1 {
+    margin-top: 10px;
+  }
+
+  .addnewemployee-sec2 {
+    gap: 5%;
+  }
+
+  .addnewemployee-sec3 {
+    gap: 5%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .addnewemployee {
+    width: 85%;
+  }
+
+  .addnewemployee-sec1 {
+    width: 100%;
+  }
+
+  .addnewemployee-btn {
+    font-size: 16px;
+    width: 140px;
+  }
+
+  .addnewemployee-sec2 {
+    gap: 2%;
+  }
+
+  .addnewemployee-sec3 {
+    gap: 2%;
+  }
+}
+
+.addempupload {
+  width: 120px;
+}
+
+
+.sexType {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  direction: rtl;
+
+}
+
+.radTitle {
+  margin-left: 50px;
+}
+
+.datelable{
+  margin-bottom: .5rem !important;
+  text-align: right;
+  width: 100%;
+}
+
+.editemployee-form1 {
+  width: 60% !important;
+}
+.upload-image {
+  border: 3px solid var(--border-color);
+  max-width: 350px;
+  border-radius: 18px;
+  width: fit-content;
+}
+.upload-image > div:first-child.image {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: transform 0.3s;
+  width: 150px;
+}
+.upload-image img {
+  width: 100%;
+  display: block;
+}
+
+.salary-section {
+  background: var(--background-color);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+}
+
+.salary-title {
+  margin-bottom: 15px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.salary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 15px;
+}
+
+.addnewemployee-sec3 {
+  background: var(--background-color);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.salary-card {
+  background: var(--background-color);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.salary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  justify-content: center;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.field {
+  display: flex;
+  justify-content: center;
+}
+
+.field input {
+  width: 100%;
+  max-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .salary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -1,0 +1,517 @@
+/* CSS */
+.Chartofaccounts-container {
+  width: 80%;
+  margin: auto;
+}
+
+.title-sub{
+  text-align: center;
+
+}
+
+.table-tree-container {
+  margin-top: 80px;
+  direction: rtl;
+}
+
+.form-tree {
+  display: flex;
+  width: 100%;
+  gap: 30px;
+}
+
+.addaccount-form {
+  margin-top: 15px;
+}
+
+.table-tree {
+  margin: auto;
+  text-align: center;
+  width: 100%;
+}
+
+.head-Chartofaccounts {
+  background-color: var(--printTabelHeadbackground--color);
+}
+
+.th-Chartofaccounts {
+  padding: 20px !important;
+}
+
+.body-TChartofaccounts {
+  background-color: var(--printTabelbackground--color);
+}
+
+.td-Chartofaccounts {
+  padding: 20px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--background-color) !important;
+  padding: 20px;
+  border-radius: 8px;
+  /* width: 400px; */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1001;
+  /* border: 1px solid var(--border-color) !important; */
+  /* width: 2000px !important;
+  height: 1880px;
+} 
+  */
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.Addasubaccount {
+  width: 80%;
+  margin: auto;
+}
+
+.form-Addasubaccount {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 80px;
+  padding: 30px;
+}
+
+.input-Addasubaccount {
+  width: 32%;
+  border-radius: 20px;
+  background-color: transparent;
+  border: 3px solid #aec9ab;
+  margin-bottom: 15px;
+  padding: 15px;
+  color: var(--text-color);
+}
+
+.select-Addasubaccount {
+  width: 32%;
+  border-radius: 20px;
+  background-color: transparent;
+  border: 3px solid #aec9ab;
+  margin-bottom: 15px;
+  padding: 13px;
+  color: var(--text-color);
+}
+
+.option-Addasubaccount {
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+}
+
+.input-Addasubaccount:focus,
+.select-Addasubaccount:focus {
+  outline: none;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+}
+
+.close-popup {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.save-button {
+  background-color: #768b77;
+  color: var(--text-color);
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.modal.show .modal-dialog {
+  transform: none;
+  max-width: 1048px;
+  max-height: 3000px;
+}
+
+.modalLabel {
+  color: var(--text-color);
+}
+
+.modal-footer {
+  display: unset !important;
+  /* margin: -23px; */
+}
+
+.select-component {
+  color: var(--text-color) !important;
+
+}
+select.form-select {
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+  direction: rtl !important;
+  border: 3px solid var(--border-color);
+}
+
+input.mm-sub.form-control {
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+  direction: rtl !important;
+  width: 100%;
+  border: 3px solid var(--border-color);
+}
+
+input.mm-sub.form-control:focus {
+  outline: none;
+}
+
+select.form-select option {
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+}
+
+textarea.form-control {
+  background-color: transparent !important;
+  direction: rtl !important;
+  color: var(--text-color) !important;
+  border: 3px solid var(--border-color);
+}
+
+textarea.form-control:focus {
+  outline: none;
+}
+
+.modal-header {
+  direction: rtl !important;
+  display: flex;
+}
+
+button.btn.btn-primary {
+  background-color: var(--buttonbackground-color);
+  border: none;
+  color: var(--buttontext-color);
+}
+
+button.btn.btn-primary:hover {
+  background-color: var(--buttonbackgroundhover-color);
+}
+
+button.btn.btn-secondary {
+  background-color: var(--buttonbackground-color);
+  color: var(--buttontext-color);
+}
+
+button.btn.btn-secondary:hover {
+  background-color: var(--buttonbackgroundhover-color);
+}
+
+.model-subaccaount {
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; */
+}
+
+.form-subaccc {}
+
+.from1-subacc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  margin-bottom: 6px;
+}
+
+.opening-blancesubholder {
+  color: var(--text-color);
+  text-align: center !important;
+}
+
+
+
+.sub-inputs {
+  width: 350px;
+  text-align: right;
+}
+
+
+.main-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start !important;
+}
+
+.check-form {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  direction: rtl;
+}
+
+.addaccrow {
+  display: flex;
+}
+
+tbody,
+td,
+tfoot,
+th,
+thead,
+tr {
+  border-color: inherit;
+  border-style: solid;
+  border-width: 0;
+  padding: 20px;
+}
+
+select.form-select option {
+  /* background-color: transparent !important; */
+  /* color: var(--text-color) !important; */
+  background-color: var(--sidebar-color) !important;
+  color: var(--text-color) !important;
+}
+
+.buttons-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  margin-top: 80px;
+  direction: rtl;
+}
+
+.btntreesersh {
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: var(--text-color);
+  font-size: 17px;
+  padding: 10px 20px;
+  position: relative;
+  transition: color 0.3s ease;
+  font-weight: 600;
+}
+
+.btntreesersh::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 3px solid var(--border-color);
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btntreesersh.active::after {
+  opacity: 1;
+}
+
+
+
+.accnumpad {
+  direction: rtl;
+}
+
+.trtr {
+  direction: rtl;
+}
+
+.hoverd-account:hover {
+  border-bottom: 2px solid var(--border-color);
+  border-top: 2px solid var(--border-color);
+}
+
+
+
+/* =============================================== */
+.add-subacc-modal .modal-dialog {
+  max-width: 1000px !important;
+  display: flex !important;
+  justify-content: center !important;
+  margin: auto;
+
+}
+
+.add-subacc-modal .modal-content {
+  height: auto !important;
+  max-height: 800px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--border-color) !important;
+  background-color: var(--background-color) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+  padding: 20px !important;
+  width: 100% !important;
+  margin: auto !important;
+
+
+}
+
+.add-subacc-modal .modal-header {
+  justify-content: space-between !important;
+  direction: var(--revtranslate-direction) !important;
+
+}
+
+.add-subacc-modal .modal-body {
+  direction: var(--revtranslate-direction) !important;
+  display: flex !important;
+  justify-content: center;
+
+}
+
+.add-subacc-modal .modal-footer {
+  display: flex !important;
+  justify-content: center !important;
+
+}
+
+/* ================================ */
+
+.showacc-modal .modal-dialog {
+  max-width: 800px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+}
+
+.showacc-modal .modal-content {
+  height: 580px !important;
+
+
+
+}
+
+.showacc-modal .modal-header {
+  justify-content: space-between !important;
+  direction: var(--revtranslate-direction) !important;
+
+}
+
+.showacc-modal .modal-body {
+  direction: var(--revtranslate-direction) !important;
+
+
+}
+
+.showacc-modal .modal-footer {
+  display: flex !important;
+  justify-content: center !important;
+
+}
+
+/* =============================== */
+
+
+.edit-acc-modal .modal-dialog {
+  max-width: 800px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+
+}
+
+.edit-acc-modal .modal-content {
+  height: 800px !important;
+
+  overflow-y: scroll;
+
+}
+
+.edit-acc-modal .modal-header {
+  justify-content: space-between !important;
+  direction: var(--revtranslate-direction) !important;
+
+}
+
+.edit-acc-modal .modal-body {
+  direction: var(--revtranslate-direction) !important;
+
+
+}
+
+.edit-acc-modal .modal-footer {
+  display: flex !important;
+  justify-content: center !important;
+
+}
+
+.copyright {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  width: 20%;
+}
+
+.calculateDepreciation {
+  display: flex;
+  width: 40%;
+  gap: 30px;
+  text-align: center;
+
+}
+
+.search {
+  margin-top: 7px;
+  width: 25%;
+}
+
+.copyright-form {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+
+}

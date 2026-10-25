@@ -1,0 +1,49 @@
+.pricelist {
+  width: 80%;
+  margin: auto;
+  margin-top: 100px;
+}
+
+.pricelist_row {
+  display: flex;
+  gap: 30px;
+  width: 80%;
+  margin: auto;
+  direction: var(--translate-direction);
+  flex-wrap: wrap;
+}
+
+.paddtp {
+  padding: 6px 15px;
+}
+
+@media screen and (max-width: 575px) {
+  .pricelist-table {
+    width: 600px;
+  }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px) {
+  .pricelist {
+    width: 90%;
+  }
+
+  .pricelist-table {
+    width: 600px;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .pricelist {
+    width: 90%;
+  }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+  .pricelist {
+    width: 90%;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+}

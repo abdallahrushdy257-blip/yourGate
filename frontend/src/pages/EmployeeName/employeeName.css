@@ -1,0 +1,88 @@
+.employeeName-container {
+  width: 80%;
+  margin: auto;
+  text-align: center;
+}
+
+.employeeName-inputs {
+  width: 85%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 5%;
+}
+
+.emp-times {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  gap: 15%;
+}
+
+.empname-submit {
+  width: 20%;
+  padding: 1%;
+  border: none;
+  border-radius: 15px;
+  font-weight: 700;
+  background: #a3ccfe;
+  transition: .5s;
+}
+
+.empname-submit:hover {
+  background: #c9e1ff;
+}
+
+
+
+@media (max-width: 768px) {
+    .employeeName-container {
+      width: 90%;
+    }
+  
+    .emp-times {
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+    }
+  
+    .employeeName-inputs {
+      gap: 15px;
+      width: 100%;
+    }
+  
+    .empname-submit {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .employeeName-container {
+      width: 100%;
+    }
+  
+    .employeeName-form {
+      gap: 15px;
+    }
+  
+    .emp-times {
+      flex-direction: column;
+      width: 100%;
+    }
+  
+    .employeeName-inputs {
+      gap: 10px;
+    }
+  
+    .empname-submit {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+  }
