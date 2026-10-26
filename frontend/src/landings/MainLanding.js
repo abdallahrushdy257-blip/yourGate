@@ -1,3 +1,4 @@
+import React, { useEffect, useState, useRef } from "react";
 import "./mainLanding.css";
 import Title from "../components/title";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,28 +19,57 @@ import {
   faShield,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router";
-import { useEffect, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LandingFooter from "../components/LandingFooter";
 import MainLandingPageNav from "../components/MainLandingPageNav";
-import MainLandingCover from './images/mainlandingv2.svg?react';
-import Main1 from './images/main1.svg?react';
-import Main2 from './images/main2.svg?react';
-import CustomButton from "../components/CustomButton";
+import MainLandingCover from "./images/mainlandingv2.svg?react";
+import Main1 from "./images/main1.svg?react";
+import Main2 from "./images/main2.svg?react";
 import API from "../api/axiosConfig";
 
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * SplitHeading: Splits text by words for GSAP staggered word reveals
+ */
+function SplitHeading({
+  text,
+  className = "",
+  wordClass = "",
+  as: Component = "h3",
+}) {
+  const words = text ? text.split(" ") : [];
+  return (
+    <Component
+      className={`split-heading-container ${className}`}
+      data-split-heading
+    >
+      {words.map((word, i) => (
+        <span key={i} className="split-word-mask">
+          <span className={`split-word ${wordClass}`}>{word}</span>
+          {i < words.length - 1 && <span className="split-space">&nbsp;</span>}
+        </span>
+      ))}
+    </Component>
+  );
+}
 
 function MainLanding() {
+  const containerRef = useRef(null);
+  const heroVideoRef = useRef(null);
+
   const [showCard7, setShowCard7] = useState(false);
   const toggleCard7 = () => {
     setShowCard7((prevShowCard7) => !prevShowCard7);
   };
 
-  const [price , setPrice] = useState([]);
+  const [price, setPrice] = useState([]);
 
   const getPrices = async () => {
     try {
-      const response = await API.get('/pricing/modules');
+      const response = await API.get("/pricing/modules");
       const data = await response;
       setPrice(data.data);
     } catch (error) {
@@ -51,116 +81,236 @@ function MainLanding() {
     getPrices();
   }, []);
 
+  // GSAP Text Animations & ScrollTriggers
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. Hero Entrance Timeline
+      const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
+      heroTl
+        .from(".heroBadge", {
+          y: -25,
+          opacity: 0,
+          duration: 0.7,
+        })
+        .fromTo(
+          ".heroTitle .split-word",
+          { y: "115%", opacity: 0, rotateZ: 3 },
+          {
+            y: "0%",
+            opacity: 1,
+            rotateZ: 0,
+            duration: 0.85,
+            stagger: 0.05,
+          },
+          "-=0.4",
+        )
+        .from(
+          ".heroDesc",
+          {
+            y: 20,
+            opacity: 0,
+            duration: 0.7,
+          },
+          "-=0.5",
+        )
+        .from(
+          ".heroCtaGroup",
+          {
+            y: 20,
+            opacity: 0,
+            duration: 0.6,
+          },
+          "-=0.4",
+        )
+        .from(
+          ".heroIllustrationWrap",
+          {
+            x: -35,
+            opacity: 0,
+            duration: 0.9,
+          },
+          "-=0.6",
+        );
 
-  //  const columns = [
-  //   {
-  //     title: "59,800",
-  //     subTitle: 'ر.س/ تخصص سنوياً',
-  //     discount: "وفر 35% عند الحصول على النظام الكامل",
-  //     button: "اختر هذه الخطة",
-  //     features: ["8000", "8000", "10000", "2000", "8000", "5000", "12000", "6800", "مجاني", "وفقاً للمتطلبات"]
-  //   },
-  //   {
-  //     title: "37,800",
-  //     title: "39,400",
-  //     subTitle: 'ر.س/ ثلاث تخصصات سنوياً',
-  //     discount: "وفر 20% عند الحصول على النظام الكامل",
-  //     button: "اختر هذه الخطة",
-  //     features: ["5400", "5400", "6750", "1350", "5400", "3000", "8100", "4000", "مجاني", "وفقاً للمتطلبات"]
-  //   },
-  //   {
-  //     title: "15,750",
-  //     title: "14,500",
-  //     subTitle: 'ر.س/ سنوياً',
-  //     discount: "وفر 10% عند الحصول على النظام الكامل",
-  //     button: "اختر هذه الخطة",
-  //     features: ["2000", "2000", "2500", "500", "2000", "1000", "3000", "1500", "مجاني", "وفقاً للمتطلبات"]
-  //   }
-  // ];
+      // 2. Lightweight GPU parallax on video container (no video re-scaling)
+      gsap.to(".heroVideoBgContainer", {
+        y: "12%",
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".heroWrapper",
+          start: "top top",
+          end: "bottom top",
+          scrub: 0.3,
+        },
+      });
 
-  // const rows = [
-  //   "التعرف على النظام",
-  //   "الإنشاء و الإدارة",
-  //   "تصميم المشاريع ",
-  //   "إدارة الموارد البشرية",
-  //   "الأرشيف",
-  //   "إدارة القروض و الأقساط",
-  //   "إدارة المهام",
-  //   "إدارة البيانات",
-  //   "إدارة الأوقاف",
-  //   "المحاسبة",
-  //   "إنشاء موقعك الالكتروني"
-  // ];
+      // 3. ScrollTrigger for Section SplitHeadings
+      const splitTitles = containerRef.current.querySelectorAll(
+        ".scroll-split-title [data-split-heading]",
+      );
+      splitTitles.forEach((title) => {
+        const words = title.querySelectorAll(".split-word");
+        if (words.length > 0) {
+          gsap.fromTo(
+            words,
+            { y: "110%", opacity: 0 },
+            {
+              y: "0%",
+              opacity: 1,
+              duration: 0.75,
+              stagger: 0.04,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: title,
+                start: "top 85%",
+                toggleActions: "play none none reverse",
+              },
+            },
+          );
+        }
+      });
 
+      // 4. ScrollTrigger for Services Cards (Staggered Reveal)
+      gsap.fromTo(
+        ".servCards .setvCard",
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.65,
+          stagger: 0.08,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".servCards",
+            start: "top 82%",
+            toggleActions: "play none none reverse",
+          },
+        },
+      );
+
+      // 5. ScrollTrigger for Pricing Section
+      gsap.fromTo(
+        ".pricingTable tbody tr",
+        { y: 25, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.45,
+          stagger: 0.06,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".pricingTable",
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        },
+      );
+
+      // 6. ScrollTrigger for About Us Cards
+      gsap.fromTo(
+        ".subscriptionContainer .subSys",
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          stagger: 0.15,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".subscriptionContainer",
+            start: "top 82%",
+            toggleActions: "play none none reverse",
+          },
+        },
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <div className="landingcontainer">
+    <div className="landingcontainer" ref={containerRef}>
       <MainLandingPageNav />
 
-      <div className="section1Container" id="mainLandingsec1">
-        <div className="homeCover">
-          <h3>
-            بوابتك للأعمال الخيرية
-          </h3>
-          <p>
-            بوابتك هي منصتك الخيرية الذكية التي تتيح لك إدارة جمعيتك بكل سهولة واحترافية. توفر أدوات متقدمة لتنظيم التبرعات، متابعة المشاريع، وإعداد التقارير بكل يسر ودقة.
-          </p>
-          <span className="lineLand"> </span>
-
+      {/* ================================================================
+          HERO SECTION (with people_cont.mp4 Video Background)
+          ================================================================ */}
+      <div className="heroWrapper" id="mainLandingsec1">
+        <div className="heroVideoBgContainer">
+          <video
+            ref={heroVideoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            className="heroBgVideo"
+          >
+            <source src="/people_cont.mp4" type="video/mp4" />
+          </video>
+          <div className="heroVideoOverlay"></div>
         </div>
 
+        <div className="section1Container">
+          <div className="homeCover">
+            <div className="heroBadge">
+              <span className="heroBadgeDot"></span>
+              <span>المنظومة الذكية الرائدة لإدارة الجمعيات</span>
+            </div>
 
-        <MainLandingCover />
-        {/* <img src={mainlanding} alt='cover' /> */}
+            <SplitHeading
+              text="بوابتك للأعمال الخيرية"
+              className="heroTitle"
+              as="h3"
+            />
 
+            <p className="heroDesc">
+              بوابتك هي منصتك الخيرية الذكية التي تتيح لك إدارة جمعيتك بكل سهولة
+              واحترافية. توفر أدوات متقدمة لتنظيم التبرعات، متابعة المشاريع،
+              وإعداد التقارير بكل يسر ودقة.
+            </p>
+
+            <div className="heroCtaGroup">
+              <a href="#mainourServ" className="heroCtaPrimary">
+                <span>استكشف خدماتنا</span>
+                <FontAwesomeIcon icon={faArrowLeft} />
+              </a>
+              <a href="#prices" className="heroCtaSecondary">
+                <span>خطط الأسعار</span>
+              </a>
+            </div>
+
+            <span className="lineLand"> </span>
+          </div>
+
+          <div className="heroIllustrationWrap">
+            <MainLandingCover />
+          </div>
+        </div>
       </div>
-      <div className="svgMainCon" style={{height:"35px"}}>
+
+      <div className="svgMainCon" style={{ height: "35px" }}>
         <Main1 className="animatedRock" />
         <Main2 />
       </div>
-      {/* <div className="ourSystemContainer" id="mainourSystemContainer">
-        <div>
-          <Title title="نظامنا" />
-        </div>
-        <div className="CardeContainer">
-          <div className="ourSystemcard">
-            <div className="cardImageContainer cardImageContainer1"></div>
-            <h5 className="ourSystext">إختر نظامك الخاص</h5>
-            <p className="ourNote">
-              احصل على الخدمات التي تحتاجها وفقًا لاحتياجاتك
-            </p>
-          </div>
-          <div className="ourSystemcard">
-            <div className="cardImageContainer cardImageContainer2"></div>
-            <h5 className="ourSystext">إشترك لمدة ثلاث سنوات</h5>
-            <p className="ourNote">
-              الحصول على جميع الخدمات المتاحة لمدة ثلاث سنوات
-            </p>
-          </div>
 
-          <div className="ourSystemcard">
-            <div className="cardImageContainer cardImageContainer3"></div>
-            <h5 className="ourSystext">إشترك لمدة سنه</h5>
-            <p className="ourNote">
-              الحصول على كافة الخدمات المتاحة لمدة سنة واحدة
-            </p>
-          </div>
-        </div>
-      </div> */}
-
+      {/* ================================================================
+          SERVICES SECTION
+          ================================================================ */}
       <div className="ourServ" id="mainourServ">
-        <div>
-          <Title title="خدماتنا" />
+        <div className="scroll-split-title">
+          <SplitHeading text="خدماتنا" as="h2" className="mainTitle" />
         </div>
-
-
 
         <div className="servCards">
           <div className="setvCard">
             <FontAwesomeIcon icon={faHome} className="servIcon" />
             <h5>الإنشاء والإدارة</h5>
-            <p className="serveDesc">تصميم مشاريع مبتكرة تلبي احتياجات المجتمع، مع أدوات فعّالة للترويج وجذب الدعم.</p>
+            <p className="serveDesc">
+              تصميم مشاريع مبتكرة تلبي احتياجات المجتمع، مع أدوات فعّالة للترويج
+              وجذب الدعم.
+            </p>
             <Link to="/createMangelanding" className="showserve">
               عرض الخدمة{" "}
               <FontAwesomeIcon icon={faArrowLeft} className="showSerIcon" />
@@ -170,7 +320,9 @@ function MainLanding() {
             <FontAwesomeIcon icon={faChartSimple} className="servIcon" />
             <h5>تصميم المشاريع و الادارة</h5>
             <p className="serveDesc">
-              تصميم المشاريع الخيرية وادارتها باحترافية. نوفر لك أدوات متقدمة لتخطيط المبادرات، وإبرازها للجمهور، وزيادة أثرها المجتمعي بسهولة.</p>
+              تصميم المشاريع الخيرية وادارتها باحترافية. نوفر لك أدوات متقدمة
+              لتخطيط المبادرات، وإبرازها للجمهور، وزيادة أثرها المجتمعي بسهولة.
+            </p>
             <Link to="/designmarketinglanding" className="showserve">
               عرض الخدمة{" "}
               <FontAwesomeIcon icon={faArrowLeft} className="showSerIcon" />
@@ -180,29 +332,20 @@ function MainLanding() {
             <FontAwesomeIcon icon={faLayerGroup} className="servIcon" />
             <h5>إدارة الموارد البشرية</h5>
             <p className="serveDesc">
-              نُمكنك من إدارة الكوادر البشرية لجمعيتك باحترافية. نوفر أدوات متقدمة لتنظيم المهام، وتوزيع الأدوار،الأداء.
+              نُمكنك من إدارة الكوادر البشرية لجمعيتك باحترافية. نوفر أدوات
+              متقدمة لتنظيم المهام، وتوزيع الأدوار،الأداء.
             </p>
             <Link to="/hrlanding" className="showserve">
               عرض الخدمة{" "}
               <FontAwesomeIcon icon={faArrowLeft} className="showSerIcon" />
             </Link>
           </div>
-          {/* <div className="setvCard">
-            <FontAwesomeIcon icon={faShield} className="servIcon" />
-            <h5>إدارة الحوكمة</h5>
-            <p className="serveDesc">
-              نُمكِّن جمعيتك من تطبيق أفضل ممارسات الحوكمة بكل شفافية وفعالية لضمان تحقيق الأهداف بثقة واستدامة.
-            </p>
-            <Link to="/governanceLanding" className="showserve">
-              عرض الخدمة{" "}
-              <FontAwesomeIcon icon={faArrowLeft} className="showSerIcon" />
-            </Link>
-          </div> */}
           <div className="setvCard">
             <FontAwesomeIcon icon={faMoneyBillTransfer} className="servIcon" />
             <h5>إدارة القروض و الاقساط</h5>
             <p className="serveDesc">
-              نُوفر لك نظامًا متكاملًا لتنظيم عمليات الإقراض وتحصيل الأقساط بكل دقة وسهولة. يمكنك متابعة الحالات، جدولة الدفعات،لدعم الشفافية .
+              نُوفر لك نظامًا متكاملًا لتنظيم عمليات الإقراض وتحصيل الأقساط بكل
+              دقة وسهولة. يمكنك متابعة الحالات، جدولة الدفعات،لدعم الشفافية .
             </p>
             <Link to="/loansLanding" className="showserve">
               عرض الخدمة{" "}
@@ -213,32 +356,35 @@ function MainLanding() {
             <FontAwesomeIcon icon={faDatabase} className="servIcon" />
             <h5>إدارة البيانات</h5>
             <p className="serveDesc">
-              نُتيح لك تنظيم وحفظ بيانات جمعيتك بكل أمان واحترافية. نوفر أدوات متقدمة لتصنيف المعلومات، تتبع الأنشطة بدقة لدعم اتخاذ القرار .
+              نُتيح لك تنظيم وحفظ بيانات جمعيتك بكل أمان واحترافية. نوفر أدوات
+              متقدمة لتصنيف المعلومات، تتبع الأنشطة بدقة لدعم اتخاذ القرار .
             </p>
             <Link to="/dataManagementLanding" className="showserve">
               عرض الخدمة{" "}
               <FontAwesomeIcon icon={faArrowLeft} className="showSerIcon" />
             </Link>
           </div>
-              <div className="setvCard">
-                <FontAwesomeIcon icon={faFileShield} className="servIcon" />
-                <h5>الأرشيف</h5>
-                <p className="serveDesc">نُتيح لك حفظ وتنظيم كافة مستندات جمعيتك في أرشيف رقمي آمن وسهل الوصول  وضمان الحفظ .
-                </p>
-                <Link to="/archivesLanding" className="showserve">
-                  عرض الخدمة{" "}
-                  <FontAwesomeIcon icon={faArrowLeft} className="showSerIcon" />
-                </Link>
-              </div>
+          <div className="setvCard">
+            <FontAwesomeIcon icon={faFileShield} className="servIcon" />
+            <h5>الأرشيف</h5>
+            <p className="serveDesc">
+              نُتيح لك حفظ وتنظيم كافة مستندات جمعيتك في أرشيف رقمي آمن وسهل
+              الوصول وضمان الحفظ .
+            </p>
+            <Link to="/archivesLanding" className="showserve">
+              عرض الخدمة{" "}
+              <FontAwesomeIcon icon={faArrowLeft} className="showSerIcon" />
+            </Link>
+          </div>
 
           {showCard7 && (
             <>
-            
               <div className="setvCard">
                 <FontAwesomeIcon icon={faLandmark} className="servIcon" />
                 <h5>إدارة الاوقاف</h5>
                 <p className="serveDesc">
-                  نُوفر نظامًا متخصصًا لإدارة الأوقاف بكفاءة وشفافية. يمكنك متابعة الأصول الوقفية، وتوزيع العوائد، وتوثيق الأنشطة .
+                  نُوفر نظامًا متخصصًا لإدارة الأوقاف بكفاءة وشفافية. يمكنك
+                  متابعة الأصول الوقفية، وتوزيع العوائد، وتوثيق الأنشطة .
                 </p>
                 <Link to="/endowmentsLanding" className="showserve">
                   عرض الخدمة{" "}
@@ -249,7 +395,8 @@ function MainLanding() {
                 <FontAwesomeIcon icon={faListCheck} className="servIcon" />
                 <h5>إدارة المهام</h5>
                 <p className="serveDesc">
-                  نُساعدك على تنظيم مهام فريقك ومتابعتها بكل سهولة وفعالية. يمكنك تحديد المسؤوليات، ضبط المواعيد، وتتبع الإنجاز.
+                  نُساعدك على تنظيم مهام فريقك ومتابعتها بكل سهولة وفعالية.
+                  يمكنك تحديد المسؤوليات، ضبط المواعيد، وتتبع الإنجاز.
                 </p>
                 <Link to="/tasksLanding" className="showserve">
                   عرض الخدمة{" "}
@@ -260,7 +407,8 @@ function MainLanding() {
                 <FontAwesomeIcon icon={faCalculator} className="servIcon" />
                 <h5>المحاسبة</h5>
                 <p className="serveDesc">
-                  نُوفر لك نظامًا محاسبيًا متكاملًا يساعدك على تتبع الإيرادات والمصروفات بكل دقة.
+                  نُوفر لك نظامًا محاسبيًا متكاملًا يساعدك على تتبع الإيرادات
+                  والمصروفات بكل دقة.
                 </p>
                 <Link to="/accountingLanding" className="showserve">
                   عرض الخدمة{" "}
@@ -271,7 +419,9 @@ function MainLanding() {
                 <FontAwesomeIcon icon={faGlobe} className="servIcon" />
                 <h5>أنشئ موقعك الإلكتروني</h5>
                 <p className="serveDesc">
-                  نُوفر لك أدوات سهلة وفعالة لإنشاء موقعك الإلكتروني الخاص بالجمعية الخيرية.</p>
+                  نُوفر لك أدوات سهلة وفعالة لإنشاء موقعك الإلكتروني الخاص
+                  بالجمعية الخيرية.
+                </p>
                 <Link to="/websiteLanding" className="showserve">
                   عرض الخدمة{" "}
                   <FontAwesomeIcon icon={faArrowLeft} className="showSerIcon" />
@@ -280,8 +430,6 @@ function MainLanding() {
             </>
           )}
         </div>
-
-
 
         {!showCard7 ? (
           <p
@@ -300,136 +448,94 @@ function MainLanding() {
             عرض اقل
           </p>
         )}
-
-
       </div>
 
-        <div className="pricing" dir="rtl" id="prices">
-        <h2 className="mainTitle">الأسعار</h2>
+      {/* ================================================================
+          PRICING SECTION
+          ================================================================ */}
+      <div className="pricing" dir="rtl" id="prices">
+        <div className="scroll-split-title">
+          <SplitHeading text="الأسعار" as="h2" className="mainTitle" />
+        </div>
         <div className="landingScrollTable">
           <table className="pricingTable">
-            <thead >
+            <thead>
               <tr></tr>
-              <tr style={{fontSize:"20px" , fontWeight:"bold"}}>
-                <th >اسم المديول </th>
-                <th >سعر سنه</th>
-                <th >سعر ثلاث سنوات</th>
-                <th >سعر خمس سنوات  </th>
+              <tr style={{ fontSize: "20px", fontWeight: "bold" }}>
+                <th>اسم المديول </th>
+                <th>سعر سنه</th>
+                <th>سعر ثلاث سنوات</th>
+                <th>سعر خمس سنوات </th>
               </tr>
-              <tr style={{borderBottom:"1px solid var(--text-color)" , fontSize:"14px" , fontWeight:"normal" , color:"gray"}}>
-                   <th >  </th>
-                <th >وفر 10% عند الحصول على النظام الكامل</th>
-                <th >وفر 20% عند الحصول على النظام الكامل  </th>
-                <th >  وفر 35% عند الحصول على النظام الكامل  </th>
+              <tr
+                style={{
+                  borderBottom: "1px solid var(--text-color)",
+                  fontSize: "14px",
+                  fontWeight: "normal",
+                  color: "gray",
+                }}
+              >
+                <th> </th>
+                <th>وفر 10% عند الحصول على النظام الكامل</th>
+                <th>وفر 20% عند الحصول على النظام الكامل </th>
+                <th> وفر 35% عند الحصول على النظام الكامل </th>
               </tr>
             </thead>
             <tbody>
-                {price && price.map((item , index) => (
-              <tr key={index}>
-                  <td>{item.name}</td>
-                  <td>{item.price_peryear} ر.س</td>
-                  <td>{item.price_perthreeyears} ر.س</td>
-                  <td>{item.price_perfiveyears} ر.س</td>
-              </tr>
+              {price &&
+                price.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.name}</td>
+                    <td>{item.price_peryear} ر.س</td>
+                    <td>{item.price_perthreeyears} ر.س</td>
+                    <td>{item.price_perfiveyears} ر.س</td>
+                  </tr>
                 ))}
-               
             </tbody>
           </table>
         </div>
       </div>
-      {/* <div className="mainsubscriptionContainer" id="mainsubscriptionContainer">
-        <div>
-          <Title title="الأسعار" />
-        </div>
-        <div className="subscriptionContainer">
-          <div className="subSys">
-            <div className="subText">
-              <div className="subTitleCon">
-                <h3 className="subtitle">باقة السنة</h3>
-                <p className="subSentance">وفر أكثر مع النظام المتكامل</p>
-                <p className="subPrice">12,250 ر.س</p>
-              </div>
-              <p className="subDesc">
-                الخيار الأمثل لأصحاب الأعمال الذين يسعون للحصول على تقارير
-                شاملة، مميزات متقدمة، وخصائص تدعم توسيع نطاق أعمالهم، مع
-                الاستفادة من خبرات فريق عملنا المحترف.
-              </p>
-            </div>
-            <button className="subButton">اشترك الآن</button>
-          </div>
 
-          <div className="subSys">
-            <div className="subText">
-              <div className="subTitleCon">
-                <h3 className="subtitle">حزمة الثلاث سنوات</h3>
-                <p className="subSentance">
-                  وفر أكثر حزمة مع الثلاث سنوات حتي 13%
-                </p>
-                <p className="subPrice">32,500 ر.س</p>
-              </div>
-              <p className="subDesc">
-                الخطة المثالية لأصحاب الأعمال الذين يبحثون عن تقارير شاملة،
-                مميزات متطورة، وخصائص تساهم في توسيع نطاق أعمالهم، مع دعم كامل
-                من فريق عملنا المحترف.
-              </p>
-            </div>
-            <button className="subButton">اشترك الآن</button>
-          </div>
-        </div>
-      </div> */}
+      {/* ================================================================
+          ABOUT US SECTION
+          ================================================================ */}
       <div className="aboutUs mainsubscriptionContainer" id="aboutUs">
-        <div>
-          <Title title="ماذا عنا" />
+        <div className="scroll-split-title text-center">
+          <SplitHeading text="ماذا عنا" as="h2" className="mainTitle" />
         </div>
         <div className="subscriptionContainer">
-          {/* <div className="subSys">
-            <div className="subText">
-              <div className="subTitleCon">
-                <h3 className="subtitle"> من نحن؟</h3>
-                <FontAwesomeIcon icon={faComment} className="servIcon" />
-                <p className="subPrice"></p>
-              </div>
-              <p className="subDesc">
-                نحن في بوابتك نؤمن بأن التقنية يمكن أن تُحدث فارقًا حقيقيًا في تطوير العمل الخيري.
-                لذلك أنشأنا منصة رقمية متكاملة تساعد الجمعيات الخيرية على إدارة أعمالها بسهولة وكفاءة.
-              </p>
-            </div>
-          </div> */}
           <div className="subSys">
             <div className="subText">
               <div className="subTitleCon">
-                <h3 className="subtitle"> الرؤية</h3>
-                <FontAwesomeIcon icon={faComment} className="servIcon" />
-                <p className="subPrice"></p>
+                <div className="subIconWrap">
+                  <FontAwesomeIcon icon={faComment} />
+                </div>
+                <h3 className="subtitle">الرؤية</h3>
               </div>
               <p className="subDesc">
-                تقدم بوابتك حلولًا ذكية ومتكاملة تلبّي احتياجات الجمعيات الخيرية، من خلال أدوات مرنة تساعد في إدارة البيانات وتنظيم الفرق وتصميم المشاريع ومتابعة الأداء بسلاسة وفعالية.
-
+                تقدم بوابتك حلولًا ذكية ومتكاملة تلبّي احتياجات الجمعيات
+                الخيرية، من خلال أدوات مرنة تساعد في إدارة البيانات وتنظيم الفرق
+                وتصميم المشاريع ومتابعة الأداء بسلاسة وفعالية.
               </p>
             </div>
           </div>
           <div className="subSys">
             <div className="subText">
               <div className="subTitleCon">
+                <div className="subIconWrap">
+                  <FontAwesomeIcon icon={faComment} />
+                </div>
                 <h3 className="subtitle">رسالتنا</h3>
-                <FontAwesomeIcon icon={faComment} className="servIcon" />
-                <p className="subPrice"></p>
               </div>
               <p className="subDesc">
-                هدفنا هو تمكين الجمعيات من التركيز على رسالتها المجتمعية، وترك المهام الإدارية والتقنية علينا.
-                نعمل بشغف لنكون الشريك الرقمي الموثوق لكل جمعية تسعى إلى تحقيق الأثر والاستدامة.
+                هدفنا هو تمكين الجمعيات من التركيز على رسالتها المجتمعية، وترك
+                المهام الإدارية والتقنية علينا. نعمل بشغف لنكون الشريك الرقمي
+                الموثوق لكل جمعية تسعى إلى تحقيق الأثر والاستدامة.
               </p>
             </div>
           </div>
         </div>
       </div>
-
-      {/* <div className="aboutUs mainsubscriptionContainer" id="mainsubscriptionContainer">
-        <div>
-          <Title title="تعرف علي النظام وباقات الاشتراك " />
-        </div>
-
-      </div> */}
 
       <LandingFooter />
     </div>

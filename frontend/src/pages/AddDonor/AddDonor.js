@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import API from "../../api/axiosConfig";
 import { useNavigate } from "react-router";
 import { Spinner } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 function AddDonor() {
   const [name, setName] = useState(
@@ -44,6 +45,12 @@ function AddDonor() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(!name){
+      return toast.error("اسم المانح مطلوب")
+    }
+    if(!phone){
+      return toast.error("رقم الجوال مطلوب")
+    }
     setIsSubmitting(true);
     const mForm = new FormData();
     mForm.append("name", name);

@@ -10,6 +10,7 @@ import API from "../../api/axiosConfig";
 import { useNavigate } from "react-router";
 import NewButton from "../../components/NewButton";
 import ConfirmModal from "../../components/ConfirmModal";
+import { toast } from "react-toastify";
 
 function Interest() {
   const columns = [
@@ -40,6 +41,9 @@ function Interest() {
   };
   const handleArchive = async (e) => {
     e.preventDefault();
+    if(!name){
+              return toast.error("الاسم مطلوب")
+            }
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append("name", name);

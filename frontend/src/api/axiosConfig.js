@@ -3,7 +3,7 @@ import { showError } from "../components/Toast";
 
 // export const BASE_URL = "https://associations.morefortech.com/api";
 // export const BASE_URL = "https://b6c4-197-36-151-217.ngrok-free.app/api";
-export const BASE_URL = "http://localhost:8000/api";
+export const BASE_URL = "http://192.168.1.6:8000/api";
 
 const API = axios.create({
   baseURL: BASE_URL,
