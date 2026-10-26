@@ -1,202 +1,332 @@
-// src/components/Surveys/SurveyList.jsx
-
-import { useState, useEffect } from 'react';
-import API from '../../api/axiosConfig';
-import SurveyForm from './SurveyForm';
-import TestPreLoader from '../../pages/TestPreLoader/TestPreLoader';
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChartLine,
+  faStar,
+  faClipboardList,
+  faPlus,
+  faXmark,
+  faTrashAlt,
+  faRotateRight,
+} from "@fortawesome/free-solid-svg-icons";
+import API from "../../api/axiosConfig";
+import SurveyForm from "./SurveyForm";
+import { TableSkeleton } from "../Skeleton";
 import { getCurrentPeriod } from "../../Utils/getCurrentPeriod";
+import "./Surveys.css";
 
 const NPS_BADGE = {
-  promoter:  { label: 'مروّج',   bg: '#dbeafe', color: '#1d4ed8' },
-  passive:   { label: 'محايد',   bg: '#ede9fe', color: '#7c3aed' },
-  detractor: { label: 'منتقد', bg: '#ccfbf1', color: '#0f766e' },
+  promoter: { label: "مروّج (Promoter)", bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" },
+  passive: { label: "محايد (Passive)", bg: "#fff8e1", color: "#b78103", border: "#ffe082" },
+  detractor: { label: "منتقد (Detractor)", bg: "#ffebee", color: "#c62828", border: "#ef9a9a" },
 };
 
-const STARS = (score) => score
-  ? '★'.repeat(score) + '☆'.repeat(5 - score)
-  : '—';
+const STARS = (score) => {
+  if (!score) return "—";
+  return "★".repeat(score) + "☆".repeat(5 - score);
+};
 
-const SurveyList = ({ period = getCurrentPeriod() }) =>  {
-  const [data,     setData]     = useState({ data: [], stats: {}, meta: {} });
-  const [loading,  setLoading]  = useState(true);
+const SurveyList = () => {
+  const [currentPeriod, setCurrentPeriod] = useState(getCurrentPeriod());
+  const [data, setData] = useState({ data: [], stats: {}, meta: {} });
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const availablePeriods = [
+    "2026-Q4",
+    "2026-Q3",
+    "2026-Q2",
+    "2026-Q1",
+    "2025-Q4",
+  ];
 
   const load = async () => {
     setLoading(true);
     try {
-      const res = await API.get('/surveys', { params: { period } });
-      setData(res.data);
+      const res = await API.get("/surveys", { params: { period: currentPeriod } });
+      if (res.data) {
+        setData(res.data);
+      }
+    } catch (err) {
+      console.error("Failed to load surveys:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const getNpsCategory = (row) => {
-  if (row.nps_category) return row.nps_category; // ← من الـ API
-  if (row.nps_score === null || row.nps_score === undefined) return null;
-  if (row.nps_score >= 9) return 'promoter';
-  if (row.nps_score >= 7) return 'passive';
-  return 'detractor';
-};
+  useEffect(() => {
+    load();
+  }, [currentPeriod]);
 
-  useEffect(() => { load(); }, [period]);
-
-  const cardStyle = {
-  backgroundColor: 'var(--background-color)',
-  border: '1px solid var(--border-color)',
-  borderRadius: '12px',
-  padding: '16px',
-  textAlign: 'center',
-  boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-};
- 
+  const handleDelete = async (id) => {
+    if (!window.confirm("هل أنت متأكد من حذف هذا الاستبيان؟")) return;
+    try {
+      setDeletingId(id);
+      await API.delete(`/surveys/${id}`);
+      load();
+    } catch (err) {
+      console.error("Failed to delete survey:", err);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const stats = data.stats ?? {};
 
-  return loading ? (
-    <TestPreLoader />
-  ) : (
-    <div style={{ 
-      padding: '32px', 
-      width: '90%', 
-      margin: '20px auto',
-      backgroundColor: 'var(--card--background, #ffffff)',
-      borderRadius: '20px',
-      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
-      border: '1px solid var(--border-color)',
-    }} dir="rtl">
-
+  return (
+    <div className="surveys-container">
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-5">
+      <div className="surveys-header">
         <div>
-          <h2 style={{ color: 'var(--text-color)', fontWeight: 700, marginBottom: 8, fontSize: '24px' }}>استبيانات الرضا</h2>
-          <p style={{ color: 'var(--text-color)', opacity: 0.8, fontSize: 14, margin: 0 }}>الفترة الحالية: <span style={{ fontWeight: 600 }}>{period}</span></p>
+          <h2 className="surveys-title">استبيانات الرضا</h2>
+          <div className="surveys-period-badge">
+            <span>الفترة المحددة:</span>
+            <select
+              className="surveys-period-select"
+              value={currentPeriod}
+              onChange={(e) => setCurrentPeriod(e.target.value)}
+            >
+              {availablePeriods.map((p) => (
+                <option key={p} value={p}>
+                  {p} {p === getCurrentPeriod() ? "(الحالية)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <button
-          onClick={() => setShowForm(s => !s)}
-          style={{
-            backgroundColor: 'var(--primary-color, #c8924a)',
-            color: 'var(--buttontext-color, #fff)',
-            border: 'none',
-            borderRadius: '12px',
-            padding: '10px 24px',
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: '0.3s',
-            boxShadow: '0 4px 10px rgba(200, 146, 74, 0.2)'
-          }}
-        >
-          {showForm ? 'إغلاق' : '+ استبيان جديد'}
-        </button>
+
+        <div className="d-flex gap-2">
+          <button
+            type="button"
+            className="btn btn-outline-secondary btn-sm"
+            style={{ borderRadius: "10px", padding: "8px 14px" }}
+            onClick={load}
+            disabled={loading}
+            title="تحديث البيانات"
+          >
+            <FontAwesomeIcon icon={faRotateRight} spin={loading} />
+          </button>
+
+          <button
+            type="button"
+            className="surveys-btn-toggle"
+            onClick={() => setShowForm((s) => !s)}
+          >
+            <FontAwesomeIcon icon={showForm ? faXmark : faPlus} />
+            <span>{showForm ? "إغلاق النموذج" : "استبيان جديد"}</span>
+          </button>
+        </div>
       </div>
 
-      {/* Form */}
+      {/* Form Area */}
       {showForm && (
-        <div className="mb-5 p-4" style={{ backgroundColor: 'var(--input-background)', borderRadius: '15px', border: '1px dashed var(--border-color)' }}>
-          <SurveyForm
-            period={period}
-            onSuccess={() => { setShowForm(false); load(); }}
-          />
-        </div>
+        <SurveyForm
+          period={currentPeriod}
+          onSuccess={() => {
+            setShowForm(false);
+            load();
+          }}
+        />
       )}
 
       {/* Stats Cards */}
-      <div className="row g-4 mb-5">
-        {[
-          { label: 'إجمالي الاستبيانات',  value: stats.total ?? 0, icon: '📊', color: 'var(--primary-color)' },
-          { label: 'متوسط الرضا',     value: stats.avg_satisfaction ?? '—', icon: '⭐', color: '#f59e0b' },
-          { label: 'مؤشر NPS',     value: stats.nps !== null && stats.nps !== undefined ? stats.nps : '—', icon: '📈', color: '#7c3aed' },
-        ].map(s => (
-          <div className="col-4" key={s.label}>
-            <div style={{
-              backgroundColor: 'var(--input-background, #fdf6ec)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '16px',
-              padding: '20px',
-              textAlign: 'center',
-              transition: '0.3s'
-            }}>
-              <div style={{ fontSize: '20px', marginBottom: '8px' }}>{s.icon}</div>
-              <p style={{ fontSize: 28, fontWeight: 800, color: s.color, margin: 0 }}>{s.value}</p>
-              <p style={{ fontSize: 13, color: 'var(--text-color)', marginTop: 6, fontWeight: 500, opacity: 0.9 }}>{s.label}</p>
-            </div>
-          </div>
-        ))}
+      <div className="surveys-stats-grid">
+        <div className="surveys-stat-card">
+          <div className="surveys-stat-icon">📊</div>
+          <p className="surveys-stat-val" style={{ color: "#a37a3e" }}>
+            {stats.total ?? 0}
+          </p>
+          <p className="surveys-stat-lbl">إجمالي الاستبيانات</p>
+        </div>
+
+        <div className="surveys-stat-card">
+          <div className="surveys-stat-icon">⭐</div>
+          <p className="surveys-stat-val" style={{ color: "#f59e0b" }}>
+            {stats.avg_satisfaction !== null && stats.avg_satisfaction !== undefined
+              ? `${stats.avg_satisfaction} / 5`
+              : "—"}
+          </p>
+          <p className="surveys-stat-lbl">متوسط الرضا العام</p>
+        </div>
+
+        <div className="surveys-stat-card">
+          <div className="surveys-stat-icon">📈</div>
+          <p
+            className="surveys-stat-val"
+            style={{
+              color:
+                stats.nps > 0
+                  ? "#2e7d32"
+                  : stats.nps < 0
+                  ? "#c62828"
+                  : "#7c3aed",
+            }}
+          >
+            {stats.nps !== null && stats.nps !== undefined ? `${stats.nps}%` : "—"}
+          </p>
+          <p className="surveys-stat-lbl">
+            مؤشر صافي الترويج (NPS)
+          </p>
+        </div>
       </div>
 
-      {/* Table */}
+      {/* Table Area */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '48px', color: 'var(--text-color)' }}>جاري التحميل...</div>
-      ) : data.data.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '64px', color: 'var(--text-color)', backgroundColor: 'var(--input-background)', borderRadius: 16 }}>
-          <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</p>
-          <p style={{ fontSize: '1.1rem', fontWeight: 500 }}>لا توجد استبيانات لهذه الفترة</p>
+        <TableSkeleton rows={4} columns={6} />
+      ) : (data.data || []).length === 0 ? (
+        <div
+          style={{
+            textAlign: "center",
+            padding: "54px 20px",
+            background: "#fffdfa",
+            borderRadius: "18px",
+            border: "1.5px dashed #ebdccb",
+          }}
+        >
+          <div style={{ fontSize: "3rem", marginBottom: "12px" }}>📋</div>
+          <h5 style={{ color: "#423625", fontWeight: "700", marginBottom: "8px" }}>
+            لا توجد استبيانات مسجلة لهذه الفترة ({currentPeriod})
+          </h5>
+          <p style={{ color: "#7a6e5d", fontSize: "14px", marginBottom: "18px" }}>
+            يمكنك تسجيل أول استبيان رضا الآن من خلال الضغط على زر "استبيان جديد" أعلاه.
+          </p>
+          <button
+            type="button"
+            className="surveys-btn-toggle"
+            onClick={() => setShowForm(true)}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+            <span>تسجيل استبيان الآن</span>
+          </button>
         </div>
       ) : (
-        <div style={{ 
-          backgroundColor: 'transparent', 
-          borderRadius: 16, 
-          overflow: 'hidden', 
-          border: '1px solid var(--border-color)'
-        }}>
-          <table className="table mb-0" style={{ 
-            color: 'var(--text-color)', 
-            width: '100%', 
-            borderCollapse: 'collapse',
-            backgroundColor: 'transparent'
-          }} >
-            <thead style={{ 
-              backgroundColor: 'var(--input-background)', 
-              color: 'var(--text-color)'
-            }}>
-              <tr>
-                <th style={{ textAlign: 'center', padding: '18px', fontWeight: 700, fontSize: '14px', borderBottom: '2px solid var(--border-color)', backgroundColor: 'transparent', boxShadow: 'none', color: 'inherit' }}>المستفيد</th>
-                <th style={{ textAlign: 'center', padding: '18px', fontWeight: 700, fontSize: '14px', borderBottom: '2px solid var(--border-color)', backgroundColor: 'transparent', boxShadow: 'none', color: 'inherit' }}>الرضا</th>
-                <th style={{ textAlign: 'center', padding: '18px', fontWeight: 700, fontSize: '14px', borderBottom: '2px solid var(--border-color)', backgroundColor: 'transparent', boxShadow: 'none', color: 'inherit' }}>NPS</th>
-                <th style={{ textAlign: 'center', padding: '18px', fontWeight: 700, fontSize: '14px', borderBottom: '2px solid var(--border-color)', backgroundColor: 'transparent', boxShadow: 'none', color: 'inherit' }}>التصنيف</th>
-                <th style={{ textAlign: 'center', padding: '18px', fontWeight: 700, fontSize: '14px', borderBottom: '2px solid var(--border-color)', backgroundColor: 'transparent', boxShadow: 'none', color: 'inherit' }}>التاريخ</th>
+        <div
+          style={{
+            overflowX: "auto",
+            borderRadius: "16px",
+            border: "1px solid #ebdccb",
+          }}
+        >
+          <table
+            className="table mb-0"
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              textAlign: "right",
+              fontSize: "13.5px",
+            }}
+          >
+            <thead>
+              <tr style={{ background: "#f8f2e7", color: "#423625" }}>
+                <th style={{ padding: "14px 16px", fontWeight: "700" }}>#</th>
+                <th style={{ padding: "14px 16px", fontWeight: "700" }}>المستفيد</th>
+                <th style={{ padding: "14px 16px", fontWeight: "700", textAlign: "center" }}>
+                  الرضا
+                </th>
+                <th style={{ padding: "14px 16px", fontWeight: "700", textAlign: "center" }}>
+                  NPS
+                </th>
+                <th style={{ padding: "14px 16px", fontWeight: "700", textAlign: "center" }}>
+                  التصنيف
+                </th>
+                <th style={{ padding: "14px 16px", fontWeight: "700" }}>الملاحظات</th>
+                <th style={{ padding: "14px 16px", fontWeight: "700", textAlign: "center" }}>
+                  التاريخ
+                </th>
+                <th style={{ padding: "14px 16px", fontWeight: "700", textAlign: "center" }}>
+                  إجراءات
+                </th>
               </tr>
             </thead>
-            <tbody style={{ backgroundColor: 'transparent' }}>
+            <tbody>
               {data.data.map((row, idx) => {
-                const category = getNpsCategory(row);
+                const category = row.nps_category;
                 const badge = NPS_BADGE[category];
                 return (
-                  <tr key={row.id} style={{ 
-                    borderTop: '1px solid var(--border-color)',
-                    backgroundColor: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)',
-                    boxShadow: 'none'
-                  }}>
-                    <td style={{ padding: '16px', fontWeight: 600, fontSize: '14px', backgroundColor: 'transparent', boxShadow: 'none', color: 'inherit' }}>
-                      {row.humancase_name ?? 'غير محدد'}
+                  <tr
+                    key={row.id || idx}
+                    style={{
+                      borderBottom: "1px solid #f0e6d6",
+                      transition: "background 0.2s ease",
+                    }}
+                  >
+                    <td style={{ padding: "14px 16px", fontWeight: "700", color: "#8a642e" }}>
+                      {idx + 1}
                     </td>
-                    <td style={{ padding: '16px', textAlign: 'center', color: '#f59e0b', fontSize: '1.2rem', backgroundColor: 'transparent', boxShadow: 'none' }}>
+                    <td style={{ padding: "14px 16px", fontWeight: "700" }}>
+                      {row.humancase_name || "غير محدد"}
+                    </td>
+                    <td
+                      style={{
+                        padding: "14px 16px",
+                        textAlign: "center",
+                        color: "#f59e0b",
+                        fontSize: "16px",
+                        letterSpacing: "2px",
+                      }}
+                      title={`${row.satisfaction_score || 0} من 5`}
+                    >
                       {STARS(row.satisfaction_score)}
                     </td>
-                    <td style={{ padding: '16px', textAlign: 'center', fontWeight: 700, fontSize: '15px', backgroundColor: 'transparent', boxShadow: 'none', color: 'inherit' }}>
-                      {row.nps_score ?? '—'}
+                    <td
+                      style={{
+                        padding: "14px 16px",
+                        textAlign: "center",
+                        fontWeight: "800",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {row.nps_score !== null && row.nps_score !== undefined
+                        ? row.nps_score
+                        : "—"}
                     </td>
-                    <td style={{ padding: '16px', textAlign: 'center', backgroundColor: 'transparent', boxShadow: 'none' }}>
+                    <td style={{ padding: "14px 16px", textAlign: "center" }}>
                       {badge ? (
-                        <span style={{ 
-                          backgroundColor: badge.bg, 
-                          color: badge.color,
-                          padding: '5px 14px',
-                          borderRadius: '25px',
-                          fontSize: '12px',
-                          fontWeight: 700,
-                          display: 'inline-block',
-                          boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
-                        }}>
+                        <span
+                          style={{
+                            backgroundColor: badge.bg,
+                            color: badge.color,
+                            border: `1px solid ${badge.border}`,
+                            padding: "4px 12px",
+                            borderRadius: "16px",
+                            fontSize: "11.5px",
+                            fontWeight: "700",
+                            display: "inline-block",
+                          }}
+                        >
                           {badge.label}
                         </span>
-                      ) : '—'}
+                      ) : (
+                        "—"
+                      )}
                     </td>
-                    <td style={{ padding: '16px', textAlign: 'center', color: 'var(--text-color)', opacity: 0.8, fontSize: '13px', backgroundColor: 'transparent', boxShadow: 'none' }}>
+                    <td style={{ padding: "14px 16px", maxWidth: "240px", color: "#5c4e3c" }}>
+                      {row.notes || <span style={{ color: "#a89b88" }}>لا توجد ملاحظات</span>}
+                    </td>
+                    <td
+                      style={{
+                        padding: "14px 16px",
+                        textAlign: "center",
+                        color: "#7a6e5d",
+                        fontSize: "12.5px",
+                      }}
+                    >
                       {row.submitted_at
-                        ? new Date(row.submitted_at).toLocaleDateString('ar-SA')
-                        : '—'}
+                        ? new Date(row.submitted_at).toLocaleDateString("ar-SA")
+                        : "—"}
+                    </td>
+                    <td style={{ padding: "14px 16px", textAlign: "center" }}>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        style={{ borderRadius: "8px", padding: "4px 10px" }}
+                        onClick={() => handleDelete(row.id)}
+                        disabled={deletingId === row.id}
+                        title="حذف الاستبيان"
+                      >
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </button>
                     </td>
                   </tr>
                 );

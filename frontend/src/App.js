@@ -100,6 +100,7 @@ import ShowDonors from "./pages/AddDonor/ShowDonors";
 import CaseStudy from "./pages/AddBeneficiary/CaseStudy";
 import Beneficiary from "./pages/Beneficiary/Beneficiary";
 import BeneficiaryX from "./pages/Beneficiary/BeneficiaryX";
+import BeneficiaryView from "./pages/Beneficiary/BeneficiaryView";
 import EditJobTitle from "./pages/JobTitle/EditJobTitle";
 import ReceiptVoucherView from "./pages/ReceiptVoucher/ReceiptVoucherView";
 import Verify from "./pages/Verify/Verify";
@@ -659,6 +660,7 @@ function App() {
 
                 <Route path="/beneficiary" element={<Beneficiary />} />
                 <Route path="/beneficiaryx" element={<BeneficiaryX />} />
+                <Route path="/beneficiary/view/:id" element={<BeneficiaryView />} />
                 <Route path="/editjobtitle/:id" element={<EditJobTitle />} />
                 <Route
                   path="/receiptVoucherView/:id"

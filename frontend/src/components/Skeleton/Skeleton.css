@@ -1,0 +1,185 @@
+/* =========================================================
+   Skeleton Loader Styles with Smooth Shimmer Animation
+   ========================================================= */
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-base {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  vertical-align: middle;
+  background-color: rgba(194, 154, 100, 0.12);
+  background-image: linear-gradient(
+    90deg,
+    rgba(194, 154, 100, 0.08) 0%,
+    rgba(194, 154, 100, 0.22) 50%,
+    rgba(194, 154, 100, 0.08) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+.dark-mode .skeleton-base {
+  background-color: rgba(255, 255, 255, 0.06);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(194, 154, 100, 0.18) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+}
+
+.skeleton-text {
+  border-radius: 4px;
+  height: 14px;
+  margin: 4px 0;
+}
+
+.skeleton-circular {
+  border-radius: 50% !important;
+}
+
+.skeleton-rounded {
+  border-radius: 8px;
+}
+
+.skeleton-rectangular {
+  border-radius: 0;
+}
+
+/* ── Table Skeleton ──────────────────────────────────────── */
+.skeleton-table-row {
+  border-bottom: 1px solid rgba(194, 154, 100, 0.12);
+}
+
+.dark-mode .skeleton-table-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.skeleton-table-cell {
+  padding: 14px 12px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* ── Full Page Skeleton ──────────────────────────────────── */
+.skeleton-page-container {
+  width: 95%;
+  max-width: 1400px;
+  margin: 25px auto;
+  direction: rtl;
+  font-family: inherit;
+}
+
+.skeleton-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 18px 24px;
+  background: var(--surface-color, #ffffff);
+  border-radius: 14px;
+  border: 1px solid rgba(194, 154, 100, 0.18);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.dark-mode .skeleton-page-header {
+  background: var(--surface-color, #241408);
+  border: 1px solid var(--border-color, #4a2e14);
+}
+
+.skeleton-filter-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.skeleton-table-wrapper {
+  background: var(--surface-color, #ffffff);
+  border-radius: 14px;
+  border: 1px solid rgba(194, 154, 100, 0.18);
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  overflow-x: auto;
+}
+
+.dark-mode .skeleton-table-wrapper {
+  background: var(--surface-color, #241408);
+  border: 1px solid var(--border-color, #4a2e14);
+}
+
+.skeleton-mock-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.skeleton-mock-th {
+  padding: 12px;
+  border-bottom: 2px solid rgba(194, 154, 100, 0.2);
+  text-align: center;
+}
+
+/* ── Card Grid Skeleton ──────────────────────────────────── */
+.skeleton-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.skeleton-card {
+  padding: 22px;
+  background: var(--surface-color, #ffffff);
+  border-radius: 14px;
+  border: 1px solid rgba(194, 154, 100, 0.18);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.dark-mode .skeleton-card {
+  background: var(--surface-color, #241408);
+  border: 1px solid var(--border-color, #4a2e14);
+}
+
+/* ── Details / Profile Skeleton ──────────────────────────── */
+.skeleton-details-box {
+  background: var(--surface-color, #ffffff);
+  border: 1px solid rgba(194, 154, 100, 0.2);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.dark-mode .skeleton-details-box {
+  background: var(--surface-color, #241408);
+  border: 1px solid var(--border-color, #4a2e14);
+}
+
+.skeleton-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.skeleton-info-item {
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(194, 154, 100, 0.06);
+  border: 1px dashed rgba(194, 154, 100, 0.18);
+}
+
+.dark-mode .skeleton-info-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+}

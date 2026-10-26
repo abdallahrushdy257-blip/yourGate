@@ -1,29 +1,57 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faFile, faTimes, faFilePdf } from "@fortawesome/free-solid-svg-icons";
+
+function detectFileType(urlOrName, mimeType) {
+  if (mimeType) {
+    if (mimeType.startsWith("image/")) return "image";
+    if (mimeType === "application/pdf") return "pdf";
+  }
+  if (urlOrName && typeof urlOrName === "string") {
+    const clean = urlOrName.toLowerCase().split("?")[0];
+    if (clean.endsWith(".pdf")) return "pdf";
+    if (/\.(jpe?g|png|gif|webp|svg)$/i.test(clean)) return "image";
+  }
+  return "file";
+}
 
 function UploadInput(props) {
   const [fileInfo, setFileInfo] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
-  const [isImage, setIsImage] = useState(false);
+  const [fileType, setFileType] = useState("file"); // "image" | "pdf" | "file"
   const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    const url = props.defaultUrl || (typeof props.value === "string" ? props.value : "");
+    if (url) {
+      setPreviewUrl(url);
+      const type = detectFileType(url);
+      setFileType(type);
+      try {
+        const cleanName = decodeURIComponent(url.split("/").pop().split("?")[0]);
+        setFileInfo(cleanName || (type === "pdf" ? "ملف PDF" : "ملف مرفوع"));
+      } catch {
+        setFileInfo(type === "pdf" ? "ملف PDF" : "ملف مرفوع");
+      }
+    } else if (!fileInputRef.current?.files?.length) {
+      setPreviewUrl("");
+      setFileInfo("");
+      setFileType("file");
+    }
+  }, [props.defaultUrl, props.value]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setFileInfo(file.name);
-      if (file.type.startsWith("image/")) {
-        setIsImage(true);
-        setPreviewUrl(URL.createObjectURL(file));
-      } else {
-        setIsImage(false);
-        setPreviewUrl("");
-      }
+      const type = detectFileType(file.name, file.type);
+      setFileType(type);
+      setPreviewUrl(URL.createObjectURL(file));
     } else {
       setFileInfo("");
       setPreviewUrl("");
-      setIsImage(false);
+      setFileType("file");
     }
 
     if (props.onChange) {
@@ -35,15 +63,18 @@ function UploadInput(props) {
     if (fileInputRef.current) {
       fileInputRef.current.value = null;
     }
-    if (previewUrl) {
+    if (previewUrl && previewUrl.startsWith("blob:")) {
       URL.revokeObjectURL(previewUrl);
     }
     setFileInfo("");
     setPreviewUrl("");
-    setIsImage(false);
+    setFileType("file");
 
     if (props.onChange) {
       props.onChange({ target: { files: [] } });
+    }
+    if (props.onClear) {
+      props.onClear();
     }
   };
 
@@ -96,28 +127,62 @@ function UploadInput(props) {
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
-            maxWidth: "calc(100% - 50px)",
+            maxWidth: "calc(100% - 70px)",
           }}
         >
           {fileInfo || "اضغط لاختيار ملف..."}
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          {isImage && previewUrl ? (
-            <img
-              src={previewUrl}
-              alt="Preview"
+          {fileType === "image" && previewUrl ? (
+            <a
+              href={previewUrl}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              title="معاينة الصورة"
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <img
+                src={previewUrl}
+                alt="Preview"
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                  border: "1.5px solid var(--primary-color, #c29a64)",
+                  cursor: "pointer",
+                }}
+              />
+            </a>
+          ) : fileType === "pdf" && previewUrl ? (
+            <a
+              href={previewUrl}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              title="عرض ملف PDF في نافذة جديدة"
               style={{
-                width: "28px",
-                height: "28px",
-                objectFit: "cover",
-                borderRadius: "50%",
-                border: "1px solid var(--primary-color, #c29a64)",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+                backgroundColor: "#e63946",
+                color: "#ffffff",
+                padding: "2px 8px",
+                borderRadius: "10px",
+                fontSize: "11px",
+                fontWeight: "bold",
+                textDecoration: "none",
+                cursor: "pointer",
               }}
-            />
+            >
+              <FontAwesomeIcon icon={faFilePdf} />
+              <span>PDF</span>
+            </a>
           ) : (
             <FontAwesomeIcon
               icon={faFile}
-              style={{ color: "var(--primary-color, #c29a64)", fontSize: "15px" }}
+              style={{ color: "var(--primary-color, #c29a64)", fontSize: "16px" }}
             />
           )}
           {fileInfo && (

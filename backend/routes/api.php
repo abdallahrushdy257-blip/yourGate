@@ -65,8 +65,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/humancasedetails/voucher/store', [\App\Http\Controllers\Api\HumanCaseDetailController::class, 'storeVoucher']);
     Route::post('/humancasedetails/update/status', [\App\Http\Controllers\Api\HumanCaseDetailController::class, 'updateStatus']);
     Route::post('/humancases/update/status', [\App\Http\Controllers\Api\HumanCaseDetailController::class, 'updateStatus']);
+
+    // Beneficiary Registration Link Generation
+    Route::post('/hcform/request', [\App\Http\Controllers\Api\BeneficiaryLinkController::class, 'generate']);
+    Route::get('/hcform/tokens', [\App\Http\Controllers\Api\BeneficiaryLinkController::class, 'tokens']);
+
+    // Beneficiary Satisfaction Surveys
+    Route::get('/surveys', [\App\Http\Controllers\Api\SurveyController::class, 'index']);
+    Route::post('/surveys', [\App\Http\Controllers\Api\SurveyController::class, 'store']);
+    Route::delete('/surveys/{id}', [\App\Http\Controllers\Api\SurveyController::class, 'destroy']);
 });
+
+// External Beneficiary Multi-Step Registration (Public)
+Route::get('/hcrequest/{code}', [\App\Http\Controllers\Api\BeneficiaryLinkController::class, 'check']);
+Route::post('/hcrequest/{code}/case', [\App\Http\Controllers\Api\BeneficiaryLinkController::class, 'storeCase']);
+Route::post('/hcrequest/{code}/banks', [\App\Http\Controllers\Api\BeneficiaryLinkController::class, 'storeBanks']);
+Route::post('/hcrequest/{code}/qualifications', [\App\Http\Controllers\Api\BeneficiaryLinkController::class, 'storeQualifications']);
+Route::post('/hcrequest/{code}/homedetails', [\App\Http\Controllers\Api\BeneficiaryLinkController::class, 'storeHousing']);
+Route::post('/hcrequest/{code}/healthdetails', [\App\Http\Controllers\Api\BeneficiaryLinkController::class, 'storeHealth']);
+Route::post('/hcrequest/{code}/dependantdetails', [\App\Http\Controllers\Api\BeneficiaryLinkController::class, 'storeDependants']);
 
 // Notifications Endpoints (Public/Optional Auth)
 Route::get('/notify', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
 Route::get('/notify/{id}', [\App\Http\Controllers\Api\NotificationController::class, 'show']);
+

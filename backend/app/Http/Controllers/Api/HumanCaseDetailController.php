@@ -4,34 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\HumanCase;
+use App\Services\HumanCaseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class HumanCaseDetailController extends Controller
 {
+    public function __construct(
+        protected HumanCaseService $humanCaseService
+    ) {}
+
     /**
      * Get beneficiary details structure for bank, home, qualifications, etc.
      */
     public function get(int $id): JsonResponse
     {
-        $case = HumanCase::findOrFail($id);
-        $details = $case->details ?? [];
+        $data = $this->humanCaseService->getDetails($id);
 
-        if (empty($details['bankdetails'])) {
-            $details['bankdetails'] = [
-                'name'   => '',
-                'branch' => '',
-                'iban'   => $case->accnumber ?? '',
-            ];
-        }
-
-        return response()->json([
-            'status'  => 200,
-            'id'      => $case->id,
-            'name'    => $case->name,
-            'details' => $details,
-        ], Response::HTTP_OK);
+        return response()->json($data, Response::HTTP_OK);
     }
 
     /**
@@ -40,20 +31,11 @@ class HumanCaseDetailController extends Controller
     public function updateBanks(Request $request): JsonResponse
     {
         $id = (int) $request->input('id');
-        $case = HumanCase::findOrFail($id);
-
-        $details = $case->details ?? [];
-        $details['bankdetails'] = [
-            'name'   => $request->input('name', ''),
-            'branch' => $request->input('branch', ''),
-            'iban'   => $request->input('iban', ''),
-        ];
-
-        $case->details = $details;
-        if ($request->filled('iban')) {
-            $case->accnumber = $request->input('iban');
-        }
-        $case->save();
+        $this->humanCaseService->updateBanks(
+            $id,
+            $request->all(),
+            $request->file('upload')
+        );
 
         return response()->json([
             'status'  => 200,
@@ -67,12 +49,12 @@ class HumanCaseDetailController extends Controller
     public function storeQualifications(Request $request): JsonResponse
     {
         $id = (int) $request->input('id');
-        $case = HumanCase::findOrFail($id);
-
-        $details = $case->details ?? [];
-        $details['qualifications'] = $request->except(['_token']);
-        $case->details = $details;
-        $case->save();
+        $this->humanCaseService->storeQualifications(
+            $id,
+            $request->except(['_token']),
+            $request->file('sourceupload'),
+            $request->file('courseupload')
+        );
 
         return response()->json([
             'status'  => 200,
@@ -86,12 +68,12 @@ class HumanCaseDetailController extends Controller
     public function updatePersonalFees(Request $request): JsonResponse
     {
         $id = (int) $request->input('id');
-        $case = HumanCase::findOrFail($id);
-
-        $details = $case->details ?? [];
-        $details['home'] = $request->except(['_token']);
-        $case->details = $details;
-        $case->save();
+        $this->humanCaseService->updatePersonalFees(
+            $id,
+            $request->except(['_token']),
+            $request->file('personalfeesdetails_upload1'),
+            $request->file('personalfeesdetails_upload2')
+        );
 
         return response()->json([
             'status'  => 200,
@@ -105,24 +87,11 @@ class HumanCaseDetailController extends Controller
     public function storeHealth(Request $request): JsonResponse
     {
         $id = (int) $request->input('id', $request->input('humancase_id'));
-        $case = HumanCase::findOrFail($id);
-
-        $details = $case->details ?? [];
-        $healthList = $details['health'] ?? [];
-
-        $healthList[] = [
-            'id'             => count($healthList) + 1,
-            'disease_name'   => $request->input('disease_name', $request->input('name', '')),
-            'disease_type'   => $request->input('disease_type', $request->input('type', '')),
-            'disease_degree' => $request->input('disease_degree', $request->input('degree', '')),
-            'treatment_type' => $request->input('treatment_type', $request->input('trtype', '')),
-            'treatment_cost' => $request->input('treatment_cost', $request->input('trcost', '')),
-            'notes'          => $request->input('notes', ''),
-        ];
-
-        $details['health'] = $healthList;
-        $case->details = $details;
-        $case->save();
+        $this->humanCaseService->storeHealth(
+            $id,
+            $request->all(),
+            $request->file('upload')
+        );
 
         return response()->json([
             'status'  => 200,
@@ -135,8 +104,7 @@ class HumanCaseDetailController extends Controller
      */
     public function showHealthData(int $id): JsonResponse
     {
-        $case = HumanCase::findOrFail($id);
-        $healthList = $case->details['health'] ?? [];
+        $healthList = $this->humanCaseService->showHealthData($id);
 
         return response()->json($healthList, Response::HTTP_OK);
     }
@@ -147,24 +115,7 @@ class HumanCaseDetailController extends Controller
     public function storeDependants(Request $request): JsonResponse
     {
         $id = (int) $request->input('id', $request->input('humancase_id'));
-        $case = HumanCase::findOrFail($id);
-
-        $details = $case->details ?? [];
-        $dependents = $details['dependants'] ?? [];
-
-        $dependents[] = [
-            'id'          => count($dependents) + 1,
-            'name'        => $request->input('name', ''),
-            'dateofbirth' => $request->input('dateofbirth', $request->input('dob', '')),
-            'phone'       => $request->input('phone', ''),
-            'relation'    => $request->input('relation', ''),
-            'gender'      => $request->input('gender', ''),
-            'note'        => $request->input('note', ''),
-        ];
-
-        $details['dependants'] = $dependents;
-        $case->details = $details;
-        $case->save();
+        $this->humanCaseService->storeDependants($id, $request->all());
 
         return response()->json([
             'status'  => 200,
@@ -177,8 +128,7 @@ class HumanCaseDetailController extends Controller
      */
     public function showDependantsData(int $id): JsonResponse
     {
-        $case = HumanCase::findOrFail($id);
-        $dependents = $case->details['dependants'] ?? [];
+        $dependents = $this->humanCaseService->showDependantsData($id);
 
         return response()->json($dependents, Response::HTTP_OK);
     }
@@ -188,16 +138,19 @@ class HumanCaseDetailController extends Controller
      */
     public function updateStatus(Request $request): JsonResponse
     {
-        $id = (int) $request->input('id');
-        $case = HumanCase::findOrFail($id);
-
-        if ($request->filled('status')) {
-            $case->status = $request->input('status');
-        }
-        if ($request->filled('note')) {
-            $case->note = $request->input('note');
-        }
-        $case->save();
+        $id = (int) ($request->input('id') ?? $request->route('id'));
+        $rawStatus = $request->input('status') ?? $request->input('decision');
+        $status = match ((string) $rawStatus) {
+            '2'     => 'موافقة',
+            '3'     => 'مرفوض',
+            '1'     => 'معلق',
+            default => $rawStatus,
+        };
+        $this->humanCaseService->updateStatus(
+            $id,
+            $status,
+            $request->input('note')
+        );
 
         return response()->json([
             'status'  => 200,
@@ -211,23 +164,7 @@ class HumanCaseDetailController extends Controller
     public function storeVoucher(Request $request): JsonResponse
     {
         $id = (int) $request->input('id');
-        $case = HumanCase::findOrFail($id);
-
-        $details = $case->details ?? [];
-        $vouchers = $details['vouchers'] ?? [];
-
-        $vouchers[] = [
-            'id'             => count($vouchers) + 1,
-            'amount'         => $request->input('amount'),
-            'date'           => $request->input('date'),
-            'payment_method' => $request->input('payment_method'),
-            'account'        => $request->input('account'),
-            'description'    => $request->input('description'),
-        ];
-
-        $details['vouchers'] = $vouchers;
-        $case->details = $details;
-        $case->save();
+        $this->humanCaseService->storeVoucher($id, $request->all());
 
         return response()->json([
             'status'  => 200,

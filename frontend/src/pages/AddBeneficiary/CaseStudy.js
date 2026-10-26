@@ -14,6 +14,7 @@ import {
   faPhoneVolume,
   faPlus,
   faEye,
+  faFilePdf,
 } from "@fortawesome/free-solid-svg-icons";
 import "./addBeneficiary.css";
 import RegisterSelect from "../../components/RegisterSelect";
@@ -51,19 +52,26 @@ function CaseStudy(props) {
   const getAllData = async () => {
     try {
       const res = await API.get(`/humancasedetails/get/${id}`);
-      // const data = await res;
-      // if (data.status === 200) {
       if (res.status === 200) {
-        // setRows(data.data);
-        setRows(res.data);
+        const d = res.data || {};
+        d.details = d.details || {};
+        d.health = d.health || d.details.health || [];
+        d.dependants = d.dependants || d.details.dependants || [];
+        d.work_education = d.work_education || d.details.qualifications || d.details.work_education || {};
+        setRows(d);
 
+        if (d.case?.status) {
+          setDecision(String(d.case.status));
+        }
+        if (d.case?.note) {
+          setNote(d.case.note);
+        }
         setLoading(false);
-        console.log(rows.details.bankdetails_upload);
       }
     } catch (error) {
       console.error(error);
-      // setError(error.response.data.errors);
       setError(error.response?.data?.errors);
+      setLoading(false);
     }
   };
 
@@ -80,6 +88,8 @@ function CaseStudy(props) {
       if (res.status === 200) {
         if (props?.onClose) {
           props.onClose();
+        } else if (window.history.length > 1) {
+          navigate(-1);
         } else {
           navigate("/beneficiary");
         }
@@ -628,15 +638,41 @@ function CaseStudy(props) {
                         }}
                       >
                         {rows?.details?.bankdetails_upload ? (
-                          <img
-                            src={rows.details.bankdetails_upload}
-                            alt="صورة بيانات البنك"
-                            style={{
-                              maxWidth: "100%",
-                              height: "auto",
-                              borderRadius: "10px",
-                            }}
-                          />
+                          typeof rows.details.bankdetails_upload === "string" &&
+                          rows.details.bankdetails_upload.toLowerCase().split("?")[0].endsWith(".pdf") ? (
+                            <a
+                              href={rows.details.bankdetails_upload}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                backgroundColor: "#e63946",
+                                color: "#ffffff",
+                                padding: "10px 20px",
+                                borderRadius: "8px",
+                                textDecoration: "none",
+                                fontWeight: "bold",
+                                fontSize: "14px",
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faFilePdf} />
+                              <span>فتح مستند البنك (PDF)</span>
+                            </a>
+                          ) : (
+                            <a href={rows.details.bankdetails_upload} target="_blank" rel="noreferrer">
+                              <img
+                                src={rows.details.bankdetails_upload}
+                                alt="صورة بيانات البنك"
+                                style={{
+                                  maxWidth: "100%",
+                                  height: "auto",
+                                  borderRadius: "10px",
+                                }}
+                              />
+                            </a>
+                          )
                         ) : (
                           <h4 style={{ color: "var(--text-color)" }}>
                             لا توجد صورة حالياً
@@ -1182,8 +1218,33 @@ function CaseStudy(props) {
             <div className="info-group full-width">
               <label>التقرير الطبي</label>
               <div className="report-preview">
-                 {illness.attachment ? (
-                    <img src={illness.attachment} alt="التقرير الطبي" />
+                 {(illness.attachment || illness.upload) ? (
+                    typeof (illness.attachment || illness.upload) === "string" &&
+                    (illness.attachment || illness.upload).toLowerCase().split("?")[0].endsWith(".pdf") ? (
+                      <a
+                        href={illness.attachment || illness.upload}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          backgroundColor: "#e63946",
+                          color: "#fff",
+                          padding: "6px 14px",
+                          borderRadius: "6px",
+                          textDecoration: "none",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faFilePdf} />
+                        معاينة ملف PDF
+                      </a>
+                    ) : (
+                      <a href={illness.attachment || illness.upload} target="_blank" rel="noreferrer">
+                        <img src={illness.attachment || illness.upload} alt="التقرير الطبي" />
+                      </a>
+                    )
                  ) : (
                     <span className="no-data">لا يوجد تقرير مرفق</span>
                  )}
@@ -1326,51 +1387,55 @@ function CaseStudy(props) {
                 icon={<FontAwesomeIcon icon={faFileContract} />}
               />
               <div className="global-form-container">
-                {rows && rows.case && rows.case.status == 2 ? (
-                  <h3 style={{ textAlign: "center", color: "green" }}>
-                    تم قبول الحالة
-                  </h3>
-                ) : (
-                  <form
-                    className="decisionForm"
-                    style={{ width: "50%", margin: "auto" }}
-                  >
-                    <RegisterSelect
-                      label="القرار"
-                      id="decision"
-                      options={[
-                        { value: "1", label: "قيد المراجعة" },
-                        { value: "2", label: "موافقة" },
-                        { value: "3", label: "رفض" },
-                      ]}
-                      value={decision}
-                      onChange={(e) => setDecision(e.target.value)}
-                      stylee={{ width: "100%" }}
-                    />
-                    {error && error.decision && (
-                      <span className="error">{error.decision}</span>
-                    )}
-                    <RegisterTextarea
-                      label="ملاحظات"
-                      id="notes"
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      stylee={{ width: "100%" }}
-                    />
-                    {error && error.note && (
-                      <span className="error">{error.note}</span>
-                    )}
-                    <div style={{textAlign:"center",marginTop:"8px"}} className="buttons">
-                      <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={handleDecision}
-                      >
-                        حفظ
-                      </button>
+                <form
+                  className="decisionForm"
+                  style={{ width: "50%", margin: "auto" }}
+                >
+                  {rows?.case?.status == 2 && (
+                    <div className="alert alert-success text-center mb-3">
+                      تمت الموافقة على الحالة مسبقاً
                     </div>
-                  </form>
-                )}
+                  )}
+                  {rows?.case?.status == 3 && (
+                    <div className="alert alert-danger text-center mb-3">
+                      الحالة مستبعدة / مرفوضة حالياً
+                    </div>
+                  )}
+                  <RegisterSelect
+                    label="القرار"
+                    id="decision"
+                    options={[
+                      { value: "1", label: "قيد المراجعة / معلق" },
+                      { value: "2", label: "موافقة" },
+                      { value: "3", label: "رفض" },
+                    ]}
+                    value={decision}
+                    onChange={(e) => setDecision(e.target.value)}
+                    stylee={{ width: "100%" }}
+                  />
+                  {error && error.decision && (
+                    <span className="error">{error.decision}</span>
+                  )}
+                  <RegisterTextarea
+                    label="ملاحظات / سبب القرار"
+                    id="notes"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    stylee={{ width: "100%" }}
+                  />
+                  {error && error.note && (
+                    <span className="error">{error.note}</span>
+                  )}
+                  <div style={{ textAlign: "center", marginTop: "16px" }} className="buttons">
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={handleDecision}
+                    >
+                      حفظ القرار
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </>
@@ -2555,7 +2620,7 @@ th, td {
 
   return loading ? (
     <>
-      <TestPreLoader />{" "}
+      <TestPreLoader variant="details" />
     </>
   ) : (
     <>

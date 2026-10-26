@@ -1,0 +1,373 @@
+.cbl-container {
+  max-width: 1080px;
+  margin: 30px auto;
+  padding: 0 20px 50px;
+  direction: rtl;
+  font-family: inherit;
+}
+
+.cbl-header-card {
+  background: linear-gradient(135deg, #fffdfa 0%, #f7efe4 100%);
+  border: 1px solid #e5d8c8;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(163, 122, 62, 0.08);
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cbl-header-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  background: linear-gradient(180deg, #b89358, #a37a3e);
+}
+
+.cbl-header-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #b89358, #8a642e);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  box-shadow: 0 6px 16px rgba(163, 122, 62, 0.3);
+  margin-left: 20px;
+  flex-shrink: 0;
+}
+
+.cbl-header-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #3d3121;
+  margin-bottom: 6px;
+}
+
+.cbl-header-subtitle {
+  color: #7a6e5d;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Generation Card */
+.cbl-card {
+  background: #ffffff;
+  border: 1px solid #e8decb;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  margin-bottom: 28px;
+}
+
+.cbl-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #423625;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cbl-card-title .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #b89358;
+}
+
+.cbl-form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 16px;
+  align-items: end;
+}
+
+@media (max-width: 768px) {
+  .cbl-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cbl-input-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5c4e3c;
+  margin-bottom: 8px;
+}
+
+.cbl-input,
+.cbl-select {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #dcd1be;
+  background: #faf7f2;
+  color: #332b20;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.cbl-input:focus,
+.cbl-select:focus {
+  border-color: #b89358;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(184, 147, 88, 0.18);
+}
+
+.cbl-btn-generate {
+  background: linear-gradient(135deg, #b89358 0%, #946f36 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(163, 122, 62, 0.25);
+  height: 48px;
+  white-space: nowrap;
+}
+
+.cbl-btn-generate:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(163, 122, 62, 0.35);
+  background: linear-gradient(135deg, #c49f64 0%, #a37a3e 100%);
+}
+
+.cbl-btn-generate:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Success Result Box */
+.cbl-result-box {
+  background: linear-gradient(135deg, #fbfaf6 0%, #f3eee3 100%);
+  border: 2px dashed #b89358;
+  border-radius: 18px;
+  padding: 24px;
+  margin-top: 24px;
+  animation: cblFadeIn 0.35s ease;
+}
+
+@keyframes cblFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cbl-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cbl-result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cbl-expiry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff8e1;
+  color: #b78103;
+  border: 1px solid #ffe082;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cbl-link-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.cbl-link-input {
+  flex: 1;
+  min-width: 280px;
+  padding: 14px 18px;
+  background: #ffffff;
+  border: 1.5px solid #dcd1be;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #332b20;
+  direction: ltr;
+  text-align: left;
+}
+
+.cbl-actions-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cbl-action-btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.cbl-btn-copy {
+  background: #2e7d32;
+  color: #ffffff;
+}
+
+.cbl-btn-copy:hover {
+  background: #1b5e20;
+}
+
+.cbl-btn-open {
+  background: #ffffff;
+  color: #5c4e3c;
+  border-color: #dcd1be;
+}
+
+.cbl-btn-open:hover {
+  background: #f4eee2;
+}
+
+.cbl-btn-whatsapp {
+  background: #25d366;
+  color: #ffffff;
+}
+
+.cbl-btn-whatsapp:hover {
+  background: #128c7e;
+}
+
+.cbl-btn-qr {
+  background: #ffffff;
+  color: #7a6e5d;
+  border-color: #dcd1be;
+}
+
+.cbl-btn-qr:hover {
+  background: #f4eee2;
+}
+
+.cbl-qr-box {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #e0d5c3;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* History Table */
+.cbl-table-wrapper {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid #ede3d3;
+}
+
+.cbl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  text-align: right;
+}
+
+.cbl-table thead th {
+  background: #f7efe4;
+  color: #4a3e2e;
+  padding: 14px 18px;
+  font-weight: 700;
+  border-bottom: 2px solid #e0d5c3;
+  white-space: nowrap;
+}
+
+.cbl-table tbody tr {
+  border-bottom: 1px solid #f0e6d6;
+  transition: background 0.2s ease;
+}
+
+.cbl-table tbody tr:hover {
+  background: #faf6ee;
+}
+
+.cbl-table tbody td {
+  padding: 14px 18px;
+  color: #382f22;
+  vertical-align: middle;
+}
+
+.cbl-status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.cbl-status-active {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.cbl-status-used {
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+.cbl-status-expired {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+.cbl-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #8c7e6c;
+}

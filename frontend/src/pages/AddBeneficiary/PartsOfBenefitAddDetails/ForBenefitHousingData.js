@@ -1,468 +1,439 @@
-import React, { useState , useEffect } from 'react';
-import '../../CreateLoan/createLoan.css'
-import RegisterTextbox from '../../../components/RegisterTextBox';
-import Title from '../../../components/title';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {  faPeopleRoof, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import '../addBeneficiary.css'
-import RegisterSelect from '../../../components/RegisterSelect';
-import UploadInput from '../../../components/UploadInput';
-import RegisterRadio from '../../../components/Radio';
-import { useNavigate, useParams } from 'react-router';
-import API from '../../../api/axiosConfig';
-import { Spinner } from 'react-bootstrap';
-import { Form } from 'react-bootstrap';
-import CustomButton from '../../../components/CustomButton'
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Spinner } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHouseUser,
+  faPlus,
+  faTrashAlt,
+  faArrowLeft,
+  faArrowRight,
+  faCloudArrowUp,
+  faCheckCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import API from "../../../api/axiosConfig";
+import "../BenefitAddDetailsUnified.css";
 
-function ForBenefitHousingData({ onNext}) {
-        const [key, setKey] = useState('tab1');
-    const navigate = useNavigate();
-    const { id } = useParams();
-    const [housingExpenses, setHousingExpenses] = useState([{ id: 1 }]);
-    const [homestate , setHomeState] = useState('')
-    const [village , setVillage] = useState('')
-    const [nationalAdress , setNationalAdress] = useState('')
-    const [summaryAdress , setSummaryAdress] = useState('')
-    const [homeType , setHomeType] = useState('')
-    const [homeOwnership , setHomeOwnership] = useState('')
-    const [rent , setRent] = useState('')   
-    const [cars , setCars] = useState('')
-    const [ lands , setLands] = useState('')
-    const [ components , setComponents] = useState('')
-    const [furniture , setFurniture] = useState('')
-    const [cost , setCost] = useState('')
-    const [ bill , setBill] = useState([])
-    const [ amount , setAmount] = useState([])
-    const [upload1 , setUpload1] = useState('')
-    const [upload2 , setUpload2] = useState('')
-    const [error , setError] = useState('')
-    const [isSubmitting , setIsSubmitting] = useState(false)
-    const [showMinus, setShowMinus] = useState(false);
-    const [rows, setRows] = useState([]);
+function ForBenefitHousingData({ initialData, onNext, onPrev, onSaved }) {
+  const { id } = useParams();
 
-    const addBill = () => {
-        setBill([...bill, ""]); // Add a new empty input
-        setAmount([...amount, ""]); // Add a new empty input
-      };
-    
-      // Function to handle changes in input fields
-      const handleBillChange = (index, value) => {
-        const newInputs = [...bill];
-        newInputs[index] = value; // Update the correct input field
-        setBill(newInputs);
-      };
+  const [homestate, setHomestate] = useState(initialData?.homestate || "");
+  const [village, setVillage] = useState(initialData?.village || "");
+  const [nationalAdress, setNationalAdress] = useState(initialData?.nationalAdress || "");
+  const [summaryAdress, setSummaryAdress] = useState(initialData?.summaryAdress || "");
+  const [homeType, setHomeType] = useState(initialData?.homeType || "شقة");
+  const [homeOwnership, setHomeOwnership] = useState(initialData?.homeOwnership || "إيجار");
+  const [rent, setRent] = useState(initialData?.rent || "");
+  const [cars, setCars] = useState(initialData?.cars || "0");
+  const [lands, setLands] = useState(initialData?.lands || "0");
+  const [components, setComponents] = useState(initialData?.components || "");
+  const [furniture, setFurniture] = useState(initialData?.furniture || "متوسط");
+  const [cost, setCost] = useState(initialData?.cost || "");
 
-      const handleAmountChange = (index, value) => {
-        const newInputs = [...amount];
-        newInputs[index] = value; // Update the correct input field
-        setAmount(newInputs);
-      };
+  const [bills, setBills] = useState(
+    initialData?.bills || [
+      { name: "فاتورة الكهرباء", amount: "" },
+      { name: "فاتورة المياه", amount: "" },
+    ]
+  );
 
-      const mergeItems = (bill, amount) => {
-        var newItem = [];
-        bill.map((item, index) => (
-          newItem.push({
-            bill: item,
-            amount: amount[index],
-          })
-        ));
-        return newItem;
-      };
-    
+  const [upload1, setUpload1] = useState(null);
+  const [upload2, setUpload2] = useState(null);
+  const [existingUpload1, setExistingUpload1] = useState(initialData?.upload1 || null);
+  const [existingUpload2, setExistingUpload2] = useState(initialData?.upload2 || null);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        const formData = new FormData();
-        formData.append('state' ,  homestate);
-        formData.append('village' ,  village);
-        formData.append('nationalAdress' , nationalAdress);
-        formData.append('summaryAdress' , summaryAdress);
-        formData.append('homeType' , homeType);
-        formData.append('homeOwnership' , homeOwnership);
-        formData.append('rent' , rent);
-        formData.append('cars' , cars);
-        formData.append('lands' , lands);
-        formData.append('components' , components);
-        formData.append('furniture' , furniture);
-        formData.append('cost' , cost);
-        formData.append('bill' , JSON.stringify(mergeItems(bill , amount).slice(1, bill.length)));
-        //formData.append('id' , id);
-        formData.append('upload1' , upload1);
-        formData.append('upload2' , upload2);
-        //formData.append('personalfeesdetails_upload1' , upload1);
-        //formData.append('personalfeesdetails_upload2' , upload2);
-        if (!upload1 && !upload2) {
-  alert("من فضلك اختر الصور أولاً");
-  return;
-}
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState({});
 
-        try{
-            const res = await API.post(`/hcrequest/${id}/homedetails` , formData , {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            // const data = await res;
-            const data =  res;
-            // if(data.status === 200){
-            if(res.status === 200){
-                onNext();
-            }
-        }catch(error){
-            console.error(error);
-            setError(error.response.data.errors);
-            setIsSubmitting(false);
+  useEffect(() => {
+    if (initialData) {
+      if (initialData.homestate) setHomestate(initialData.homestate);
+      if (initialData.village) setVillage(initialData.village);
+      if (initialData.nationalAdress) setNationalAdress(initialData.nationalAdress);
+      if (initialData.summaryAdress) setSummaryAdress(initialData.summaryAdress);
+      if (initialData.homeType) setHomeType(initialData.homeType);
+      if (initialData.homeOwnership) setHomeOwnership(initialData.homeOwnership);
+      if (initialData.rent !== undefined) setRent(String(initialData.rent));
+      if (initialData.cars !== undefined) setCars(String(initialData.cars));
+      if (initialData.lands !== undefined) setLands(String(initialData.lands));
+      if (initialData.components) setComponents(initialData.components);
+      if (initialData.furniture) setFurniture(initialData.furniture);
+      if (initialData.cost !== undefined) setCost(String(initialData.cost));
+      if (initialData.bills && initialData.bills.length > 0) setBills(initialData.bills);
+      if (initialData.upload1) setExistingUpload1(initialData.upload1);
+      if (initialData.upload2) setExistingUpload2(initialData.upload2);
+    }
+  }, [initialData]);
+
+  const addBill = () => setBills([...bills, { name: "", amount: "" }]);
+  const removeBill = (idx) => {
+    if (bills.length > 1) {
+      setBills(bills.filter((_, i) => i !== idx));
+    }
+  };
+  const updateBill = (idx, field, val) => {
+    const next = [...bills];
+    next[idx][field] = val;
+    setBills(next);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError({});
+
+    const formData = new FormData();
+    formData.append("state", homestate);
+    formData.append("village", village);
+    formData.append("nationalAdress", nationalAdress);
+    formData.append("summaryAdress", summaryAdress);
+    formData.append("homeType", homeType);
+    formData.append("homeOwnership", homeOwnership);
+    formData.append("rent", rent);
+    formData.append("cars", cars);
+    formData.append("lands", lands);
+    formData.append("components", components);
+    formData.append("furniture", furniture);
+    formData.append("cost", cost);
+
+    const validBills = bills
+      .filter((b) => b.name && b.amount)
+      .map((b) => ({ bill: b.name, amount: b.amount }));
+    formData.append("bill", JSON.stringify(validBills));
+
+    if (upload1) formData.append("upload1", upload1);
+    if (upload2) formData.append("upload2", upload2);
+
+    try {
+      const res = await API.post(`/hcrequest/${id}/homedetails`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (res.status === 200) {
+        if (onSaved) {
+          onSaved({
+            homestate,
+            village,
+            nationalAdress,
+            summaryAdress,
+            homeType,
+            homeOwnership,
+            rent,
+            cars,
+            lands,
+            components,
+            furniture,
+            cost,
+            bills,
+            upload1: existingUpload1,
+            upload2: existingUpload2,
+          });
         }
-    };
+        onNext();
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.errors || { general: "حدث خطأ أثناء حفظ بيانات السكن" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-    const handleAddHousingExpense = () => {
-        setHousingExpenses([...housingExpenses, { id: housingExpenses.length + 1 }]);
-       addBill();
-       setShowMinus(true);
-    };
+  return (
+    <div className="bad-card">
+      <div className="bad-card-header">
+        <div className="bad-card-header-icon">
+          <FontAwesomeIcon icon={faHouseUser} />
+        </div>
+        <div>
+          <h3 className="bad-card-header-title">بيانات السكن والمصروفات</h3>
+          <p className="bad-card-header-desc">
+            وصف حالة المسكن، الملكية، الإيجار، والمصروفات الدورية للأسرة.
+          </p>
+        </div>
+      </div>
 
-    const handleMinusHousingExpense = () => {
-        setHousingExpenses(housingExpenses.slice(0, -1));
-        setBill(bill.slice(0, -1));
-        setAmount(amount.slice(0, -1));
-        if (housingExpenses.length === 2){
+      {error.general && (
+        <div className="alert alert-danger mb-4" style={{ borderRadius: "12px", fontSize: "14px" }}>
+          {error.general}
+        </div>
+      )}
 
-            setShowMinus(false);
-        }
-    };
+      <form onSubmit={handleSubmit}>
+        <div className="bad-grid">
+          {/* ملكية السكن */}
+          <div className="bad-field">
+            <label className="bad-label">ملكية السكن</label>
+            <select
+              className="bad-select"
+              value={homeOwnership}
+              onChange={(e) => setHomeOwnership(e.target.value)}
+            >
+              <option value="ملك">ملك</option>
+              <option value="إيجار">إيجار</option>
+              <option value="وقف">وقف خيري</option>
+              <option value="سكن مع العائلة">سكن مع العائلة</option>
+              <option value="رهن">رهن</option>
+            </select>
+          </div>
 
-    const handleTabChange = (selectedKey) => {
-        setKey(selectedKey);
-    };
+          {/* نوع السكن */}
+          <div className="bad-field">
+            <label className="bad-label">نوع السكن</label>
+            <select
+              className="bad-select"
+              value={homeType}
+              onChange={(e) => setHomeType(e.target.value)}
+            >
+              <option value="شقة">شقة</option>
+              <option value="فيلا">فيلا</option>
+              <option value="بيت شعبي">بيت شعبي</option>
+              <option value="ملحق">ملحق</option>
+              <option value="غرفة مستقلة">غرفة مستقلة</option>
+            </select>
+          </div>
 
-    const handleNext = () => {
-        if (key === 'tab1') {
-            setKey('tab2');
-        } else if (key === 'tab2') {
-            setKey('tab3');
-        }
-    };
+          {/* الإيجار الشهري للسكن */}
+          <div className="bad-field">
+            <label className="bad-label">الإيجار الشهري للسكن (ريال)</label>
+            <input
+              type="number"
+              className="bad-input"
+              placeholder="0.00"
+              value={rent}
+              onChange={(e) => setRent(e.target.value)}
+            />
+          </div>
 
-    const handleBack = () => {
-        if (key === 'tab3') {
-            setKey('tab2');
-        } else if (key === 'tab2') {
-            setKey('tab1');
-        }
-    };
+          {/* حالة الأثاث */}
+          <div className="bad-field">
+            <label className="bad-label">حالة الأثاث</label>
+            <select
+              className="bad-select"
+              value={furniture}
+              onChange={(e) => setFurniture(e.target.value)}
+            >
+              <option value="ممتاز">ممتاز</option>
+              <option value="جيد">جيد</option>
+              <option value="متوسط">متوسط</option>
+              <option value="سيء">سيء / متهالك</option>
+            </select>
+          </div>
 
-    //  const getHouseDetails = async () => {
-    //     try {
-    //         const res = await API.get(`/humancasedetails/get/${id}`);
-    //         const data = await res;
-    //         if (data.status === 200) {
-    //             setRows(data.data);
-    //         }
-    //     } catch (error) {
-    //         console.error(error);
-    //         setError(error.response.data.errors);
-    //     }
-    // }
+          {/* المنطقة / المحافظة */}
+          <div className="bad-field">
+            <label className="bad-label">المنطقة / المحافظة</label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="مثال: الرياض"
+              value={homestate}
+              onChange={(e) => setHomestate(e.target.value)}
+            />
+          </div>
 
-    // useEffect(() => {
-    //     getHouseDetails();
-    // }, []);
+          {/* الحي / المدينة */}
+          <div className="bad-field">
+            <label className="bad-label">الحي أو المدينة</label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="مثال: حي الرمال"
+              value={village}
+              onChange={(e) => setVillage(e.target.value)}
+            />
+          </div>
 
-    return (
-        <>
-            <div className='AddBeneficiary'>
-                            <Title
-                                title="بيانات السكن"
-                                icon={<FontAwesomeIcon icon={faPeopleRoof} />}
-                            />
-                            <Form className="housing-form-container" onSubmit={handleSubmit}>
-                            <div className='AddBeneficiaryContainerRow housingData '>
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: "30%",
-                                    }}
-                                    id="state"
-                                    label="القطاع (المحافظة)"
-                                    type="text"
-                                    stylee={{
-                                        width: "55%",
-                                    }}
-                                    name="state"
-                                    onChange={(e) => setHomeState(e.target.value)
-                                    }
-                                    value={homestate}
-                                />
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: "30%",
-                                    }}
-                                    id="village"
-                                    label="القرية (الحي)"
-                                    type="text"
-                                    stylee={{
-                                        width: "55%",
-                                    }}
-                                    name="village"
-                                    onChange={(e) => setVillage(e.target.value)}
-                                    value={village}
-                                />
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                {error && error.state && <p className="error">{error.state}</p>}
-                                {error && error.village && <p className="error">{error.village}</p>}
-                            </div>
-                            <div className='AddBeneficiaryContainerRow housingData'>
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: "30%",
-                                    }}
-                                    id="nationalAdress"
-                                    label="العنوان الوطني"
-                                    type="text"
-                                    stylee={{
-                                        width: "55%",
-                                    }}
-                                    name="nationalAdress"
-                                    onChange={(e) => setNationalAdress(e.target.value)}
-                                    value={nationalAdress}
-                                />
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: "30%",
-                                    }}
-                                    id="summaryadress"
-                                    label="العنوان المختصر"
-                                    type="text"
-                                    stylee={{
-                                        width: "55%",
-                                    }}
-                                    name="summaryAdress"
-                                    onChange={(e) => setSummaryAdress(e.target.value)}
-                                    value={summaryAdress}
-                                />
-                            </div>
-                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                {error && error.nationalAdress && <p className="error">{error.nationalAdress}</p>}
-                                {error && error.summaryAdress && <p className="error">{error.summaryAdress}</p>}
-                            </div>
-                            <div className="AddBeneficiaryContainerRow housingData">
-                                <RegisterSelect
-                                    id="hometype"
-                                    label="نوع السكن"
-                                    stylee={{ width: "30%" }}
-                                    parentStyle={{ width: "30%", marginBottom: "20px" }}
-                                    options={[
-                                        { value: "", label: "اختر النوع" },
-                                        { value: "0", label: "تمليك" },
-                                        { value: "1", label: "إيجار" },
-                                    ]}
-                                    onChange={(e) => setHomeType(e.target.value)}
-                                    value={homeType}
-                                    name="homeType"
-                                />
-                                {error && error.homeType && <p className="error">{error.homeType}</p>}
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: '30%',
-                                    }}
-                                    id="ownership"
-                                    label="ملكية السكن"
-                                    type="text"
-                                    stylee={{
-                                        width: '55%',
-                                    }}
-                                    name="homeOwnership"
-                                    onChange={(e) => setHomeOwnership(e.target.value)}
-                                    value={homeOwnership}
-                                />
-                                {error && error.homeOwnership && <p className="error">{error.homeOwnership}</p>}
-                            </div>
-                            <div className="AddBeneficiaryContainerRow housingData">
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: '30%',
-                                    }}
-                                    id="month"
-                                    label="الإيجار الشهري للسكن"
-                                    type="number"
-                                    stylee={{
-                                        width: '55%',
-                                    }}
-                                    name="rent"
-                                    onChange={(e) =>  setRent(e.target.value)}
-                                    value={rent}
-                                />
-                                {error && error.rent && <p className="error">{error.rent}</p>}
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: '30%',
-                                    }}
-                                    id="cars"
-                                    label="عدد السيارات المملوكة"
-                                    type="number"
-                                    stylee={{
-                                        width: '55%',
-                                    }}
-                                    name="cars"
-                                    onChange={(e) => setCars(e.target.value)}
-                                    value={cars}
-                                />
-                                {error && error.cars && <p className="error">{error.cars}</p>}
-                            </div>
+          {/* العنوان الوطني */}
+          <div className="bad-field">
+            <label className="bad-label">العنوان الوطني (اختياري)</label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="رمز العنوان الوطني"
+              value={nationalAdress}
+              onChange={(e) => setNationalAdress(e.target.value)}
+            />
+          </div>
 
-                            <div className="AddBeneficiaryContainerRow housingData">
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: '30%',
-                                    }}
-                                    id="lands"
-                                    label="عدد الأراضي المملوكة"
-                                    type="number"
-                                    stylee={{
-                                        width: '55%',
-                                    }}
-                                    name="lands"
-                                    onChange={(e) =>  setLands(e.target.value)}
-                                    value={lands}
-                                />
-                                {error && error.lands && <p className="error">{error.lands}</p>}
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: '30%',
-                                    }}
-                                    id="components"
-                                    label="مكونات السكن"
-                                    type="text"
-                                    stylee={{
-                                        width: '55%',
-                                    }}
-                                    name="components"
-                                    onChange={(e) => setComponents(e.target.value)}
-                                    value={components}
-                                />
-                                {error && error.components && <p className="error">{error.components}</p>}
-                            </div>
-                            <div className="AddBeneficiaryContainerRow housingData">
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: '30%',
-                                    }}
-                                    id="furniture"
-                                    label="مكونات الاثاث"
-                                    type="text"
-                                    stylee={{
-                                        width: '55%',
-                                    }}
-                                    name="furniture"
-                                    onChange={(e) => setFurniture(e.target.value)}
-                                    value={furniture}
-                                />
-                                {error && error.furniture && <p className="error">{error.furniture}</p>}
-                                <RegisterTextbox
-                                    parentStyle={{
-                                        width: '30%',
-                                    }}
-                                    id="personperMonth"
-                                    label="تكاليف الشهر للفرد"
-                                    type="text"
-                                    stylee={{
-                                        width: '55%',
-                                    }}
-                                    name="cost"
-                                    onChange={(e) =>  setCost(e.target.value)}
-                                    value={cost}
-                                />
-                            </div>
-                            <div className='direc'>
-                                <div className='housing-title-section'>
-                                    <h5>
-                                        مصروفات السكن
-                                        <span className='addillness addillness2' onClick={handleAddHousingExpense} style={{ marginLeft: '15px' , color: 'var(--accent-color)' , cursor: 'pointer' , borderRadius: '50%' , border: '1px solid var(--accent-color)' , padding: '5px 10px' }}>
-                                            <FontAwesomeIcon icon={faPlus} />
-                                        </span>
-                                        {
-                                            showMinus && (
-                                                <span className='addillness' onClick={handleMinusHousingExpense} style={{ marginLeft: '10px' , color: 'red' , cursor: 'pointer' , borderRadius: '50%' }}>
-                                                    <FontAwesomeIcon icon={faMinus} />
-                                                </span>
-                                            )
-                                        }
-                                    </h5>
-                                </div>
+          {/* عدد السيارات المملوكة */}
+          <div className="bad-field">
+            <label className="bad-label">عدد السيارات المملوكة</label>
+            <input
+              type="number"
+              className="bad-input"
+              min="0"
+              value={cars}
+              onChange={(e) => setCars(e.target.value)}
+            />
+          </div>
 
-                                {housingExpenses.map((index , value) => (
-                                    <div key={index.id} className='housing-expense-row'>
-                                        <RegisterTextbox
-                                            parentStyle={{
-                                                width: "30%",
-                                            }}
-                                            id={`monthly-bill-${index.id}`}
-                                            label="الفاتورة الشهرية"
-                                            type="text"
-                                            stylee={{
-                                                width: "55%",
-                                            }}
-                                            name="bill"
-                                            onChange={(e => 
-                                                handleBillChange(index.id, e.target.value)
-                                            )}
-                                        />
-                                        <RegisterTextbox
-                                            parentStyle={{
-                                                width: "30%",
-                                            }}
-                                            id={`value-${index.id}`}
-                                            label="القيمة"
-                                            type="number"
-                                            stylee={{
-                                                width: "55%",
-                                            }}
-                                            name="amount"
-                                            //value={bill}
-                                            onChange={(e => 
-                                                handleAmountChange(index.id, e.target.value)
-                                            )}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+          {/* عدد الأراضي المملوكة */}
+          <div className="bad-field">
+            <label className="bad-label">عدد الأراضي أو العقارات المملوكة</label>
+            <input
+              type="number"
+              className="bad-input"
+              min="0"
+              value={lands}
+              onChange={(e) => setLands(e.target.value)}
+            />
+          </div>
 
-                            <div className="AddBeneficiaryContainerRow housingData">
-                                <UploadInput
-                                    id="invoice"
-                                    parentStyle={{
-                                        marginBottom: '20px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                    }}
-                                    label="صورة فاتورة الكهرباء "
-                                    onChange={(e) => setUpload1(e.target.files[0])}
-                                    value={upload1}
-                                />
-                                <UploadInput
-                                    id="chieftain"
-                                    parentStyle={{
-                                        marginBottom: "20px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                    }}
-                                    label="صورة الملكية "
-                                    onChange={(e) => setUpload2(e.target.files[0])}
-                                    value={upload2}
-                                />
-                            </div>
+          {/* مكونات السكن */}
+          <div className="bad-field">
+            <label className="bad-label">مكونات السكن</label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="مثال: 3 غرف وصالة ودورتي مياه"
+              value={components}
+              onChange={(e) => setComponents(e.target.value)}
+            />
+          </div>
 
-                            <div className='AddBeneficiaryContainerRow housingData'>
-                    { isSubmitting ? <Spinner animation="border" variant="primary" /> :
-                        <CustomButton text="حفظ" onClick={handleSubmit} />
-                    }
-                    </div>
-                        </Form>
-                        </div>
+          {/* تفاصيل العنوان */}
+          <div className="bad-field bad-grid-full">
+            <label className="bad-label">وصف وتفاصيل العنوان</label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="الشارع، رقم المبنى، علامة مميزة..."
+              value={summaryAdress}
+              onChange={(e) => setSummaryAdress(e.target.value)}
+            />
+          </div>
 
-        </>
-    );
+          {/* فواتير ومصروفات السكن */}
+          <div className="bad-grid-full" style={{ marginTop: "12px" }}>
+            <label className="bad-label" style={{ fontSize: "15px" }}>
+              الفواتير والمصروفات الشهرية
+            </label>
+            {bills.map((b, idx) => (
+              <div key={idx} className="bad-repeat-item">
+                <div className="bad-repeat-header">
+                  <span className="bad-repeat-title">مصروف / فاتورة #{idx + 1}</span>
+                  {bills.length > 1 && (
+                    <button
+                      type="button"
+                      className="bad-btn-remove"
+                      onClick={() => removeBill(idx)}
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} /> حذف
+                    </button>
+                  )}
+                </div>
+                <div className="bad-grid">
+                  <div className="bad-field">
+                    <label className="bad-label">نوع الفاتورة أو المصروف</label>
+                    <input
+                      type="text"
+                      className="bad-input"
+                      placeholder="فاتورة كهرباء، مياه، غاز..."
+                      value={b.name}
+                      onChange={(e) => updateBill(idx, "name", e.target.value)}
+                    />
+                  </div>
+                  <div className="bad-field">
+                    <label className="bad-label">المبلغ الشهري التقريبي (ريال)</label>
+                    <input
+                      type="number"
+                      className="bad-input"
+                      placeholder="0.00"
+                      value={b.amount}
+                      onChange={(e) => updateBill(idx, "amount", e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <button type="button" className="bad-btn-add" onClick={addBill}>
+              <FontAwesomeIcon icon={faPlus} />
+              <span>إضافة فاتورة / مصروف آخر</span>
+            </button>
+          </div>
+
+          {/* صورة فاتورة الكهرباء */}
+          <div className="bad-field">
+            <label className="bad-label">صورة فاتورة الكهرباء أو عداد (اختياري)</label>
+            <label className={`bad-upload-card ${upload1 ? "has-file" : ""}`}>
+              <div className="bad-upload-info">
+                <FontAwesomeIcon
+                  icon={upload1 ? faCheckCircle : faCloudArrowUp}
+                  className="bad-upload-icon"
+                  style={{ color: upload1 ? "#2e7d32" : "#b89358" }}
+                />
+                <div>
+                  <p className="bad-upload-title">
+                    {upload1 ? upload1.name : "صورة الفاتورة"}
+                  </p>
+                  <p className="bad-upload-sub">JPG, PNG, PDF</p>
+                </div>
+              </div>
+              <span className="bad-upload-btn">{upload1 ? "تغيير" : "اختيار"}</span>
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) => e.target.files && setUpload1(e.target.files[0])}
+                style={{ display: "none" }}
+              />
+            </label>
+          </div>
+
+          {/* صورة صك الملكية أو عقد الإيجار */}
+          <div className="bad-field">
+            <label className="bad-label">صورة عقد الإيجار أو صك الملكية (اختياري)</label>
+            <label className={`bad-upload-card ${upload2 ? "has-file" : ""}`}>
+              <div className="bad-upload-info">
+                <FontAwesomeIcon
+                  icon={upload2 ? faCheckCircle : faCloudArrowUp}
+                  className="bad-upload-icon"
+                  style={{ color: upload2 ? "#2e7d32" : "#b89358" }}
+                />
+                <div>
+                  <p className="bad-upload-title">
+                    {upload2 ? upload2.name : "صورة العقد / الصك"}
+                  </p>
+                  <p className="bad-upload-sub">JPG, PNG, PDF</p>
+                </div>
+              </div>
+              <span className="bad-upload-btn">{upload2 ? "تغيير" : "اختيار"}</span>
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) => e.target.files && setUpload2(e.target.files[0])}
+                style={{ display: "none" }}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="bad-actions">
+          {onPrev ? (
+            <button type="button" className="bad-btn-prev" onClick={onPrev}>
+              <FontAwesomeIcon icon={faArrowRight} />
+              <span>السابق</span>
+            </button>
+          ) : <div />}
+
+          <button type="submit" className="bad-btn-submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Spinner animation="border" size="sm" />
+                <span>جاري الحفظ...</span>
+              </>
+            ) : (
+              <>
+                <span>حفظ ومتابعة</span>
+                <FontAwesomeIcon icon={faArrowLeft} />
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 }
 
 export default ForBenefitHousingData;

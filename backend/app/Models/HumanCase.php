@@ -18,6 +18,7 @@ class HumanCase extends Model
         'dob',
         'humancasetype',
         'status',
+        'case_status',
         'nationality',
         'familycount',
         'phonenum',
@@ -40,6 +41,8 @@ class HumanCase extends Model
     protected $appends = [
         'gender_string',
         'status_string',
+        'social_status_string',
+        'case_status_string',
         'dateofbirth',
     ];
 
@@ -56,16 +59,44 @@ class HumanCase extends Model
     }
 
     /**
-     * Map status code to human-readable string.
+     * Map social status (الحالة الإجتماعية) based on gender.
+     */
+    public function getSocialStatusStringAttribute(): string
+    {
+        $val = trim((string) ($this->status ?? '1'));
+        $isFemale = ((string) $this->gender === '1' || strtolower((string) $this->gender) === 'female' || $this->gender === 'أنثى');
+
+        return match ($val) {
+            '1', 'أعزب', 'عزباء'   => $isFemale ? 'عزباء' : 'أعزب',
+            '2', 'متزوج', 'متزوجة' => $isFemale ? 'متزوجة' : 'متزوج',
+            '3', 'مطلق', 'مطلقة'   => $isFemale ? 'مطلقة' : 'مطلق',
+            '4', 'أرمل', 'أرملة'   => $isFemale ? 'أرملة' : 'أرمل',
+            '200'                  => $isFemale ? 'متزوجة' : 'متزوج',
+            default                => $isFemale ? 'عزباء' : 'أعزب',
+        };
+    }
+
+    /**
+     * Map case study decision (دراسة الحالة / قرار الاعتماد).
+     */
+    public function getCaseStatusStringAttribute(): string
+    {
+        $val = trim((string) ($this->case_status ?? 'موافقة'));
+
+        return match ($val) {
+            '1', 'pending', 'معلق', 'قيد المراجعة'    => 'معلق',
+            '2', 'approved', 'موافقة', 'مقبول'        => 'موافقة',
+            '3', 'rejected', 'مرفوض', 'رفض', 'مستبعد' => 'مرفوض',
+            default                                   => $val !== '' ? $val : 'موافقة',
+        };
+    }
+
+    /**
+     * Backward-compatible status string representing social status.
      */
     public function getStatusStringAttribute(): string
     {
-        return match ((string) $this->status) {
-            '1'     => 'موافقة',
-            '2'     => 'معلق',
-            '3'     => 'مرفوض',
-            default => (string) ($this->status ?? 'موافقة'),
-        };
+        return $this->social_status_string;
     }
 
     /**

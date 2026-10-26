@@ -65,6 +65,34 @@ class HumanCaseTest extends TestCase
             ->assertJsonMissing(['name' => 'مستفيد خارجي']);
     }
 
+    public function test_user_can_list_rejected_beneficiaries(): void
+    {
+        // Accepted case
+        HumanCase::create([
+            'store_id' => $this->store->id,
+            'name'     => 'حالة مقبولة',
+            'status'   => '1',
+            'note'     => 'مستحق',
+        ]);
+
+        // Rejected case
+        HumanCase::create([
+            'store_id'    => $this->store->id,
+            'name'        => 'حالة مستبعدة',
+            'status'      => '1',
+            'case_status' => 'مرفوض',
+            'note'        => 'تجاوز الحد المسموح للدخل',
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->postJson('/api/humancases/rejected', []);
+
+        $response->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['name' => 'حالة مستبعدة', 'case_status_string' => 'مرفوض', 'note' => 'تجاوز الحد المسموح للدخل'])
+            ->assertJsonMissing(['name' => 'حالة مقبولة']);
+    }
+
     public function test_user_can_create_beneficiary_successfully(): void
     {
         $response = $this->actingAs($this->user)
@@ -89,7 +117,7 @@ class HumanCaseTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.name', 'سارة علي القرني')
             ->assertJsonPath('data.gender_string', 'أنثى')
-            ->assertJsonPath('data.status_string', 'موافقة');
+            ->assertJsonPath('data.status_string', 'عزباء');
 
         $this->assertDatabaseHas('human_cases', [
             'store_id' => $this->store->id,
@@ -147,7 +175,7 @@ class HumanCaseTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
             ->assertJsonPath('data.name', 'الاسم المعتمد')
-            ->assertJsonPath('data.status_string', 'موافقة');
+            ->assertJsonPath('data.status_string', 'أعزب');
 
         $this->assertDatabaseHas('human_cases', [
             'id'     => $case->id,
@@ -189,16 +217,34 @@ class HumanCaseTest extends TestCase
             ->assertJsonPath('status', 200)
             ->assertJsonPath('id', $case->id);
 
-        // 2. Update Banks
+        // 2. Update Banks with File Upload
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $file = \Illuminate\Http\UploadedFile::fake()->image('iban_test.jpg');
+
         $bankRes = $this->actingAs($this->user)
-            ->postJson('/api/humancasedetails/update/banks', [
+            ->post('/api/humancasedetails/update/banks', [
                 'id'     => $case->id,
                 'name'   => 'مصرف الراجحي',
                 'branch' => 'فرع العليا',
                 'iban'   => 'SA998877665544',
+                'upload' => $file,
             ]);
         $bankRes->assertStatus(200)
             ->assertJsonPath('status', 200);
+
+        // Verify get details returns the image
+        $getResAfter = $this->actingAs($this->user)
+            ->getJson("/api/humancasedetails/get/{$case->id}");
+        $getResAfter->assertStatus(200)
+            ->assertJsonPath('status', 200);
+        $this->assertNotEmpty($getResAfter->json('details.bankdetails_upload'));
+
+        // Verify /api/humancases returns the image
+        $listRes = $this->actingAs($this->user)
+            ->getJson('/api/humancases');
+        $listRes->assertStatus(200);
+        $this->assertNotEmpty($listRes->json('0.bankdetails_upload'));
+        $this->assertNotEmpty($listRes->json('0.image'));
 
         // 3. Store Health
         $healthRes = $this->actingAs($this->user)

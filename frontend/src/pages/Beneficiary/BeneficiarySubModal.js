@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Modal, Button, Row, Col, Spinner, Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import UploadInput from "../../components/UploadInput";
 import API from "../../api/axiosConfig";
+import { FormSkeleton } from "../../components/Skeleton";
 
 function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -17,6 +18,7 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
   const [branch, setBranch] = useState("");
   const [iban, setIban] = useState("");
   const [ibanUpload, setIbanUpload] = useState(null);
+  const [existingBankUpload, setExistingBankUpload] = useState("");
 
   // Qualification fields
   const [educationLevel, setEducationLevel] = useState("");
@@ -27,6 +29,8 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
   const [qualNotes, setQualNotes] = useState("");
   const [sourceUpload, setSourceUpload] = useState(null);
   const [courseUpload, setCourseUpload] = useState(null);
+  const [existingSourceUpload, setExistingSourceUpload] = useState("");
+  const [existingCourseUpload, setExistingCourseUpload] = useState("");
 
   // Housing fields
   const [houseState, setHouseState] = useState("");
@@ -48,6 +52,64 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
   const [treatmentCost, setTreatmentCost] = useState("");
   const [healthNotes, setHealthNotes] = useState("");
   const [healthUpload, setHealthUpload] = useState(null);
+  const [existingHealthUpload, setExistingHealthUpload] = useState("");
+
+  const renderAttachmentPreview = (url, label) => {
+    if (!url) return null;
+    const isPdf = typeof url === "string" && url.toLowerCase().split("?")[0].endsWith(".pdf");
+    return (
+      <Col md={12} className="text-center mt-2">
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "13px",
+            color: "var(--primary-color, #c29a64)",
+            textDecoration: "underline",
+          }}
+        >
+          {isPdf ? (
+            <span
+              style={{
+                backgroundColor: "#e63946",
+                color: "#ffffff",
+                padding: "4px 10px",
+                borderRadius: "6px",
+                fontSize: "12px",
+                fontWeight: "bold",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                textDecoration: "none",
+              }}
+            >
+              <FontAwesomeIcon icon={faFilePdf} />
+              <span>معاينة ملف PDF الحالي</span>
+            </span>
+          ) : (
+            <>
+              <img
+                src={url}
+                alt={label}
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  objectFit: "cover",
+                  borderRadius: "6px",
+                  border: "1px solid var(--border-color, #c29a64)",
+                }}
+              />
+              <span>{label}</span>
+            </>
+          )}
+        </a>
+      </Col>
+    );
+  };
 
   // Dependents fields
   const [depName, setDepName] = useState("");
@@ -71,97 +133,136 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
   // Case Study fields
   const [decision, setDecision] = useState("2");
   const [caseNotes, setCaseNotes] = useState("");
+  const lastFetchedKeyRef = useRef(null);
 
   useEffect(() => {
     if (!activePopup?.id) return;
+
+    const popupKey = `${activePopup.id}_${activePopup.type}`;
+    if (lastFetchedKeyRef.current === popupKey) return;
+    lastFetchedKeyRef.current = popupKey;
+
+    let isMounted = true;
+    const controller = new AbortController();
 
     if (activePopup.record) {
       const r = activePopup.record;
       if (r.accnumber) setIban(r.accnumber);
       if (r.status) setDecision(String(r.status));
       if (r.note) setCaseNotes(r.note);
+      const prevImg = r.bankdetails_upload || r.bank_image || r.image || r.details?.bankdetails_upload || r.details?.bankdetails?.upload;
+      if (prevImg) setExistingBankUpload(prevImg);
+      const prevHealth = r.health_upload || r.healthdetails_upload || r.details?.health_upload || r.details?.healthdetails_upload;
+      if (prevHealth) setExistingHealthUpload(prevHealth);
     }
 
     const loadData = async () => {
       setLoading(true);
       try {
-        const res = await API.get(`/humancasedetails/get/${activePopup.id}`);
-        if (res.data) {
-          const details = res.data.details || {};
+        const res = await API.get(`/humancasedetails/get/${activePopup.id}`, {
+          signal: controller.signal,
+        });
+        if (!isMounted || !res.data) return;
+        const details = res.data.details || {};
 
-          // Bank data
-          if (details.bankdetails) {
-            setBankName(details.bankdetails.name || "");
-            setBranch(details.bankdetails.branch || "");
-            setIban(details.bankdetails.iban || "");
-          }
-
-          // Qualification data
-          const q = details.qualifications || details.work_education || {};
-          if (q) {
-            setEducationLevel(q.level || q.educationlevel || "");
-            setCanWork(q.canwork !== undefined ? String(q.canwork) : "");
-            setJob(q.job || "");
-            setIncomeSource(q.sourcename || q.incomeSource || "");
-            setIncomeAmount(q.sourceamount || q.incomeAmount || "");
-            setQualNotes(q.note || q.notes || "");
-          }
-
-          // Housing data
-          const h = details.home || details.personalfeesdetails || {};
-          if (h) {
-            setHouseState(h.state || "");
-            setVillage(h.village || "");
-            setNationalAddress(h.nationalAdress || h.nationalAddress || "");
-            setSummaryAddress(h.summaryAdress || h.summaryAddress || "");
-            setHomeType(h.homeType || "");
-            setHomeOwnership(h.homeOwnership || "");
-            setRent(h.rent || "");
-            setCars(h.cars || "");
-            setFurniture(h.furniture || "");
-          }
-
-          // Health data
-          if (Array.isArray(details.health) && details.health.length > 0) {
-            const lastH = details.health[details.health.length - 1];
-            setDiseaseName(lastH.disease_name || "");
-            setDiseaseType(lastH.disease_type || "");
-            setDiseaseDegree(lastH.disease_degree || "");
-            setTreatmentType(lastH.treatment_type || "");
-            setTreatmentCost(lastH.treatment_cost || "");
-            setHealthNotes(lastH.notes || "");
-          }
-
-          // Dependents data
-          if (Array.isArray(details.dependants) && details.dependants.length > 0) {
-            const lastD = details.dependants[details.dependants.length - 1];
-            setDepName(lastD.name || "");
-            setDepRelation(lastD.relation || "");
-            setDepGender(lastD.gender || "");
-            setDepDob(lastD.dateofbirth || "");
-            setDepPhone(lastD.phone || "");
-            setDepNationalId(lastD.nationalid || "");
-            setDepHealth(lastD.health || "");
-            setDepNote(lastD.note || "");
-          }
-
-          // Case study / Status
-          if (res.data.status) {
-            setDecision(String(res.data.status));
-          }
-          if (res.data.note) {
-            setCaseNotes(res.data.note);
+        // Bank data
+        if (details.bankdetails) {
+          setBankName(details.bankdetails.name || "");
+          setBranch(details.bankdetails.branch || "");
+          setIban(details.bankdetails.iban || "");
+          if (details.bankdetails.upload) {
+            setExistingBankUpload(details.bankdetails.upload);
           }
         }
+        if (details.bankdetails_upload) {
+          setExistingBankUpload(details.bankdetails_upload);
+        }
+
+        // Qualification data
+        const q = details.qualifications || details.work_education || {};
+        if (q) {
+          setEducationLevel(q.level || q.educationlevel || "");
+          setCanWork(q.canwork !== undefined ? String(q.canwork) : "");
+          setJob(q.job || "");
+          setIncomeSource(q.sourcename || q.incomeSource || "");
+          setIncomeAmount(q.sourceamount || q.incomeAmount || "");
+          setQualNotes(q.note || q.notes || "");
+          if (q.sourceupload || q.incomesource_upload) {
+            setExistingSourceUpload(q.sourceupload || q.incomesource_upload);
+          }
+          if (q.courseupload || q.courses_upload) {
+            setExistingCourseUpload(q.courseupload || q.courses_upload);
+          }
+        }
+
+        // Housing data
+        const h = details.home || details.personalfeesdetails || {};
+        if (h) {
+          setHouseState(h.state || "");
+          setVillage(h.village || "");
+          setNationalAddress(h.nationalAdress || h.nationalAddress || "");
+          setSummaryAddress(h.summaryAdress || h.summaryAddress || "");
+          setHomeType(h.homeType || "");
+          setHomeOwnership(h.homeOwnership || "");
+          setRent(h.rent || "");
+          setCars(h.cars || "");
+          setFurniture(h.furniture || "");
+        }
+
+        // Health data
+        if (Array.isArray(details.health) && details.health.length > 0) {
+          const lastH = details.health[details.health.length - 1];
+          setHealthStatus(lastH.health_status || "سليم");
+          setDiseaseName(lastH.disease_name || lastH.name || "");
+          setDiseaseType(lastH.disease_type || lastH.type || "");
+          setDiseaseDegree(lastH.disease_degree || lastH.degree || "");
+          setTreatmentType(lastH.treatment_type || lastH.trtype || "");
+          setTreatmentCost(lastH.treatment_cost || lastH.trcost || "");
+          setHealthNotes(lastH.notes || "");
+          const hUp = lastH.upload || details.health_upload || details.healthdetails_upload;
+          if (hUp) setExistingHealthUpload(hUp);
+        } else if (details.health_upload || details.healthdetails_upload) {
+          setExistingHealthUpload(details.health_upload || details.healthdetails_upload);
+        }
+
+        // Dependents data
+        if (Array.isArray(details.dependants) && details.dependants.length > 0) {
+          const lastD = details.dependants[details.dependants.length - 1];
+          setDepName(lastD.name || "");
+          setDepRelation(lastD.relation || "");
+          setDepGender(lastD.gender || "");
+          setDepDob(lastD.dateofbirth || "");
+          setDepPhone(lastD.phone || "");
+          setDepNationalId(lastD.nationalid || "");
+          setDepHealth(lastD.health || "");
+          setDepNote(lastD.note || "");
+        }
+
+        // Case study / Status
+        if (res.data.status) {
+          setDecision(String(res.data.status));
+        }
+        if (res.data.note) {
+          setCaseNotes(res.data.note);
+        }
       } catch (err) {
-        console.error("Failed to load popup details:", err);
+        if (err?.name !== "CanceledError" && err?.code !== "ERR_CANCELED") {
+          console.error("Failed to load popup details:", err);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     loadData();
-  }, [activePopup?.id]);
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [activePopup?.id, activePopup?.type]);
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -211,7 +312,11 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
         formData.append("treatment_type", treatmentType);
         formData.append("treatment_cost", treatmentCost);
         formData.append("notes", healthNotes);
-        if (healthUpload) formData.append("upload", healthUpload);
+        if (healthUpload) {
+          formData.append("upload", healthUpload);
+        } else if (existingHealthUpload) {
+          formData.append("existing_upload", existingHealthUpload);
+        }
       } else if (type === "dependents") {
         endpoint = "/humancasedetails/dependants/store";
         formData.append("name", depName);
@@ -315,9 +420,7 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
         )}
 
         {loading ? (
-          <div className="text-center py-4">
-            <Spinner animation="border" variant="primary" />
-          </div>
+          <FormSkeleton fields={isWide ? 8 : 4} />
         ) : (
           <>
             {/* 1. BANK DATA */}
@@ -354,9 +457,19 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
                   <UploadInput
                     id="bank-upload"
                     label="صورة رقم IBAN"
-                    onChange={(e) => setIbanUpload(e.target.files[0])}
+                    defaultUrl={existingBankUpload}
+                    onChange={(e) => {
+                      const file = e.target.files[0] || null;
+                      setIbanUpload(file);
+                      if (!file) setExistingBankUpload("");
+                    }}
+                    onClear={() => {
+                      setIbanUpload(null);
+                      setExistingBankUpload("");
+                    }}
                   />
                 </Col>
+                {renderAttachmentPreview(existingBankUpload, "معاينة صورة الحساب البنكي / IBAN الحالية")}
               </Row>
             )}
 
@@ -435,14 +548,32 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
                   <UploadInput
                     id="qual-sourceupload"
                     label="إثبات الدخل"
-                    onChange={(e) => setSourceUpload(e.target.files[0])}
+                    defaultUrl={existingSourceUpload}
+                    onChange={(e) => {
+                      const file = e.target.files[0] || null;
+                      setSourceUpload(file);
+                      if (!file) setExistingSourceUpload("");
+                    }}
+                    onClear={() => {
+                      setSourceUpload(null);
+                      setExistingSourceUpload("");
+                    }}
                   />
                 </Col>
                 <Col md={6}>
                   <UploadInput
                     id="qual-courseupload"
                     label="شهادة أو دورة تدريبية"
-                    onChange={(e) => setCourseUpload(e.target.files[0])}
+                    defaultUrl={existingCourseUpload}
+                    onChange={(e) => {
+                      const file = e.target.files[0] || null;
+                      setCourseUpload(file);
+                      if (!file) setExistingCourseUpload("");
+                    }}
+                    onClear={() => {
+                      setCourseUpload(null);
+                      setExistingCourseUpload("");
+                    }}
                   />
                 </Col>
               </Row>
@@ -631,9 +762,19 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
                   <UploadInput
                     id="health-upload"
                     label="إرفاق تقرير طبي"
-                    onChange={(e) => setHealthUpload(e.target.files[0])}
+                    defaultUrl={existingHealthUpload}
+                    onChange={(e) => {
+                      const file = e.target.files[0] || null;
+                      setHealthUpload(file);
+                      if (!file) setExistingHealthUpload("");
+                    }}
+                    onClear={() => {
+                      setHealthUpload(null);
+                      setExistingHealthUpload("");
+                    }}
                   />
                 </Col>
+                {renderAttachmentPreview(existingHealthUpload, "معاينة التقرير الطبي الحالي")}
                 <Col md={6}>
                   <RegisterTextbox
                     id="health-notes"

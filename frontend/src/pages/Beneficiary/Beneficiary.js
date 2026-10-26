@@ -14,11 +14,31 @@ import BeneficiarySubModal from "./BeneficiarySubModal";
 function Beneficiary(props) {
   const columns = [
     { name: "إسم المستفيد", key: "name" },
-    { name: " تاريخ الميلاد", key: "dateofbirth" },
+    { name: "تاريخ الميلاد", key: "dateofbirth" },
     { name: "النوع", key: "gender_string" },
-    { name: "الحالة", key: "status_string" },
+    { name: "الحالة الإجتماعية", key: "social_status_string" },
+    { name: "دراسة الحالة", key: "case_status_badge" },
     { name: "", key: "actions" },
   ];
+
+  const transformRow = (row) => {
+    const rawDecision = row.case_status_string || row.case_status || "موافقة";
+    const statusConfig = {
+      موافقة: { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7", icon: "✓" },
+      معلق: { bg: "#fff8e1", color: "#f57f17", border: "#ffe082", icon: "⏳" },
+      مرفوض: { bg: "#ffebee", color: "#c62828", border: "#ef9a9a", icon: "✕" },
+    }[rawDecision] || { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7", icon: "✓" };
+
+    const badge = `<span style="background:${statusConfig.bg};color:${statusConfig.color};border:1px solid ${statusConfig.border};padding:4px 12px;border-radius:14px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">${statusConfig.icon} ${rawDecision}</span>`;
+
+    return {
+      ...row,
+      social_status_string: row.social_status_string || row.status_string || "-",
+      case_status_badge: badge,
+      case_status_string: badge,
+    };
+  };
+
   const [rows, setRows] = useState([]);
   const [tableReloadKey, setTableReloadKey] = useState(0);
   const navigate = useNavigate();
@@ -185,6 +205,10 @@ function Beneficiary(props) {
 
   const dropdownOptions = [
     {
+      label: "عرض",
+      route: "/beneficiary/view/:id",
+    },
+    {
       label: "تعديل",
       action: (id, record) => handleEditOpen(id, record),
     },
@@ -211,8 +235,8 @@ function Beneficiary(props) {
     {
       label: " سند دفع ",
       action: (id, record) => {
-        if (record && record.status_string && record.status_string !== "موافقة") {
-          alert("لا يمكن عرض السند حتى تتم الموافقة على المستفيد");
+        if (record && (record.case_status_string === "مرفوض" || record.case_status === "مرفوض" || record.case_status === "3")) {
+          alert("لا يمكن عرض السند لحالة مرفوضة في دراسة الحالة");
         } else {
           setActivePopup({ type: "voucher", id, record, title: "سند دفع" });
         }
@@ -230,6 +254,7 @@ function Beneficiary(props) {
         <TableComponent
           apiUrl="/humancases"
           columns={columns}
+          transformRowFn={transformRow}
           title="تقرير المستفيدين"
           titleIcon={<FontAwesomeIcon icon={faReceipt} />}
           placeholderSearch="إسم المستفيد أو رقم الهوية"

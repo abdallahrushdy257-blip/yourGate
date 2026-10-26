@@ -1,412 +1,303 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Title from "../../../components/title";
-import "../addBeneficiary.css";
-import RegisterTextbox from "../../../components/RegisterTextBox";
-import RegisterSelect from "../../../components/RegisterSelect";
-import { faPlus , faMinus } from "@fortawesome/free-solid-svg-icons";
-import CustomButton from "../../../components/CustomButton";
-import { Form } from "react-bootstrap";
-import { useNavigate, useParams } from "react-router";
-import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
-import UploadInput from "../../../components/UploadInput";
-import { useEffect, useState } from "react";
-import API from "../../../api/axiosConfig";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faGraduationCap,
+  faPlus,
+  faTrashAlt,
+  faArrowLeft,
+  faArrowRight,
+  faCloudArrowUp,
+  faCheckCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import API from "../../../api/axiosConfig";
+import "../BenefitAddDetailsUnified.css";
 
-function ForBenefitQualificationPosition({ onNext}) {
-  const navigate = useNavigate();
+function ForBenefitQualificationPosition({ initialData, onNext, onPrev, onSaved }) {
   const { id } = useParams();
-  const [incomeSources, setIncomeSources] = useState([{ id: 1 }]);
-  const [trainingCourses, setTrainingCourses] = useState([{ id: 1 }]);
-  const [level, setLevel] = useState('');
-  const [canwork, setCanwork] = useState('');
-  const [job, setJob] = useState('');
-  const [notes, setNotes] = useState('');
-  const [sourceamount, setSourceamount] = useState(['']);
-  const [sourcename, setSourcename] = useState(['']);
-  const [sourceupload, setSourceupload] = useState("");
-  const [coursetitle, setCoursetitle] = useState(['']);
-  const [courseupload, setCourseupload] = useState("");
+
+  const [level, setLevel] = useState(initialData?.level || "ثانوي");
+  const [canwork, setCanwork] = useState(initialData?.canwork || "1");
+  const [job, setJob] = useState(initialData?.job || "");
+  const [notes, setNotes] = useState(initialData?.note || "");
+
+  const [sources, setSources] = useState(initialData?.sources || [{ name: "", amount: "" }]);
+  const [sourceFile, setSourceFile] = useState(null);
+  const [existingSourceUpload, setExistingSourceUpload] = useState(initialData?.sourceupload || null);
+
+  const [courses, setCourses] = useState(initialData?.courses || [{ title: "", address: "" }]);
+  const [courseFile, setCourseFile] = useState(null);
+  const [existingCourseUpload, setExistingCourseUpload] = useState(initialData?.courseupload || null);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [courseaddress, setCourseaddress] = useState(['']);
-  const [showMinus, setShowMinus] = useState(false);
-  const [showMinus1, setShowMinus1] = useState(false);
-  const [rows , setRows] = useState([]);
 
-  const addSource = () => {
-    setSourceamount([...sourceamount, ""]); // Add a new empty input
-    setSourcename([...sourcename, ""]); // Add a new empty input
+  useEffect(() => {
+    if (initialData) {
+      if (initialData.level) setLevel(initialData.level);
+      if (initialData.canwork !== undefined) setCanwork(String(initialData.canwork));
+      if (initialData.job) setJob(initialData.job);
+      if (initialData.note) setNotes(initialData.note);
+      if (initialData.sources && initialData.sources.length > 0) setSources(initialData.sources);
+      if (initialData.courses && initialData.courses.length > 0) setCourses(initialData.courses);
+      if (initialData.sourceupload) setExistingSourceUpload(initialData.sourceupload);
+      if (initialData.courseupload) setExistingCourseUpload(initialData.courseupload);
+    }
+  }, [initialData]);
+
+  // Dynamic Sources
+  const addSource = () => setSources([...sources, { name: "", amount: "" }]);
+  const removeSource = (idx) => {
+    if (sources.length > 1) {
+      setSources(sources.filter((_, i) => i !== idx));
+    }
+  };
+  const updateSource = (idx, field, val) => {
+    const next = [...sources];
+    next[idx][field] = val;
+    setSources(next);
   };
 
-  const addCource = () => {
-    setCoursetitle([...coursetitle, ""]); // Add a new empty input
-    setCourseaddress([...courseaddress, ""]); // Add a new empty input
+  // Dynamic Courses
+  const addCourse = () => setCourses([...courses, { title: "", address: "" }]);
+  const removeCourse = (idx) => {
+    if (courses.length > 1) {
+      setCourses(courses.filter((_, i) => i !== idx));
+    }
+  };
+  const updateCourse = (idx, field, val) => {
+    const next = [...courses];
+    next[idx][field] = val;
+    setCourses(next);
   };
 
-  const mergeSource = (sourcename, amount) => {
-    var newItem = [];
-    //console.log('name', sourcename, 'amount', amount);
-    sourcename.map((item, index) => (
-      newItem.push({
-        sourcename: item,
-        sourceamount: amount[index],
-      })
-    ));
-    return newItem;
-  };
-
-  const mergeCourse = (coursetitle, courseaddress) => {
-    var newItem = [];
-    coursetitle.map((item, index) => (
-      newItem.push({
-        coursetitle: item,
-        courseaddress: courseaddress[index],
-      })
-    ));
-    return newItem;
-  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError({});
+
     const formData = new FormData();
-    //formData.append('id', id);
     formData.append("level", level);
     formData.append("canwork", canwork);
     formData.append("job", job);
     formData.append("note", notes);
-    formData.append('source', JSON.stringify(mergeSource(sourcename, sourceamount)));
-    formData.append('course', JSON.stringify(mergeCourse(coursetitle, courseaddress)));
-    formData.append('sourceupload', sourceupload);
-    formData.append('courseupload', courseupload);
+
+    const mergedSources = sources
+      .filter((s) => s.name || s.amount)
+      .map((s) => ({ sourcename: s.name, sourceamount: s.amount }));
+    formData.append("source", JSON.stringify(mergedSources));
+
+    const mergedCourses = courses
+      .filter((c) => c.title || c.address)
+      .map((c) => ({ coursetitle: c.title, courseaddress: c.address }));
+    formData.append("course", JSON.stringify(mergedCourses));
+
+    if (sourceFile) formData.append("sourceupload", sourceFile);
+    if (courseFile) formData.append("courseupload", courseFile);
+
     try {
       const res = await API.post(`/hcrequest/${id}/qualifications`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (res.status === 200) {
+        if (onSaved) {
+          onSaved({
+            level,
+            canwork,
+            job,
+            note: notes,
+            sources,
+            courses,
+            sourceupload: existingSourceUpload,
+            courseupload: existingCourseUpload,
+          });
         }
-      })
-      const data = await res;
-      if (data.status === 200) {
         onNext();
       }
-    } catch (error) {
-      console.log(error)
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.errors || { general: "حدث خطأ أثناء حفظ المؤهلات" });
+    } finally {
       setIsSubmitting(false);
-      setError(error.response.data.errors);
     }
   };
 
-  const handleAddIncomeSource = () => {
-    setIncomeSources([...incomeSources, { id: incomeSources.length + 1 }]);
-    addSource();
-    setShowMinus1(true);
-  };
-
-  const handleMinusIncomeSource = () => {
-    setShowMinus1(true);
-    setIncomeSources(incomeSources.slice(0, -1));
-    setSourceamount(sourceamount.slice(0, -1));
-    setSourcename(sourcename.slice(0, -1));
-    if (incomeSources.length === 2) {
-      setShowMinus1(false);
-    }
-  }
-
-  const handleAddTrainingCourse = () => {
-    setTrainingCourses([
-      ...trainingCourses,
-      { id: trainingCourses.length + 1 },
-    ]);
-    addCource();
-    setShowMinus(true);
-  
-  };
-
-  const handleMinusTrainingCourse = () => {
-setShowMinus(true);
-    setTrainingCourses(trainingCourses.slice(0, -1));
-    setCoursetitle(coursetitle.slice(0, -1));
-    setCourseaddress(courseaddress.slice(0, -1));
-    if (trainingCourses.length === 2) {
-      setShowMinus(false);
-    }
-  }
-
-  const handleSourceName = (index, value) => {
-    const newInputs = [...sourcename];
-    newInputs[index] = value; // Update the correct input field
-    setSourcename(newInputs);
-  };
-
-  const handleSourceAmount = (index, value) => {
-    const newInputs = [...sourceamount];
-    newInputs[index] = value; // Update the correct input field
-    setSourceamount(newInputs);
-  };
-
-  // const handleSourceUpload = (index, value) => {
-  //   const newInputs = [...sourceupload];
-  //   newInputs[index] = value; // Update the correct input field
-  //   setSourceupload(newInputs);
-  // };
-
-  const handleCourceTitle = (index, value) => {
-    const newInputs = [...coursetitle];
-    newInputs[index] = value; // Update the correct input field
-    setCoursetitle(newInputs);
-  };
-
-  const handleCourceAddress = (index, value) => {
-    const newInputs = [...courseaddress];
-    newInputs[index] = value; // Update the correct input field
-    setCourseaddress(newInputs);
-  };
-
-
-
-
-  // const getAllData = async () => {
-  //       try {
-  //           const res = await API.get(`/humancasedetails/get/${id}`);
-  //           const data = await res;
-  //           if (data.status === 200) {
-  //               setRows(data.data);
-  //           }
-  //       } catch (error) {
-  //           console.error(error);
-  //           setError(error.response.data.errors);
-  //       }
-  //   }
-
-  //   useEffect(() => {
-  //       getAllData();
-  //   }, []);
   return (
-    <>
-      <div className="AddBeneficiary">
-        <Title
-          title="المؤهل والوظيفة"
-          icon={<FontAwesomeIcon icon={faGraduationCap} />}
-        />
-        <Form onSubmit={handleSubmit} className="AddBeneficiaryContainer">
-          <div className="AddBeneficiaryContainer">
-            <div className="AddBeneficiaryContainerRow">
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="edLevel"
-                label="المستوي التعليمي"
-                type="text"
-                stylee={{
-                  width: "55%",
-                }}
-                name="level"
-                onChange={(e) => setLevel(e.target.value)} 
-                value={level}
-                //disabled = { rows && rows.work_education && rows.work_education.educationlevel ? true : false }
-              />
-              <RegisterSelect
-                id="canwork"
-                label="يستطيع العمل"
-                stylee={{ width: "30%" }}
-                parentStyle={{ width: "30%", marginBottom: "20px" }}
-                options={[
-                  { value: "", label: "اختر" },
-                  { value: "1", label: "نعم" },
-                  { value: "0", label: "لا" },
-                ]}
-                name="canwork"
-                onChange={(e) => setCanwork(e.target.value)}
-                value={canwork}
-                //disabled = { rows && rows.work_education && rows.work_education.canwork ? true : false }
-              />
+    <div className="bad-card">
+      <div className="bad-card-header">
+        <div className="bad-card-header-icon">
+          <FontAwesomeIcon icon={faGraduationCap} />
+        </div>
+        <div>
+          <h3 className="bad-card-header-title">المؤهل العلمي والوظيفة ومصادر الدخل</h3>
+          <p className="bad-card-header-desc">
+            تحديد المستوى التعليمي، القدرة على العمل، ومصادر الدخل الشهري للأسرة.
+          </p>
+        </div>
+      </div>
 
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              {error && error.level && <span className="error" style={{ marginLeft: "20px" }}>{error.level}</span>}
-              {error && error.canwork && <span className="error" style={{ marginRight: "10px" }}>{error.canwork}</span>}
-            </div>
-            <div className="AddBeneficiaryContainerRow">
-
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="job"
-                label="المهنة"
-                type="text"
-                stylee={{
-                  width: "55%",
-                }}
-                name="job"
-                onChange={(e) => setJob(e.target.value)}
-                value={job}
-                //disabled = { rows && rows.work_education && rows.work_education.job ? true : false }
-              />{error && error.job && <span className="error">{error.job}</span>}
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="extraNotes"
-                label="ملاحظات اضافية"
-                type="text"
-                stylee={{
-                  width: "55%",
-                }}
-                name="extraNotes"
-                onChange={(e) => setNotes(e.target.value)}
-                value={notes}
-                //disabled = { rows && rows.work_education && rows.work_education.educationlevel ? true : false }
-              />{error && error.extraNotes && <span className="error">{error.extraNotes}</span>}
-            </div>
-            <div>
-              <div className="titleaddcon">
-                <h5>
-                  مصادر الدخل
-                  <span
-                    className="addillness addillness2"
-                    onClick={handleAddIncomeSource}
-                    style={{ color: "green" , borderRadius: "50px" , marginLeft: "10px" }}
-                  >
-                    <FontAwesomeIcon icon={faPlus} />
-                  </span>
-                  {
-                    showMinus1 && (
-                      <span
-                        className="addillness addillness2"
-                        onClick={handleMinusIncomeSource}
-                        style={{ color: "red" , borderRadius: "50px" }}
-                      >
-                        <FontAwesomeIcon icon={faMinus} />
-                      </span>
-                    )
-                  }
-                </h5>
-              </div>
-              {incomeSources.map((source, value) => (
-                <div key={source.id} className="AddBeneficiaryContainerRow" style={{ border: "1px solid var(--text-color)" , borderRadius: "10px" , padding: "10px"}}>
-                  <RegisterTextbox
-                    parentStyle={{ width: "30%" }}
-                    id={`incomesources-${source.id}`}
-                    label="اسم المصدر"
-                    type="text"
-                    stylee={{ width: "55%" }}
-                    name="incomesources"
-                    onChange={(e) => handleSourceName(source.id, e.target.value)}
-
-                  />
-                  <RegisterTextbox
-                    parentStyle={{ width: "30%" }}
-                    id={`souramount-${source.id}`}
-                    label="القيمة"
-                    type="text"
-                    stylee={{ width: "55%" }}
-                    name="souramount"
-                    onChange={(e) => handleSourceAmount(source.id, e.target.value)}
-                  />
-
-                </div>
-              ))}
-            </div>
-
-            <div>
-              <div className="titleaddcon">
-                <h5>
-                  الدورات التدريبية
-                  <span
-                    className="addillness addillness2"
-                    onClick={handleAddTrainingCourse}
-                    style={{ color: "green" , borderRadius: "50px" , marginLeft: "10px" }}
-                  >
-                    <FontAwesomeIcon icon={faPlus} />
-                  </span>
-                  {
-                    showMinus &&
-                    <span
-                      className="addillness addillness2"
-                      onClick={handleMinusTrainingCourse}
-                      style={{ color: "red" , borderRadius: "50px" }}
-                    >
-                      <FontAwesomeIcon icon={faMinus} />
-                    </span>
-                  }
-                </h5>
-              </div>
-              {trainingCourses.map((course, value) => (
-                <div key={course.id} className="AddBeneficiaryContainerRow" style={{ border: "1px solid var(--text-color)" , borderRadius: "10px" , padding: "10px"}}>
-                  <RegisterTextbox
-                    parentStyle={{ width: "30%" }}
-                    id={`coursesname-${course.id}`}
-                    label="اسم الدورة"
-                    type="text"
-                    stylee={{ width: "55%" }}
-                    name="coursesname"
-                    onChange={(e) => handleCourceTitle(course.id, e.target.value)}
-                  />
-                  <RegisterTextbox
-                    parentStyle={{ width: "30%" }}
-                    id={`coursesdate-${course.id}`}
-                    label=" مكان الحصول على الدورة"
-                    type="text"
-                    stylee={{ width: "55%" }}
-                    name="courseaddress"
-                    onChange={(e) => handleCourceAddress(course.id, e.target.value)}
-                  />
-
-                </div>
-              ))}
-            </div>
+      <form onSubmit={handleSubmit}>
+        <div className="bad-grid">
+          {/* المستوى التعليمي */}
+          <div className="bad-field">
+            <label className="bad-label">المؤهل التعليمي</label>
+            <select
+              className="bad-select"
+              value={level}
+              onChange={(e) => setLevel(e.target.value)}
+            >
+              <option value="أمي">أمي / بدون مؤهل</option>
+              <option value="ابتدائي">ابتدائي</option>
+              <option value="متوسط">متوسط</option>
+              <option value="ثانوي">ثانوي</option>
+              <option value="دبلوم">دبلوم</option>
+              <option value="بكالوريوس">بكالوريوس</option>
+              <option value="ماجستير">ماجستير</option>
+              <option value="دكتوراه">دكتوراه</option>
+            </select>
           </div>
 
-          <div className="AddBeneficiaryContainerRow">
+          {/* القدرة على العمل */}
+          <div className="bad-field">
+            <label className="bad-label">القدرة على العمل</label>
+            <select
+              className="bad-select"
+              value={canwork}
+              onChange={(e) => setCanwork(e.target.value)}
+            >
+              <option value="1">قادر على العمل</option>
+              <option value="0">غير قادر على العمل / عاجز</option>
+            </select>
+          </div>
 
-            <UploadInput
-              id={`salary`}
-              parentStyle={{
-                marginBottom: "20px",
-                display: "flex",
-                alignItems: "center",
-              }}
-              label="مشهد الراتب"
-              name="salary"
-              onChange={(e) => setSourceupload(e.target.files[0])}
+          {/* المهنة الحالية */}
+          <div className="bad-field">
+            <label className="bad-label">الوظيفة / المهنة الحالية</label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="مثال: بدون عمل / متقاعد / موظف قطاع خاص"
+              value={job}
+              onChange={(e) => setJob(e.target.value)}
             />
-           
-       
+          </div>
 
-          <UploadInput
-            id="trainingcourse"
-            parentStyle={{
-              marginBottom: "20px",
-              display: "flex",
-              alignItems: "center",
-            }}
-            label="صور الدورات التدريبة"
-            name="salary"
-            onChange={(e) => setCourseupload(e.target.files[0])}
-            value={courseupload}
-          />
-         
+          {/* ملاحظات */}
+          <div className="bad-field">
+            <label className="bad-label">ملاحظات العمل والدخل</label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="أي تفاصيل حول طبيعة العمل أو الدخل"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+          </div>
 
-      </div >
-      <div style={{ display: "flex", alignItems: "space-between" }}>
-        
-        {error && error.sourceupload && <span className="error" style={{ marginLeft: "10px", marginBottom: "5px" }}>{error.sourceupload}</span>}
-         
-        {error && error.courseupload && <span className="error" style={{ marginRight: "10px", marginBottom: "5px" }}>{error.courseupload}</span>}
-      </div>
+          {/* مصادر الدخل المتعددة */}
+          <div className="bad-grid-full" style={{ marginTop: "12px" }}>
+            <label className="bad-label" style={{ fontSize: "15px" }}>
+              مصادر الدخل الشهري للأسرة
+            </label>
+            {sources.map((src, idx) => (
+              <div key={idx} className="bad-repeat-item">
+                <div className="bad-repeat-header">
+                  <span className="bad-repeat-title">مصدر دخل #{idx + 1}</span>
+                  {sources.length > 1 && (
+                    <button
+                      type="button"
+                      className="bad-btn-remove"
+                      onClick={() => removeSource(idx)}
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} /> حذف
+                    </button>
+                  )}
+                </div>
+                <div className="bad-grid">
+                  <div className="bad-field">
+                    <label className="bad-label">جهة الدخل</label>
+                    <input
+                      type="text"
+                      className="bad-input"
+                      placeholder="مثال: الضمان الاجتماعي / حساب المواطن / تقاعد"
+                      value={src.name}
+                      onChange={(e) => updateSource(idx, "name", e.target.value)}
+                    />
+                  </div>
+                  <div className="bad-field">
+                    <label className="bad-label">المبلغ الشهري (ريال)</label>
+                    <input
+                      type="number"
+                      className="bad-input"
+                      placeholder="0.00"
+                      value={src.amount}
+                      onChange={(e) => updateSource(idx, "amount", e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
 
+            <button type="button" className="bad-btn-add" onClick={addSource}>
+              <FontAwesomeIcon icon={faPlus} />
+              <span>إضافة مصدر دخل آخر</span>
+            </button>
+          </div>
 
+          {/* ملف إثبات الدخل */}
+          <div className="bad-field bad-grid-full" style={{ marginTop: "12px" }}>
+            <label className="bad-label">مستند إثبات الدخل (اختياري)</label>
+            <label className={`bad-upload-card ${sourceFile ? "has-file" : ""}`}>
+              <div className="bad-upload-info">
+                <FontAwesomeIcon
+                  icon={sourceFile ? faCheckCircle : faCloudArrowUp}
+                  className="bad-upload-icon"
+                  style={{ color: sourceFile ? "#2e7d32" : "#b89358" }}
+                />
+                <div>
+                  <p className="bad-upload-title">
+                    {sourceFile ? sourceFile.name : "شهادة راتب، مشهد ضمان، أو كشف حساب"}
+                  </p>
+                  <p className="bad-upload-sub">صيغ مقبولة: JPG, PNG, PDF</p>
+                </div>
+              </div>
+              <span className="bad-upload-btn">{sourceFile ? "تغيير الملف" : "اختيار ملف"}</span>
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                onChange={(e) => e.target.files && setSourceFile(e.target.files[0])}
+                style={{ display: "none" }}
+              />
+            </label>
+          </div>
+        </div>
 
-      <div className="AddBeneficiaryContainerRow">
-        {isSubmitting ? <Spinner animation="border" variant="primary" /> :
-          <CustomButton text="حفظ" onClick={handleSubmit} />
-        }
-      </div>
-    </Form >
-      </div >
-    </>
+        {/* Footer Actions */}
+        <div className="bad-actions">
+          {onPrev ? (
+            <button type="button" className="bad-btn-prev" onClick={onPrev}>
+              <FontAwesomeIcon icon={faArrowRight} />
+              <span>السابق</span>
+            </button>
+          ) : <div />}
+
+          <button type="submit" className="bad-btn-submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Spinner animation="border" size="sm" />
+                <span>جاري الحفظ...</span>
+              </>
+            ) : (
+              <>
+                <span>حفظ ومتابعة</span>
+                <FontAwesomeIcon icon={faArrowLeft} />
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 

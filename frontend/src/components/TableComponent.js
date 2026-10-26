@@ -20,6 +20,7 @@ import { Dropdown } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Tablestyle.css";
+import { TableSkeleton } from "./Skeleton";
 
 function TableComponent({
   extraTitleField,
@@ -553,45 +554,10 @@ function TableComponent({
             </thead>
             <tbody>
               {loading && data.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={columns.length + 1}
-                    style={{
-                      textAlign: "center",
-                      padding: "45px 20px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "12px",
-                      }}
-                    >
-                      <div
-                        className="spinner-border"
-                        role="status"
-                        style={{
-                          width: "2.2rem",
-                          height: "2.2rem",
-                          color: "var(--primary-color, #c29a64)",
-                        }}
-                      >
-                        <span className="visually-hidden">Loading...</span>
-                      </div>
-                      <span
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: "500",
-                          color: "var(--text-color, #888)",
-                        }}
-                      >
-                        جاري تحميل البيانات...
-                      </span>
-                    </div>
-                  </td>
-                </tr>
+                <TableSkeleton
+                  rows={perPage > 8 ? 8 : perPage || 6}
+                  columns={columns.length + 1}
+                />
               ) : data.length === 0 ? (
                 <tr>
                   <td
@@ -660,7 +626,8 @@ function TableComponent({
                                   .map((option, idx) => (
                                     <Dropdown.Item
                                       key={idx}
-                                      onClick={() => {
+                                      onClick={(e) => {
+                                        if (e && e.stopPropagation) e.stopPropagation();
                                         if (option.action) {
                                           option.action(record.id, record);
                                         } else if (option.route) {
@@ -676,7 +643,7 @@ function TableComponent({
                                   ))}
                               </Dropdown.Menu>
                             </Dropdown>
-                          ) : record[column.key] !== undefined ? (
+                          ) : transformedRecord[column.key] !== undefined ? (
                             <span
                               dangerouslySetInnerHTML={{
                                 __html: transformedRecord[column.key],

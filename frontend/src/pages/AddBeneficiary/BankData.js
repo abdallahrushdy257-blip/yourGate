@@ -116,6 +116,7 @@ function BankData(props) {
                     <UploadInput
                         id="chieftain"
                         label="صورة رقم IBAN"
+                        defaultUrl={rows?.details?.bankdetails_upload || rows?.details?.bankdetails?.upload}
                         onChange={(e) => setUpload(e.target.files[0])}
                         name="upload"
                     />

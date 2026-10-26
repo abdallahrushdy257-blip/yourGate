@@ -1,599 +1,380 @@
-import { useEffect, useState } from "react";
-import "../../CreateLoan/createLoan.css";
-import RegisterTextbox from "../../../components/RegisterTextBox";
-import Title from "../../../components/title";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDatabase  } from "@fortawesome/free-solid-svg-icons";
-import "../addBeneficiary.css";
-import RegisterSelect from "../../../components/RegisterSelect";
-
-import API from "../../../api/axiosConfig";
-import { useNavigate } from "react-router";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
-import { useParams } from "react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import API from "../../../api/axiosConfig";
+import "../BenefitAddDetailsUnified.css";
 
-function ForBenefitAdding({ onNext}) {
-  
-  const [myid, setMyid] = useState(null);
-  const [dob, setDob] = useState(
-    () =>
-      sessionStorage.getItem("beneficary_dob") ||
-      new Date().toISOString().substr(0, 10)
-  );
-  const [age, setAge] = useState(
-    () => sessionStorage.getItem("beneficary_age") || ""
-  );
-  const [cardNum, setCardNum] = useState(
-    () => sessionStorage.getItem("beneficary_cardNum") || ""
-  );
-  const [mobileNum, setMobileNum] = useState(
-    () => sessionStorage.getItem("beneficary_mobileNum") || 0
-  );
-  const {id} = useParams();
-  const [errors, setErrors] = useState({});
-  const [dobMap, setDobMap] = useState({});
-  const [ageMap, setAgeMap] = useState({});
-  const [showbtn , setShowbtn] = useState(false);
-  const [name, setName] = useState(
-    () => sessionStorage.getItem("beneficary_name") || ""
-  );
+function ForBenefitAdding({ initialData, onNext, onSaved }) {
+  const { id } = useParams();
+
+  const [name, setName] = useState(() => initialData?.name || sessionStorage.getItem("bad_name") || "");
+  const [gender, setGender] = useState(() => initialData?.gender ?? sessionStorage.getItem("bad_gender") ?? "0");
+  const [humancasetype, setHumancasetype] = useState(() => initialData?.humancasetype ?? sessionStorage.getItem("bad_type") ?? "1");
+  const [dob, setDob] = useState(() => initialData?.dob || sessionStorage.getItem("bad_dob") || "1995-01-01");
+  const [status, setStatus] = useState(() => initialData?.status ?? sessionStorage.getItem("bad_status") ?? "1");
+  const [nationality, setNationality] = useState(() => initialData?.nationality || sessionStorage.getItem("bad_nat") || "سعودي");
+  const [idnumber, setIdnumber] = useState(() => initialData?.idnumber || sessionStorage.getItem("bad_idnum") || "");
+  const [idsource, setIdsource] = useState(() => initialData?.idsource || sessionStorage.getItem("bad_idsrc") || "");
+  const [iddate, setIddate] = useState(() => initialData?.iddate || sessionStorage.getItem("bad_iddate") || "2030-01-01");
+  const [phonenum, setPhonenum] = useState(() => initialData?.phonenum || sessionStorage.getItem("bad_phone") || "");
+  const [familycount, setFamilycount] = useState(() => initialData?.familycount ?? sessionStorage.getItem("bad_fam") ?? "1");
+  const [email, setEmail] = useState(() => initialData?.email || sessionStorage.getItem("bad_email") || "");
+  const [accnumber, setAccnumber] = useState(() => initialData?.accnumber || sessionStorage.getItem("bad_acc") || "");
+  const [note, setNote] = useState(() => initialData?.note || sessionStorage.getItem("bad_note") || "");
+  const [agree, setAgree] = useState(true);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState({});
-  const [message, setMessage] = useState({});
-  const [gender, setGender] = useState(
-    () => sessionStorage.getItem("beneficary_gender") || 0
-  );
-  const [status, setStatus] = useState(
-    () => sessionStorage.getItem("beneficary_status") || 0
-  );
-  const [nationality, setNationality] = useState(
-    () => sessionStorage.getItem("beneficary_nationality") || ""
-  );
-  const [email, setEmail] = useState(
-    () => sessionStorage.getItem("beneficary_email") || ""
-  );
-  const [accnumber, setAccnumber] = useState(
-    () => sessionStorage.getItem("beneficary_accnumber") || 0
-  );
-  const [idnumber, setIdnumber] = useState(
-    () => sessionStorage.getItem("beneficary_idnumber") || 0
-  );
-  const [idsource, setIdsource] = useState(
-    () => sessionStorage.getItem("beneficary_idsource") || ""
-  );
-  const [iddate, setIddate] = useState(
-    () =>
-      sessionStorage.getItem("beneficary_iddate") ||
-      new Date().toISOString().substr(0, 10)
-  );
-  const [note, setNote] = useState(
-    () => sessionStorage.getItem("beneficary_note") || ""
-  );
-  const [humancasetype, setHumancasetype] = useState(
-    () => sessionStorage.getItem("beneficary_humancasetype") || 1
-  ); // Assuming 1 is the default value for humancasetype
-  const [isSubmitting, setSubmitting] = useState(false);
-  const navigate = useNavigate();
-  
- const [messageAdd, setMessageAdd] = useState('');
-  const handleCardNumChange = (e) => {
-    const { value } = e.target;
-    setCardNum(value);
-    sessionStorage.setItem("beneficary_cardNum", value);
-    if (value.length !== 10) {
-      setErrors((prevState) => ({
-        ...prevState,
-        cardnum: "رقم الهوية يجب ان يكون 10 أرقام",
-      }));
-    } else {
-      setErrors((prevState) => ({
-        ...prevState,
-        cardnum: "",
-      }));
-    }
-  };
-
-  const handlePhoneNumChange = (e) => {
-    const { value } = e.target;
-    setMobileNum(value);
-    sessionStorage.setItem("beneficary_mobileNum", value);
-    if (value.length !== 10) {
-      setErrors((prevState) => ({
-        ...prevState,
-        phonenum: "رقم الجوال يجب ان يكون 10 أرقام",
-      }));
-    } else {
-      setErrors((prevState) => ({
-        ...prevState,
-        phonenum: "",
-      }));
-    }
-  };
-  const [exist, setExist] = useState(false);
-
-  const checkExist = async () => {
-    try {
-      const res = await API.get(`/hcrequest/${id}`);
-      const data = await res;
-      if (data.status === 200) {
-        setExist(true);
-      } else {
-        setExist(false);
-      }
-    } catch (error) {
-      console.error(error);
-      setExist(false);
-    }
-  }
 
   useEffect(() => {
-    checkExist();
-  }, []);
+    if (initialData) {
+      if (initialData.name) setName(initialData.name);
+      if (initialData.gender !== undefined) setGender(String(initialData.gender));
+      if (initialData.humancasetype !== undefined) setHumancasetype(String(initialData.humancasetype));
+      if (initialData.dob) setDob(initialData.dob);
+      if (initialData.status !== undefined) setStatus(String(initialData.status));
+      if (initialData.nationality) setNationality(initialData.nationality);
+      if (initialData.idnumber) setIdnumber(initialData.idnumber);
+      if (initialData.idsource) setIdsource(initialData.idsource);
+      if (initialData.iddate) setIddate(initialData.iddate);
+      if (initialData.phonenum) setPhonenum(initialData.phonenum);
+      if (initialData.familycount !== undefined) setFamilycount(String(initialData.familycount));
+      if (initialData.email) setEmail(initialData.email);
+      if (initialData.accnumber) setAccnumber(initialData.accnumber);
+      if (initialData.note) setNote(initialData.note);
+    }
+  }, [initialData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
+    if (!name.trim()) {
+      setError({ name: "يرجى إدخال اسم المستفيد الكامل" });
+      return;
+    }
+    if (!agree) {
+      alert("يرجى الإقرار بصحة البيانات المدخلة قبل المتابعة");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError({});
+
     const formData = new FormData();
     formData.append("name", name);
     formData.append("gender", gender);
+    formData.append("humancasetype", humancasetype);
+    formData.append("dob", dob);
     formData.append("status", status);
     formData.append("nationality", nationality);
-    formData.append("email", email);
-    formData.append("accnumber", accnumber);
     formData.append("idnumber", idnumber);
     formData.append("idsource", idsource);
     formData.append("iddate", iddate);
+    formData.append("phonenum", phonenum);
+    formData.append("familycount", familycount);
+    formData.append("email", email);
+    formData.append("accnumber", accnumber);
     formData.append("note", note);
-    formData.append("familycount", cardNum);
-    formData.append("phonenum", mobileNum);
-    formData.append("humancasetype", humancasetype); // Assuming 1 is the default value for humancasetype
-    formData.append("dob", dob);
 
-    //formData.append("code", myCode);
     try {
-      if (!exist) {
-        setMessageAdd("برجاء التأكد من الرابط");
-      }else {
-        const res = await API.post(`/hcrequest/${id}/case`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const res = await API.post(`/hcrequest/${id}/case`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      const data = await res;
-      if (data.status === 200) {
-        sessionStorage.removeItem("beneficary_dob");
-        sessionStorage.removeItem("beneficary_age");
-        sessionStorage.removeItem("beneficary_cardNum");
-        sessionStorage.removeItem("beneficary_mobileNum");
-        sessionStorage.removeItem("beneficary_name");
-        sessionStorage.removeItem("beneficary_gender");
-        sessionStorage.removeItem("beneficary_status");
-        sessionStorage.removeItem("beneficary_nationality");
-        sessionStorage.removeItem("beneficary_email");
-        sessionStorage.removeItem("beneficary_accnumber");
-        sessionStorage.removeItem("beneficary_idnumber");
-        sessionStorage.removeItem("beneficary_idsource");
-        sessionStorage.removeItem("beneficary_iddate");
-        sessionStorage.removeItem("beneficary_note");
-        sessionStorage.removeItem("beneficary_humancasetype");
-        setMyid(data.data.id);
-        //sessionStorage.setItem("beneficiary_id", data.data.id);
+
+      if (res.status === 200) {
+        // Save to session
+        sessionStorage.setItem("bad_name", name);
+        sessionStorage.setItem("bad_gender", gender);
+        sessionStorage.setItem("bad_dob", dob);
+        sessionStorage.setItem("bad_status", status);
+        sessionStorage.setItem("bad_nat", nationality);
+        sessionStorage.setItem("bad_idnum", idnumber);
+        sessionStorage.setItem("bad_phone", phonenum);
+
+        if (onSaved) {
+          onSaved({
+            name,
+            gender,
+            humancasetype,
+            dob,
+            status,
+            nationality,
+            idnumber,
+            idsource,
+            iddate,
+            phonenum,
+            familycount,
+            email,
+            accnumber,
+            note,
+          });
+        }
+
         onNext();
-      } else {
-        setError(data.data.errors);
       }
-      }
-    } catch (error) {
-      setSubmitting(false);
-      setError(error.response.data.errors);
-      setMessage(error.response.data.message);
-    }
-
-    let hasErrors = false;
-
-    if (cardNum.length !== 10) {
-      setErrors((prevState) => ({
-        ...prevState,
-        cardnum: "رقم الهوية يجب ان يكون 10 أرقام",
-      }));
-      hasErrors = true;
-    }
-
-    if (mobileNum.length !== 10) {
-      setErrors((prevState) => ({
-        ...prevState,
-        phonenum: "رقم الجوال يجب ان يكون 10 أرقام",
-      }));
-      hasErrors = true;
-    }
-  };
-
-  const handlebtn = (e) => {
-    e.preventDefault();
-    if (e.target.checked) {
-      setShowbtn(true);
-    } else {
-      setShowbtn(false);
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.errors || { general: err.response?.data?.message || "حدث خطأ أثناء الحفظ" });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="createloan">
+    <div className="bad-card">
+      <div className="bad-card-header">
+        <div className="bad-card-header-icon">
+          <FontAwesomeIcon icon={faUser} />
+        </div>
+        <div>
+          <h3 className="bad-card-header-title">البيانات الأساسية للمستفيد</h3>
+          <p className="bad-card-header-desc">
+            يرجى إدخال المعلومات الشخصية للمستفيد ورقم الهوية بدقة لمطابقتها في سجلات الجمعية.
+          </p>
+        </div>
+      </div>
+
+      {error.general && (
+        <div className="alert alert-danger mb-4" style={{ borderRadius: "12px", fontSize: "14px" }}>
+          {error.general}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit}>
-        <div className="AddBeneficiary">
-          <Title
-            title="إضافة مستفيد"
-            icon={<FontAwesomeIcon icon={faDatabase} />}
-          />
-          {   messageAdd && <div className="message">{messageAdd}</div> }
-          <div className="AddBeneficiaryContainer" onSubmit={handleSubmit}>
-            <div className="AddBeneficiaryContainerRow">
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="name"
-                label="الإسم"
-                type="text"
-                stylee={{
-                  width: "55%",
-                }}
-                name="name"
-                value={name}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setName(value);
-                  sessionStorage.setItem("beneficary_name", value);
-                }}
-                error={error && error.name}
-              />
-              <RegisterSelect
-                id="sex"
-                label="نوع الجنس"
-                stylee={{ width: "30%" }}
-                parentStyle={{ width: "30%", marginBottom: "20px" }}
-                options={[
-                  { value: "", label: "اختر نوع الجنس" },
-                  { value: "0", label: "ذكر" },
-                  { value: "1", label: "أنثي" },
-                ]}
-                name="gender"
-                value={gender}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setGender(value);
-                  sessionStorage.setItem("beneficary_gender", value);
-                }}
-                error={error && error.gender}
-              />
-            </div>
-            {/* <div style={{ display: "flex", justifyContent: "space-between" }}>
-              {error && error.name && <span className="error">{error.name}</span>}
-              {error && error.gender && <span className="error">{error.gender}</span>}
-            </div> */}
-
-            <div className="AddBeneficiaryContainerRow">
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "right",
-                  width: "30%",
-                }}
-                className="mb-3"
-              >
-                <p style={{ marginBottom: "10px" }}>تاريخ الميلاد</p>
-                <input
-                  type="date"
-                  id="dob"
-                  name="dob"
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setDob(value);
-                    sessionStorage.setItem("beneficary_dob", value);
-                  }}
-                  value={dob}
-                  className="custom-datepicker"
-                  style={{ width: "100%" }}
-                  error={error && error.dob}
-                />
-              </div>
-
-              <RegisterSelect
-                id="relation"
-                label="حالة المستفيد"
-                stylee={{ width: "30%" }}
-                parentStyle={{ width: "30%", marginBottom: "20px" }}
-                options={[
-                  { value: "", label: "اختر حالة المستفيد" },
-                  { value: "1", label: "مؤقت" },
-                  { value: "2", label: "دائم" },
-                ]}
-                name="status"
-                value={humancasetype}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setHumancasetype(value);
-                  sessionStorage.setItem("beneficary_humancasetype", value);
-                }}
-                error={error && error.humancasetype}
-              />
-            </div>
-            {/* <div style={{ display: "flex", justifyContent: "space-between" }}>
-              {error && error.dob && <span className="error">{error.dob}</span>}
-              {error && error.humancasetype && <span className="error">{error.humancasetype}</span>}
-            </div> */}
-
-            <div className="AddBeneficiaryContainerRow">
-              <RegisterSelect
-                id="relation"
-                label="الحالة الإجتماعية"
-                stylee={{ width: "30%" }}
-                parentStyle={{ width: "30%", marginBottom: "20px" }}
-                options={[
-                  { value: "", label: "اختر الحالة الإجتماعية" },
-                  { value: "1", label: "أعزب" },
-                  { value: "2", label: "متزوج" },
-                  { value: "3", label: "مطلق" },
-                  { value: "4", label: "أرمل" },
-                ]}
-                name="status"
-                value={status}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setStatus(value);
-                  sessionStorage.setItem("beneficary_status", value);
-                }}
-                error={error && error.status}
-              />
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="nationality"
-                label="الجنسية"
-                type="text"
-                stylee={{
-                  width: "55%",
-                }}
-                name="nationality"
-                value={nationality}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setNationality(value);
-                  sessionStorage.setItem("beneficary_nationality", value);
-                }}
-                error={error && error.nationality}
-              />
-            </div>
-            {/* <div style={{ display: "flex", justifyContent: "space-between" }}>
-              {error && error.status && <span className="error">{error.status}</span>}
-              {error && error.nationality && <span className="error">{error.nationality}</span>}
-            </div> */}
-
-            <div className="AddBeneficiaryContainerRow">
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="idnum"
-                label="عدد افراد الأسرة"
-                type="number"
-                onChange={handleCardNumChange}
-                stylee={{
-                  width: "55%",
-                }}
-                onBlur={(e) => {
-                  if (e.target.value.length !== 10) {
-                    setErrors((prevState) => ({
-                      ...prevState,
-                      cardnum: "رقم الهوية يجب ان يكون 10 أرقام",
-                    }));
-                  } else {
-                    setErrors((prevState) => ({
-                      ...prevState,
-                      cardnum: "",
-                    }));
-                  }
-                }}
-                name="cardnum"
-                error={error && error.cardnum}
-              />
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="phoneNum"
-                label="رقم الجوال"
-                type="number"
-                stylee={{
-                  width: "55%",
-                }}
-                onChange={handlePhoneNumChange}
-                error={error && error.phonenum}
-              />
-            </div>
-            {/* <div style={{ display: "flex", justifyContent: "space-between" }}>
-              {error && error.cardnum && <span className="error">{error.cardnum}</span>}
-              {error && error.phonenum && <span className="error">{error.phonenum}</span>}
-            </div> */}
-
-            <div className="AddBeneficiaryContainerRow">
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="email"
-                label="البريد الإلكتروني"
-                type="email"
-                stylee={{
-                  width: "55%",
-                }}
-                name="email"
-                value={email}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setEmail(value);
-                  sessionStorage.setItem("beneficary_email", value);
-                }}
-                error={error && error.email}
-              />
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="accNumber"
-                label="رقم الحساب"
-                type="text"
-                stylee={{
-                  width: "55%",
-                }}
-                name="accnumber"
-                value={accnumber}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setAccnumber(value);
-                  sessionStorage.setItem("beneficary_accnumber", value);
-                }}
-                error={error && error.accnumber}
-              />
-            </div>
-            {/* <div style={{ display: "flex", justifyContent: "space-between" }}>
-              {error && error.email && <span className="error">{error.email}</span>}
-              {error && error.accnumber && <span className="error">{error.accnumber}</span>}
-            </div> */}
-
-            <div className="AddBeneficiaryContainerRow">
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="idnumber"
-                label="رقم الهوية"
-                type="number"
-                stylee={{
-                  width: "55%",
-                }}
-                name="idnumber"
-                value={idnumber}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setIdnumber(value);
-                  sessionStorage.setItem("beneficary_idnumber", value);
-                }}
-                error={ error && error.idnumber}
-              />
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="idSource"
-                label="مصدر الهوية"
-                type="text"
-                stylee={{
-                  width: "55%",
-                }}
-                name="idsource"
-                value={idsource}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setIdsource(value);
-                  sessionStorage.setItem("beneficary_idsource", value);
-                }}
-                error={error && error.idsource}
-              />
-            </div>
-            {/* <div style={{ display: "flex", justifyContent: "space-between" }}>
-              {error && error.idnumber && <span className="error">{error.idnumber}</span>}
-              {error && error.idsource && <span className="error">{error.idsource}</span>}
-            </div> */}
-
-            <div className="AddBeneficiaryContainerRow">
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "right",
-                  width: "30%",
-                  marginBottom: "20px",
-                }}
-              >
-                <p style={{ marginBottom: "10px" }}>تاريخ انتهاء الهوية</p>
-                <input
-                  type="date"
-                  name="iddate"
-                  className="custom-datepicker"
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setIddate(value);
-                    sessionStorage.setItem("beneficary_iddate", value);
-                  }}
-                  value={iddate}
-                  style={{ width: "100%" }}
-                  error={error && error.iddate}
-                />
-              </div>
-
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="moreNotes"
-                label="ملاحظات اضافية"
-                type="text"
-                stylee={{
-                  width: "55%",
-                }}
-                name="morenotes"
-                value={note}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setNote(value);
-                  sessionStorage.setItem("beneficary_note", value);
-                }}
-                error={error && error.note}
-              />
-            </div>
-            {/* <div style={{ display: "flex", justifyContent: "space-between" }}>
-              {error && error.iddate && <span className="error">{error.iddate}</span>}
-              {error && error.note && <span className="error">{error.note}</span>}
-            </div> */}
-
-            {/* <div
-              className="AddBeneficiaryContainerRow"
-              style={{ color: "red", fontSize: "0.8em" }}
-            >
-              {errors.cardnum && (
-                <div style={{ color: "red", fontSize: "0.8em" }}>
-                  {errors.cardnum}
-                </div>
-              )}
-              {errors.phonenum && (
-                <div style={{ color: "red", fontSize: "0.8em" }}>
-                  {errors.phonenum}
-                </div>
-              )}
-            </div> */}
+        <div className="bad-grid">
+          {/* الاسم الكامل */}
+          <div className="bad-field bad-grid-full">
+            <label className="bad-label">
+              <span>الاسم الكامل</span>
+              <span className="required">*</span>
+            </label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="الاسم الرباعي للمستفيد"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            {error.name && <span className="bad-error">{error.name}</span>}
           </div>
-          <div style={{direction:"rtl", margin:"20px auto" , display:"flex", justifyContent:"center"}}>
-            <input type="checkbox" id="confirm" required onChange={handlebtn}/>{" "}
-            <label htmlFor="confirm">
-              أقر بأن جميع البيانات المدخلة صحيحة وأتحمل المسؤولية القانونية
+
+          {/* نوع الجنس */}
+          <div className="bad-field">
+            <label className="bad-label">الجنس</label>
+            <select
+              className="bad-select"
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+            >
+              <option value="0">ذكر</option>
+              <option value="1">أنثى</option>
+            </select>
+          </div>
+
+          {/* الحالة الاجتماعية */}
+          <div className="bad-field">
+            <label className="bad-label">الحالة الاجتماعية</label>
+            <select
+              className="bad-select"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <option value="1">أعزب / عزباء</option>
+              <option value="2">متزوج / متزوجة</option>
+              <option value="3">مطلق / مطلقة</option>
+              <option value="4">أرمل / أرملة</option>
+            </select>
+          </div>
+
+          {/* تاريخ الميلاد */}
+          <div className="bad-field">
+            <label className="bad-label">تاريخ الميلاد</label>
+            <input
+              type="date"
+              className="bad-input"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+            />
+          </div>
+
+          {/* الجنسية */}
+          <div className="bad-field">
+            <label className="bad-label">الجنسية</label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="مثال: سعودي"
+              value={nationality}
+              onChange={(e) => setNationality(e.target.value)}
+            />
+          </div>
+
+          {/* رقم الهوية / الإقامة */}
+          <div className="bad-field">
+            <label className="bad-label">
+              <span>رقم الهوية الوطنية / الإقامة</span>
+              <span className="required">*</span>
+            </label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="رقم الهوية (10 أرقام)"
+              value={idnumber}
+              onChange={(e) => setIdnumber(e.target.value)}
+              maxLength={15}
+            />
+            {error.idnumber && <span className="bad-error">{error.idnumber}</span>}
+          </div>
+
+          {/* مصدر الهوية */}
+          <div className="bad-field">
+            <label className="bad-label">مصدر الهوية</label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="مثال: أحوال الرياض"
+              value={idsource}
+              onChange={(e) => setIdsource(e.target.value)}
+            />
+          </div>
+
+          {/* تاريخ انتهاء الهوية */}
+          <div className="bad-field">
+            <label className="bad-label">تاريخ انتهاء الهوية</label>
+            <input
+              type="date"
+              className="bad-input"
+              value={iddate}
+              onChange={(e) => setIddate(e.target.value)}
+            />
+          </div>
+
+          {/* رقم الجوال */}
+          <div className="bad-field">
+            <label className="bad-label">
+              <span>رقم الجوال</span>
+              <span className="required">*</span>
+            </label>
+            <input
+              type="tel"
+              className="bad-input"
+              placeholder="05XXXXXXXX"
+              value={phonenum}
+              onChange={(e) => setPhonenum(e.target.value)}
+              maxLength={15}
+              required
+            />
+            {error.phonenum && <span className="bad-error">{error.phonenum}</span>}
+          </div>
+
+          {/* عدد أفراد الأسرة */}
+          <div className="bad-field">
+            <label className="bad-label">عدد أفراد الأسرة</label>
+            <input
+              type="number"
+              className="bad-input"
+              min="0"
+              value={familycount}
+              onChange={(e) => setFamilycount(e.target.value)}
+            />
+          </div>
+
+          {/* نوع الحالة */}
+          <div className="bad-field">
+            <label className="bad-label">نوع الدعم / الحالة</label>
+            <select
+              className="bad-select"
+              value={humancasetype}
+              onChange={(e) => setHumancasetype(e.target.value)}
+            >
+              <option value="1">دائم</option>
+              <option value="2">مؤقت / عاجل</option>
+            </select>
+          </div>
+
+          {/* البريد الإلكتروني */}
+          <div className="bad-field">
+            <label className="bad-label">البريد الإلكتروني (اختياري)</label>
+            <input
+              type="email"
+              className="bad-input"
+              placeholder="user@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          {/* رقم الحساب / الآيبان البنكي */}
+          <div className="bad-field">
+            <label className="bad-label">رقم الآيبان (IBAN)</label>
+            <input
+              type="text"
+              className="bad-input"
+              placeholder="SA..."
+              value={accnumber}
+              onChange={(e) => setAccnumber(e.target.value)}
+              style={{ direction: "ltr", textAlign: "right" }}
+            />
+          </div>
+
+          {/* ملاحظات إضافية */}
+          <div className="bad-field bad-grid-full">
+            <label className="bad-label">ملاحظات إضافية (اختياري)</label>
+            <textarea
+              className="bad-textarea"
+              placeholder="أي تفاصيل أو ملاحظات أخرى تود إرفاقها..."
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              rows={2}
+            />
+          </div>
+
+          {/* الإقرار */}
+          <div className="bad-grid-full" style={{ marginTop: "10px" }}>
+            <label
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "10px",
+                cursor: "pointer",
+                fontSize: "13.5px",
+                fontWeight: "700",
+                color: "#4a3e2e",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+                style={{ width: "18px", height: "18px", accentColor: "#b89358" }}
+              />
+              <span>أقر بأن جميع البيانات المدخلة صحيحة وأتحمل المسؤولية القانونية الكاملة عنها.</span>
             </label>
           </div>
         </div>
-        {
-          showbtn &&
-           <div style={{ display: "flex", justifyContent: "center" }}>
-          {isSubmitting ? (
-            <Spinner animation="border" variant="primary" />
-          ) : (
-            <button type="submit" className=" loanbtn saveButton" id="save" onClick={handleSubmit} style={{marginBottom:"20px"}}>
-              حفظ
-            </button>
-          )}
+
+        {/* Action button */}
+        <div className="bad-actions" style={{ justifyContent: "flex-end" }}>
+          <button
+            type="submit"
+            className="bad-btn-submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Spinner animation="border" size="sm" />
+                <span>جاري الحفظ...</span>
+              </>
+            ) : (
+              <>
+                <span>حفظ ومتابعة</span>
+                <FontAwesomeIcon icon={faArrowLeft} />
+              </>
+            )}
+          </button>
         </div>
-        }
-       
       </form>
     </div>
   );
