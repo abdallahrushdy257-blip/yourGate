@@ -9,6 +9,7 @@ import { Button, Modal, Spinner, Row, Col } from "react-bootstrap";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import API from "../../api/axiosConfig";
+import { toast } from "react-toastify";
 
 function ShowDonors(props) {
   // ── Table ──────────────────────────────────────────────
@@ -123,6 +124,12 @@ function ShowDonors(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(!name){
+          return toast.error("اسم المانح مطلوب")
+        }
+        if(!phone){
+          return toast.error("رقم الجوال مطلوب")
+        }
     setIsSubmitting(true);
     const mForm = new FormData();
     if (editingId) {

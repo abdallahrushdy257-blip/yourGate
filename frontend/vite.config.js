@@ -50,7 +50,11 @@ export default defineConfig({
             if (id.includes("highcharts") || id.includes("recharts")) {
               return "vendor-charts";
             }
-            if (id.includes("jspdf") || id.includes("html2canvas") || id.includes("xlsx")) {
+            if (
+              id.includes("jspdf") ||
+              id.includes("html2canvas") ||
+              id.includes("xlsx")
+            ) {
               return "vendor-docs";
             }
           }

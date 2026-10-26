@@ -1,13 +1,24 @@
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
-import { Button, Container, Form, Spinner } from "react-bootstrap";
-import RegisterTextbox from "../../components/RegisterTextBox";
-import Logo from "../../logo-dark.svg";
-import "./charityRegistration.css";
-import { useState } from "react";
+import {
+  faUser,
+  faEnvelope,
+  faPhone,
+  faLocationDot,
+  faLock,
+  faEye,
+  faEyeSlash,
+  faArrowRight,
+  faCircleExclamation,
+  faCheckCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import logoLight from "../../logo-light.svg";
+import logoDark from "../../logo-dark.svg";
+import { ThemeContext } from "../../context/theme-context";
 import API from "../../api/axiosConfig";
-import { useNavigate } from "react-router";
-// import FlagSu from "../../saudi-arabia.png";
+import "./charityRegistration.css";
+import "../Login/login.css";
 
 function CharityRegistration(props) {
   const [representativeName, setRepresentativeName] = useState("");
@@ -16,48 +27,52 @@ function CharityRegistration(props) {
   const [representativeAddress, setRepresentativeAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [phoneError, setPhoneError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [formError, setFormError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const navigate = useNavigate();
   const [error, setError] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { theme } = useContext(ThemeContext);
+  const navigate = useNavigate();
+
+  const Logo = theme === "light" ? logoLight : logoDark;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setPhoneError("");
+    setPasswordError("");
+    setEmailError("");
+    setFormError("");
+    setError({});
+
     if (/[A-Z]/.test(representativeEmail)) {
       setEmailError("البريد الإلكتروني يجب أن يكون بدون أحرف كبيرة");
       setFormError("يرجى تصحيح الأخطاء قبل إرسال النموذج");
-      setIsSubmitting(false);
       return;
-    } else {
-      setEmailError("");
     }
 
     const phoneNumberLength = representativePhone.replace(/[^0-9]/g, "").length;
     if (phoneNumberLength !== 10) {
       setPhoneError("رقم الجوال يجب أن يتكون من 10 أرقام فقط");
       setFormError("يرجى تصحيح الأخطاء قبل إرسال النموذج");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (password.length <= 8) {
-      setPasswordError("كلمة السر يجب أن تكون أكثر من 8 أحرف");
-      setFormError("يرجى تصحيح الأخطاء قبل إرسال النموذج");
-      setIsSubmitting(false);
       return;
     }
 
     if (password !== confirmPassword) {
-      setPasswordError("كلمة السر وتأكيد كلمة السر يجب أن تكون متطابقة");
+      setPasswordError("كلمة السر وتأكيد كلمة السر يجب أن تكونا متطابقتين");
       setFormError("يرجى تصحيح الأخطاء قبل إرسال النموذج");
-      setIsSubmitting(false);
       return;
     }
+
+    setIsSubmitting(true);
+
     try {
       const response = await API.post("/register", {
         name: representativeName,
@@ -65,34 +80,25 @@ function CharityRegistration(props) {
         phone: representativePhone,
         address: representativeAddress,
         password: password,
-        password_confirmation: confirmPassword
+        password_confirmation: confirmPassword,
       });
+
       if (response.data.errors) {
         setError(response.data.errors);
         setIsSubmitting(false);
         return;
-      } else {
-        setSuccessMessage("تم ارسال رسالة الي بريدك الالكتروني");
-        setPhoneError("");
-        setPasswordError("");
-        setEmailError("");
-        setFormError("");
-        setRepresentativeName("");
-        setRepresentativeEmail("");
-        setRepresentativePhone("");
-        setRepresentativeAddress("");
-        setPassword("");
-        setConfirmPassword("");
-        navigate("/login");
       }
-    } catch (error) {
-      console.clear();
-      console.log(error);
+
+      setSuccessMessage("تم إرسال رسالة تفعيل إلى بريدك الإلكتروني بنجاح");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } catch (err) {
       setIsSubmitting(false);
-      if (error.response?.data?.errors) {
-        setError(error.response.data.errors);
+      if (err.response?.data?.errors) {
+        setError(err.response.data.errors);
       } else {
-        setError({ general: ["حدث خطأ في الاتصال بالخادم"] });
+        setError({ general: ["حدث خطأ في الاتصال بالخادم، يُرجى المحاولة لاحقاً"] });
       }
     }
   };
@@ -100,7 +106,6 @@ function CharityRegistration(props) {
   const handlePhoneChange = (e) => {
     const value = e.target.value;
     setRepresentativePhone(value);
-
     if (value.replace(/[^0-9]/g, "").length > 10) {
       setPhoneError("رقم الجوال يجب أن يتكون من 10 أرقام فقط");
     } else {
@@ -108,134 +113,245 @@ function CharityRegistration(props) {
     }
   };
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
-  };
-
-  const handleEmailChange = (e) => {
-    setRepresentativeEmail(e.target.value);
-  };
-
   return (
-    <Container>
-      <div className="register-form-conatiner">
-        <h1 className="register-title">
-          إنشاء حساب جديد{" "}
-          <FontAwesomeIcon className="register-icon" icon={faPenToSquare} />
-        </h1>
-        <div className="login-imageCont">
-          <img src={Logo} alt="Login" className="regester-image" />
+    <div className="register-page-wrapper">
+      {/* Return to Landing Page */}
+      <Link to="/" className="auth-back-home" title="الرجوع للرئيسية">
+        <FontAwesomeIcon icon={faArrowRight} />
+        <span>الرئيسية</span>
+      </Link>
+
+      <div className="register-card">
+        {/* Header with Branded Logo */}
+        <div className="register-header">
+          <div className="register-logo-badge" onClick={() => navigate("/")}>
+            <img src={Logo} alt="بوابتك" className="register-logo-img" />
+          </div>
+          <h1 className="register-title">إنشاء حساب جمعية جديد</h1>
+          <p className="register-subtitle">
+            سجّل جمعيتك الآن وانضم إلى منظومة بوابتك الذكية لإدارة الجمعيات
+          </p>
         </div>
 
+        {/* Success Message Banner */}
         {successMessage && (
-          <div
-            style={{
-              color: "#010101",
-              fontSize: "16px",
-              textAlign: "center",
-              background: "#83f2ff",
-              width: "45%",
-              margin: "auto",
-              padding: "2px",
-              borderRadius: "10px",
-              fontWeight: "600",
-            }}
-          >
+          <div className="register-success-banner">
+            <FontAwesomeIcon icon={faCheckCircle} style={{ marginLeft: "8px" }} />
             {successMessage}
           </div>
         )}
 
-        <Form onSubmit={handleSubmit} className="register-form">
-          <RegisterTextbox
-            id="representativeName"
-            label="اسم ممثل الجمعية"
-            value={representativeName}
-            onChange={(e) => setRepresentativeName(e.target.value)}
-            type="text"
-          />
-          {error.name && (
-            <div style={{ color: "red", fontSize: "12px" }}>{error.name}</div>
-          )}
-          <RegisterTextbox
-            id="representativeEmail"
-            label="البريد الالكتروني لممثل الجمعية"
-            value={representativeEmail}
-            onChange={handleEmailChange}
-            type="email"
-          />
-          {emailError && (
-            <div style={{ color: "red", fontSize: "12px" }}>{emailError}</div>
-          )}
-          {error.email && (
-            <div style={{ color: "red", fontSize: "12px" }}>{error.email}</div>
-          )}
-          <div style={{ direction: "ltr" }}>
-            <RegisterTextbox
-              id="representativePhone"
-              label="رقم جوال ممثل الجمعية"
-              value={representativePhone}
-              onChange={handlePhoneChange}
-              type="number"
-              prefix="+966"
-              // flag={FlagSu}
-              align="left"
-            />
+        {/* Form Error Banner */}
+        {(formError || error.general) && (
+          <div className="auth-banner-error">
+            <FontAwesomeIcon icon={faCircleExclamation} style={{ marginLeft: "6px" }} />
+            {formError || error.general[0]}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="register-grid">
+            {/* 1. Representative Name */}
+            <div className="auth-field-group">
+              <label className="auth-label" htmlFor="rep-name">
+                اسم ممثل الجمعية <span style={{ color: "#ff5252" }}>*</span>
+              </label>
+              <div className="auth-input-wrapper">
+                <FontAwesomeIcon icon={faUser} className="auth-input-icon" />
+                <input
+                  id="rep-name"
+                  className="auth-input"
+                  type="text"
+                  placeholder="الاسم الثلاثي"
+                  value={representativeName}
+                  onChange={(e) => setRepresentativeName(e.target.value)}
+                  required
+                />
+              </div>
+              {error.name && (
+                <span className="auth-error-msg">
+                  <FontAwesomeIcon icon={faCircleExclamation} />
+                  {error.name[0]}
+                </span>
+              )}
+            </div>
+
+            {/* 2. Representative Email */}
+            <div className="auth-field-group">
+              <label className="auth-label" htmlFor="rep-email">
+                البريد الإلكتروني <span style={{ color: "#ff5252" }}>*</span>
+              </label>
+              <div className="auth-input-wrapper">
+                <FontAwesomeIcon icon={faEnvelope} className="auth-input-icon" />
+                <input
+                  id="rep-email"
+                  className="auth-input"
+                  type="email"
+                  placeholder="charity@example.org"
+                  value={representativeEmail}
+                  onChange={(e) => setRepresentativeEmail(e.target.value)}
+                  required
+                />
+              </div>
+              {emailError && (
+                <span className="auth-error-msg">
+                  <FontAwesomeIcon icon={faCircleExclamation} />
+                  {emailError}
+                </span>
+              )}
+              {error.email && (
+                <span className="auth-error-msg">
+                  <FontAwesomeIcon icon={faCircleExclamation} />
+                  {error.email[0]}
+                </span>
+              )}
+            </div>
+
+            {/* 3. Representative Phone */}
+            <div className="auth-field-group">
+              <label className="auth-label" htmlFor="rep-phone">
+                رقم جوال ممثل الجمعية <span style={{ color: "#ff5252" }}>*</span>
+              </label>
+              <div className="auth-input-wrapper">
+                <FontAwesomeIcon icon={faPhone} className="auth-input-icon" />
+                <input
+                  id="rep-phone"
+                  className="auth-input"
+                  type="tel"
+                  placeholder="05XXXXXXXX"
+                  value={representativePhone}
+                  onChange={handlePhoneChange}
+                  style={{ paddingLeft: "55px" }}
+                  required
+                />
+                <span className="register-phone-prefix">+966</span>
+              </div>
+              {phoneError && (
+                <span className="auth-error-msg">
+                  <FontAwesomeIcon icon={faCircleExclamation} />
+                  {phoneError}
+                </span>
+              )}
+              {error.phone && (
+                <span className="auth-error-msg">
+                  <FontAwesomeIcon icon={faCircleExclamation} />
+                  {error.phone[0]}
+                </span>
+              )}
+            </div>
+
+            {/* 4. Representative Address */}
+            <div className="auth-field-group">
+              <label className="auth-label" htmlFor="rep-address">
+                عنوان ممثل الجمعية <span style={{ color: "#ff5252" }}>*</span>
+              </label>
+              <div className="auth-input-wrapper">
+                <FontAwesomeIcon icon={faLocationDot} className="auth-input-icon" />
+                <input
+                  id="rep-address"
+                  className="auth-input"
+                  type="text"
+                  placeholder="المدينة، الحي"
+                  value={representativeAddress}
+                  onChange={(e) => setRepresentativeAddress(e.target.value)}
+                  required
+                />
+              </div>
+              {error.address && (
+                <span className="auth-error-msg">
+                  <FontAwesomeIcon icon={faCircleExclamation} />
+                  {error.address[0]}
+                </span>
+              )}
+            </div>
+
+            {/* 5. Password */}
+            <div className="auth-field-group">
+              <label className="auth-label" htmlFor="reg-password">
+                كلمة السر <span style={{ color: "#ff5252" }}>*</span>
+              </label>
+              <div className="auth-input-wrapper">
+                <FontAwesomeIcon icon={faLock} className="auth-input-icon" />
+                <input
+                  id="reg-password"
+                  className="auth-input"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="8 أحرف على الأقل"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="auth-password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "إخفاء كلمة السر" : "إظهار كلمة السر"}
+                >
+                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                </button>
+              </div>
+              {error.password && (
+                <span className="auth-error-msg">
+                  <FontAwesomeIcon icon={faCircleExclamation} />
+                  {error.password[0]}
+                </span>
+              )}
+            </div>
+
+            {/* 6. Confirm Password */}
+            <div className="auth-field-group">
+              <label className="auth-label" htmlFor="confirm-password">
+                تأكيد كلمة السر <span style={{ color: "#ff5252" }}>*</span>
+              </label>
+              <div className="auth-input-wrapper">
+                <FontAwesomeIcon icon={faLock} className="auth-input-icon" />
+                <input
+                  id="confirm-password"
+                  className="auth-input"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="أعد إدخال كلمة السر"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="auth-password-toggle"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? "إخفاء كلمة السر" : "إظهار كلمة السر"}
+                >
+                  <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                </button>
+              </div>
+              {passwordError && (
+                <span className="auth-error-msg">
+                  <FontAwesomeIcon icon={faCircleExclamation} />
+                  {passwordError}
+                </span>
+              )}
+            </div>
           </div>
 
-          {phoneError && (
-            <div style={{ color: "red", fontSize: "12px" }}>{phoneError}</div>
-          )}
-          {error.phone && (
-            <div style={{ color: "red", fontSize: "12px" }}>{error.phone}</div>
-          )}
-          <RegisterTextbox
-            id="representativeAddress"
-            label="عنوان ممثل الجمعية"
-            value={representativeAddress}
-            onChange={(e) => setRepresentativeAddress(e.target.value)}
-            type="text"
-          />
-          {error.address && (
-            <div style={{ color: "red", fontSize: "12px" }}>{error.address}</div>
-          )}
-          <RegisterTextbox
-            id="password"
-            label="كلمة السر"
-            value={password}
-            onChange={handlePasswordChange}
-            type="password"
-          />
-          {error.password && (
-            <div style={{ color: "red", fontSize: "12px" }}>{error.password}</div>
-          )}
-          <RegisterTextbox
-            id="confirmPassword"
-            label="تأكيد كلمة السر"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            type="password"
-          />
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="auth-submit-btn"
+            disabled={isSubmitting}
+            style={{ marginTop: "12px" }}
+          >
+            {isSubmitting ? "جاري إرسال الطلب..." : "إرسال طلب التسجيل"}
+          </button>
+        </form>
 
-          {passwordError && (
-            <div style={{ color: "red", fontSize: "12px", marginTop: "5px" }}>
-              {passwordError}
-            </div>
-          )}
-
-          {
-            isSubmitting ?
-              <Spinner animation="border" variant="primary" style={{ display: "block", margin: "auto" }} /> :
-              <Button className="register-button" variant="primary" type="submit">
-                إرسال طلب التسجيل
-              </Button>
-          }
-        </Form>
+        {/* Footer Link to Login */}
+        <div className="auth-footer">
+          <span>لديك حساب جمعية بالفعل؟</span>
+          <Link to="/login" className="auth-switch-link">
+            تسجيل الدخول
+          </Link>
+        </div>
       </div>
-    </Container>
+    </div>
   );
 }
 
