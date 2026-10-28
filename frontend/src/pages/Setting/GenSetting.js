@@ -1,6 +1,6 @@
 import "./setting.css";
 import { useState, useEffect } from "react";
-import API from "../../api/axiosConfig";
+import { settingsService } from "../../modules/settings";
 import { Form, Spinner } from "react-bootstrap";
 import CustomButton from "../../components/CustomButton";
 import RegisterTextbox from "../../components/RegisterTextBox";
@@ -59,7 +59,7 @@ function GenSetting() {
     setLoading(true);
     try {
       // Load Rep/Org Info
-      const userRes = await API.get(`/orgusers/representative`);
+      const userRes = await settingsService.getRepresentativeInfo();
       const userData = userRes.data;
       setUser(userData);
       setFormData({
@@ -75,7 +75,7 @@ function GenSetting() {
       });
 
       // Load Print Settings
-      const printRes = await API.get("/print");
+      const printRes = await settingsService.getPrintSettings();
 
       // data.data لأن axios بيحط الـ response في .data
       const printData = printRes.data[0];
@@ -140,7 +140,7 @@ function GenSetting() {
     setSaving(true);
     console.log("saving:", printSettings); // شوف الـ state قبل الإرسال
     try {
-      await API.post("/print/store", { settings: printSettings });
+      await settingsService.savePrintSettings(printSettings);
       toast.success("تم حفظ جميع الإعدادات بنجاح");
     } catch (error) {
       console.error(error);

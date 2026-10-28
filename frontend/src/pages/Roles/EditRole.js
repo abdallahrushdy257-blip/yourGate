@@ -6,7 +6,7 @@ import RegisterTextbox from '../../components/RegisterTextBox'
 import RegisterSelect from '../../components/RegisterSelect'
 import { Form, Spinner } from 'react-bootstrap'
 import { useState , useEffect } from 'react'
-import API from '../../api/axiosConfig'
+import { settingsService } from '../../modules/settings'
 import { useNavigate , useParams } from 'react-router'
 
 import RegisterTextarea from '../../components/RegisterTextarea'
@@ -24,13 +24,13 @@ function EditRole() {
 
   const getGroup = async () => {
     try {
-      const res = await API.get(`/permissions/${id}`);
+      const res = await settingsService.getRole(id);
       const data = await res;
     setGroup(data.data);
       setLoading(false);
     } catch (error) {
       console.error(error);
-      setError(error.response.data.errors);
+      setError(error.response?.data?.errors);
       setLoading(false);
     }
   };
@@ -47,7 +47,7 @@ function EditRole() {
         mFormData.append("description", group.description);
         mFormData.append("id", id);
         try {
-            const res = await API.post("/permissions/update", mFormData)
+            const res = await settingsService.updateRole(mFormData)
             const data = await res;
             if (data.status === 200) {
                 navigate('/roles');

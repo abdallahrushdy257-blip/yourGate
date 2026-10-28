@@ -6,7 +6,7 @@ import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import { Form, Spinner } from "react-bootstrap";
 import { useState } from "react";
-import API from "../../api/axiosConfig";
+import { settingsService } from "../../modules/settings";
 import { useNavigate } from "react-router";
 import TableComponent from "../../components/TableComponent";
 import { Button, Modal } from "react-bootstrap";
@@ -38,7 +38,7 @@ function Roles() {
     mFormData.append("description", description);
     //mFormData.append("note", note);
     try {
-      const res = await API.post("/permissions/store", mFormData);
+      const res = await settingsService.createRole(mFormData);
       const data = await res;
       if (data.status === 200) {
         setTableReloadKey(Date.now());
@@ -49,8 +49,8 @@ function Roles() {
     } catch (error) {
       console.error(error);
       setIsSubmitting(false);
-      setError(error.response.data.errors);
-      setMessage(error.response.data.message);
+      setError(error.response?.data?.errors);
+      setMessage(error.response?.data?.message);
     }
   };
 
@@ -62,7 +62,8 @@ function Roles() {
       label: "حذف الصلاحية",
       action: (id) => {
         if (window.confirm("هل أنت متأكد من حذف هذه المجموعه؟")) {
-          API.get(`/permissions/${id}/delete`)
+          settingsService
+            .deleteRole(id)
             .then((res) => {
               if (res.status === 200) {
                 setTableReloadKey(Date.now());

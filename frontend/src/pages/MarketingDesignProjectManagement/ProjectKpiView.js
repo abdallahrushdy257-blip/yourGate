@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useParams } from 'react-router';
 import TableComponent from '../../components/TableComponent';
 import ConfirmModal from '../../components/ConfirmModal';
-import API from '../../api/axiosConfig';
+import { projectService } from '../../modules/projects';
 import { useNavigate } from 'react-router';
+import ProjectKPI from './ProjectKPI';
 
 function ProjectKpiView() {
     const columns = [
@@ -18,6 +19,7 @@ function ProjectKpiView() {
     const navigate = useNavigate();
     const { id } = useParams();
     const [tableReloadKey, setTableReloadKey] = useState(Date.now());
+    const [showKpiModal, setShowKpiModal] = useState(false);
   
     // Confirm Modal states
     const [showConfirm, setShowConfirm] = useState(false);
@@ -32,7 +34,7 @@ function ProjectKpiView() {
     const confirmDelete = async () => {
         setIsDeleting(true);
         try {
-            const res = await API.get(`/projectkpi/${deleteId}/delete`);
+            const res = await projectService.deleteProjectKpi(deleteId);
             if (res.status === 200) {
                 setTableReloadKey(Date.now());
                 setShowConfirm(false);
@@ -45,7 +47,7 @@ function ProjectKpiView() {
     };
 
     const dropdownOptions = [
-        { label: "تعديل القيم", action: () => navigate(`/projectkpis/${id}`) },
+        { label: "تعديل القيم", action: () => setShowKpiModal(true) },
         { label: "حذف", action: (rowId) => handleDeleteClick(rowId) },
     ];
 
@@ -75,9 +77,16 @@ function ProjectKpiView() {
                     search={false}
                     triggerReload={tableReloadKey}
                     addBtn={true}
-                    onAddClick={() => navigate(`/projectkpis/${id}`)}
+                    onAddClick={() => setShowKpiModal(true)}
                 />
             </div>
+
+            <ProjectKPI
+                show={showKpiModal}
+                onHide={() => setShowKpiModal(false)}
+                projectId={id}
+                onSuccess={() => setTableReloadKey(Date.now())}
+            />
 
             <ConfirmModal
                 show={showConfirm}

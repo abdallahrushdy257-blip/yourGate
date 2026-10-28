@@ -5,7 +5,7 @@ import { Button, Modal, Spinner } from "react-bootstrap";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import TableComponent from "../../components/TableComponent";
 import ConfirmModal from "../../components/ConfirmModal";
-import API from "../../api/axiosConfig";
+import { projectService } from "../../modules/projects";
 import { toast } from "react-toastify";
 
 function KPI() {
@@ -61,9 +61,9 @@ function KPI() {
     try {
       let res;
       if (editId) {
-        res = await API.post(`/kpi/${editId}/update`, payload);
+        res = await projectService.updateMasterKpi(editId, payload);
       } else {
-        res = await API.post(`/kpi/store`, payload);
+        res = await projectService.saveMasterKpi(payload);
       }
 
       if (res.status === 200 || res.status === 201) {
@@ -89,7 +89,7 @@ function KPI() {
   const confirmDelete = async () => {
     setIsDeleting(true);
     try {
-      const res = await API.get(`/kpi/${deleteId}/delete`);
+      const res = await projectService.deleteMasterKpi(deleteId);
       if (res.status === 200 || res.status === 204) {
         toast.success("تم حذف المؤشر بنجاح");
         setTableReloadKey(Date.now());

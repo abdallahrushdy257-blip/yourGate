@@ -1,0 +1,13 @@
+export { default as ProjectListPage } from "../../../pages/ProjectStatus/ProjectStatus";
+export { default as ProjectDetailsPage } from "../../../pages/MarketingDesignProjectManagement/ProjectDetailsView";
+export { default as EditProjectStatusPage } from "../../../pages/MarketingDesignProjectManagement/EditProjectStatus";
+export { default as MarketingDesignProjectManagementPage } from "../../../pages/MarketingDesignProjectManagement/MarketingDesignProjectManagement";
+export { default as MasterKpiPage } from "../../../pages/MarketingDesignProjectManagement/KPI";
+export { default as ProjectKpiViewPage } from "../../../pages/MarketingDesignProjectManagement/ProjectKpiView";
+export { default as ProjectKpiFormPage } from "../../../pages/MarketingDesignProjectManagement/ProjectKPI";
+export { default as ProjectPhasesPage } from "../../../pages/MarketingDesignProjectManagement/ProjectPhases";
+export { default as ProjectMembersPage } from "../../../pages/MarketingDesignProjectManagement/ProjectMember";
+export { default as ProjectRisksPage } from "../../../pages/MarketingDesignProjectManagement/ProjectRisk";
+export { default as RiskMitigationPage } from "../../../pages/MarketingDesignProjectManagement/RiskMitigation";
+export { default as RiskAssessmentReportPage } from "../../../pages/MarketingDesignProjectManagement/RiskAssessmentReport";
+export { default as ProjectAttachmentsPage } from "../../../pages/MarketingDesignProjectManagement/ProjectAttachment";

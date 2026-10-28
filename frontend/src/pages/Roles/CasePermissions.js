@@ -3,9 +3,8 @@ import CustomButton from "../../components/CustomButton";
 import "./roles.css";
 import CheckboxComponent from "../../components/CheckboxComponent ";
 import PermissionsTabs from "./PermissionsTabs";
-import API from "../../api/axiosConfig";
+import { settingsService } from "../../modules/settings";
 import { useParams } from "react-router-dom";
-import { all } from "axios";
 
 function CasePermissions() {
   const { id: groupId } = useParams(); // /groups/:id
@@ -77,7 +76,7 @@ function CasePermissions() {
     setMessage("");
 
     try {
-      await API.post(`/permissions/${groupId}/roles`, { roles });
+      await settingsService.saveRolePermissions(groupId, roles);
       setMessage("✅ تم حفظ الصلاحيات بنجاح");
     } catch (error) {
       console.error(error);
