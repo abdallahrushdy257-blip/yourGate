@@ -56,6 +56,7 @@ function TableComponent({
   const [refreshData, setRefreshData] = useState(false);
   const navigate = useNavigate();
   const [totalAmount, setTotalAmount] = useState(0);
+  const [activeDropdownRow, setActiveDropdownRow] = useState(null);
 
   const handleNavigate = (route, rowId) => {
     navigate(route.replace(":id", rowId));
@@ -229,60 +230,10 @@ function TableComponent({
       xlsx.writeFile(wb, `${title || "Export"}.xlsx`);
     });
   };
-
-  //  const handleExportPDF = async () => {
-  //   const { default: jsPDF } = await import("jspdf");
-  //   const { default: autoTable } = await import("jspdf-autotable");
-
-  //   const doc = new jsPDF({
-  //     orientation: "portrait",
-  //     unit: "mm",
-  //     format: "a4",
-  //   });
-
-  //   doc.text(title || "Report", 14, 10);
-
-  //   const tableColumn = [
-  //     "#",
-  //     ...columns.filter((c) => c.key !== "actions").map((c) => c.name),
-  //   ];
-
-  //   const tableRows = data.map((record, i) => [
-  //     i + 1,
-  //     ...columns
-  //       .filter((c) => c.key !== "actions")
-  //       .map((c) => record[c.key]),
-  //   ]);
-
-  //   // ✅ الاستدعاء الصحيح في الإصدار الحديث:
-  //   autoTable(doc, {
-  //     head: [tableColumn],
-  //     body: tableRows,
-  //     startY: 20,
-  //     styles: { fontSize: 9 },
-  //   });
-
-  //   doc.save(`${title || "Report"}.pdf`);
-  // };
-
   return (
     <>
       <div className="printTabel-container">
         <div className="printCalc">
-          {/* <Title title={title} icon={titleIcon} style={{ width: "unset" }} classname='rmtit' /> */}
-          {/* <Title
-            title={
-              <>
-                {extraTitleField && data.length > 0 && (
-                  <>{getNestedValue(data[0], extraTitleField)} - </>
-                )}
-                {title}
-              </>
-            }
-            icon={titleIcon}
-            style={{ width: "unset" }}
-            classname="rmtit"
-          /> */}
           <Title
             title={
               <>
@@ -517,22 +468,6 @@ function TableComponent({
               </div>
             </div>
           </div>
-
-          {/* <div>
-                    <select
-                        className="search-input styled-search-button rowsdrop"
-                        value={perPage}
-                        onChange={(e) => {
-                            setPerPage(Number(e.target.value));
-                            setPage(1);
-                        }}
-                    >
-                        <option value={10}>10 صفوف</option>
-                        <option value={25}>25 صفوف</option>
-                        <option value={50}>50 صفوف</option>
-                        <option value={100}>100 صفوف</option>
-                    </select>
-                </div> */}
         </div>
         <div className="table-scroll">
           <div className="no-screen print-only">
@@ -608,7 +543,13 @@ function TableComponent({
                           className={column.key === "actions" ? "no-print" : ""}
                         >
                           {column.key === "actions" ? (
-                            <Dropdown className="table-un-printable-ellipse">
+                            <Dropdown
+                              className="table-un-printable-ellipse"
+                              show={activeDropdownRow === (record.id ?? rowIndex)}
+                              onToggle={(isOpen) => {
+                                setActiveDropdownRow(isOpen ? (record.id ?? rowIndex) : null);
+                              }}
+                            >
                               <Dropdown.Toggle
                                 variant="secondary"
                                 size="sm"
@@ -626,8 +567,8 @@ function TableComponent({
                                   .map((option, idx) => (
                                     <Dropdown.Item
                                       key={idx}
-                                      onClick={(e) => {
-                                        if (e && e.stopPropagation) e.stopPropagation();
+                                      onClick={() => {
+                                        setActiveDropdownRow(null);
                                         if (option.action) {
                                           option.action(record.id, record);
                                         } else if (option.route) {
@@ -723,18 +664,6 @@ function TableComponent({
               </>
             )}
           </button>
-
-          {/* <span className="align-self-center">
-                        صفحة {page} من {totalPages}
-                    </span>
-                    
-                    <button
-                        className="page-button"
-                        onClick={() => handlePageChange(page - 1)}
-                        disabled={page === 1}
-                    >
-                        السابق
-                    </button> */}
         </div>
       )}
       {/* <PrintFooter /> */}

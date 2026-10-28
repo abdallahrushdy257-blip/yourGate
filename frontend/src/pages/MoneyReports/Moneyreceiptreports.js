@@ -101,7 +101,7 @@ const barcodePrintRef = useRef(null);
                   id="receivedBy"
                   label="بواسطة"
                   type="text"
-                  value={user && user.user.name}
+                  value={user && user?.user?.name}
                   disable={true}
                 />
               </div>

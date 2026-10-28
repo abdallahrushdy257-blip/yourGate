@@ -77,6 +77,9 @@ function ProjectPhases() {
 
   const handlePhase = async (e) => {
     e.preventDefault();
+      if(!name){
+        return toast.error("اسم المرحلة مطلوب")
+      }
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append("name", name);

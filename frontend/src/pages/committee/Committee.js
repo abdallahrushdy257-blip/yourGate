@@ -11,6 +11,7 @@ import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import API from "../../api/axiosConfig";
 import "./committee.css";
+import { toast } from "react-toastify";
 
 function Committee() {
   const [showModal, setShowModal] = useState(false);
@@ -64,6 +65,10 @@ function Committee() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!name) {
+      toast.error("اسم اللجنة مطلوب")
+      return;
+    }
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append("name", name);

@@ -10,6 +10,7 @@ import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import { useNavigate } from "react-router-dom";
 import BeneficiarySubModal from "./BeneficiarySubModal";
+import { toast } from "react-toastify";
 
 function Beneficiary(props) {
   const columns = [
@@ -151,14 +152,17 @@ function Beneficiary(props) {
     const today = new Date().toLocaleDateString("en-CA");
     let validationErrors = {};
 
-    if (!name.trim()) {
-      validationErrors.name = "حقل الإسم مطلوب";
+    if (!name) {
+      toast.error("حقل الإسم مطلوب");
+      return
     }
     if (dob && dob > today) {
-      validationErrors.dob = "تاريخ الميلاد لا يمكن أن يكون في المستقبل";
+      toast.error("تاريخ الميلاد لا يمكن أن يكون في المستقبل");
+      return
     }
     if (iddate && iddate < today) {
-      validationErrors.iddate = "تاريخ انتهاء الهوية لا يمكن أن يكون في الماضي";
+      toast.error("تاريخ انتهاء الهوية لا يمكن أن يكون في الماضي");
+      return
     }
 
     if (Object.keys(validationErrors).length > 0) {

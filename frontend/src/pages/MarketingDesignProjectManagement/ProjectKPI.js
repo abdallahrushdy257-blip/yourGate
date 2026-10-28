@@ -17,9 +17,13 @@ function ProjectKPI() {
   const getKpis = async () => {
     try {
       const res = await API.get(`/kpi/quizs`);
-      setKpis(res.data);
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : (Array.isArray(res.data) ? res.data : []);
+      setKpis(data);
     } catch (error) {
       console.error("There was an error!", error);
+      setKpis([]);
     } finally {
       setLoading(false);
     }
@@ -52,7 +56,7 @@ function ProjectKPI() {
     try {
       const payload = {
         project_id: id,
-        kpis: kpis.map((k) => ({
+        kpis: kpis?.map((k) => ({
           kpi_id: k.id,
           actual: k.actual,
         })),
@@ -82,7 +86,7 @@ function ProjectKPI() {
         style={{ width: "unset", marginBottom: "20px" }}
       />
       <br />
-      {kpis.map((kpi, index) => (
+      {kpis?.map((kpi, index) => (
         <div key={kpi.id} className="kpi-row">
           <RegisterTextBox
             parentStyle={{ width: "100%" }}

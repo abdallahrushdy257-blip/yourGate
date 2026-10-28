@@ -9,6 +9,7 @@ import { Button, Modal, Spinner, Row, Col } from "react-bootstrap";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import ConfirmModal from "../../components/ConfirmModal";
+import { toast } from "react-toastify";
 
 function Hcvendor(props) {
   const columns = [
@@ -123,6 +124,12 @@ function Hcvendor(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!name){
+      return toast.error("الاسم مطلوب")
+    }
+    if (!phone){
+      return toast.error("رقم الهاتف مطلوب")
+    }
     setIsSubmitting(true);
     const mForm = new FormData();
     if (editingId) {

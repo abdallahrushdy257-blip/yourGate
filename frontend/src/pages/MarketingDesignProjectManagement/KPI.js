@@ -7,6 +7,7 @@ import TableComponent from "../../components/TableComponent";
 import ConfirmModal from "../../components/ConfirmModal";
 import API from "../../api/axiosConfig";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 function KPI() {
   const columns = [
@@ -29,6 +30,9 @@ function KPI() {
 
   const handlekpi = async (e) => {
     e.preventDefault();
+    if(!quiz){
+      return toast.error("حقل المؤشر مطلوب")
+    }
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append("quiz", quiz);
@@ -41,7 +45,7 @@ function KPI() {
         },
       });
       const data = await res;
-      if (data.status === 200) {
+      if (data.status === 201) {
         setQuiz("");
         setTarget(0);
         setError([]);

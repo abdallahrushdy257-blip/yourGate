@@ -1,92 +1,489 @@
-/* .createMangeLand {
-  height: 5000px;
-} */
+/* ==========================================================================
+   Modern Feature Landing Pages Design System
+   Applies to: CreateMangeLanding, DesignMarketingLanding, HRLanding,
+   LoansLanding, DataManagementLanding, ArchivesLanding, EndowmentsLanding,
+   TasksLanding, AccountingLanding, WebsiteLanding
+   ========================================================================== */
 
+.createMangeLand {
+  font-family: "cairo", sans-serif;
+  direction: rtl;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.dark-mode .createMangeLand {
+  background: radial-gradient(circle at 50% 8%, rgba(200, 146, 74, 0.08) 0%, #120b06 45%, #0a0603 100%);
+}
+
+.light-mode .createMangeLand {
+  background: radial-gradient(circle at 50% 8%, rgba(200, 146, 74, 0.1) 0%, #fbf8f3 45%, #f4ede3 100%);
+}
+
+/* 1. Category / Page Pill Banner */
 .landingTitleCon {
-  margin: 3% 0;
-}
-
-.CreateLandingimage {
-  width: 100%;
-  height: 70vh !important;
-}
-
-.infoContainer {
-  width: 80%;
-  margin: auto;
-  margin-top: 5%;
-}
-
-.textContainer {
-  direction: rtl;
-  margin-top: 3%;
   display: flex;
-  flex-direction: column;
   justify-content: center;
-  gap: 15px;
+  align-items: center;
+  margin: 36px auto 10px auto;
+  padding: 0 20px;
 }
 
-.infoText {
+.landingTitleCon .mainTitle {
+  font-size: clamp(26px, 3vw, 36px) !important;
+  font-weight: 900 !important;
+  color: var(--primary-color, #c8924a) !important;
+  margin: 0 !important;
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+.landingTitleCon .mainTitle::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 50%;
+  transform: translateX(50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--primary-color, #c8924a), transparent);
+  border-radius: 99px;
+}
+
+/* 2. Hero Section */
+.createMangeLand .section1Container {
+  width: 90%;
+  max-width: 1300px;
+  margin: 20px auto 40px auto;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 30px;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  gap: 50px;
+  padding: 20px 0 40px 0;
+  border-bottom: 1px solid var(--border-color, rgba(200, 146, 74, 0.18));
 }
 
-.iconCreateContainer {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--text-color);
-  border-radius: 50%;
-  padding: 12px;
-}
-
-.infoCheck {
-  color: var(--text-color);
-}
-
-.infoBody {
-  margin: unset;
-  color: var(--text-color);
-  font-family: "cairo";
-}
-
-.benefitsConatiner {
-  width: 80%;
-  margin: auto;
-  margin-top: 10%;
-  direction: rtl;
-}
-
-.benefits {
+.createMangeLand .homeCover {
   width: 50%;
-  margin: auto;
-  margin-top: 4%;
-  border: 0.3px solid rgb(58, 29, 87);
-  padding: 50px 10px;
-  /* height: 200px; */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  text-align: right;
+}
+
+.createMangeLand .homeCover h3 {
+  font-size: clamp(32px, 3.6vw, 48px);
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--text-color);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.createMangeLand .homeCover p {
+  font-size: 17.5px;
+  line-height: 36px;
+  color: var(--text-color);
+  opacity: 0.9;
+  margin: 0;
+}
+
+.createMangeLand .homeCover .lineLand {
+  width: 90px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--buttonbackground-color, #c8924a), #9c6c2e);
+  border-radius: 99px;
+  display: inline-block;
+}
+
+/* SVG Illustration in Hero */
+.createMangeLand .section1Container svg {
+  width: 100% !important;
+  max-width: 480px !important;
+  height: auto !important;
+  max-height: 420px !important;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.15));
+  transition: transform 0.4s ease;
+}
+
+.createMangeLand .section1Container svg:hover {
+  transform: translateY(-4px);
+}
+
+/* 3. Section Titles */
+.subLandingSectionTitle {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.subLandingSectionTitle .mainTitle {
+  font-size: clamp(24px, 2.6vw, 34px) !important;
+  font-weight: 800 !important;
+  color: var(--text-color) !important;
+  margin: 0 0 10px 0 !important;
+}
+
+.subLandingSectionDesc {
+  font-size: 15.5px;
+  color: var(--text-color);
+  opacity: 0.75;
+  margin: 0 auto;
+  max-width: 650px;
+  line-height: 1.6;
+}
+
+/* 4. Features Section (LandingInfo) */
+.infoContainer {
+  width: 90%;
+  max-width: 1300px;
+  margin: 60px auto;
+  direction: rtl;
+}
+
+.featureCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 22px;
+  margin-top: 30px;
+}
+
+.featureCardItem {
+  background: var(--card--background, #1b120c);
+  border: 1px solid var(--border-color, rgba(200, 146, 74, 0.22));
+  border-radius: 18px;
+  padding: 22px 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+  transform: translateZ(0);
+}
+
+.featureCardItem:hover {
+  transform: translateY(-4px) translateZ(0);
+  border-color: var(--primary-color, #c8924a);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12), 0 0 20px rgba(200, 146, 74, 0.15);
+}
+
+.featureIconBadge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(200, 146, 74, 0.12);
+  border: 1px solid rgba(200, 146, 74, 0.3);
+  color: var(--primary-color, #c8924a);
+  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.featureCardText {
+  font-size: 15.5px;
+  line-height: 28px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+/* 5. Plans / Pricing Section (OurSystemContainer & SubScriptionContainer) */
+.ourSystemContainer {
+  width: 90%;
+  max-width: 1300px;
+  margin: 70px auto;
+  direction: rtl;
+}
+
+.plansGridContainer {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 28px;
+  margin-top: 35px;
+}
+
+.planCardItem {
+  flex: 1 1 340px;
+  max-width: 400px;
+  background: var(--card--background, #1b120c);
+  border: 1px solid var(--border-color, rgba(200, 146, 74, 0.25));
+  border-radius: 24px;
+  padding: 34px 28px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+  display: flex;
   flex-direction: column;
-  gap: 40px;
+  justify-content: space-between;
+  gap: 24px;
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  transform: translateZ(0);
+}
+
+.planCardItem:hover {
+  transform: translateY(-6px) translateZ(0);
+  border-color: var(--primary-color, #c8924a);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.14), 0 0 28px rgba(200, 146, 74, 0.2);
+}
+
+.featuredPlanCard {
+  border-color: var(--primary-color, #c8924a) !important;
+  box-shadow: 0 12px 36px rgba(200, 146, 74, 0.2) !important;
+}
+
+.planBadgeFeatured {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--buttonbackground-color, #c8924a), #9c6c2e);
+  color: #ffffff;
+  padding: 5px 16px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 14px rgba(200, 146, 74, 0.4);
+  white-space: nowrap;
+}
+
+.planHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.planTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.planSubtitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--primary-color, #c8924a);
+  margin: 0;
+}
+
+.planTextDesc {
+  font-size: 14.5px;
+  line-height: 26px;
+  color: var(--text-color);
+  opacity: 0.82;
+  margin: 0;
+}
+
+.planPriceBox {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 14px 0;
+  border-top: 1px dashed var(--border-color, rgba(200, 146, 74, 0.2));
+  border-bottom: 1px dashed var(--border-color, rgba(200, 146, 74, 0.2));
+}
+
+.planPriceValue {
+  font-size: 34px;
+  font-weight: 900;
+  color: var(--primary-color, #c8924a);
+  letter-spacing: -0.5px;
+}
+
+.planPriceCurrency {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.planFeaturesWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.planFeaturesTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-color);
+}
+
+.planFeaturesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.planFeatureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 22px;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+.planCheckIconWrap {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(200, 146, 74, 0.15);
+  color: var(--primary-color, #c8924a);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.planCtaBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--buttonbackground-color, #c8924a), #9c6c2e);
+  color: #ffffff !important;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(200, 146, 74, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.planCtaBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(200, 146, 74, 0.5);
+  color: #ffffff !important;
+}
+
+/* 6. Benefits Value Proposition Banner (BenefitsConatiner) */
+.benefitsConatiner {
+  width: 90%;
+  max-width: 1200px;
+  margin: 70px auto 80px auto;
+  direction: rtl;
+}
+
+.benefitsBannerCard {
+  background: linear-gradient(135deg, rgba(200, 146, 74, 0.12) 0%, rgba(200, 146, 74, 0.03) 100%), var(--card--background, #1b120c);
+  border: 1px solid var(--border-color, rgba(200, 146, 74, 0.3));
+  border-radius: 28px;
+  padding: 48px 36px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.benefitsBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 99px;
+  background: rgba(200, 146, 74, 0.15);
+  border: 1px solid rgba(200, 146, 74, 0.35);
+  color: var(--primary-color, #c8924a);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.benTitle {
+  font-size: clamp(24px, 2.8vw, 36px);
+  font-weight: 800;
+  color: var(--text-color);
+  margin: 0;
+  line-height: 1.35;
+  max-width: 850px;
 }
 
 .benDesc {
-  width: 85%;
-  font-size: 20px;
-  font-weight: 600;
-  text-align: center;
-  line-height: 50px;
+  font-size: 16.5px;
+  line-height: 34px;
+  color: var(--text-color);
+  opacity: 0.88;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-h4.benTitle {
-  font-size: 35px;
+.benefitsCtaWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 10px;
+  flex-wrap: wrap;
 }
 
+.benefitsPrimaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 28px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--buttonbackground-color, #c8924a), #9c6c2e);
+  color: #ffffff !important;
+  font-weight: 800;
+  font-size: 15px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(200, 146, 74, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.benefitsPrimaryBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(200, 146, 74, 0.5);
+  color: #ffffff !important;
+}
+
+.benefitsSecondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 13px 24px;
+  border-radius: 12px;
+  background: rgba(200, 146, 74, 0.08);
+  border: 1px solid var(--border-color, rgba(200, 146, 74, 0.3));
+  color: var(--text-color) !important;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.benefitsSecondaryBtn:hover {
+  border-color: var(--buttonbackground-color, #c8924a);
+  transform: translateY(-2px);
+  color: var(--buttonbackground-color, #c8924a) !important;
+}
+
+/* 7. Particles Container */
 .starsContainer {
   position: relative;
   overflow: hidden;
@@ -100,57 +497,71 @@ h4.benTitle {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .star {
   position: absolute;
   width: 2px;
   height: 2px;
-  background-color: var(--text-color);
+  background-color: var(--primary-color, #c8924a);
   border-radius: 50%;
-  opacity: 0.8;
-  animation: moveStar 10s linear infinite;
-  animation-delay: calc(var(--randomDelay) * 1s);
+  opacity: 0.6;
 }
 
-@keyframes moveStar {
-  0% {
-    transform: translate(0, 0);
+/* ==========================================================================
+   Responsive Breakpoints for All Feature Landings
+   ========================================================================== */
+@media (max-width: 991px) {
+  .createMangeLand .section1Container {
+    flex-direction: column-reverse;
+    text-align: center;
+    gap: 30px;
+    padding: 10px 0 30px 0;
   }
 
-  100% {
-    transform: translate(calc(-300px + 300px * var(--randomX)), calc(-50px + 100px * var(--randomY)));
+  .createMangeLand .homeCover {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  .createMangeLand .section1Container svg {
+    max-width: 380px !important;
+  }
+
+  .featureCardsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .plansGridContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .planCardItem {
+    width: 100%;
+    max-width: 480px;
   }
 }
 
-
-@media (max-width:950px) {
-  .benefits {
-    width: 90%;
+@media (max-width: 680px) {
+  .benefitsBannerCard {
+    padding: 34px 20px;
+    border-radius: 20px;
   }
-}
 
+  .benTitle {
+    font-size: 22px;
+  }
 
-.carouselWrapper {
-  overflow: hidden;
-  width: 100%;
-}
+  .benDesc {
+    font-size: 15px;
+    line-height: 28px;
+  }
 
-.carouselTrack {
-  display: flex;
-  transition: transform 0.5s ease-in-out;
-}
-
-.ourSystemcard {
-  min-width: 50%; /* يظهر 2 كارد */
-  box-sizing: border-box;
-  padding: 20px;
-}
-
-/* زرار */
-.carouselBtn {
-  margin-top: 15px;
-  padding: 8px 20px;
-  cursor: pointer;
+  .createMangeLand .section1Container svg {
+    max-width: 280px !important;
+  }
 }

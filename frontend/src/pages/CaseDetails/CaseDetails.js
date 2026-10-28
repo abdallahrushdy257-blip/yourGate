@@ -13,6 +13,7 @@ import RegisterTextarea from "../../components/RegisterTextarea";
 import UploadInput from "../../components/UploadInput";
 import API from "../../api/axiosConfig";
 import { toLocal } from "../../Utils/toLocal";
+import { toast } from "react-toastify";
 
 function CaseDetails(props) {
   const navigate = useNavigate();
@@ -125,6 +126,9 @@ function CaseDetails(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(!name){
+      return toast.error("مسمي الحاله مطلوب")
+    }
     setIsSubmitting(true);
     const mForm = new FormData();
     mForm.append("name", name);

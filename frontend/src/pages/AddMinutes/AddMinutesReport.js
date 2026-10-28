@@ -6,7 +6,7 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import "../CaseDetails/CaseDetails.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import API from "../../api/axiosConfig";
 import TableComponent from "../../components/TableComponent";
 import NewButton from "../../components/NewButton";
@@ -15,6 +15,7 @@ import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import RegisterTextarea from "../../components/RegisterTextarea";
 import UploadInput from "../../components/UploadInput";
+import { toast } from "react-toastify";
 
 function AddMinutesReport(params) {
   const columns = [
@@ -131,11 +132,14 @@ function AddMinutesReport(params) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!title) {
+      toast.error("اسم المحضر مطلوب")
+      return;
+    }
     // Client-side validation
     const today = new Date().toISOString().split("T")[0];
     if (date && date < today) {
-      setError({ date: "تاريخ المحضر لا يمكن أن يكون في الماضي" });
+      toast.error("تاريخ المحضر لا يمكن أن يكون في الماضي")
       return;
     }
 
@@ -169,7 +173,108 @@ function AddMinutesReport(params) {
     }
   };
 
-  const dropdownOptions = [{ label: "تعديل", route: "/editAddMinutes/:id" }];
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      if (day.length === 4) return dateStr;
+      return `${year}-${month}-${day}`;
+    }
+    return dateStr;
+  };
+
+  // ── Edit Minutes Modal State & Handlers ─────────────────
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [isEditSubmitting, setIsEditSubmitting] = useState(false);
+  const [editError, setEditError] = useState({});
+  const [editId, setEditId] = useState(null);
+  const isFetchingEditRef = useRef(false);
+
+  const [editTitle, setEditTitle] = useState("");
+  const [editDate, setEditDate] = useState("");
+  const [editNote, setEditNote] = useState("");
+  const [editFile, setEditFile] = useState(null);
+
+  const handleOpenEditModal = async (recordId, record) => {
+    if (isFetchingEditRef.current) return;
+    isFetchingEditRef.current = true;
+    setEditId(recordId);
+    setEditError({});
+
+    try {
+      const res = await API.get(`/minutesheets/${recordId}`);
+      const m = res.data?.data || res.data || record || {};
+      setEditTitle(m.title || "");
+      setEditDate(formatDateForInput(m.date || ""));
+      setEditNote(m.note || "");
+      setEditFile(null);
+      setShowEditModal(true);
+    } catch (err) {
+      console.error(err);
+      const m = record || {};
+      setEditTitle(m.title || "");
+      setEditDate(formatDateForInput(m.date || ""));
+      setEditNote(m.note || "");
+      setEditFile(null);
+      setShowEditModal(true);
+    } finally {
+      isFetchingEditRef.current = false;
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (isEditSubmitting) return;
+
+    if (!editTitle) {
+      return toast.error("عنوان المحضر مطلوب");
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    if (editDate && editDate < today) {
+      return toast.error("تاريخ المحضر لا يمكن أن يكون في الماضي");
+    }
+
+    setIsEditSubmitting(true);
+    const formData = new FormData();
+    formData.append("id", editId);
+    formData.append("title", editTitle);
+    formData.append("date", editDate);
+    formData.append("note", editNote || "");
+    if (editFile) {
+      formData.append("paper", editFile);
+    }
+
+    try {
+      const res = await API.post("/minutesheets/update", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (res.status === 200 || res.status === 201) {
+        toast.success("تم تعديل المحضر بنجاح");
+        setShowEditModal(false);
+        setTableReloadKey(Date.now());
+      } else {
+        setEditError(res.data?.errors || {});
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "حدث خطأ أثناء تعديل المحضر");
+      setEditError(err.response?.data?.errors || {});
+    } finally {
+      setIsEditSubmitting(false);
+    }
+  };
+
+  const dropdownOptions = [
+    {
+      label: "تعديل",
+      action: (id, record) => {
+        handleOpenEditModal(id, record);
+      },
+    },
+  ];
 
   const modifyRow = (row) => {
     let newRow = { ...row };
@@ -392,6 +497,102 @@ function AddMinutesReport(params) {
               حفظ
             </Button>
           )}
+        </Modal.Footer>
+      </Modal>
+
+      {/* ── Edit Minutes Modal ── */}
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        className="modal-table archModal donor-modal"
+        size="md"
+        centered
+      >
+        <Modal.Header>
+          <Modal.Title>تعديل محضر اجتماع</Modal.Title>
+          <Button
+            className="custom-close-button cls-btn"
+            variant="link"
+            onClick={() => setShowEditModal(false)}
+          >
+            <FontAwesomeIcon icon={faXmark} className="closeModal" />
+          </Button>
+        </Modal.Header>
+
+        <Modal.Body style={{ paddingBottom: "0", direction: "rtl" }}>
+          <Row>
+            <Col md={6}>
+              <RegisterTextbox
+                id="edit-min-title"
+                label="عنوان المحضر *"
+                type="text"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                error={editError.title}
+              />
+            </Col>
+            <Col md={6}>
+              <div
+                className="mb-3"
+                style={{ display: "flex", flexDirection: "column" }}
+              >
+                <p style={{ marginBottom: "10px", textAlign: "right" }}>
+                  تاريخ المحضر *
+                </p>
+                <input
+                  type="date"
+                  className="custom-datepicker"
+                  value={editDate}
+                  onChange={(e) => setEditDate(e.target.value)}
+                  style={{ width: "100%" }}
+                />
+                {editError.date && (
+                  <span className="error-text" style={{ color: "red" }}>
+                    {editError.date}
+                  </span>
+                )}
+              </div>
+            </Col>
+          </Row>
+
+          <RegisterTextarea
+            id="edit-min-note"
+            label="ملاحظات"
+            value={editNote}
+            onChange={(e) => setEditNote(e.target.value)}
+            error={editError.note}
+          />
+
+          <UploadInput
+            id="edit-min-file"
+            label="إرفاق مستند جديد (اختياري)"
+            onChange={(e) => setEditFile(e.target.files[0])}
+            error={editError.file}
+          />
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowEditModal(false)}
+            disabled={isEditSubmitting}
+          >
+            إغلاق
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleEditSubmit}
+            disabled={isEditSubmitting}
+          >
+            {isEditSubmitting ? (
+              <>
+                <Spinner animation="border" size="sm" className="ms-2" />
+                <span>جاري الحفظ...</span>
+              </>
+            ) : (
+              "حفظ التعديلات"
+            )}
+          </Button>
         </Modal.Footer>
       </Modal>
     </>

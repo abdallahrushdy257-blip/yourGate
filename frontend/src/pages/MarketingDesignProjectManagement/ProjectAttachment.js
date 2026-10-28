@@ -8,6 +8,7 @@ import ConfirmModal from "../../components/ConfirmModal";
 import API from "../../api/axiosConfig";
 import { useNavigate, useParams } from "react-router";
 import UploadInput from "../../components/UploadInput";
+import { toast } from "react-toastify";
 
 function ProjectAttachment() {
   const columns = [
@@ -36,6 +37,9 @@ function ProjectAttachment() {
   };
   const handleUploads = async (e) => {
     e.preventDefault();
+    if(!upload){
+      return toast.error("الملف مطلوب")
+    }
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append("description", description);

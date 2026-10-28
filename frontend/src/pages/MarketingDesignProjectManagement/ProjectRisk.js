@@ -8,6 +8,7 @@ import API from "../../api/axiosConfig";
 import { useParams } from "react-router";
 import RegisterSelect from "../../components/RegisterSelect";
 import TestPreLoader from "../TestPreLoader/TestPreLoader";
+import { toast } from "react-toastify";
 
 function ProjectRisk() {
   const columns = [
@@ -33,6 +34,9 @@ function ProjectRisk() {
 
   const handleRisk = async (e) => {
     e.preventDefault();
+    if(!description){
+      return toast.error("الوصف مطلوب")
+    }
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append("project_id", id);

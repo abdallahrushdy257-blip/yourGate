@@ -4,7 +4,7 @@ import {
   faBullhorn,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./ProjectStatus.css";
 import API from "../../api/axiosConfig";
 import TableComponent from "../../components/TableComponent";
@@ -16,6 +16,7 @@ import NewButton from "../../components/NewButton";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import RegisterTextarea from "../../components/RegisterTextarea";
+import { toast } from "react-toastify";
 
 function ProjectStatus() {
   const navigate = useNavigate();
@@ -61,8 +62,71 @@ function ProjectStatus() {
     setShowAddModal(false);
   };
 
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+      const [day, month, year] = dateStr.split("-");
+      return `${year}-${month}-${day}`;
+    }
+    return "";
+  };
+
+  // ── Edit Project Modal State ────────────────────────────
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [isEditSubmit, setIsEditSubmit] = useState(false);
+  const [editError, setEditError] = useState({});
+  const [editId, setEditId] = useState(null);
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editDateoflaunch, setEditDateoflaunch] = useState("");
+  const [editDeadline, setEditDeadline] = useState("");
+  const [editTotal, setEditTotal] = useState(0);
+  const [editMarketingmethod, setEditMarketingmethod] = useState(0);
+  const isFetchingEditRef = useRef(false);
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (isEditSubmit) return;
+    if (!editName) {
+      return toast.error("اسم المشروع مطلوب");
+    }
+    setIsEditSubmit(true);
+    const mForm = new FormData();
+    mForm.append("id", editId);
+    mForm.append("name", editName);
+    mForm.append("description", editDescription || "");
+    mForm.append("dateoflaunch", editDateoflaunch || "");
+    mForm.append("deadline", editDeadline || "");
+    mForm.append("total", editTotal || 0);
+    mForm.append("marketingmethod", editMarketingmethod || 0);
+
+    try {
+      const res = await API.post("/projects/update", mForm, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (res.status === 200 || res.status === 201) {
+        toast.success("تم تعديل المشروع بنجاح");
+        setShowEditModal(false);
+        setTableReloadKey(Date.now());
+      } else {
+        setEditError(res.data?.errors || {});
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "حدث خطأ أثناء تعديل المشروع");
+      setEditError(err.response?.data?.errors || {});
+    } finally {
+      setIsEditSubmit(false);
+    }
+  };
+
   const handleAddSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmit) return;
+    if (!name) {
+      return toast.error("اسم المشروع مطلوب");
+    }
     setIsSubmit(true);
     const mForm = new FormData();
     mForm.append("name", name);
@@ -150,11 +214,38 @@ function ProjectStatus() {
     },
     {
       label: "تعديل",
-      action: (id, record) => {
+      action: async (id, record) => {
         if (record.status === 3 || record.status === 2) {
           showError("لا يمكن تعديل مشروع ملغي أو مكتمل");
-        } else {
-          navigate(`/editproject/${id}`);
+          return;
+        }
+        if (isFetchingEditRef.current) return;
+        isFetchingEditRef.current = true;
+        setEditId(id);
+        setEditError({});
+
+        try {
+          const res = await API.get(`/projects/${id}`);
+          const p = res.data?.data || res.data || record;
+          setEditName(p.name || "");
+          setEditDescription(p.description || "");
+          setEditDateoflaunch(
+            formatDateForInput(p.startdate || p.dateoflaunch || ""),
+          );
+          setEditDeadline(formatDateForInput(p.deadline || ""));
+          setEditTotal(p.budget || p.total || 0);
+          setEditMarketingmethod(p.marketingmethod || 0);
+          setShowEditModal(true);
+        } catch (err) {
+          setEditName(record.name || "");
+          setEditDescription(record.description || "");
+          setEditDateoflaunch(formatDateForInput(record.startdate || ""));
+          setEditDeadline(formatDateForInput(record.deadline || ""));
+          setEditTotal(record.budget || 0);
+          setEditMarketingmethod(record.marketingmethod || 0);
+          setShowEditModal(true);
+        } finally {
+          isFetchingEditRef.current = false;
         }
       },
     },
@@ -366,13 +457,167 @@ function ProjectStatus() {
             </Row>
 
             <div className="d-flex justify-content-center mt-4 mb-3">
-              {isSubmit ? (
-                <Spinner animation="border" variant="primary" />
-              ) : (
-                <Button variant="primary" type="submit" className="px-5">
-                  حفظ
-                </Button>
-              )}
+              <Button
+                variant="primary"
+                type="submit"
+                className="px-5 d-inline-flex align-items-center justify-content-center gap-2"
+                disabled={isSubmit}
+              >
+                {isSubmit ? (
+                  <>
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                    <span>جاري الحفظ...</span>
+                  </>
+                ) : (
+                  "حفظ"
+                )}
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
+      {/* ── Edit Project Modal ── */}
+      <Modal
+        size="md"
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        className="modal-table archModal donor-modal"
+        dialogClassName="fit-content-modal"
+        centered
+      >
+        <Modal.Header>
+          <Modal.Title>تعديل المشروع</Modal.Title>
+          <Button
+            className="custom-close-button cls-btn"
+            variant="link"
+            onClick={() => setShowEditModal(false)}
+          >
+            <FontAwesomeIcon icon={faXmark} className="closeModal" />
+          </Button>
+        </Modal.Header>
+
+        <Modal.Body style={{ paddingBottom: "0", direction: "rtl" }}>
+          <Form onSubmit={handleEditSubmit}>
+            <Row>
+              <Col md={6}>
+                <RegisterTextbox
+                  id="edit-project-name"
+                  label="إسم المشروع *"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  type="text"
+                  error={editError.name}
+                />
+              </Col>
+              <Col md={6}>
+                <RegisterTextbox
+                  id="edit-project-total"
+                  label="مبلغ الدعم الكلي"
+                  type="number"
+                  value={editTotal}
+                  onChange={(e) => setEditTotal(Number(e.target.value))}
+                  error={editError.total}
+                />
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={6}>
+                <div className="mb-3">
+                  <p className="mb-2" style={{ textAlign: "right" }}>
+                    تاريخ البدء
+                  </p>
+                  <input
+                    type="date"
+                    className="custom-datepicker w-100"
+                    value={editDateoflaunch}
+                    onChange={(e) => setEditDateoflaunch(e.target.value)}
+                  />
+                  {editError.dateoflaunch && (
+                    <small className="text-danger">
+                      {editError.dateoflaunch}
+                    </small>
+                  )}
+                </div>
+              </Col>
+              <Col md={6}>
+                <div className="mb-3">
+                  <p className="mb-2" style={{ textAlign: "right" }}>
+                    تاريخ الانتهاء
+                  </p>
+                  <input
+                    type="date"
+                    className="custom-datepicker w-100"
+                    value={editDeadline}
+                    onChange={(e) => setEditDeadline(e.target.value)}
+                  />
+                  {editError.deadline && (
+                    <small className="text-danger">{editError.deadline}</small>
+                  )}
+                </div>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={12}>
+                <RegisterSelect
+                  id="edit-project-marketing"
+                  label="آلية التسويق"
+                  options={[
+                    { value: "0", label: "إختر الآلية" },
+                    { value: "1", label: "المانحون" },
+                    { value: "2", label: "المنصات الحكومية" },
+                    { value: "3", label: "متاجر الجمعيات" },
+                  ]}
+                  value={editMarketingmethod}
+                  onChange={(e) => setEditMarketingmethod(e.target.value)}
+                  error={editError.marketingmethod}
+                />
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={12}>
+                <RegisterTextarea
+                  id="edit-project-desc"
+                  label="نبذة عن المشروع"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  error={editError.description}
+                  stylee={{ height: "100px" }}
+                />
+              </Col>
+            </Row>
+
+            <div className="d-flex justify-content-center mt-4 mb-3">
+              <Button
+                variant="primary"
+                type="submit"
+                className="px-5 d-inline-flex align-items-center justify-content-center gap-2"
+                disabled={isEditSubmit}
+              >
+                {isEditSubmit ? (
+                  <>
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                    <span>جاري التعديل...</span>
+                  </>
+                ) : (
+                  "تعديل"
+                )}
+              </Button>
             </div>
           </Form>
         </Modal.Body>

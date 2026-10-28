@@ -24,6 +24,10 @@ table.g tbody th::last-child {
         color: black !important;
     }
 
+    .printTabel{
+        background-color: transparent !important;
+    }
+
     .no-print, 
     .navbar, 
     .right-sidebar, 
@@ -53,7 +57,6 @@ table.g tbody th::last-child {
         padding: 8px !important;
         text-align: center !important;
         color: black !important;
-        background-color: transparent !important;
     }
 
     .printTabelHead th {

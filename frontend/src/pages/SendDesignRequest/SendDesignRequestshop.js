@@ -27,6 +27,7 @@ const [rows, setRows] = useState([]);
   const [description , setDescription] = useState("");
   const [isSubmitting , setIsSubmitting] = useState(false);
   const designType = 1;
+
   const handleSubmit = async(e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -44,11 +45,12 @@ const [rows, setRows] = useState([]);
         },
       });
       const data = await res;
-      if (data.status === 200) {
+      if (data.status === 201) {
       
         navigate("/casedetails");
         
       }
+      setIsSubmitting(false);
     } catch (error) {
       console.log(error);
       setIsSubmitting(false);
