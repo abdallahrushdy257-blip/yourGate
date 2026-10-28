@@ -1,82 +1,566 @@
-table.printTabel thead th::nth-child(1) {
-    border-top-right-radius: 25px !important;
-    border-bottom-right-radius: 25px !important;
-    background-color:blue;
-}
-table.printTabel tbody th::nth-child(1) {
-    border-top-right-radius: 25px !important;
-    border-bottom-right-radius: 25px !important;
-    background-color:red;
-}
-table.printTabel thead th::last-child {
-    border-top-left-radius: 25px !important;
-    border-bottom-left-radius: 25px !important;
-    background-color:blue;
-}
-table.g tbody th::last-child {
-    border-top-left-radius: 25px !important;
-    border-bottom-left-radius: 25px !important;
-    background-color:red;
-}
-@media print {
-    body {
-        background-color: white !important;
-        color: black !important;
-    }
+/* ═══════════════════════════════════════════════════════════════
+   UNIFIED MODERN TABLE & TOOLBAR STYLES (GLOBAL ACROSS ALL PAGES)
+   ═══════════════════════════════════════════════════════════════ */
 
-    .no-print, 
-    .navbar, 
-    .right-sidebar, 
-    .newContainer, 
-    .tablepagination-container, 
-    .table-header-action,
-    .table-un-printable-ellipse {
-        display: none !important;
-    }
-
-    .printTabel-container {
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    table.printTabel {
-        width: 100% !important;
-        border-collapse: collapse !important;
-        border: 1px solid #000 !important;
-        font-size: 12px !important;
-    }
-
-    table.printTabel th, 
-    table.printTabel td {
-        border: 1px solid #000 !important;
-        padding: 8px !important;
-        text-align: center !important;
-        color: black !important;
-        background-color: transparent !important;
-    }
-
-    .printTabelHead th {
-        background-color: #f2f2f2 !important;
-        font-weight: bold !important;
-    }
-
-    .theader, .tfooter {
-        width: 100% !important;
-        color: black !important;
-    }
-
-    /* Force landscape if needed, but usually portrait is better for reports */
-    @page {
-        size: auto;
-        margin: 10mm;
-    }
+/* ── Container & Title (Standard 1440px Width Aligned with AssociationMembersReport) ── */
+.printcasedata-container,
+.printTabel-container {
+  width: 95% !important;
+  max-width: 1440px !important;
+  margin: 15px auto 40px !important;
+  direction: rtl !important;
+  box-sizing: border-box !important;
 }
 
+/* When printTabel-container is nested inside a page container */
+.printcasedata-container .printTabel-container,
+.ass-mem .printTabel-container,
+.cases-page-container .printTabel-container,
+.committee-page-container .printTabel-container,
+.minutes-page-container .printTabel-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.printTabel-container .mainTitle,
+.printTabel-container .rmtit {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: var(--text-color, #382f22) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  margin: 0 0 20px 0 !important;
+  direction: rtl !important;
+  text-align: center !important;
+}
+
+.printTabel-container .mainTitle svg,
+.printTabel-container .rmtit svg {
+  color: var(--primary-color, #b89358) !important;
+  font-size: 24px !important;
+}
+
+.newContainer {
+  margin-bottom: 16px !important;
+}
+
+/* ── Unified Toolbar Card (Top Controls Above Table) ────────── */
+.actions-container.newactions-container {
+  background: var(--surface-color, #ffffff) !important;
+  border: 1.5px solid var(--border-color, #ebdcc8) !important;
+  border-radius: 14px !important;
+  padding: 12px 18px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+  margin: 0 0 16px 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.left-side-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  flex: 1 1 auto !important;
+}
+
+/* ── Search Input ───────────────────────────────────────────── */
+.search-container {
+  width: auto !important;
+  flex: 1 1 240px !important;
+  max-width: 360px !important;
+  min-width: 190px !important;
+  position: relative !important;
+}
+
+.search-input-icon {
+  position: absolute !important;
+  right: 13px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: var(--label-color, #8c7e6c) !important;
+  font-size: 14px !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+.styled-search-button {
+  width: 100% !important;
+  height: 42px !important;
+  border: 1.5px solid var(--border-color, #dfd3c0) !important;
+  border-radius: 10px !important;
+  background: var(--input-background, #fdfbf7) !important;
+  color: var(--text-color, #382f22) !important;
+  font-size: 13px !important;
+  font-family: inherit !important;
+  padding: 0 14px 0 38px !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.styled-search-button:focus {
+  border-color: var(--primary-color, #b89358) !important;
+  box-shadow: 0 0 0 3px rgba(184, 147, 88, 0.15) !important;
+  background: var(--surface-color, #ffffff) !important;
+}
+
+.styled-search-button::placeholder {
+  color: var(--placeholder-color, #9e917e) !important;
+  font-size: 12.5px !important;
+}
+
+.clear-button {
+  transition: opacity 0.2s ease;
+}
+.clear-button:hover {
+  opacity: 0.8;
+}
+
+.date-clear-button {
+  background: rgba(184, 147, 88, 0.15) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 10px !important;
+  color: var(--label-color, #8c7e6c) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  padding: 0 !important;
+  margin-left: 4px !important;
+  flex-shrink: 0 !important;
+}
+
+.date-clear-button:hover {
+  background: rgba(220, 53, 69, 0.2) !important;
+  color: #dc3545 !important;
+}
+
+/* ── Date Range Inputs ──────────────────────────────────────── */
+.date-container {
+  border: 1.5px solid var(--border-color, #dfd3c0) !important;
+  border-radius: 10px !important;
+  background: var(--input-background, #fdfbf7) !important;
+  height: 42px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0 8px 0 10px !important;
+  position: relative !important;
+  width: auto !important;
+  flex: 0 1 210px !important;
+  min-width: 185px !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+
+.date-container:hover,
+.date-container:focus-within {
+  border-color: var(--primary-color, #b89358) !important;
+  box-shadow: 0 0 0 3px rgba(184, 147, 88, 0.15) !important;
+  background: var(--surface-color, #ffffff) !important;
+}
+
+.date-container .MuiFormControl-root {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+}
+
+.date-container .MuiOutlinedInput-notchedOutline {
+  border: none !important;
+}
+
+.date-container .MuiOutlinedInput-notchedOutline legend {
+  display: none !important;
+}
+
+.date-container .MuiInputLabel-root {
+  position: static !important;
+  transform: none !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  color: var(--label-color, #705838) !important;
+  padding: 0 2px 0 6px !important;
+  margin: 0 !important;
+  pointer-events: none !important;
+  flex-shrink: 0 !important;
+}
+
+.date-container .MuiInputBase-root {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 38px !important;
+  font-size: 13px !important;
+  font-family: inherit !important;
+  color: var(--text-color, #382f22) !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 0 !important;
+}
+
+.date-container .MuiInputBase-input,
+.date-container .MuiOutlinedInput-input,
+.date-container .MuiPickersInputBase-input,
+.date-container input {
+  padding: 0 4px !important;
+  height: 38px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--text-color, #382f22) !important;
+  text-align: center !important;
+  direction: ltr !important;
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-width: 85px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  box-sizing: border-box !important;
+}
+
+.date-container .MuiInputAdornment-root {
+  margin: 0 !important;
+  padding: 0 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+}
+
+.date-container .MuiIconButton-root {
+  padding: 4px !important;
+  color: var(--label-color, #8c7e6c) !important;
+  font-size: 18px !important;
+}
+
+/* ── Add Action Button ──────────────────────────────────────── */
+.add-row-ta {
+  height: 42px !important;
+  padding: 0 20px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #b89358 0%, #9e793d 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  box-shadow: 0 3px 12px rgba(184, 147, 88, 0.25) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.add-row-ta:hover {
+  background: linear-gradient(135deg, #c59f63 0%, #8c6a32 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(184, 147, 88, 0.35) !important;
+}
+
+/* ── Export & Print Buttons ─────────────────────────────────── */
+.export-buttons {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.styled-download-button {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 10px !important;
+  border: 1.5px solid var(--border-color, #dfd3c0) !important;
+  background: var(--input-background, #fdfbf7) !important;
+  color: var(--text-color, #6d5e4b) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+}
+
+.styled-download-button:hover {
+  border-color: var(--primary-color, #b89358) !important;
+  color: var(--primary-color, #b89358) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 10px rgba(184, 147, 88, 0.15) !important;
+}
+
+/* ── Unified Modern Table Container ─────────────────────────── */
+.table-scroll {
+  background: var(--surface-color, #ffffff) !important;
+  border: 1.5px solid var(--border-color, #ebdcc8) !important;
+  border-radius: 14px !important;
+  overflow: visible !important;
+  min-height: auto !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+  margin-bottom: 20px !important;
+  transition: box-shadow 0.2s ease !important;
+  position: relative !important;
+}
+
+table.printTabel {
+  width: 100% !important;
+  min-width: 700px !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: transparent !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+table.printTabel thead tr.printTabelHead {
+  background: var(--navbar-color, #f7f1e6) !important;
+}
+
+table.printTabel thead th {
+  padding: 14px 16px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: var(--text-color, #382f22) !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  border-bottom: 1.5px solid var(--border-color, #ebdcc8) !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  letter-spacing: 0.2px !important;
+  background: transparent !important;
+}
+
+table.printTabel thead th:first-child {
+  border-top-right-radius: 12.5px !important;
+}
+
+table.printTabel thead th:last-child {
+  border-top-left-radius: 12.5px !important;
+}
+
+table.printTabel tbody tr {
+  border-bottom: 1px solid var(--border-color, #f0e6d8) !important;
+  transition: background 0.15s ease !important;
+  background: transparent !important;
+}
+
+table.printTabel tbody tr:hover td {
+  background: rgba(184, 147, 88, 0.05) !important;
+}
+
+table.printTabel tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+table.printTabel tbody tr:last-child td:first-child {
+  border-bottom-right-radius: 12.5px !important;
+}
+
+table.printTabel tbody tr:last-child td:last-child {
+  border-bottom-left-radius: 12.5px !important;
+}
+
+table.printTabel tbody td {
+  padding: 13px 16px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--text-color, #382f22) !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid var(--border-color, #f0e6d8) !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  background: transparent !important;
+}
+
+table.printTabel tfoot tr:last-child td:first-child {
+  border-bottom-right-radius: 12.5px !important;
+}
+
+table.printTabel tfoot tr:last-child td:last-child {
+  border-bottom-left-radius: 12.5px !important;
+}
+
+table.printTabel tfoot td {
+  background: transparent !important;
+}
+
+/* Dropdown actions in table */
 .table-un-printable-ellipse {
-    display: block;
+  display: inline-block !important;
 }
 
+.table-un-printable-ellipse .dropdown-toggle {
+  background: transparent !important;
+  border: none !important;
+  color: var(--label-color, #8c7e6c) !important;
+  padding: 4px 8px !important;
+  font-size: 15px !important;
+  border-radius: 8px !important;
+  transition: all 0.15s ease !important;
+}
 
+.table-un-printable-ellipse .dropdown-toggle:hover {
+  background: rgba(184, 147, 88, 0.12) !important;
+  color: var(--primary-color, #b89358) !important;
+}
 
+.table-un-printable-ellipse .dropdown-menu {
+  border: 1px solid var(--border-color, #e5d7c3) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(70, 50, 20, 0.12) !important;
+  background: var(--surface-color, #ffffff) !important;
+  padding: 6px !important;
+  min-width: 160px !important;
+}
 
+.table-un-printable-ellipse .dropdown-item {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 8px 12px !important;
+  color: var(--text-color, #382f22) !important;
+  text-align: right !important;
+  transition: all 0.15s ease !important;
+}
+
+.table-un-printable-ellipse .dropdown-item:hover {
+  background: rgba(184, 147, 88, 0.1) !important;
+  color: var(--primary-color, #b89358) !important;
+}
+
+/* ── Dark Mode Support ───────────────────────────────────────── */
+.dark-mode .actions-container.newactions-container {
+  background: var(--surface-color, #1e1b18) !important;
+  border-color: var(--border-color, #382f24) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark-mode .styled-search-button,
+.dark-mode .date-container,
+.dark-mode .styled-download-button {
+  background: var(--input-background, #28241f) !important;
+  border-color: var(--border-color, #3e3428) !important;
+  color: var(--text-color, #e0d6c8) !important;
+}
+
+.dark-mode .date-container .MuiInputBase-input {
+  color: var(--text-color, #e0d6c8) !important;
+}
+
+.dark-mode .date-container .MuiInputLabel-root {
+  color: var(--label-color, #a89a88) !important;
+}
+
+.dark-mode .table-scroll {
+  background: var(--surface-color, #1e1b18) !important;
+  border-color: var(--border-color, #382f24) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark-mode table.printTabel {
+  background: var(--surface-color, #1e1b18) !important;
+}
+
+.dark-mode table.printTabel thead tr.printTabelHead {
+  background: #25201a !important;
+}
+
+.dark-mode table.printTabel thead th {
+  color: #f0d9b5 !important;
+  border-bottom-color: #382f24 !important;
+}
+
+.dark-mode table.printTabel tbody td {
+  color: #dcd0be !important;
+  border-bottom-color: #2e261d !important;
+}
+
+.dark-mode table.printTabel tbody tr:hover {
+  background: rgba(184, 147, 88, 0.08) !important;
+}
+
+.dark-mode .table-un-printable-ellipse .dropdown-menu {
+  background: #231e18 !important;
+  border-color: #3e3428 !important;
+}
+
+.dark-mode .table-un-printable-ellipse .dropdown-item {
+  color: #f0d9b5 !important;
+}
+
+.dark-mode .table-un-printable-ellipse .dropdown-item:hover {
+  background: rgba(184, 147, 88, 0.15) !important;
+}
+
+/* ── Print Media ─────────────────────────────────────────────── */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  .no-print,
+  .navbar,
+  .right-sidebar,
+  .newContainer,
+  .tablepagination-container,
+  .table-header-action,
+  .table-un-printable-ellipse {
+    display: none !important;
+  }
+
+  .printTabel-container {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  table.printTabel {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1px solid #000 !important;
+    font-size: 12px !important;
+  }
+
+  table.printTabel th,
+  table.printTabel td {
+    border: 1px solid #000 !important;
+    padding: 8px !important;
+    text-align: center !important;
+    color: black !important;
+    background-color: transparent !important;
+  }
+
+  .printTabelHead th {
+    background-color: #f2f2f2 !important;
+    font-weight: bold !important;
+  }
+
+  .theader,
+  .tfooter {
+    width: 100% !important;
+    color: black !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 10mm;
+  }
+}

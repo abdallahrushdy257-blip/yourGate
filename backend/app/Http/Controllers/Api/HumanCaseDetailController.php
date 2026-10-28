@@ -141,10 +141,10 @@ class HumanCaseDetailController extends Controller
         $id = (int) ($request->input('id') ?? $request->route('id'));
         $rawStatus = $request->input('status') ?? $request->input('decision');
         $status = match ((string) $rawStatus) {
-            '2'     => 'موافقة',
-            '3'     => 'مرفوض',
-            '1'     => 'معلق',
-            default => $rawStatus,
+            '2', '200', 'approved', 'موافقة' => 'موافقة',
+            '3', 'rejected', 'رفض', 'مرفوض'   => 'مرفوض',
+            '1', 'pending', 'معلق'           => 'معلق',
+            default                          => in_array($rawStatus, ['موافقة', 'مرفوض', 'معلق']) ? $rawStatus : 'موافقة',
         };
         $this->humanCaseService->updateStatus(
             $id,

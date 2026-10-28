@@ -16,6 +16,7 @@ import CreateAndManege from "./pages/createAndManage/createAndManage";
 import CaseData from "./pages/CaseData/CaseData";
 import PrintCaseData from "./pages/PrintCaseData/PrintCaseData";
 import CaseDetails from "./pages/CaseDetails/CaseDetails";
+import CaseDetailsView from "./pages/CaseDetails/CaseDetailsView";
 import ViewDonations from "./pages/ViewDonations/ViewDonations";
 import ReceiptVoucher from "./pages/ReceiptVoucher/ReceiptVoucher";
 import ReceiptVoucherProject from "./pages/ReceiptVoucher/ReceiptVoucherProject";
@@ -294,6 +295,7 @@ import KPI from "./pages/MarketingDesignProjectManagement/KPI";
 import ProjectKPI from "./pages/MarketingDesignProjectManagement/ProjectKPI";
 import ProjectKpiView from "./pages/MarketingDesignProjectManagement/ProjectKpiView";
 import ProjectPhases from "./pages/MarketingDesignProjectManagement/ProjectPhases";
+import ProjectDetailsView from "./pages/MarketingDesignProjectManagement/ProjectDetailsView";
 import ProjectRisk from "./pages/MarketingDesignProjectManagement/ProjectRisk";
 import RiskMitigation from "./pages/MarketingDesignProjectManagement/RiskMitigation";
 import RiskAssessmentReport from "./pages/MarketingDesignProjectManagement/RiskAssessmentReport";
@@ -454,15 +456,19 @@ function App() {
             <Route path="/endowmentsLanding" element={<EndowmentsLanding />} />
             <Route path="/tasksLanding" element={<TasksLanding />} />
             <Route path="/accountingLanding" element={<AccountingLanding />} />
+            <Route path="/casedata/:id" element={<CaseData />} />
             <Route element={<MainApp />}>
               <Route element={<ProtectedRoute />}>
                 <Route path="/home" element={<Home />} />
                 <Route path="/review" element={<ReviewData />} />
                 <Route path="/complete" element={<CompletingData />} />
                 {/* <Route path="/createandmanege" element={<CreateAndManege />} /> */}
-                <Route path="/casedata/:id" element={<CaseData />} />
                 <Route path="/printcasedata" element={<PrintCaseData />} />
                 <Route path="/casedetails" element={<CaseDetails />} />
+                <Route
+                  path="/casedetailsview/:id"
+                  element={<CaseDetailsView />}
+                />
                 <Route path="/viewdonations/:id" element={<ViewDonations />} />
                 <Route
                   path="/receiptvoucher/:id"
@@ -920,6 +926,14 @@ function App() {
                   path="/editprojectstatus/:id"
                   element={<EditProjectStatus />}
                 />
+                <Route
+                  path="/editproject/:id"
+                  element={<EditProjectStatus />}
+                />
+                <Route
+                  path="/projectpaymentvouchers/:id"
+                  element={<ViewDonationsProject />}
+                />
                 <Route path="/fstudy/:id" element={<Fstudy />} />
                 <Route
                   path="/receiptvoucherloan/:id"
@@ -1101,6 +1115,10 @@ function App() {
                   element={<ProjectKpiView />}
                 />
                 <Route path="/projectdetails/:id" element={<ProjectPhases />} />
+                <Route
+                  path="/projectdetailsview/:id"
+                  element={<ProjectDetailsView />}
+                />
                 <Route path="/projectrisks/:id" element={<ProjectRisk />} />
                 <Route
                   path="/riskmitigation/:id"

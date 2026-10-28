@@ -3,6 +3,7 @@ import TableComponent from "../../components/TableComponent";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate, useParams } from "react-router";
+import { toLocal } from "../../Utils/toLocal";
 
 function PaymentDetails(props) {
     const columns = [
@@ -70,6 +71,10 @@ function PaymentDetails(props) {
                     title={`تفاصيل المدفوعات`}
                     onDownload={handleDownload}
                     dropdownOptions={dropdownOptions}
+                    transformRowFn={(row) => ({
+                        ...row,
+                        amount: toLocal(row.amount) + " ر.س",
+                    })}
                     total={true}
                     searchDate={true}
                     searchTextProp={false}

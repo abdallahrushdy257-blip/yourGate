@@ -1,0 +1,545 @@
+/* ── Minutes Report Page Styles ───────────────────────────── */
+
+.minutes-page-container {
+  width: 95%;
+  max-width: 1440px;
+  margin: 15px auto 40px;
+  direction: rtl;
+}
+
+/* ── Top KPI Statistics Grid ─────────────────────────────── */
+.minutes-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.minutes-stat-card {
+  background: var(--surface-color, #ffffff);
+  border: 1px solid var(--border-color, #ebdcc8);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.minutes-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+.minutes-stat-card.stat-gold {
+  border-top: 3.5px solid #b89358;
+}
+
+.minutes-stat-card.stat-blue {
+  border-top: 3.5px solid #3182ce;
+}
+
+.minutes-stat-card.stat-purple {
+  border-top: 3.5px solid #805ad5;
+}
+
+.minutes-stat-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.minutes-stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+}
+
+.minutes-stat-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--label-color, #705838);
+  margin: 0;
+}
+
+.minutes-stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-color, #382f22);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.minutes-stat-sub {
+  font-size: 11.5px;
+  color: var(--placeholder-color, #9c8e7c);
+  margin: 0;
+}
+
+.minutes-stat-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.stat-gold .minutes-stat-icon-wrapper {
+  background: rgba(184, 147, 88, 0.12);
+  color: #b89358;
+}
+
+.stat-blue .minutes-stat-icon-wrapper {
+  background: rgba(49, 130, 206, 0.12);
+  color: #3182ce;
+}
+
+.stat-purple .minutes-stat-icon-wrapper {
+  background: rgba(128, 90, 213, 0.12);
+  color: #805ad5;
+}
+
+/* ── Table Container Modernization ──────────────────────────── */
+.minutes-page-container .printTabel-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}
+
+.minutes-page-container .table-scroll {
+  background: var(--surface-color, #ffffff) !important;
+  border: 1.5px solid var(--border-color, #ebdcc8) !important;
+  border-radius: 14px !important;
+  overflow: visible !important;
+  min-height: auto !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+}
+
+.minutes-page-container table.printTabel {
+  width: 100% !important;
+  min-width: 750px !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: transparent !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+.minutes-page-container table.printTabel thead tr.printTabelHead {
+  background: var(--navbar-color, #f7f1e6) !important;
+}
+
+.minutes-page-container table.printTabel thead th {
+  padding: 14px 16px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: var(--text-color, #382f22) !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  border-bottom: 1.5px solid var(--border-color, #ebdcc8) !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+.minutes-page-container table.printTabel tbody tr {
+  border-bottom: 1px solid var(--border-color, #f0e6d8) !important;
+  transition: background 0.15s ease !important;
+  background: transparent !important;
+}
+
+.minutes-page-container table.printTabel tbody tr:hover {
+  background: rgba(184, 147, 88, 0.05) !important;
+}
+
+.minutes-page-container table.printTabel tbody td {
+  padding: 13px 16px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--text-color, #382f22) !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid var(--border-color, #f0e6d8) !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+.minutes-page-container table.printTabel th:nth-child(2),
+.minutes-page-container table.printTabel td:nth-child(2) {
+  text-align: right !important;
+  padding-right: 20px !important;
+  font-weight: 700 !important;
+}
+
+/* ── Badges ─────────────────────────────────────────────────── */
+.badge-minute-assembly {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: rgba(49, 130, 206, 0.14);
+  color: #2b6cb0;
+  border: 1px solid rgba(49, 130, 206, 0.35);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-minute-board {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: rgba(214, 158, 46, 0.14);
+  color: #b7791f;
+  border: 1px solid rgba(214, 158, 46, 0.35);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-minute-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: rgba(184, 147, 88, 0.12);
+  color: var(--primary-color, #b89358);
+  border: 1px solid rgba(184, 147, 88, 0.35);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+}
+
+.badge-minute-file:hover {
+  background: var(--primary-color, #b89358);
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+/* ── Modal Modernization (Unified Warm Background) ──────────── */
+.minutes-modal .modal-content {
+  border-radius: 20px !important;
+  border: 1.5px solid var(--border-color, #ebdcc8) !important;
+  background: var(--background-color, #f5ede0) !important;
+  color: var(--text-color, #382f22) !important;
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.22) !important;
+  direction: rtl !important;
+  overflow: hidden !important;
+}
+
+.dark-mode .minutes-modal .modal-content {
+  background: var(--background-color, #1a0f07) !important;
+  border-color: var(--border-color, #4a2e14) !important;
+  color: var(--text-color, #f0d9b5) !important;
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.5) !important;
+}
+
+.minutes-modal .modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border-color, rgba(184, 147, 88, 0.25)) !important;
+  padding: 18px 26px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  direction: rtl !important;
+}
+
+.minutes-modal .modal-title {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: var(--text-color, #382f22) !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.dark-mode .minutes-modal .modal-title {
+  color: var(--text-color, #f0d9b5) !important;
+}
+
+.minutes-modal .modal-body {
+  padding: 22px 26px 10px !important;
+  background: transparent !important;
+}
+
+.minutes-modal .modal-footer {
+  background: transparent !important;
+  border-top: 1px solid var(--border-color, rgba(184, 147, 88, 0.25)) !important;
+  padding: 16px 26px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+}
+
+/* Modal Form Inputs */
+.minutes-modal .register-textbox,
+.minutes-modal .custom-datepicker,
+.minutes-modal select.register-textbox,
+.minutes-modal .styled-input {
+  background: #ffffff !important;
+  border: 1.5px solid #d4c0a5 !important;
+  border-radius: 12px !important;
+  height: 44px !important;
+  padding: 0 14px !important;
+  font-size: 13.5px !important;
+  font-family: inherit !important;
+  color: var(--text-color, #382f22) !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+.minutes-modal textarea.register-textbox {
+  height: auto !important;
+  min-height: 75px !important;
+  padding: 10px 14px !important;
+  line-height: 1.5 !important;
+}
+
+.minutes-modal .styled-input {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-style: solid !important;
+}
+
+.minutes-modal .register-textbox:focus,
+.minutes-modal .custom-datepicker:focus,
+.minutes-modal select.register-textbox:focus,
+.minutes-modal .styled-input:focus {
+  border-color: var(--primary-color, #b89358) !important;
+  box-shadow: 0 0 0 3.5px rgba(184, 147, 88, 0.2) !important;
+  background: #ffffff !important;
+}
+
+/* Dark Mode Form Inputs */
+.dark-mode .minutes-modal .register-textbox,
+.dark-mode .minutes-modal .custom-datepicker,
+.dark-mode .minutes-modal select.register-textbox,
+.dark-mode .minutes-modal .styled-input {
+  background: #160d04 !important;
+  border-color: #4a2e14 !important;
+  color: #f0d9b5 !important;
+  box-shadow: none !important;
+}
+
+.dark-mode .minutes-modal .register-textbox:focus,
+.dark-mode .minutes-modal .custom-datepicker:focus,
+.dark-mode .minutes-modal select.register-textbox:focus,
+.dark-mode .minutes-modal .styled-input:focus {
+  border-color: #c8924a !important;
+  box-shadow: 0 0 0 3.5px rgba(200, 146, 74, 0.25) !important;
+  background: #160d04 !important;
+}
+
+.minutes-modal .custom-datepicker {
+  direction: rtl;
+  cursor: pointer;
+}
+
+.minutes-modal .custom-datepicker::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+}
+
+.minutes-modal .custom-datepicker::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.minutes-modal .register-label {
+  display: block !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--label-color, #5a3510) !important;
+  margin-bottom: 6px !important;
+  text-align: right !important;
+}
+
+.dark-mode .minutes-modal .register-label {
+  color: var(--label-color, #d4a870) !important;
+}
+
+/* ── Attendees Dynamic Section ──────────────────────────────── */
+.minutes-attendees-box {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1.5px solid #d4c0a5;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.dark-mode .minutes-attendees-box {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: #4a2e14;
+}
+
+.attendees-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.attendees-box-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-color, #382f22);
+  margin: 0;
+}
+
+.attendees-box-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-add-row {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(184, 147, 88, 0.15);
+  color: var(--primary-color, #b89358);
+  border: 1px solid rgba(184, 147, 88, 0.4);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-add-row:hover {
+  background: var(--primary-color, #b89358);
+  color: #ffffff;
+}
+
+.btn-remove-row {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(229, 62, 62, 0.1);
+  color: #e53e3e;
+  border: 1px solid rgba(229, 62, 62, 0.3);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-remove-row:hover {
+  background: #e53e3e;
+  color: #ffffff;
+}
+
+/* Modal Buttons */
+.minutes-modal .btn-primary {
+  background: linear-gradient(135deg, #b89358 0%, #9e793d 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 10px 28px !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(184, 147, 88, 0.25) !important;
+  transition: all 0.2s ease !important;
+}
+
+.minutes-modal .btn-primary:hover {
+  background: linear-gradient(135deg, #c59f63 0%, #8c6a32 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(184, 147, 88, 0.35) !important;
+}
+
+.minutes-modal .btn-secondary {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: 1.5px solid var(--border-color, #dfcaa6) !important;
+  color: var(--text-color, #5c4e3c) !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  padding: 9px 24px !important;
+  transition: all 0.2s ease !important;
+}
+
+.minutes-modal .btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: var(--text-color) !important;
+}
+
+.dark-mode .minutes-modal .btn-secondary {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: #4a2e14 !important;
+  color: #f0d9b5 !important;
+}
+
+.minutes-modal .custom-close-button {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--label-color, #8c7e6c) !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: none !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+}
+
+.minutes-modal .custom-close-button:hover {
+  background: rgba(0, 0, 0, 0.1) !important;
+  color: var(--text-color) !important;
+}
+
+/* Delete Modal */
+.minutes-delete-modal .modal-content {
+  border-radius: 18px !important;
+  max-width: 480px;
+  margin: auto;
+}
+
+.minutes-delete-modal .btn-danger {
+  background: #e53e3e !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  padding: 9px 24px !important;
+  color: #ffffff !important;
+  transition: all 0.2s ease !important;
+}
+
+.minutes-delete-modal .btn-danger:hover {
+  background: #c53030 !important;
+  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3) !important;
+}
+
+/* ── Responsive adjustments ─────────────────────────────────── */
+@media (max-width: 900px) {
+  .minutes-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .minutes-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

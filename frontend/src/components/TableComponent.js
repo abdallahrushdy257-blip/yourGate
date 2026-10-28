@@ -12,6 +12,7 @@ import {
   faX,
   faFileExcel,
   faInbox,
+  faMagnifyingGlass,
 } from "@fortawesome/free-solid-svg-icons";
 import PrintHead from "./PrintHead";
 import PrintFooter from "./PrintFooter";
@@ -338,6 +339,10 @@ function TableComponent({
                       minWidth: "240px",
                     }}
                   >
+                    <FontAwesomeIcon
+                      icon={faMagnifyingGlass}
+                      className="search-input-icon"
+                    />
                     {searchTextProp !== false && (
                       <input
                         placeholder={
@@ -357,7 +362,7 @@ function TableComponent({
                         style={{
                           width: "100%",
                           paddingLeft: searchText ? "36px" : "16px",
-                          paddingRight: "16px",
+                          paddingRight: "38px",
                           height: "42px",
                         }}
                       />
@@ -406,25 +411,26 @@ function TableComponent({
                             setSearchFrom(date);
                             setPage(1);
                           }}
-                          renderInput={(params) => (
-                            <TextField {...params} />
-                          )}
+                          slotProps={{
+                            textField: {
+                              size: "small",
+                              placeholder: "DD-MM-YYYY",
+                            },
+                          }}
                           className="cus-input"
                         />
                       </LocalizationProvider>
                       {searchFrom && (
                         <button
-                          className="clear-button"
+                          type="button"
+                          className="clear-button date-clear-button"
                           onClick={() => {
                             setSearchFrom(null);
                             setPage(1);
                           }}
-                          style={{
-                            borderRadius: "20px",
-                            backgroundColor: "var(--background-color)",
-                          }}
+                          title="مسح التاريخ"
                         >
-                          ❌
+                          <FontAwesomeIcon icon={faX} />
                         </button>
                       )}
                     </div>
@@ -438,25 +444,26 @@ function TableComponent({
                             setSearchTo(date);
                             setPage(1);
                           }}
-                          renderInput={(params) => (
-                            <TextField {...params} />
-                          )}
+                          slotProps={{
+                            textField: {
+                              size: "small",
+                              placeholder: "DD-MM-YYYY",
+                            },
+                          }}
                           className="cus-input"
                         />
                       </LocalizationProvider>
                       {searchTo && (
                         <button
-                          className="clear-button"
+                          type="button"
+                          className="clear-button date-clear-button"
                           onClick={() => {
                             setSearchTo(null);
                             setPage(1);
                           }}
-                          style={{
-                            borderRadius: "20px",
-                            backgroundColor: "var(--background-color)",
-                          }}
+                          title="مسح التاريخ"
                         >
-                          ❌
+                          <FontAwesomeIcon icon={faX} />
                         </button>
                       )}
                     </div>
@@ -468,21 +475,6 @@ function TableComponent({
                     type="button"
                     className="add-row-ta archiveAdd"
                     onClick={onAddClick}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      cursor: "pointer",
-                      height: "42px",
-                      padding: "0 18px",
-                      borderRadius: "21px",
-                      border: "1.5px solid var(--primary-color, #c29a64)",
-                      background: "transparent",
-                      color: "var(--primary-color, #c29a64)",
-                      fontWeight: "600",
-                      fontSize: "14px",
-                      whiteSpace: "nowrap",
-                    }}
                   >
                     <FontAwesomeIcon icon={faPlus} /> إضافة {addBtnName || ""}
                   </button>

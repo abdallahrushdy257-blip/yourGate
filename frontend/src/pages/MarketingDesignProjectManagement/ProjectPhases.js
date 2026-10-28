@@ -18,6 +18,9 @@ function ProjectPhases() {
     { name: "الأولوية", key: "priority_string" },
     { name: "الميزانية", key: "budget" },
     { name: "الحالة", key: "status_string" },
+    { name: "ملخص الأداء", key: "performance_summary" },
+    { name: "العمل المتبقي", key: "remaining_work" },
+    { name: "ملاحظات", key: "notes" },
     { name: "", key: "actions" },
   ];
   const [rows, setRows] = useState([]);
@@ -41,6 +44,7 @@ function ProjectPhases() {
   const [phaseid, setphaseId] = useState(null);
   const [performancesummary, setPerformancesummary] = useState("");
   const [remainingwork, setRemainingwork] = useState("");
+  const [phaseNotes, setPhaseNotes] = useState("");
 
   const handleCompletePhase = async (e) => {
     e.preventDefault();
@@ -48,6 +52,8 @@ function ProjectPhases() {
     const formData = new FormData();
     formData.append("performance_summary", performancesummary);
     formData.append("remaining_work", remainingwork);
+    formData.append("notes", phaseNotes);
+    formData.append("description", phaseNotes);
     formData.append("phase_id", phaseid);
     formData.append("project_id", id);
 
@@ -58,15 +64,18 @@ function ProjectPhases() {
         },
       });
       const data = await res;
-      if (data.status === 200) {
+      if (data.status === 200 || data.status === 201) {
         setPerformancesummary("");
         setRemainingwork("");
+        setPhaseNotes("");
         setError([]);
 
         setShowModal2(false);
         setIsSubmitting(false);
         setRows(data.data);
         setTableReloadKey(Date.now());
+      } else {
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error(error);
@@ -95,7 +104,7 @@ function ProjectPhases() {
         },
       });
       const data = await res;
-      if (data.status === 200) {
+      if (data.status === 200 || data.status === 201) {
         setName("");
         setStartdate("");
         setEnddate("");
@@ -108,6 +117,8 @@ function ProjectPhases() {
         setIsSubmitting(false);
         setRows(data.data);
         setTableReloadKey(Date.now());
+      } else {
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error(error);
@@ -121,12 +132,13 @@ function ProjectPhases() {
       label: "اكتمال المرحلة",
       action: (id, record) => {
         if (record.status === 3) {
-          toast.error("لا يمكن تعديل مشروع ملغي");
-        } else if (record.status === 2) {
-          toast.error("المرحلة مكتملة بالفعل");
+          toast.error("لا يمكن تعديل مرحلة ملغاة");
         } else {
-          setShowModal2(true);
           setphaseId(id);
+          setPerformancesummary(record.performance_summary || "");
+          setRemainingwork(record.remaining_work || "");
+          setPhaseNotes(record.description || record.notes || "");
+          setShowModal2(true);
         }
       },
     },
@@ -171,6 +183,13 @@ function ProjectPhases() {
     },
   ];
 
+  const transformRow = (row) => ({
+    ...row,
+    performance_summary: row.performance_summary || "-",
+    remaining_work: row.remaining_work || "-",
+    notes: row.description || row.notes || "-",
+  });
+
   return (
     <>
       <div className="printcasedata-container">
@@ -186,6 +205,7 @@ function ProjectPhases() {
           title=" مراحل المشروع"
           triggerReload={tableReloadKey}
           dropdownOptions={dropdownOptions}
+          transformRowFn={transformRow}
           onAddClick={() => setShowModal(true)}
           addBtn={true}
         />
@@ -367,6 +387,20 @@ function ProjectPhases() {
                     error && error.remaining_work && error.remaining_work[0]
                   }
                   placeholder="المهام التي لم تكتمل بعد..."
+                />
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={12}>
+                <RegisterTextbox
+                  label="ملاحظات"
+                  type="text"
+                  value={phaseNotes}
+                  onChange={(e) => setPhaseNotes(e.target.value)}
+                  error={
+                    error && (error.notes ? error.notes[0] : (error.description && error.description[0]))
+                  }
+                  placeholder="ملاحظات إضافية حول المرحلة..."
                 />
               </Col>
             </Row>

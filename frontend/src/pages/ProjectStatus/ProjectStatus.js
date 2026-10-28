@@ -17,6 +17,8 @@ import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import RegisterTextarea from "../../components/RegisterTextarea";
 
+import { toLocal } from "../../Utils/toLocal";
+
 function ProjectStatus() {
   const navigate = useNavigate();
   const [tableReloadKey, setTableReloadKey] = useState(Date.now());
@@ -103,6 +105,7 @@ function ProjectStatus() {
   ];
 
   const dropdownOptions = [
+    { label: "التفاصيل", route: "/projectdetailsview/:id" },
     { label: "مراحل المشروع ", route: "/projectdetails/:id" },
     { label: "اعضاء المشروع", route: "/projectmembers/:id" },
     { label: " مؤشرات الاداء", route: "/projectkpiview/:id" },
@@ -194,6 +197,42 @@ function ProjectStatus() {
     },
   ];
 
+  const modifyRow = (row) => {
+    const budgetVal = parseFloat(row.budget || row.total || 0);
+    const statusVal = Number(row.status);
+    const marketingVal = Number(row.marketingmethod);
+
+    let statusBadge =
+      '<span style="background: rgba(2, 132, 199, 0.12); color: #0284c7; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">قيد التنفيذ</span>';
+    if (statusVal === 2) {
+      statusBadge =
+        '<span style="background: rgba(22, 163, 74, 0.12); color: #16a34a; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">مكتمل</span>';
+    } else if (statusVal === 3) {
+      statusBadge =
+        '<span style="background: rgba(220, 38, 38, 0.12); color: #dc2626; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">ملغي</span>';
+    }
+
+    let marketingBadge =
+      '<span style="background: rgba(100, 116, 139, 0.12); color: #64748b; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">غير محدد</span>';
+    if (marketingVal === 1 || row.marketingmethodstring === "المانحون") {
+      marketingBadge =
+        '<span style="background: rgba(217, 119, 6, 0.12); color: #d97706; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">المانحون</span>';
+    } else if (marketingVal === 2 || row.marketingmethodstring === "المنصات الحكومية") {
+      marketingBadge =
+        '<span style="background: rgba(124, 58, 237, 0.12); color: #7c3aed; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">المنصات الحكومية</span>';
+    } else if (marketingVal === 3 || row.marketingmethodstring === "متاجر الجمعيات") {
+      marketingBadge =
+        '<span style="background: rgba(79, 70, 229, 0.12); color: #4f46e5; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">متاجر الجمعيات</span>';
+    }
+
+    return {
+      ...row,
+      budget: `<span style="font-weight: 700; color: var(--text-color);">${toLocal(budgetVal)} ر.س</span>`,
+      marketingmethodstring: marketingBadge,
+      statusstring: statusBadge,
+    };
+  };
+
   return (
     <>
       <div className="project-status">
@@ -205,6 +244,7 @@ function ProjectStatus() {
           titleIcon={<FontAwesomeIcon icon={faReceipt} />}
           searchDate={false}
           dropdownOptions={dropdownOptions}
+          transformRowFn={modifyRow}
           triggerReload={tableReloadKey}
           addBtn={true}
           onAddClick={() => setShowAddModal(true)}

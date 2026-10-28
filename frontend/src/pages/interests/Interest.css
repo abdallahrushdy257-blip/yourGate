@@ -1,83 +1,115 @@
 .archive-report {
-    margin: 25px auto 0;
-    width: 80%;
-    direction: rtl;
+  margin: 25px auto 0;
+  width: 80%;
+  direction: rtl;
 }
-
-/* code bellow by mohamed hany  */
-.employpaper .archive-report {
-    margin-top: 90px;
-}
-/* code up by mohamed hany  */
 
 .archive-report span {
-    cursor: pointer;
-    /* background: var(--buttonbackground-color); */
-    color: var(--text-color);
-    padding: 5px;
-    border-radius: 7px;
-    display: inline-block;
-    font-size: 17px;
-    font-weight: 600;
+  cursor: pointer;
+  color: var(--text-color);
+  padding: 5px;
+  border-radius: 7px;
+  display: inline-block;
+  font-size: 17px;
+  font-weight: 600;
 }
 
-.small-modall .modal-dialog {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 500px;
+/* ── Interest Modern Modal ───────────────────────────────────── */
+.interest-modal .modal-dialog {
+  max-width: 500px !important;
+  margin: 1.75rem auto !important;
 }
 
-.small-modall .modal-content {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    height: 345px !important;
-    /* overflow: auto; */
+.interest-modal .modal-content {
+  border-radius: 16px !important;
+  border: 1.5px solid var(--border-color, #d4ab72) !important;
+  background: var(--surface-color, #ffffff) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15) !important;
+  overflow: hidden !important;
+  direction: rtl !important;
+  height: auto !important;
 }
 
-.small-modall .modal-body {
-    width: 80%;
+.interest-modal .modal-header {
+  background: linear-gradient(135deg, #2a1a0e 0%, #1a0f07 100%) !important;
+  border-bottom: 1.5px solid #d4ab72 !important;
+  padding: 16px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  direction: rtl !important;
 }
 
-.small-modall .modal-header {
-    width: 100%;
+.interest-modal .modal-title {
+  color: #f0d9b5 !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
 }
 
-.small-modall .modal-header button {
-    color: var(--buttonbackground-color) !important;
+.interest-modal .custom-close-button {
+  color: #d4ab72 !important;
+  font-size: 18px !important;
+  padding: 4px !important;
+  background: transparent !important;
+  border: none !important;
+  line-height: 1 !important;
+  opacity: 0.8 !important;
+  transition: opacity 0.2s ease !important;
 }
 
-.small-modall .modal-footer {
-    width: 100%;
-    justify-content: center;
-    border-top: 1px solid var(--border-color) !important;
-    padding: 15px 0 0 0;
+.interest-modal .custom-close-button:hover {
+  opacity: 1 !important;
+  color: #ffffff !important;
 }
 
-.archModal .modal-header {
-    direction: rtl;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border-color) !important;
-    padding: 0 0 15px 0;
+.interest-modal .modal-body {
+  padding: 20px 24px !important;
+  background: var(--surface-color, #ffffff) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  width: 100% !important;
 }
 
-.archModal .modal-title {
-    width: auto;
+.interest-modal .modal-footer {
+  background: var(--navbar-color, #f7f1e6) !important;
+  border-top: 1px solid var(--border-color, #ebdcc8) !important;
+  padding: 14px 20px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  width: 100% !important;
 }
 
-.archModal .modal-content {
-    /* max-height: 47vh;  */
+.interest-modal .btn-secondary {
+  background: transparent !important;
+  border: 1.5px solid var(--border-color, #dfd3c0) !important;
+  color: var(--text-color, #382f22) !important;
+  font-weight: 600 !important;
+  font-size: 13.5px !important;
+  border-radius: 9px !important;
+  padding: 8px 20px !important;
+  transition: all 0.2s ease !important;
 }
 
-
-.small-modall .modal-footer button{
-    background-color: var(--buttonbackground-color);
-    color: var(--buttontext-color);
-    border: none;
-    font-weight: 700;
+.interest-modal .btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
 }
 
-.small-modall .modal-footer button:hover {
-    background-color: var(--buttonbackgroundhover-color);
+.interest-modal .btn-primary {
+  background: linear-gradient(135deg, #b89358 0%, #9e793d 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  border-radius: 9px !important;
+  padding: 8px 24px !important;
+  box-shadow: 0 4px 12px rgba(184, 147, 88, 0.25) !important;
+  transition: all 0.2s ease !important;
+}
+
+.interest-modal .btn-primary:hover {
+  background: linear-gradient(135deg, #c59f63 0%, #8c6a32 100%) !important;
+  transform: translateY(-1px) !important;
 }

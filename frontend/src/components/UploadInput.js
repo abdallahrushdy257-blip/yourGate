@@ -42,8 +42,13 @@ function UploadInput(props) {
   }, [props.defaultUrl, props.value]);
 
   const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
+    const files = event.target.files;
+    if (files && files.length > 1) {
+      setFileInfo(`تم اختيار ${files.length} ملفات`);
+      setPreviewUrl("");
+      setFileType("file");
+    } else if (files && files.length === 1) {
+      const file = files[0];
       setFileInfo(file.name);
       const type = detectFileType(file.name, file.type);
       setFileType(type);
@@ -216,6 +221,7 @@ function UploadInput(props) {
         onChange={handleFileChange}
         ref={fileInputRef}
         accept="image/*,application/pdf"
+        multiple={props.multiple}
       />
 
       {props.error && (

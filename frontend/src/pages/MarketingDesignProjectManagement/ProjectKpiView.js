@@ -9,8 +9,10 @@ import { useNavigate } from 'react-router';
 
 function ProjectKpiView() {
     const columns = [
-        { name: "السؤال", key: "quiz" },
-        { name: " الحالة", key: "status" },
+        { name: "المؤشر", key: "quiz" },
+        { name: "القيمة المتوقعة", key: "target" },
+        { name: "القيمة الحالية", key: "actual" },
+        { name: "الحالة", key: "status" },
         { name: "", key: "actions" },
     ];
     const navigate = useNavigate();
@@ -43,8 +45,23 @@ function ProjectKpiView() {
     };
 
     const dropdownOptions = [
-        { label: "حذف", action: (id) => handleDeleteClick(id) },
+        { label: "تعديل القيم", action: () => navigate(`/projectkpis/${id}`) },
+        { label: "حذف", action: (rowId) => handleDeleteClick(rowId) },
     ];
+
+    const transformRow = (row) => {
+        let badgeClass = "badge bg-secondary";
+        if (row.status === "ممتاز") badgeClass = "badge bg-success";
+        else if (row.status === "تحذير") badgeClass = "badge bg-warning text-dark";
+        else if (row.status === "خطر") badgeClass = "badge bg-danger";
+
+        return {
+            ...row,
+            target: row.target !== null && row.target !== undefined ? row.target : "-",
+            actual: row.actual !== null && row.actual !== undefined ? row.actual : "-",
+            status: `<span class="${badgeClass} px-3 py-2 fs-6">${row.status || "خطر"}</span>`,
+        };
+    };
 
     return (
         <>
@@ -54,6 +71,7 @@ function ProjectKpiView() {
                     columns={columns}
                     title=" مؤشرات الاداء"
                     dropdownOptions={dropdownOptions}
+                    transformRowFn={transformRow}
                     search={false}
                     triggerReload={tableReloadKey}
                     addBtn={true}

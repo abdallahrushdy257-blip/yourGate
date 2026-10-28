@@ -1,23 +1,24 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faXmark, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Button, Modal, Spinner } from "react-bootstrap";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import TableComponent from "../../components/TableComponent";
 import ConfirmModal from "../../components/ConfirmModal";
 import API from "../../api/axiosConfig";
-import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 function KPI() {
   const columns = [
-    { name: "السؤال", key: "quiz" },
-    { name: "القيمة المتوقعة", key: "target" },
+    { name: "المؤشر / السؤال", key: "quiz" },
+    { name: "القيمة المستهدفة", key: "target_display" },
     { name: "", key: "actions" },
   ];
-  const [rows, setRows] = useState([]);
-  const [error, setError] = useState([]);
+
+  const [error, setError] = useState({});
   const [quiz, setQuiz] = useState("");
-  const [target, setTarget] = useState(0);
+  const [target, setTarget] = useState(100);
+  const [editId, setEditId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableReloadKey, setTableReloadKey] = useState(Date.now());
@@ -27,34 +28,56 @@ function KPI() {
   const [deleteId, setDeleteId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const resetForm = () => {
+    setQuiz("");
+    setTarget(100);
+    setEditId(null);
+    setError({});
+  };
+
+  const handleOpenAdd = () => {
+    resetForm();
+    setShowModal(true);
+  };
+
+  const handleEditClick = (record) => {
+    setEditId(record.id);
+    setQuiz(record.quiz || "");
+    setTarget(record.target !== undefined ? record.target : 100);
+    setError({});
+    setShowModal(true);
+  };
+
   const handlekpi = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const formData = new FormData();
-    formData.append("quiz", quiz);
-    formData.append("target", target);
+    setError({});
+
+    const payload = {
+      quiz: quiz,
+      target: Number(target) || 0,
+    };
 
     try {
-      const res = await API.post(`/kpi/store`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      const data = await res;
-      if (data.status === 200) {
-        setQuiz("");
-        setTarget(0);
-        setError([]);
+      let res;
+      if (editId) {
+        res = await API.post(`/kpi/${editId}/update`, payload);
+      } else {
+        res = await API.post(`/kpi/store`, payload);
+      }
 
+      if (res.status === 200 || res.status === 201) {
+        toast.success(editId ? "تم تحديث المؤشر بنجاح" : "تمت إضافة المؤشر بنجاح");
+        resetForm();
         setShowModal(false);
-        setIsSubmitting(false);
-        setRows(data.data);
         setTableReloadKey(Date.now());
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.errors || {});
+      toast.error(err.response?.data?.message || "حدث خطأ أثناء حفظ المؤشر");
+    } finally {
       setIsSubmitting(false);
-      setError(error.response?.data?.errors || {});
     }
   };
 
@@ -67,20 +90,28 @@ function KPI() {
     setIsDeleting(true);
     try {
       const res = await API.get(`/kpi/${deleteId}/delete`);
-      if (res.status === 200) {
+      if (res.status === 200 || res.status === 204) {
+        toast.success("تم حذف المؤشر بنجاح");
         setTableReloadKey(Date.now());
         setShowConfirm(false);
       }
-    } catch (error) {
-      console.error("There was an error!", error);
+    } catch (err) {
+      console.error("Error deleting KPI:", err);
+      toast.error(err.response?.data?.message || "حدث خطأ أثناء حذف المؤشر");
     } finally {
       setIsDeleting(false);
     }
   };
 
   const dropdownOptions = [
+    { label: "تعديل", action: (id, record) => handleEditClick(record) },
     { label: "حذف", action: (id) => handleDeleteClick(id) },
   ];
+
+  const transformRowFn = (record) => ({
+    ...record,
+    target_display: `${record.target !== undefined ? record.target : 100} %`,
+  });
 
   return (
     <>
@@ -88,43 +119,40 @@ function KPI() {
         <TableComponent
           apiUrl="/kpi"
           columns={columns}
-          title=" مؤشرات الاداء"
+          title="مؤشرات الأداء المعيارية"
           triggerReload={tableReloadKey}
           dropdownOptions={dropdownOptions}
+          transformRowFn={transformRowFn}
           addBtn={true}
-          onAddClick={() => setShowModal(true)}
+          onAddClick={handleOpenAdd}
         />
       </div>
 
-      {/* Add Indicator Modal */}
+      {/* Add / Edit Indicator Modal */}
       <Modal
         show={showModal}
         onHide={() => setShowModal(false)}
         className="modal-table archModal donor-modal"
         centered
         size="md"
+        dir="rtl"
       >
-        <Modal.Header>
-          <Modal.Title className="w-100 text-center">
-            إضافة مؤشر جديد
+        <Modal.Header closeButton>
+          <Modal.Title className="w-100 text-center fw-bold">
+            {editId ? "تعديل مؤشر الأداء" : "إضافة مؤشر أداء جديد"}
           </Modal.Title>
-          <Button
-            className="custom-close-button cls-btn"
-            variant="link"
-            onClick={() => setShowModal(false)}
-          >
-            <FontAwesomeIcon icon={faXmark} className="closeModal" />
-          </Button>
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={handlekpi}>
-            <div className="row g-4">
+            <div className="row g-3">
               <div className="col-12">
                 <RegisterTextbox
-                  label="المؤشر"
+                  label="نص المؤشر / السؤال"
                   type="text"
                   value={quiz}
                   onChange={(e) => setQuiz(e.target.value)}
+                  placeholder="مثال: نسبة الالتزام بالجدول الزمني للمشروع"
+                  required
                 />
                 {error && error.quiz && (
                   <span className="error">{error.quiz[0]}</span>
@@ -132,10 +160,13 @@ function KPI() {
               </div>
               <div className="col-12">
                 <RegisterTextbox
-                  label="القيمة المتوقعة"
+                  label="القيمة المستهدفة (%)"
                   type="number"
                   value={target}
                   onChange={(e) => setTarget(e.target.value)}
+                  min={0}
+                  max={100}
+                  required
                 />
                 {error && error.target && (
                   <span className="error">{error.target[0]}</span>
@@ -158,7 +189,7 @@ function KPI() {
                   type="submit"
                   style={{ minWidth: "120px" }}
                 >
-                  حفظ
+                  {editId ? "حفظ التعديلات" : "إضافة المؤشر"}
                 </Button>
               )}
               <Button

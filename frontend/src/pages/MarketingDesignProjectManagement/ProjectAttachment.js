@@ -18,7 +18,7 @@ function ProjectAttachment() {
   const [rows, setRows] = useState([]);
   const [error, setError] = useState([]);
   const [description, setDescription] = useState("");
-  const [upload, setUpload] = useState("");
+  const [upload, setUpload] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableReloadKey, setTableReloadKey] = useState(Date.now());
@@ -39,8 +39,20 @@ function ProjectAttachment() {
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append("description", description);
-    formData.append("upload", upload);
     formData.append("project_id", id);
+
+    if (Array.isArray(upload) && upload.length > 0) {
+      upload.forEach((file) => {
+        formData.append("upload[]", file);
+        formData.append("uploads[]", file);
+      });
+      if (upload.length === 1) {
+        formData.append("upload", upload[0]);
+      }
+    } else if (upload instanceof File) {
+      formData.append("upload", upload);
+      formData.append("upload[]", upload);
+    }
 
     try {
       const res = await API.post(`/projectuploads/store`, formData, {
@@ -49,15 +61,16 @@ function ProjectAttachment() {
         },
       });
       const data = await res;
-      if (data.status === 200) {
+      if (data.status === 200 || data.status === 201) {
         setDescription("");
-        setUpload("");
+        setUpload(null);
         setError([]);
 
         setShowModal(false);
         setIsSubmitting(false);
-        setRows(data.data);
         setTableReloadKey(Date.now());
+      } else {
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error(error);
@@ -144,14 +157,23 @@ function ProjectAttachment() {
           )}
           <div style={{ marginBottom: "20px" }}></div>
           <UploadInput
-            label="الملف"
+            label="الملف / الملفات (يمكن اختيار أكثر من ملف)"
             type="file"
-            value={upload}
             id="upload"
-            onChange={(e) => setUpload(e.target.files[0])}
+            multiple={true}
+            onChange={(e) => {
+              const files = e.target.files;
+              if (files && files.length > 0) {
+                setUpload(Array.from(files));
+              } else {
+                setUpload(null);
+              }
+            }}
           />
-          {error && error.upload && (
-            <span className="error">{error.upload[0]}</span>
+          {error && (error.upload || error["upload.0"] || error.uploads) && (
+            <span className="error">
+              {error.upload ? error.upload[0] : (error["upload.0"] ? error["upload.0"][0] : error.uploads[0])}
+            </span>
           )}
         </Modal.Body>
         <Modal.Footer>

@@ -149,7 +149,6 @@ function PaymentReport(props) {
                     transformRowFn={modifyRow}
                     searchTextProp={true}
                     searchDate={false}
-                    data={dummyData}
                 />
             </div>
         </>

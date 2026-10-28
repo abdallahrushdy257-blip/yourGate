@@ -56,47 +56,44 @@ function PaymentVoucherProject(props) {
   const getHumancases = async () => {
     try {
       const res = await API.get(`/projectphase/${id}/all`);
-      const data = await res;
-      if (data.status === 200) {
-        setHumancases(data.data);
-        setLoading(false);
-      }
+      const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+      setHumancases(Array.isArray(list) ? list : []);
     } catch (error) {
       console.error(error);
+      setHumancases([]);
     }
   };
 
   const getAccount = async () => {
     try {
       const res = await API.get("/transactions/components/donations");
-      const data = await res;
-      console.log(data);
-      setAccount(data.data);
-      setLoading(false);
+      const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+      setAccount(Array.isArray(list) ? list : []);
     } catch (error) {
       console.error(error);
+      setAccount([]);
     }
   };
 
   const getProject = async () => {
     try {
       const res = await API.get(`/projects/${id}`);
-      const data = await res;
-      console.log(data.data);
-      if (data.status === 200) {
-        setRows(data.data);
-        setLoading(false);
-      }
+      const projectData = res.data?.data || res.data || {};
+      setRows(projectData);
     } catch (error) {
       console.error(error);
+      setRows({});
     }
   };
 
   useEffect(() => {
-    getHumancases();
-    getAccount();
-    getProject();
-  }, []);
+    const fetchData = async () => {
+      setLoading(true);
+      await Promise.allSettled([getHumancases(), getAccount(), getProject()]);
+      setLoading(false);
+    };
+    fetchData();
+  }, [id]);
 
   const [paymentTypeError, setPaymentTypeError] = useState("");
 
@@ -204,9 +201,9 @@ function PaymentVoucherProject(props) {
                 }}
                 options={[
                   { value: "", label: "إختر الحساب" },
-                  ...account.map((account) => ({
-                    value: account.id,
-                    label: account.name,
+                  ...(Array.isArray(account) ? account : []).map((acc) => ({
+                    value: acc.id,
+                    label: acc.name,
                   })),
                 ]}
                 value={cridet}
@@ -227,8 +224,8 @@ function PaymentVoucherProject(props) {
                 }}
                 options={[
                   { value: "", label: "إختر المرحلة" },
-                  { value: "0", label: "لا يوجد المرحلة" },
-                  ...humancases.map((humancase) => ({
+                  { value: "0", label: "لا يوجد مرحلة" },
+                  ...(Array.isArray(humancases) ? humancases : []).map((humancase) => ({
                     value: humancase.id,
                     label: humancase.name,
                   })),

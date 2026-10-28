@@ -1,0 +1,323 @@
+/* ═══════════════════════════════════════════════════════════════
+   PROJECT COMPREHENSIVE DETAILS VIEW (التفاصيل الشاملة للمشروع)
+   ═══════════════════════════════════════════════════════════════ */
+
+.project-view-page {
+  width: 95%;
+  max-width: 1440px;
+  margin: 15px auto 50px;
+  direction: rtl;
+}
+
+/* ── Top Header Navigation ──────────────────────────────────── */
+.project-view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1.5px solid var(--border-color, #ebdcc8);
+}
+
+.project-view-header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.project-back-btn {
+  background: var(--surface-color, #ffffff) !important;
+  border: 1.5px solid var(--border-color, #ebdcc8) !important;
+  color: var(--text-color, #382f22) !important;
+  border-radius: 12px !important;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.project-back-btn:hover {
+  background: rgba(184, 147, 88, 0.1) !important;
+  border-color: var(--primary-color, #b89358) !important;
+  color: var(--primary-color, #b89358) !important;
+  transform: translateX(2px);
+}
+
+.project-header-info h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-color, #382f22);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.project-header-subtitle {
+  font-size: 13px;
+  color: var(--placeholder-color, #8c7e6c);
+  margin-top: 3px;
+}
+
+.project-view-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.project-action-btn {
+  border-radius: 10px !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  padding: 8px 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+/* ── Hero KPI Cards Grid ────────────────────────────────────── */
+.project-view-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.project-view-kpi-card {
+  background: var(--surface-color, #ffffff);
+  border: 1px solid var(--border-color, #ebdcc8);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-view-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.project-kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--placeholder-color, #8c7e6c);
+  margin-bottom: 4px;
+}
+
+.project-kpi-value {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.project-view-kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.kpi-gold .project-view-kpi-icon {
+  background: rgba(184, 147, 88, 0.12);
+  color: var(--primary-color, #b89358);
+}
+
+.kpi-green .project-view-kpi-icon {
+  background: rgba(40, 167, 69, 0.12);
+  color: #28a745;
+}
+
+.kpi-danger .project-view-kpi-icon {
+  background: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+}
+
+.kpi-blue .project-view-kpi-icon {
+  background: rgba(13, 110, 253, 0.12);
+  color: #0d6efd;
+}
+
+.kpi-purple .project-view-kpi-icon {
+  background: rgba(111, 66, 193, 0.12);
+  color: #6f42c1;
+}
+
+/* ── Progress Box ───────────────────────────────────────────── */
+.project-view-progress-box {
+  background: var(--surface-color, #ffffff);
+  border: 1px solid var(--border-color, #ebdcc8);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* ── Tabs Container ─────────────────────────────────────────── */
+.project-tabs-container {
+  background: var(--surface-color, #ffffff);
+  border: 1px solid var(--border-color, #ebdcc8);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.project-tabs-container .nav-tabs {
+  border-bottom: 1.5px solid var(--border-color, #ebdcc8);
+  background: rgba(235, 220, 200, 0.15);
+  padding: 8px 12px 0;
+  display: flex;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  gap: 6px;
+  scrollbar-width: thin;
+}
+
+.project-tabs-container .nav-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.project-tabs-container .nav-tabs::-webkit-scrollbar-thumb {
+  background: var(--border-color, #ebdcc8);
+  border-radius: 4px;
+}
+
+.project-tabs-container .nav-tabs .nav-link {
+  border: none !important;
+  color: var(--text-color, #382f22) !important;
+  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  padding: 10px 18px !important;
+  border-radius: 10px 10px 0 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: all 0.2s ease !important;
+  background: transparent !important;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+}
+
+.project-tabs-container .nav-tabs .nav-link:hover {
+  color: var(--primary-color, #b89358) !important;
+  background: rgba(184, 147, 88, 0.08) !important;
+}
+
+.project-tabs-container .nav-tabs .nav-link.active {
+  color: var(--primary-color, #b89358) !important;
+  background: var(--surface-color, #ffffff) !important;
+  border-top: 3px solid var(--primary-color, #b89358) !important;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.project-tabs-content {
+  padding: 24px;
+}
+
+/* ── Overview Grid ──────────────────────────────────────────── */
+.project-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.project-info-card {
+  background: rgba(235, 220, 200, 0.08);
+  border: 1px solid var(--border-color, #ebdcc8);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.project-info-card h4 {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: var(--text-color, #382f22);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.project-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(235, 220, 200, 0.6);
+  font-size: 13px;
+}
+
+.project-info-row:last-child {
+  border-bottom: none;
+}
+
+.project-info-row .label {
+  color: var(--placeholder-color, #8c7e6c);
+  font-weight: 600;
+}
+
+.project-info-row .val {
+  color: var(--text-color, #382f22);
+  font-weight: 700;
+}
+
+/* ── Custom Data Tables inside Tabs ─────────────────────────── */
+.project-sub-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color, #ebdcc8);
+  font-size: 13px;
+}
+
+.project-sub-table th {
+  background: rgba(235, 220, 200, 0.25);
+  padding: 12px 14px;
+  font-weight: 800;
+  color: var(--text-color, #382f22);
+  text-align: right;
+  border-bottom: 1px solid var(--border-color, #ebdcc8);
+}
+
+.project-sub-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(235, 220, 200, 0.4);
+  color: var(--text-color, #382f22);
+  text-align: right;
+}
+
+.project-sub-table tr:last-child td {
+  border-bottom: none;
+}
+
+.project-sub-table tr:hover td {
+  background: rgba(184, 147, 88, 0.04);
+}
+
+.empty-tab-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--placeholder-color, #8c7e6c);
+}
+
+.empty-tab-state .icon {
+  font-size: 40px;
+  opacity: 0.35;
+  margin-bottom: 12px;
+}

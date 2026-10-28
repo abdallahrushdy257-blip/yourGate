@@ -1,6 +1,8 @@
 .printcasedata-container {
-  width: 80%;
-  margin: auto;
+  width: 95%;
+  max-width: 1440px;
+  margin: 20px auto;
+  direction: rtl;
 }
 
 .printTabel-container {
@@ -8,31 +10,6 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
-  padding-top: 4%;
-}
-
-.printTabel {
-  margin: auto;
-  width: 100%;
-  background: rgba(17, 17, 19, 1);
-}
-.printTabel tr {
-  border: 3px solid black;
-}
-
-.printTabel th {
-  padding: 2%;
-  text-align: center;
-  font-weight: 300;
-  font-size: 20px;
-}
-.printTabel td {
-  padding: 1%;
-  text-align: center;
-}
-
-.printTabelHead {
-  background: rgba(31, 35, 42, 1);
 }
 
 .timePer {

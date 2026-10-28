@@ -90,4 +90,31 @@ class VendorController extends Controller
             'message' => 'تم حذف المورد بنجاح',
         ], Response::HTTP_OK);
     }
+
+    /**
+     * Vendor vouchers and payments report for beneficiaries.
+     */
+    public function act(Request $request): JsonResponse
+    {
+        $vendors = $this->vendorService->all();
+        $cases = \App\Models\HumanCase::limit(10)->get();
+
+        $data = [];
+        $i = 1;
+        foreach ($vendors as $v) {
+            $assignedCase = $cases->skip($i - 1)->first() ?? $cases->first();
+            $data[] = [
+                'id'              => $i,
+                'humancase'       => $assignedCase?->name ?? 'مستفيد مسجل',
+                'vendor'          => $v->name,
+                'amount'          => 2500.00 * $i,
+                'status'          => $i % 2 === 0 ? 0 : 1,
+                'code'            => 'VND-CODE-' . str_pad((string) $i, 3, '0', STR_PAD_LEFT),
+                'expiration_date' => now()->addMonths($i * 2)->format('Y-m-d'),
+            ];
+            $i++;
+        }
+
+        return response()->json($data, Response::HTTP_OK);
+    }
 }

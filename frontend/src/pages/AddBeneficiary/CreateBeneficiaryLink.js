@@ -250,9 +250,23 @@ function CreateBeneficiaryLink() {
       {/* Recent Tokens History Table */}
       <div className="cbl-card">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <div className="cbl-card-title mb-0">
+          <div className="cbl-card-title mb-0 d-flex align-items-center gap-2">
             <span className="dot"></span>
             <span>سجل الروابط المنشأة مؤخراً</span>
+            {tokens.length > 0 && (
+              <span
+                style={{
+                  backgroundColor: "rgba(194, 154, 100, 0.15)",
+                  color: "var(--primary-color, #c29a64)",
+                  fontSize: "12px",
+                  padding: "2px 10px",
+                  borderRadius: "12px",
+                  fontWeight: "bold",
+                }}
+              >
+                {tokens.length}
+              </span>
+            )}
           </div>
           <button
             type="button"

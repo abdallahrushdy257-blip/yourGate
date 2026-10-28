@@ -17,9 +17,37 @@ function ProjectKPI() {
   const getKpis = async () => {
     try {
       const res = await API.get(`/kpi/quizs`);
-      setKpis(res.data);
+      const defaultList = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+
+      try {
+        const existingRes = await API.get(`/projectkpi/${id}`);
+        const existingList = existingRes.data?.data || existingRes.data || [];
+        if (Array.isArray(existingList) && existingList.length > 0) {
+          const merged = defaultList.map((quizItem) => {
+            const match = existingList.find(
+              (ex) => ex.quiz === quizItem.quiz || ex.kpi_id === quizItem.id
+            );
+            if (match) {
+              const act = match.actual !== undefined ? match.actual : "";
+              return {
+                ...quizItem,
+                actual: act,
+                status: match.status || calculateStatus(act, quizItem.target),
+              };
+            }
+            return quizItem;
+          });
+          setKpis(merged);
+          return;
+        }
+      } catch (err) {
+        // ignore if not found
+      }
+
+      setKpis(defaultList);
     } catch (error) {
       console.error("There was an error!", error);
+      setKpis([]);
     } finally {
       setLoading(false);
     }
@@ -51,10 +79,12 @@ function ProjectKPI() {
 
     try {
       const payload = {
-        project_id: id,
-        kpis: kpis.map((k) => ({
+        project_id: Number(id),
+        kpis: (Array.isArray(kpis) ? kpis : []).map((k) => ({
           kpi_id: k.id,
-          actual: k.actual,
+          target: k.target !== "" && k.target !== null && !isNaN(k.target) ? Number(k.target) : 100,
+          actual: k.actual !== "" && k.actual !== null && !isNaN(k.actual) ? Number(k.actual) : 0,
+          quiz: k.quiz || k.title || null,
         })),
       };
 
@@ -82,7 +112,7 @@ function ProjectKPI() {
         style={{ width: "unset", marginBottom: "20px" }}
       />
       <br />
-      {kpis.map((kpi, index) => (
+      {(Array.isArray(kpis) ? kpis : []).map((kpi, index) => (
         <div key={kpi.id} className="kpi-row">
           <RegisterTextBox
             parentStyle={{ width: "100%" }}

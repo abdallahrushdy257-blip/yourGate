@@ -10,6 +10,7 @@ import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import API from "../../api/axiosConfig";
 import { toast } from "react-toastify";
+import ConfirmModal from "../../components/ConfirmModal";
 
 function ShowDonors(props) {
   // ── Table ──────────────────────────────────────────────
@@ -29,9 +30,37 @@ function ShowDonors(props) {
       action: (id, record) => handleEditOpen(id, record),
     },
     { label: "سند قبض", route: "/donerreceiptvoucher/:id" },
+    {
+      label: "حذف",
+      action: (id) => {
+        setItemToDelete(id);
+        setShowConfirm(true);
+      },
+    },
   ];
 
   const [tableReloadKey, setTableReloadKey] = useState(Date.now());
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await API.delete(`/donor/${itemToDelete}`);
+      if (res.status === 200 || res.status === 204) {
+        toast.success("تم حذف المانح بنجاح");
+        setTableReloadKey(Date.now());
+        setShowConfirm(false);
+      }
+    } catch (err) {
+      console.error("Error deleting donor:", err);
+      toast.error("حدث خطأ أثناء الحذف");
+    } finally {
+      setIsDeleting(false);
+      setItemToDelete(null);
+    }
+  };
 
   // ── Modal state ─────────────────────────────────────────
   const [showModal, setShowModal] = useState(false);
@@ -320,6 +349,14 @@ function ShowDonors(props) {
           )}
         </Modal.Footer>
       </Modal>
+
+      <ConfirmModal
+        show={showConfirm}
+        onHide={() => setShowConfirm(false)}
+        onConfirm={handleDelete}
+        isSubmitting={isDeleting}
+        message="هل أنت متأكد من حذف هذا المانح؟ لا يمكن التراجع عن هذا الإجراء."
+      />
     </>
   );
 }

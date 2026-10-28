@@ -140,11 +140,10 @@ function DonationsReport(props) {
                     columns={columns}
                     title="تقرير مدفوعات المانحون"
                     titleIcon={<FontAwesomeIcon icon={faPrint} />}
-                    dropdownOptions = {dropdownOptions}
+                    dropdownOptions={dropdownOptions}
                     transformRowFn={modifyRow}
                     searchTextProp={true}
                     searchDate={false}
-                    data={dummyData}
                 />
             </div>
         </>

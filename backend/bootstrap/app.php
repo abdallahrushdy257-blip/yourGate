@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\SetLocale::class,
             \App\Http\Middleware\IdentifyStore::class,
         ]);
+        $middleware->redirectGuestsTo(fn (\Illuminate\Http\Request $request) => ($request->is('api/*') || $request->expectsJson()) ? null : '/login');
         $middleware->alias([
             'store.identify' => \App\Http\Middleware\IdentifyStore::class,
             'set.locale'     => \App\Http\Middleware\SetLocale::class,
