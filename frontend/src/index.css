@@ -1185,10 +1185,10 @@ nav.landingPageNav.navbar.navbar-expand-lg {
   display: none;
 }
 
-.printTabelHead th:first-child {
+/* .printTabelHead th:first-child {
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
-}
+} */
 
 .printTabelHead th:last-child {
   /* border-top-left-radius: 20px;

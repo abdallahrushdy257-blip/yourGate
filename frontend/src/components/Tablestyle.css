@@ -83,7 +83,7 @@
 
 .search-input-icon {
   position: absolute !important;
-  right: 13px !important;
+  left: 13px !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
   color: var(--label-color, #8c7e6c) !important;
