@@ -1,0 +1,99 @@
+
+.carousel-container {
+    max-width: 80%;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .carousel-item {
+    margin: 0 10px;
+  }
+  
+  .slide-content {
+    background-color: #f7f7f7; /* Light background for content */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .slide-content:hover {
+    /* transform: scale(1.05); Slight zoom effect on hover */
+  }
+  
+  /* Heading styles */
+  .slide-content h3 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  /* Paragraph styles */
+  .slide-content p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  /* Button styles */
+  .slide-content button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Button hover effect */
+  .slide-content button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Remove the default navigation arrows (white circles) */
+  .slick-prev, .slick-next {
+    display: none !important; /* Hide default arrows */
+  }
+  
+  /* Custom arrow styles */
+  .custom-arrow {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    color: white;
+    font-size: 30px;
+    padding: 10px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+  }
+  
+  /* Position the left custom arrow */
+  .prev-arrow {
+    left: 10px;
+  }
+  
+  /* Position the right custom arrow */
+  .next-arrow {
+    right: 10px;
+  }
+  
+  /* Darker background color for the custom arrows on hover */
+  .custom-arrow:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  /* Custom dot styles */
+  .slick-dots {
+    bottom: -30px; /* Adjust the position of the dots */
+  }
+  
+  .slick-dots li button:before {
+    color: #007bff; /* Change dot color */
+  }
+  
+  .slick-dots li.slick-active button:before {
+    color: #ff5722; /* Change active dot color */
+  }
+  

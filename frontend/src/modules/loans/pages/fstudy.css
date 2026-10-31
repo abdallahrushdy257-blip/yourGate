@@ -1,0 +1,91 @@
+.fstudy-container {
+  width: 90%;
+  margin: auto;
+  font-family: "Cairo", sans-serif;
+  color: #222;
+  background: #fff;
+}
+
+.print-header {
+  text-align: center;
+  border-bottom: 3px solid #2a9d8f;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+}
+
+section {
+  margin: 25px 0;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+/* h2 {
+  color: #2a9d8f;
+  border-bottom: 2px solid #2a9d8f;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+} */
+
+.two-col {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 10px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+/* table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+} */
+
+.print-footer {
+  text-align: center;
+  margin: 30px;
+}
+
+.print-footer button {
+  background-color: #2a9d8f;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  .fstudy-container {
+    width: 100%;
+    border: none;
+  }
+  section {
+    page-break-inside: avoid;
+  }
+}

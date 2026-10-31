@@ -41,6 +41,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import "./ProjectDetailsView.css";
+import RiskMitigation from "./RiskMitigation";
 
 export default function ProjectDetailsView() {
   const { id } = useParams();
@@ -53,6 +54,15 @@ export default function ProjectDetailsView() {
   // Progress Modal
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [progressPct, setProgressPct] = useState(0);
+
+  // Mitigation Modal
+  const [showMitigationModal, setShowMitigationModal] = useState(false);
+  const [selectedRiskId, setSelectedRiskId] = useState(null);
+
+  const handleOpenMitigation = (riskId) => {
+    setSelectedRiskId(riskId);
+    setShowMitigationModal(true);
+  };
 
   // Financial Filter
   const [financialFilter, setFinancialFilter] = useState("all"); // all, receipts, payments
@@ -758,7 +768,9 @@ export default function ProjectDetailsView() {
                           <th>مستوى التأثير</th>
                           <th>الاحتمالية</th>
                           <th>الحالة</th>
-                          <th>إجراءات التخفيف</th>
+                          <th>خطة وإجراءات التخفيف</th>
+                          <th>التأثير بعد التخفيف</th>
+                          <th>الاحتمالية بعد التخفيف</th>
                           <th>الإجراء</th>
                         </tr>
                       </thead>
@@ -783,14 +795,50 @@ export default function ProjectDetailsView() {
                                 {r.status_string || r.status || "مفتوح"}
                               </Badge>
                             </td>
-                            <td style={{ maxWidth: "200px", fontSize: "13px" }}>
-                              {r.mitigation_description || r.action_plan || "لم تسجل خطة تخفيف"}
+                            <td style={{ maxWidth: "220px", fontSize: "13px" }}>
+                              {r.mitigation_description && r.mitigation_description !== "لم يتم تسجيل خطة تخفيف بعد" ? (
+                                <span className="fw-semibold text-dark">{r.mitigation_description}</span>
+                              ) : (
+                                <span className="text-muted fst-italic">لا توجد خطة بعد</span>
+                              )}
+                            </td>
+                            <td>
+                              <Badge
+                                bg={
+                                  r.mitigation_impact === "مرتفع"
+                                    ? "danger"
+                                    : r.mitigation_impact === "منخفض"
+                                    ? "success"
+                                    : r.mitigation_impact === "متوسط"
+                                    ? "warning"
+                                    : "secondary"
+                                }
+                                text={r.mitigation_impact === "متوسط" ? "dark" : "white"}
+                              >
+                                {r.mitigation_impact || "لم يحدد"}
+                              </Badge>
+                            </td>
+                            <td>
+                              <Badge
+                                bg={
+                                  r.mitigation_probability === "مرتفع"
+                                    ? "danger"
+                                    : r.mitigation_probability === "منخفض"
+                                    ? "success"
+                                    : r.mitigation_probability === "متوسط"
+                                    ? "warning"
+                                    : "secondary"
+                                }
+                                text={r.mitigation_probability === "متوسط" ? "dark" : "white"}
+                              >
+                                {r.mitigation_probability || "لم يحدد"}
+                              </Badge>
                             </td>
                             <td>
                               <Button
                                 variant="outline-success"
                                 size="sm"
-                                onClick={() => navigate(`/riskmitigation/${r.id}`)}
+                                onClick={() => handleOpenMitigation(r.id)}
                                 style={{ fontSize: "12px", padding: "3px 10px", whiteSpace: "nowrap" }}
                               >
                                 خطة التخفيف
@@ -1021,6 +1069,14 @@ export default function ProjectDetailsView() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* ── Risk Mitigation Modal ───────────────────────────────── */}
+      <RiskMitigation
+        show={showMitigationModal}
+        onHide={() => setShowMitigationModal(false)}
+        riskId={selectedRiskId}
+        onSuccess={fetchProjectDetails}
+      />
     </div>
   );
 }

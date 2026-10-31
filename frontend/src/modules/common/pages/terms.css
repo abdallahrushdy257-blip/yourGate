@@ -1,0 +1,53 @@
+.termsPage {
+  direction: rtl;
+  background: var(--background-color);
+  padding: 40px 0;
+}
+
+.termsContainer {
+  background: var(--background-color);
+  margin: auto;
+  padding: 40px;
+  max-width: 900px;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+
+.termsTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.termsDate {
+  font-size: 14px;
+  color: var(--text-color);
+  margin-bottom: 20px;
+}
+
+.termsSectionTitle {
+  font-size: 22px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.termsParagraph {
+  font-size: 16px;
+  line-height: 1.9;
+  color: var(--text-color);
+}
+
+.termsList {
+  margin-right: 20px;
+  padding: 0;
+}
+
+.termsList li {
+  margin: 8px 0;
+  font-size: 16px;
+  color: var(--text-color);
+  line-height: 1.8;
+}

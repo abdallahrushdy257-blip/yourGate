@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../components/title";
-import "./jobTitle.css";
+import "../../pages/JobTitle/jobTitle.css";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import { Form, Spinner } from "react-bootstrap";

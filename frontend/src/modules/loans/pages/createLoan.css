@@ -1,0 +1,294 @@
+.myTabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 3%;
+    direction: rtl;
+    flex-wrap: wrap;
+}
+/* الحاوية الرئيسية */
+.custom-data-view {
+    direction: rtl;
+    padding: 20px;
+    max-width: 95%;
+    margin: auto;
+}
+
+.data-section {
+    background-color: rgba(255, 255, 255, 0.03); /* خلفية خفيفة جداً */
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px solid #c6934b33; /* ذهبي شفاف */
+}
+
+.section-title {
+    color: #c6934b; /* اللون الذهبي الخاص بك */
+    font-size: 22px;
+    margin-bottom: 20px;
+    border-right: 4px solid #c6934b;
+    padding-right: 15px;
+}
+
+/* تنسيق الجدول */
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px; /* مسافة بين الصفوف */
+    text-align: center;
+}
+
+.custom-table th {
+    background-color: #c6934b;
+    color: #000; /* نص أسود فوق الذهبي لسهولة القراءة */
+    padding: 12px;
+    font-weight: bold;
+    border-radius: 0;
+}
+
+/* تدوير حواف الرأس */
+.custom-table th:first-child { border-radius: 0 8px 8px 0; }
+.custom-table th:last-child { border-radius: 8px 0 0 8px; }
+
+.custom-table td {
+    background-color: #1a1a1a; /* لون داكن يتناسب مع الخلفية */
+    color: #fff;
+    padding: 15px;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #333;
+}
+
+/* تدوير حواف الصفوف */
+.custom-table td:first-child { border-right: 1px solid #333; border-radius: 0 8px 8px 0; }
+.custom-table td:last-child { border-left: 1px solid #333; border-radius: 8px 0 0 8px; }
+
+/* تنسيق الصور داخل الجدول */
+.image-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-cell img {
+    max-width: 80px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #c6934b;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.image-cell img:hover {
+    transform: scale(2); /* تكبير عند الوقوف عليها */
+    z-index: 10;
+}
+
+.no-img {
+    font-size: 13px;
+    color: #888;
+}
+
+.empty-msg {
+    padding: 30px !important;
+    font-style: italic;
+    color: #888 !important;
+}
+
+.text-danger {
+    color: #ff4d4d !important;
+}
+.health-cards-container {
+    padding: 20px;
+    direction: rtl;
+}
+
+/* تنسيق البطاقة الواحدة */
+.health-card {
+    background-color: #0c0c0c; /* أسود فخم */
+    border: 1px solid #c6934b44; /* ذهبي شفاف */
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+}
+
+.health-card:hover {
+    border-color: #c6934b;
+}
+
+/* توزيع الحقول داخل البطاقة */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-group.full-width {
+    grid-column: 1 / -1; /* يأخذ العرض بالكامل للملاحظات والتقرير */
+}
+
+.info-group label {
+    color: #c6934b; /* ذهبي */
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+/* صندوق القيمة (بديل الـ Input المعطل) */
+.value-box {
+    background-color: #1a1a1a;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    font-size: 15px;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+}
+
+.danger-level { border-right: 4px solid #dc3545; } /* علامة حمراء للخطورة */
+.cost-value { color: #c6934b; font-weight: bold; }
+.notes-box { line-height: 1.6; }
+
+/* معاينة التقرير */
+.report-preview img {
+    max-width: 200px;
+    border-radius: 10px;
+    border: 1px solid #c6934b;
+    margin-top: 10px;
+}
+.print-only {
+  display: none;
+}
+
+@media print {
+  .print-only {
+    display: block;
+  }
+
+  .createloan {
+    display: none;
+  }
+}
+.empty-health {
+    text-align: center;
+    color: #c6934b;
+    padding: 50px;
+    background: rgba(198, 147, 75, 0.05);
+    border-radius: 20px;
+    border: 1px dashed #c6934b44;
+}
+
+/* للموبايل */
+@media (max-width: 600px) {
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.loantab {
+    margin-left: 20px;
+    padding: 6px 20px;
+    border-radius: 4px;
+    background: transparent;
+    border: 3px solid transparent;
+    color: var(--text-color);
+    transition: .5s;
+}
+
+.loantab.active,
+.loantab:hover {
+    border: 3px solid var(--border-color);
+    background-color: var(--border-color) !important;
+}
+
+.navigationButtons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2% 0px;
+    gap: 20px;
+
+}
+
+.loanbtn {
+    padding: 5px 20px;
+    background: transparent;
+    color: var(--text-color);
+    border: 3px solid var(--border-color);
+    border-radius: 5px;
+    transition: .2s;
+}
+
+.loanbtn:hover {
+    background: #46484f6e;
+}
+
+.saveButton {
+    background: var(--buttonbackground-color);
+    border: none;
+    color: var(--buttontext-color);
+    border: 3px solid var(--buttonbackground-color);
+}
+
+.saveButton:hover {
+    background: unset;
+    color: var(--text-color)
+}
+
+.loanContent {
+    width: 80%;
+    margin: auto;
+    direction: rtl;
+    margin-top: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.loanContent2 {
+    width: 80%;
+    margin: auto;
+    direction: rtl;
+    margin-top: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    column-gap: 15px;
+    flex-wrap: wrap;
+}
+
+.addattachrow {
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.association {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+
+.loanRow {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+    flex-wrap: wrap;
+}

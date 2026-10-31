@@ -1,0 +1,171 @@
+.org-chart-container {
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+}
+
+.org-chart-container h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.departments-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  width: 100%;
+}
+
+.department-card {
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 1200px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: all 0.3s ease-in-out;
+  background: var(--scrollbackground--color);
+}
+
+.department-card:hover {
+  border-color: rgba(139, 92, 246, 0.7);
+  border-color: rgba(122, 201, 148, 0.7);
+}
+
+.department-header {
+  text-align: center;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.department-header h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  -webkit-background-clip: text;
+  background-clip: text;
+  margin: 0;
+  color: var(--buttontext-color);
+}
+
+.manager-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.employees-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 25px;
+  padding-top: 30px;
+  border-top: 1px dashed var(--border-color);
+  position: relative;
+}
+
+.employees-grid::before {
+  content: 'الموظفون';
+  position: absolute;
+  top: -15px;
+  right: 50%;
+  transform: translateX(50%);
+  padding: 5px 20px;
+  color: var(--buttontext-color);
+  background-color: var(--buttonbackground-color);
+  font-weight: 400;
+  font-size: 0.9rem;
+  border-radius: 12px;
+}
+
+
+.person-card {
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+  background: var(--background-color);
+}
+
+.person-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 10px 25px rgba(115, 201, 75, 0.3);
+  border-color: rgba(200, 255, 189, 0.5);
+}
+
+.person-card .avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #b6c2b1, #5d6b5f);
+  margin: 0 auto 15px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  border: 3px solid #1a1a2e;
+}
+
+.person-card .person-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+}
+
+.person-card .person-role {
+  font-size: 0.85rem;
+  font-weight: 300;
+}
+
+.person-card.manager {
+  border: 1px solid var(--border-color);
+  width: 310px;
+  background: var(--background-color);
+}
+
+.person-card.manager .avatar {
+  width: 100px;
+  height: 100px;
+  font-size: 3.5rem;
+}
+
+.person-card.manager .person-name {
+  font-size: 1.3rem;
+}
+
+.person-card .role-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: var(--text-color);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--buttontext-color);
+  background-color: var(--buttonbackground-color);}
+
+.loader,
+.error-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  width: fit-content;
+  margin: auto;
+}
+
+.modal {
+  display: block !important;
+}

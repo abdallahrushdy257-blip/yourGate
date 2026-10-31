@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import CustomButton from "../../components/CustomButton";
 import SettingTabs from "./SettingTabs";
 import { Form } from "react-bootstrap";
-import API from "../../api/axiosConfig";
+import { settingsService } from "../../modules/settings";
 import { text } from "@fortawesome/fontawesome-svg-core";
 
 function PrintSetting() {
@@ -36,7 +36,7 @@ function PrintSetting() {
 
   // -------- LOAD FROM API ON MOUNT ---------
   useEffect(() => {
-  API.get("/print")
+  settingsService.getPrintSettings()
     .then((res) => {
       if (res.data?.settings) {
 
@@ -74,9 +74,7 @@ function PrintSetting() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    API.post("/print/store", {
-    settings: settings
-});
+    settingsService.savePrintSettings(settings);
   };
   return (
     <div

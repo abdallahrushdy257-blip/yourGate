@@ -16,6 +16,7 @@ class StoreProjectUploadRequest extends BaseApiRequest
         return [
             'project_id'    => ['required', 'integer', 'exists:projects,id'],
             'description'   => ['nullable'],
+            'description.*' => ['nullable', 'string', 'max:1000'],
             'upload'        => ['nullable'],
             'upload.*'      => ['nullable', 'file', 'max:51200'],
             'uploads'       => ['nullable'],

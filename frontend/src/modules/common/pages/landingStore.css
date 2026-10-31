@@ -1,0 +1,104 @@
+.landingStoreContainer {
+    width: 100%;
+    color: var(--text-color)
+}
+
+.sliderContainer {
+    width: 80%;
+    margin: auto;
+    color: var(--text-color)
+}
+
+
+.sliderHead {
+    margin: 100px auto 30px auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    color: var(--text-color)
+}
+
+.donationCart {
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 5px;
+    color: var(--text-color)
+}
+
+
+.donationCart,
+.showAllProject {
+    direction: rtl;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+svg.svg-inline--fa.fa-arrow-up-long {
+    transform: rotate(-45deg);
+
+}
+
+.sliderContent {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+    color: var(--text-color)
+}
+
+.landingStoreSlide {
+    /* width: 25%; */
+    background-color: var(--border-color);
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    border-radius: 5px;
+    color: var(--text-color)
+}
+
+.addToCart {
+    background: #9393f7;
+    width: 134px;
+    text-align: center;
+    margin-left: 5px;
+    padding: 3px;
+    border-radius: 20px;
+    color: var(--text-color)
+}
+
+.slideText {}
+
+.slideTitle {
+    text-align: center;
+    font-size: 25px;
+    font-weight: 700;
+    padding: 4px 32px;
+    color: var(--text-color)
+}
+
+.slideDesc {
+    text-align: center;
+    margin-top: 25px;
+    direction: rtl;
+    color: var(--text-color);
+    width: 79%;
+    margin: auto;
+}
+
+.slideMoney {
+    font-size: 18px;
+    font-weight: 700;
+    color: rgb(100, 100, 212);
+    text-align: center;
+}
+
+.sliderHead2 {
+    margin: 55px 0px 10px;
+}
+
+
+.landingStoreContainer2 {
+    margin-top: 60px;
+}
