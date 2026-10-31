@@ -1,0 +1,334 @@
+.ReceiptContainer {
+  width: 70%;
+  margin: auto;
+  direction: rtl;
+  /* display: flex; */
+  /* flex-wrap: wrap; */
+  /* justify-content: center; */
+  /* gap: 5%; */
+  margin-top: 2%;
+}
+
+
+
+.fixedVoucher {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.vouHead {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 2%;
+}
+
+.ReceiptTabelCon {
+  width: 65%;
+  margin: auto;
+  margin-top: 1%;
+  direction: rtl;
+}
+
+.datevou {
+  
+}
+
+
+.receiptTabel-tbody td {
+  padding: 1%;
+}
+
+.signatureCon {
+  display: flex;
+  direction: rtl;
+  width: 70%;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2%;
+  gap: 10%;
+}
+
+.signatureCon1 {
+  width: 30%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  padding: 20px 0;
+}
+
+.barCode {
+  width: 49%;
+  padding: 9px;
+}
+
+.signaturebuttonCon {
+  width: 60%;
+  margin: auto;
+  text-align: center;
+}
+
+.signaturebutton {
+  background: rgba(163, 204, 254, 1) !important;
+  color: black !important;
+  border: none !important;
+  width: 20% !important;
+  padding: 1% !important;
+  font-weight: 700 !important;
+  transition: 0.5s;
+}
+
+.signaturebutton:hover {
+  background: #c9e1ff !important;
+}
+
+@media (max-width: 768px) {
+  .ReceiptContainer {
+    width: 90%;
+    gap: 20px;
+  }
+
+  .signatureCon {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .signatureCon1 {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .ReceiptTabelCon {
+    width: 90%;
+  }
+
+  .receiptTabel {
+    font-size: 14px;
+  }
+
+  .signaturebutton {
+    width: 40% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .ReceiptContainer {
+    width: 100%;
+    gap: 15px;
+  }
+
+  .ReceiptTabelCon {
+    width: 100%;
+  }
+
+  .signatureCon {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .signatureCon1 {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .receiptTabel {
+    font-size: 12px;
+  }
+
+  .signaturebutton {
+    width: 50%;
+  }
+}
+
+
+.radioContainer2 {
+  display: flex;
+  width: 100% !important;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+
+
+.vouHeadShow {
+  width: 80%;
+  /* height: 600px; */
+  margin: auto;
+  border: 3px solid var(--border-color);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.vouHeadShowRow {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap:5px;
+}
+
+.vouHeadShowRowpadd {
+  padding-top: 50px;
+}
+
+.vouHeadShowRow p {
+  width: 100%;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap:3px;
+}
+
+
+.vouHeadShow .mainTitle {
+  direction: ltr;
+}
+
+.receipt-row-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.receipt-item {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 5px;
+  direction: rtl;
+}
+
+.receipt-label {
+  font-weight: bold;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.receipt-value {
+  color: var(--text-color);
+  flex: 1;
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .no-print, .navbar, .right-sidebar, .sidebar, .printmoneybtn {
+    display: none !important;
+  }
+
+  .moneycontainer {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  .ssss, .print-voucher-fieldset {
+    border: 2px solid #333 !important;
+    border-radius: 15px !important;
+    margin: 20px 0 !important;
+    padding: 25px !important;
+    box-shadow: none !important;
+    background-color: white !important;
+  }
+
+  .form_barcode {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    direction: rtl !important;
+  }
+
+  .form_barcode_textbox {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .Moneyreceiptreports-formbody {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    margin-bottom: 15px !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    padding-bottom: 10px !important;
+    direction: rtl !important;
+  }
+
+  /* Force labels and values to be visible and black */
+  .Moneyreceiptreports-formbody label {
+    color: #444 !important;
+    font-weight: bold !important;
+    font-size: 12pt !important;
+    flex: 0 0 120px !important;
+    text-align: right !important;
+  }
+
+  .Moneyreceiptreports-formbody input {
+    border: none !important;
+    background: transparent !important;
+    color: black !important;
+    font-weight: bold !important;
+    font-size: 12pt !important;
+    text-align: right !important;
+    flex: 1 !important;
+  }
+
+  .badll {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    margin-bottom: 20px !important;
+  }
+
+  .barcodoo {
+    width: 180px !important;
+  }
+
+  .print-content-wrapper {
+    margin: 20px 0 !important;
+  }
+
+  .receipt-row-group {
+    margin-bottom: 25px !important;
+    gap: 40px !important;
+  }
+
+  .receipt-item {
+    border-bottom: 1px solid #333 !important;
+  }
+
+  .receipt-label {
+    color: #333 !important;
+    font-size: 13pt !important;
+  }
+
+  .receipt-value {
+    color: #000 !important;
+    font-size: 13pt !important;
+    font-weight: bold !important;
+  }
+}

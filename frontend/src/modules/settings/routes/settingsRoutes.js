@@ -2,27 +2,27 @@ import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
 import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 
-const SettingTabsPage = lazy(() => import("../pages").then((m) => ({ default: m.SettingTabsPage })));
-const GenSettingPage = lazy(() => import("../pages").then((m) => ({ default: m.GenSettingPage })));
-const EnterSettingPage = lazy(() => import("../pages").then((m) => ({ default: m.EnterSettingPage })));
+const SettingTabsPage = lazy(() => import("../../../pages/Setting/SettingTabs"));
+const GenSettingPage = lazy(() => import("../../../pages/Setting/GenSetting"));
+const EnterSettingPage = lazy(() => import("../../../pages/Setting/EnterSetting"));
 
-const RolesPage = lazy(() => import("../pages").then((m) => ({ default: m.RolesPage })));
-const EditRolePage = lazy(() => import("../pages").then((m) => ({ default: m.EditRolePage })));
-const PermissionsTabsPage = lazy(() => import("../pages").then((m) => ({ default: m.PermissionsTabsPage })));
-const CasePermissionsPage = lazy(() => import("../pages").then((m) => ({ default: m.CasePermissionsPage })));
-const ProjectPermissionsPage = lazy(() => import("../pages").then((m) => ({ default: m.ProjectPermissionsPage })));
-const HrPermissionsPage = lazy(() => import("../pages").then((m) => ({ default: m.HrPermissionsPage })));
-const LoansPermissionsPage = lazy(() => import("../pages").then((m) => ({ default: m.LoansPermissionsPage })));
-const EndowmentsPermissionsPage = lazy(() => import("../pages").then((m) => ({ default: m.EndowmentsPermissionsPage })));
-const ArchivePermissionsPage = lazy(() => import("../pages").then((m) => ({ default: m.ArchivePermissionsPage })));
-const MissionsPermissionsPage = lazy(() => import("../pages").then((m) => ({ default: m.MissionsPermissionsPage })));
-const AccountingPermissionsPage = lazy(() => import("../pages").then((m) => ({ default: m.AccountingPermissionsPage })));
-const HumanCasePermissionPage = lazy(() => import("../pages").then((m) => ({ default: m.HumanCasePermissionPage })));
-const DonorPermissionPage = lazy(() => import("../pages").then((m) => ({ default: m.DonorPermissionPage })));
-const AssemblyPermissionPage = lazy(() => import("../pages").then((m) => ({ default: m.AssemblyPermissionPage })));
-const WarrantorPermissionPage = lazy(() => import("../pages").then((m) => ({ default: m.WarrantorPermissionPage })));
-const UsersPermissionsPage = lazy(() => import("../pages").then((m) => ({ default: m.UsersPermissionsPage })));
-const SettingPermissionsPage = lazy(() => import("../pages").then((m) => ({ default: m.SettingPermissionsPage })));
+const RolesPage = lazy(() => import("../../../pages/Roles/Roles"));
+const EditRolePage = lazy(() => import("../../../pages/Roles/EditRole"));
+const PermissionsTabsPage = lazy(() => import("../../../pages/Roles/PermissionsTabs"));
+const CasePermissionsPage = lazy(() => import("../../../pages/Roles/CasePermissions"));
+const ProjectPermissionsPage = lazy(() => import("../../../pages/Roles/ProjectPermissions"));
+const HrPermissionsPage = lazy(() => import("../../../pages/Roles/HrPermissions"));
+const LoansPermissionsPage = lazy(() => import("../../../pages/Roles/LoansPermissions"));
+const EndowmentsPermissionsPage = lazy(() => import("../../../pages/Roles/EndowmentsPermissions"));
+const ArchivePermissionsPage = lazy(() => import("../../../pages/Roles/ArchivePermissions"));
+const MissionsPermissionsPage = lazy(() => import("../../../pages/Roles/MissionsPermissions"));
+const AccountingPermissionsPage = lazy(() => import("../../../pages/Roles/AccountingPermissions"));
+const HumanCasePermissionPage = lazy(() => import("../../../pages/Roles/HumanCasePermission"));
+const DonorPermissionPage = lazy(() => import("../../../pages/Roles/DonorPermission"));
+const AssemblyPermissionPage = lazy(() => import("../../../pages/Roles/AssemblyPermission"));
+const WarrantorPermissionPage = lazy(() => import("../../../pages/Roles/WarrantorPermission"));
+const UsersPermissionsPage = lazy(() => import("../../../pages/Roles/UsersPermissions"));
+const SettingPermissionsPage = lazy(() => import("../../../pages/Roles/SettingPermissions"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>
@@ -38,6 +38,7 @@ export const settingsRouteConfigs = [
 
   // ── Roles & Permissions ───────────────────────────────────────
   { path: "/roles", element: withSuspense(RolesPage) },
+  { path: "/groupShow/:id", element: withSuspense(RolesPage) },
   { path: "/groupEdit/:id", element: withSuspense(EditRolePage) },
   { path: "/permissionsTabs/:id", element: withSuspense(PermissionsTabsPage) },
   { path: "/permissions/case/:id", element: withSuspense(CasePermissionsPage) },

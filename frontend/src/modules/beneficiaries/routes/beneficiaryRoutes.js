@@ -2,36 +2,45 @@ import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
 import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 
-const CaseDataPage = lazy(() => import("../pages").then((m) => ({ default: m.CaseDataPage })));
-const PrintCaseDataPage = lazy(() => import("../pages").then((m) => ({ default: m.PrintCaseDataPage })));
-const CaseDetailsPage = lazy(() => import("../pages").then((m) => ({ default: m.CaseDetailsPage })));
-const CaseDetailsViewPage = lazy(() => import("../pages").then((m) => ({ default: m.CaseDetailsViewPage })));
-const CaseDetailsChartPage = lazy(() => import("../pages").then((m) => ({ default: m.CaseDetailsChartPage })));
-const EditCaseDetailsPage = lazy(() => import("../pages").then((m) => ({ default: m.EditCaseDetailsPage })));
-const CaseStudyPage = lazy(() => import("../pages").then((m) => ({ default: m.CaseStudyPage })));
+const CaseDataPage = lazy(() => import("../../../pages/CaseData/CaseData"));
+const PrintCaseDataPage = lazy(() => import("../../../pages/PrintCaseData/PrintCaseData"));
+const CaseDetailsPage = lazy(() => import("../../../pages/CaseDetails/CaseDetails"));
+const CaseDetailsViewPage = lazy(() => import("../../../pages/CaseDetails/CaseDetailsView"));
+const CaseDetailsChartPage = lazy(() => import("../../../pages/CaseDetailsChart/CaseDetailsChart"));
+const EditCaseDetailsPage = lazy(() => import("../../../pages/createAndManage/EditCaseDetails"));
+const CaseStudyPage = lazy(() => import("../../../pages/AddBeneficiary/CaseStudy"));
 
-const BeneficiaryPage = lazy(() => import("../pages").then((m) => ({ default: m.BeneficiaryPage })));
-const BeneficiaryXPage = lazy(() => import("../pages").then((m) => ({ default: m.BeneficiaryXPage })));
-const BeneficiaryViewPage = lazy(() => import("../pages").then((m) => ({ default: m.BeneficiaryViewPage })));
-const AddBeneficiaryPage = lazy(() => import("../pages").then((m) => ({ default: m.AddBeneficiaryPage })));
-const AddBeneficiaryAllPage = lazy(() => import("../pages").then((m) => ({ default: m.AddBeneficiaryAllPage })));
-const EditBeneficiaryPage = lazy(() => import("../pages").then((m) => ({ default: m.EditBeneficiaryPage })));
-const CreateBeneficiaryLinkPage = lazy(() => import("../pages").then((m) => ({ default: m.CreateBeneficiaryLinkPage })));
-const BenefitAddDetailsPage = lazy(() => import("../pages").then((m) => ({ default: m.BenefitAddDetailsPage })));
-const MainBeneficiaryDataPage = lazy(() => import("../pages").then((m) => ({ default: m.MainBeneficiaryDataPage })));
-const ShowHealthDataPage = lazy(() => import("../pages").then((m) => ({ default: m.ShowHealthDataPage })));
-const EditHealthDataPage = lazy(() => import("../pages").then((m) => ({ default: m.EditHealthDataPage })));
-const ShowDependDataPage = lazy(() => import("../pages").then((m) => ({ default: m.ShowDependDataPage })));
-const EditDependDataPage = lazy(() => import("../pages").then((m) => ({ default: m.EditDependDataPage })));
+const BeneficiaryPage = lazy(() => import("../../../pages/Beneficiary/Beneficiary"));
+const BeneficiaryXPage = lazy(() => import("../../../pages/Beneficiary/BeneficiaryX"));
+const BeneficiaryViewPage = lazy(() => import("../../../pages/Beneficiary/BeneficiaryView"));
+const AddBeneficiaryPage = lazy(() => import("../../../pages/AddBeneficiary/AddBeneficiary"));
+const AddBeneficiaryAllPage = lazy(() => import("../../../pages/AddBeneficiary/AddBeneficiaryAll"));
+const EditBeneficiaryPage = lazy(() => import("../../../pages/AddBeneficiary/EditBeneficiary"));
+const CreateBeneficiaryLinkPage = lazy(() => import("../../../pages/AddBeneficiary/CreateBeneficiaryLink"));
+const BenefitAddDetailsPage = lazy(() => import("../../../pages/AddBeneficiary/BenefitAddDetails"));
+const MainBeneficiaryDataPage = lazy(() => import("../../../pages/AddBeneficiary/MainBeneficiaryData"));
+const ShowHealthDataPage = lazy(() => import("../../../pages/AddBeneficiary/ShowhelthData"));
+const EditHealthDataPage = lazy(() => import("../../../pages/AddBeneficiary/EdithealthData"));
+const ShowDependDataPage = lazy(() => import("../../../pages/AddBeneficiary/ShowDependData"));
+const EditDependDataPage = lazy(() => import("../../../pages/AddBeneficiary/EditDependData"));
 
-const ShowDonorsPage = lazy(() => import("../pages").then((m) => ({ default: m.ShowDonorsPage })));
-const EditDonorPage = lazy(() => import("../pages").then((m) => ({ default: m.EditDonorPage })));
-const DonerReceiptVoucherPage = lazy(() => import("../pages").then((m) => ({ default: m.DonerReceiptVoucherPage })));
+const ShowDonorsPage = lazy(() => import("../../../pages/AddDonor/ShowDonors"));
+const EditDonorPage = lazy(() => import("../../../pages/AddDonor/EditDonor"));
+const DonerReceiptVoucherPage = lazy(() => import("../../../pages/AddDonor/DonerReceiptVoucher"));
 
-const HcVendorPage = lazy(() => import("../pages").then((m) => ({ default: m.HcVendorPage })));
-const AddHcVendorPage = lazy(() => import("../pages").then((m) => ({ default: m.AddHcVendorPage })));
-const EditHcVendorPage = lazy(() => import("../pages").then((m) => ({ default: m.EditHcVendorPage })));
-const HcVendorReportPage = lazy(() => import("../pages").then((m) => ({ default: m.HcVendorReportPage })));
+const HcVendorPage = lazy(() => import("../../../pages/hcvendor/Hcvendor"));
+const AddHcVendorPage = lazy(() => import("../../../pages/hcvendor/Addhcvendor"));
+const EditHcVendorPage = lazy(() => import("../../../pages/hcvendor/Edithcvendor"));
+const HcVendorReportPage = lazy(() => import("../../../pages/hcvendor/HcVendorReport"));
+
+const Additionalnformation = lazy(() => import("../../../pages/AddBeneficiary/Additionalnformation"));
+const MembershipData = lazy(() => import("../../../pages/AddBeneficiary/MembershipData"));
+const BankData = lazy(() => import("../../../pages/AddBeneficiary/BankData"));
+const CallingData = lazy(() => import("../../../pages/AddBeneficiary/CallingData"));
+const QualificationPosition = lazy(() => import("../../../pages/AddBeneficiary/QualificationPosition"));
+const HousingData = lazy(() => import("../../../pages/AddBeneficiary/HousingData"));
+const HealthData = lazy(() => import("../../../pages/AddBeneficiary/HealthData"));
+const DependentsData = lazy(() => import("../../../pages/AddBeneficiary/DependentsData"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>
@@ -59,6 +68,14 @@ export const beneficiaryRouteConfigs = [
   { path: "/createbeneficiarylink", element: withSuspense(CreateBeneficiaryLinkPage) },
   { path: "/beneficiaryAddDetails/:id", element: withSuspense(BenefitAddDetailsPage) },
   { path: "/mainbeneficiarydata", element: withSuspense(MainBeneficiaryDataPage) },
+  { path: "/additionalnformation", element: withSuspense(Additionalnformation) },
+  { path: "/membershipdata", element: withSuspense(MembershipData) },
+  { path: "/bankdata/:id", element: withSuspense(BankData) },
+  { path: "/callingdata", element: withSuspense(CallingData) },
+  { path: "/qualificationposition/:id", element: withSuspense(QualificationPosition) },
+  { path: "/housingdata/:id", element: withSuspense(HousingData) },
+  { path: "/healthdata/:id", element: withSuspense(HealthData) },
+  { path: "/dependentsdata/:id", element: withSuspense(DependentsData) },
   { path: "/showhealthdata/:id", element: withSuspense(ShowHealthDataPage) },
   { path: "/edithealthdata/:id", element: withSuspense(EditHealthDataPage) },
   { path: "/showdependdata/:id", element: withSuspense(ShowDependDataPage) },

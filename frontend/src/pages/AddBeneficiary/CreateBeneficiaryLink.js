@@ -281,7 +281,13 @@ function CreateBeneficiaryLink() {
         </div>
 
         {loadingTokens ? (
-          <TableSkeleton rows={4} columns={6} />
+          <div className="cbl-table-wrapper">
+            <table className="cbl-table">
+              <tbody>
+                <TableSkeleton rows={4} columns={7} />
+              </tbody>
+            </table>
+          </div>
         ) : tokens.length === 0 ? (
           <div className="cbl-empty-state">
             <FontAwesomeIcon

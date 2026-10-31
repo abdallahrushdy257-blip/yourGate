@@ -2,23 +2,23 @@ import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
 import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 
-const ReceiptVoucherPage = lazy(() => import("../pages").then((m) => ({ default: m.ReceiptVoucherPage })));
-const ReceiptVoucherProjectPage = lazy(() => import("../pages").then((m) => ({ default: m.ReceiptVoucherProjectPage })));
-const ReceiptVoucherViewPage = lazy(() => import("../pages").then((m) => ({ default: m.ReceiptVoucherViewPage })));
-const ReceiptVoucherViewProjectPage = lazy(() => import("../pages").then((m) => ({ default: m.ReceiptVoucherViewProjectPage })));
-const ReceiptVoucherEndowmentsPage = lazy(() => import("../pages").then((m) => ({ default: m.ReceiptVoucherEndowmentsPage })));
-const ReceiptVoucherLoanPage = lazy(() => import("../pages").then((m) => ({ default: m.ReceiptVoucherLoanPage })));
+const ReceiptVoucherPage = lazy(() => import("../../../pages/ReceiptVoucher/ReceiptVoucher"));
+const ReceiptVoucherProjectPage = lazy(() => import("../../../pages/ReceiptVoucher/ReceiptVoucherProject"));
+const ReceiptVoucherViewPage = lazy(() => import("../../../pages/ReceiptVoucher/ReceiptVoucherView"));
+const ReceiptVoucherViewProjectPage = lazy(() => import("../../../pages/ReceiptVoucher/ReceiptVoucherViewProject"));
+const ReceiptVoucherEndowmentsPage = lazy(() => import("../../../pages/ReceiptVoucher/ReceiptVoucherEndowments"));
+const ReceiptVoucherLoanPage = lazy(() => import("../../../pages/ReceiptVoucher/ReceiptVoucherLoan"));
 
-const PaymentVoucherPage = lazy(() => import("../pages").then((m) => ({ default: m.PaymentVoucherPage })));
-const PaymentVoucherGeneralPage = lazy(() => import("../pages").then((m) => ({ default: m.PaymentVoucherGeneralPage })));
-const PaymentVoucherProjectPage = lazy(() => import("../pages").then((m) => ({ default: m.PaymentVoucherProjectPage })));
-const EndowmentsVoucherPage = lazy(() => import("../pages").then((m) => ({ default: m.EndowmentsVoucherPage })));
-const PaymentVoucherLoanPage = lazy(() => import("../pages").then((m) => ({ default: m.PaymentVoucherLoanPage })));
+const PaymentVoucherPage = lazy(() => import("../../../pages/PaymentVoucher/PaymentVoucher"));
+const PaymentVoucherGeneralPage = lazy(() => import("../../../pages/PaymentVoucher/PaymentVoucherGeneral"));
+const PaymentVoucherProjectPage = lazy(() => import("../../../pages/PaymentVoucher/PaymentVoucherProject"));
+const EndowmentsVoucherPage = lazy(() => import("../../../pages/PaymentVoucher/EndowmentsVoucher"));
+const PaymentVoucherLoanPage = lazy(() => import("../../../pages/PaymentVoucher/PaymentVoucherLoan"));
 
-const GeneralReceiptVoucherPage = lazy(() => import("../pages").then((m) => ({ default: m.GeneralReceiptVoucherPage })));
-const GeneralReceiptVoucherCashPage = lazy(() => import("../pages").then((m) => ({ default: m.GeneralReceiptVoucherCashPage })));
-const GeneralPaymentVoucherPage = lazy(() => import("../pages").then((m) => ({ default: m.GeneralPaymentVoucherPage })));
-const GeneralPaymentVoucherCashPage = lazy(() => import("../pages").then((m) => ({ default: m.GeneralPaymentVoucherCashPage })));
+const GeneralReceiptVoucherPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralReceiptVoucher"));
+const GeneralReceiptVoucherCashPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralReceiptVoucherCash"));
+const GeneralPaymentVoucherPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralPaymentVoucher"));
+const GeneralPaymentVoucherCashPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralPaymentVoucherCash"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>

@@ -11,3 +11,7 @@ export { default as ProjectRisksPage } from "../../../pages/MarketingDesignProje
 export { default as RiskMitigationPage } from "../../../pages/MarketingDesignProjectManagement/RiskMitigation";
 export { default as RiskAssessmentReportPage } from "../../../pages/MarketingDesignProjectManagement/RiskAssessmentReport";
 export { default as ProjectAttachmentsPage } from "../../../pages/MarketingDesignProjectManagement/ProjectAttachment";
+export { default as DepartmentsDetailsPage } from "../../../pages/DepartmentsDetails/DepartmentsDetails";
+export { default as ProjectChartPage } from "../../../pages/CaseDetailsChart/ProjectChart";
+export { default as SectionsReportPage } from "../../../pages/sections/SectionsReport";
+export { default as CreateAndManagePage } from "../../../pages/createAndManage/createAndManage";

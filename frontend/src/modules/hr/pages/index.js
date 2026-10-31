@@ -18,10 +18,15 @@ export { default as SalaryCertificatePage } from "../../../pages/Salarycertifica
 // ── Attendance & Departure ─────────────────────────────────────
 export { default as AttendanceDeparturePage } from "../../../pages/AttendanceDeparture/AttendanceDeparture";
 export { default as AttendanceDepartureReportPage } from "../../../pages/AttendanceDepartureReport/AttendanceDepartureReport";
+export { default as ComeLeave } from "./ComeLeave/ComeLeave";
+export { default as ComeLeaveModal } from "./ComeLeave/ComeLeaveModal";
 
 // ── Vacations & Leaves ──────────────────────────────────────────
 export { default as VacationRequestPage } from "../../../pages/VacationRequest/VacationRequest";
 export { default as VacationDetailsPage } from "../../../pages/VacationDetails/VacationDetails";
+export { default as LeaveType } from "./LeaveType/LeaveType";
+export { default as EditLeave } from "./LeaveType/EditLeave";
+export { default as RequestPermission } from "./RequestPermission/RequestPermission";
 
 // ── Performance & Evaluation ────────────────────────────────────
 export { default as JobPerformanceEvaluationPage } from "../../../pages/JobPerformanceEvaluation/JobPerformanceEvaluation";
@@ -29,8 +34,40 @@ export { default as ShowJobPerformanceEvaluationPage } from "../../../pages/Show
 export { default as ShowPerformancePage } from "../../../pages/ShowPerformance/ShowPerformance";
 export { default as KPIEvaluationPage } from "../../../pages/KPIEvaluation/KPIEvaluation";
 
+// ── Discounts & Allowances ──────────────────────────────────────
+export { default as Discounts } from "./Discounts/Discounts";
+export { default as DiscountsModal } from "./Discounts/Discounts";
+
+// ── Investigations ──────────────────────────────────────────────
+export { default as Investigations } from "./Investigations/Investigations";
+export { default as InvestigationsModal } from "./Investigations/Investigations";
+export { default as EditInvestigations } from "./Investigations/EditInvestigations";
+
+// ── Missions ────────────────────────────────────────────────────
+export { default as Missions } from "./Missions/Missions";
+export { default as EditMissions } from "./Missions/EditMissions";
+export { default as AddMissions } from "./Missions/AddMissions";
+export { default as ShowMissions } from "./Missions/ShowMissions";
+export { default as ShowMissionsEmp } from "./Missions/ShowMissionsEmp";
+
 // ── HR Reports ──────────────────────────────────────────────────
 export { default as HRReportsPage } from "../../../pages/HRreports/HRreports";
 export { default as EmployeeReportPage } from "../../../pages/HRreports/reports/EmployeeReport";
 export { default as SalaryReportPage } from "../../../pages/HRreports/reports/SalaryReport";
 export { default as LeaveReportPage } from "../../../pages/HRreports/reports/LeaveReport";
+export { default as JobtitleReport } from "../../../pages/HRreports/reports/JobtitleReport";
+export { default as KpiReport } from "../../../pages/HRreports/reports/KpiReport";
+export { default as LeaveNameReport } from "../../../pages/HRreports/reports/LeaveNameReport";
+export { default as DeductionReport } from "../../../pages/HRreports/reports/DeductionReport";
+export { default as AttendenceReport } from "../../../pages/HRreports/reports/AttendenceReport";
+export { default as InvestigationReport } from "../../../pages/HRreports/reports/InvestigationReport";
+export { default as LeavePermissionReport } from "../../../pages/HRreports/reports/LeavePermissionReport";
+export { default as EmpVac } from "../../../pages/HRreports/reports/EmpVac";
+export { default as ShowEmpVac } from "../../../pages/HRreports/reports/ShowEmpVac";
+
+// ── Job Titles & Papers ─────────────────────────────────────────
+export { default as Jobtitle } from "./JobTitle/JobTitle";
+export { default as EditJobTitle } from "./JobTitle/EditJobTitle";
+export { default as EmployPaper } from "./EmployPaper/EmployPaper";
+export { default as AddEmpPaper } from "./EmployPaper/AddEmpPaper";
+export { default as EditEmploypaper } from "./EmployPaper/EditEmploypaper";

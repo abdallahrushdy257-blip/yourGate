@@ -1,0 +1,38 @@
+.endowments {
+  width: 80%;
+  margin: auto;
+}
+
+.endowmentsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 70%;
+  margin: auto;
+  direction: rtl;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.locCon {
+  width: 40%;
+  direction: ltr;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .endowmentsRow {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.printcasedata-container2 {
+  width: 60%;
+}
+
+.myTabs3 {
+  direction: rtl !important;
+}

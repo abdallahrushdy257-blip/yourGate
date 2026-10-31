@@ -22,7 +22,17 @@ export { default as EditHealthDataPage } from "../../../pages/AddBeneficiary/Edi
 export { default as ShowDependDataPage } from "../../../pages/AddBeneficiary/ShowDependData";
 export { default as EditDependDataPage } from "../../../pages/AddBeneficiary/EditDependData";
 
-// ── Donors ──────────────────────────────────────────────────────
+// ── Add Beneficiary Form Sub-Pages ───────────────────────────
+export { default as Additionalnformation } from "../../../pages/AddBeneficiary/Additionalnformation";
+export { default as MembershipData } from "../../../pages/AddBeneficiary/MembershipData";
+export { default as BankData } from "../../../pages/AddBeneficiary/BankData";
+export { default as CallingData } from "../../../pages/AddBeneficiary/CallingData";
+export { default as QualificationPosition } from "../../../pages/AddBeneficiary/QualificationPosition";
+export { default as HousingData } from "../../../pages/AddBeneficiary/HousingData";
+export { default as HealthData } from "../../../pages/AddBeneficiary/HealthData";
+export { default as DependentsData } from "../../../pages/AddBeneficiary/DependentsData";
+export { default as AddBenef } from "../../../pages/AddBeneficiary/AddBenef";
+
 export { default as ShowDonorsPage } from "../../../pages/AddDonor/ShowDonors";
 export { default as EditDonorPage } from "../../../pages/AddDonor/EditDonor";
 export { default as DonerReceiptVoucherPage } from "../../../pages/AddDonor/DonerReceiptVoucher";
