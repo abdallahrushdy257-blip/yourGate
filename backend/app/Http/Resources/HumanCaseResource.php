@@ -27,6 +27,7 @@ class HumanCaseResource extends JsonResource
             'social_status_string' => $this->social_status_string,
             'case_status'          => (string) ($this->case_status ?? 'موافقة'),
             'case_status_string'   => $this->case_status_string,
+            'case_status_code'     => $this->case_status_code,
             'nationality'   => $this->nationality ?? '',
             'familycount'   => $this->familycount,
             'phonenum'      => $this->phonenum ?? '',

@@ -1,347 +1,464 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import API from "../../api/axiosConfig";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
+import TestPreLoader from "../TestPreLoader/TestPreLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faShieldHalved,
   faTriangleExclamation,
-  faCircleCheck,
-  faCircleExclamation,
-  faClock,
-  faPrint,
+  faShieldHalved,
   faArrowRight,
-  faChartPie,
-  faFileShield,
+  faPrint,
+  faFileContract,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import TestPreLoader from "../TestPreLoader/TestPreLoader";
-import Title from "../../components/title";
-import "./RiskAssessmentReport.css";
 
-// Helper for Risk Severity Level
 const getRiskLevel = (score) => {
-  if (score >= 15) {
-    return {
-      label: "مرتفع",
-      className: "high",
-      color: "#ef4444",
-      icon: faTriangleExclamation,
-    };
-  }
   if (score >= 6) {
-    return {
-      label: "متوسط",
-      className: "medium",
-      color: "#f59e0b",
-      icon: faCircleExclamation,
-    };
+    return { label: "مرتفع", color: "#dc2626", bg: "#fef2f2", border: "#fecaca" };
   }
-  return {
-    label: "منخفض",
-    className: "low",
-    color: "#22c55e",
-    icon: faCircleCheck,
-  };
+  if (score >= 3) {
+    return { label: "متوسط", color: "#d97706", bg: "#fffbeb", border: "#fde68a" };
+  }
+  return { label: "منخفض", color: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0" };
 };
 
-// Status Badge Component
 const StatusBadge = ({ status }) => {
-  const normalizedStatus = (status || "").trim();
+  const normalized = status || "مفتوح";
+  const stylesMap = {
+    مفتوح: { bg: "#fee2e2", text: "#991b1b", border: "#f87171" },
+    "قيد المعالجة": { bg: "#fef3c7", text: "#92400e", border: "#fcd34d" },
+    "بانتظار المعالجة": { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" },
+    مغلق: { bg: "#dcfce7", text: "#166534", border: "#86efac" },
+  };
 
-  let badgeClass = "open";
-  let icon = faCircleExclamation;
-
-  if (normalizedStatus === "مغلق" || normalizedStatus === "مكتمل") {
-    badgeClass = "closed";
-    icon = faCircleCheck;
-  } else if (
-    normalizedStatus === "قيد المعالجة" ||
-    normalizedStatus === "جاري العمل"
-  ) {
-    badgeClass = "in-progress";
-    icon = faClock;
-  }
+  const current = stylesMap[normalized] || { bg: "#f1f5f9", text: "#475569", border: "#cbd5e1" };
 
   return (
-    <span className={`risk-status-badge ${badgeClass}`}>
-      <FontAwesomeIcon icon={icon} />
-      <span>{status || "غير محدد"}</span>
+    <span
+      style={{
+        background: current.bg,
+        color: current.text,
+        border: `1px solid ${current.border}`,
+        padding: "4px 14px",
+        borderRadius: "20px",
+        fontSize: "12px",
+        fontWeight: "700",
+        display: "inline-block",
+      }}
+    >
+      {normalized}
+    </span>
+  );
+};
+
+const LevelBadge = ({ text }) => {
+  const normalized = text || "متوسط";
+  const colors = {
+    مرتفع: { bg: "#fee2e2", text: "#b91c1c" },
+    متوسط: { bg: "#fef3c7", text: "#b45309" },
+    منخفض: { bg: "#dcfce7", text: "#15803d" },
+  };
+  const theme = colors[normalized] || { bg: "#f1f5f9", text: "#334155" };
+
+  return (
+    <span
+      style={{
+        background: theme.bg,
+        color: theme.text,
+        padding: "3px 12px",
+        borderRadius: "6px",
+        fontSize: "13px",
+        fontWeight: "600",
+      }}
+    >
+      {normalized}
     </span>
   );
 };
 
 const RiskAssessmentReport = () => {
-  const [risk, setRisk] = useState([]);
+  const [risk, setRisk] = React.useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = React.useState(true);
 
   const getRiskData = async () => {
     try {
+      setLoading(true);
       const response = await API.get(`/projectrisk/${id}/report`);
-      const resData = response?.data?.data ?? response?.data;
-      setRisk(Array.isArray(resData) ? resData : []);
+      const list = Array.isArray(response.data) ? response.data : (response.data?.data || []);
+      setRisk(list);
     } catch (error) {
-      console.error("Error fetching risk report:", error);
+      console.error("Error loading risk report:", error);
       setRisk([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     getRiskData();
   }, [id]);
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   if (loading) return <TestPreLoader />;
 
-  // Calculate Overview Stats
-  const totalRisks = risk.length;
-  const highRisks = risk.filter(
-    (r) => (r.risk_probability_level || 0) * (r.risk_impact_level || 0) >= 15
-  ).length;
-  const mediumRisks = risk.filter((r) => {
-    const score = (r.risk_probability_level || 0) * (r.risk_impact_level || 0);
-    return score >= 6 && score < 15;
-  }).length;
-  const lowRisks = risk.filter(
-    (r) => (r.risk_probability_level || 0) * (r.risk_impact_level || 0) < 6
-  ).length;
-
   return (
-    <div className="risk-report-container" dir="rtl">
-      {/* Top Header & Actions */}
-      <div className="risk-report-header">
-        <div className="risk-report-header-right">
-          <Title
-            title="تقرير تقييم المخاطر"
-            icon={<FontAwesomeIcon icon={faShieldHalved} />}
-          />
+    <div style={styles.wrapper}>
+      {/* Top Action Bar */}
+      <div style={styles.topBar} className="no-print">
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <FontAwesomeIcon icon={faFileContract} style={{ fontSize: "24px", color: "var(--primary-color, #c29a64)" }} />
+          <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "700", color: "var(--text-color, #1e293b)" }}>
+            تقرير تقييم المخاطر وإجراءات التخفيف
+          </h2>
         </div>
-
-        <div className="risk-report-actions">
+        <div style={{ display: "flex", gap: "10px" }}>
           <button
             type="button"
-            className="risk-action-btn print-btn"
-            onClick={handlePrint}
-            title="طباعة التقرير"
+            onClick={() => window.print()}
+            style={styles.printBtn}
           >
-            <FontAwesomeIcon icon={faPrint} />
-            <span>طباعة التقرير</span>
+            <FontAwesomeIcon icon={faPrint} style={{ marginLeft: "8px" }} />
+            طباعة التقرير
           </button>
-
           <button
             type="button"
-            className="risk-action-btn back-btn"
             onClick={() => navigate(-1)}
-            title="رجوع"
+            style={styles.backBtn}
           >
-            <FontAwesomeIcon icon={faArrowRight} />
-            <span>رجوع</span>
+            <FontAwesomeIcon icon={faArrowRight} style={{ marginLeft: "8px" }} />
+            العودة
           </button>
         </div>
       </div>
 
-      {/* Empty State */}
-      {totalRisks === 0 ? (
-        <div className="risk-empty-state">
-          <div className="risk-empty-icon">
-            <FontAwesomeIcon icon={faFileShield} />
-          </div>
-          <h3 className="risk-empty-title">لا توجد مخاطر مسجلة</h3>
-          <p className="risk-empty-subtitle">
-            لم يتم تسجيل أي مخاطر أو إجراءات معالجة لهذا المشروع حتى الآن.
-          </p>
+      {risk.length === 0 ? (
+        <div style={styles.emptyCard}>
+          <FontAwesomeIcon icon={faShieldHalved} style={{ fontSize: "48px", color: "#94a3b8", marginBottom: "16px" }} />
+          <h3 style={{ fontSize: "18px", color: "#334155", margin: "0 0 8px" }}>لا توجد مخاطر مسجلة لهذا المشروع بعد</h3>
+          <p style={{ color: "#64748b", margin: "0 0 20px" }}>يمكنك إضافة مخاطر للمشروع وتحديد خطط التخفيف من خلال صفحة المخاطر.</p>
           <button
             type="button"
-            className="risk-action-btn print-btn"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`/projectrisks/${id}`)}
+            style={styles.addBtn}
           >
-            <FontAwesomeIcon icon={faArrowRight} />
-            <span>العودة إلى تفاصيل المشروع</span>
+            <FontAwesomeIcon icon={faPlus} style={{ marginLeft: "8px" }} />
+            الانتقال لصفحة المخاطر
           </button>
         </div>
       ) : (
-        <>
-          {/* Overview Metrics Cards */}
-          <div className="risk-stats-grid">
-            <div className="risk-stat-card total">
-              <div className="risk-stat-info">
-                <span className="risk-stat-label">إجمالي المخاطر</span>
-                <span className="risk-stat-value">{totalRisks}</span>
-              </div>
-              <div className="risk-stat-icon-wrapper">
-                <FontAwesomeIcon icon={faChartPie} />
-              </div>
-            </div>
+        <div style={styles.cardsContainer}>
+          {risk.map((r, index) => {
+            const probLevel = Number(r.risk_probability_level) || 2;
+            const impactLevel = Number(r.risk_impact_level) || 2;
+            const riskScore = probLevel * impactLevel;
+            const riskLevel = getRiskLevel(riskScore);
+            const hasMitigation = Boolean(r.mitigation_description && r.mitigation_description !== "لم يتم تسجيل خطة تخفيف بعد");
 
-            <div className="risk-stat-card high">
-              <div className="risk-stat-info">
-                <span className="risk-stat-label">مخاطر مرتفعة</span>
-                <span className="risk-stat-value">{highRisks}</span>
-              </div>
-              <div className="risk-stat-icon-wrapper">
-                <FontAwesomeIcon icon={faTriangleExclamation} />
-              </div>
-            </div>
+            return (
+              <div key={r.id || index} style={styles.card}>
+                {/* Header */}
+                <div style={styles.header}>
+                  <div>
+                    <span style={styles.headerSubtitle}>المرحلة المرتبطة</span>
+                    <h3 style={styles.headerTitle}>{r.risk_phase || "المشروع ككل"}</h3>
+                  </div>
+                  <div style={styles.scoreBadge(riskLevel)}>
+                    <span style={{ fontSize: "12px", opacity: 0.9 }}>درجة الخطورة الكلية</span>
+                    <strong style={{ fontSize: "18px" }}>
+                      {riskScore} / 9 – ({riskLevel.label})
+                    </strong>
+                  </div>
+                </div>
 
-            <div className="risk-stat-card medium">
-              <div className="risk-stat-info">
-                <span className="risk-stat-label">مخاطر متوسطة</span>
-                <span className="risk-stat-value">{mediumRisks}</span>
-              </div>
-              <div className="risk-stat-icon-wrapper">
-                <FontAwesomeIcon icon={faCircleExclamation} />
-              </div>
-            </div>
+                {/* Score Formula Details */}
+                <div style={styles.formulaBar}>
+                  <span>
+                    <strong>معادلة التقييم:</strong> الاحتمالية ({probLevel}) × مستوى التأثير ({impactLevel}) = <strong>{riskScore}</strong>
+                  </span>
+                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                    <span>حالة الخطر:</span>
+                    <StatusBadge status={r.risk_status} />
+                  </div>
+                </div>
 
-            <div className="risk-stat-card low">
-              <div className="risk-stat-info">
-                <span className="risk-stat-label">مخاطر منخفضة</span>
-                <span className="risk-stat-value">{lowRisks}</span>
-              </div>
-              <div className="risk-stat-icon-wrapper">
-                <FontAwesomeIcon icon={faCircleCheck} />
-              </div>
-            </div>
-          </div>
-
-          {/* Risk Detail Cards List */}
-          <div className="risk-cards-list">
-            {risk.map((r, index) => {
-              const pLevel = Number(r.risk_probability_level) || 0;
-              const iLevel = Number(r.risk_impact_level) || 0;
-              const riskScore = pLevel * iLevel;
-              const riskLevel = getRiskLevel(riskScore);
-
-              return (
-                <div key={index} className="risk-item-card">
-                  {/* Card Header */}
-                  <div className="risk-item-header">
-                    <div className="risk-item-title-section">
-                      <span className="risk-phase-badge">
-                        {r.risk_phase || `خطر #${index + 1}`}
-                      </span>
-                      <h4 className="risk-item-title">
-                        {r.risk_description
-                          ? r.risk_description.length > 50
-                            ? r.risk_description.substring(0, 50) + "..."
-                            : r.risk_description
-                          : `سجل المخاطر ${index + 1}`}
-                      </h4>
+                {/* Main Two Columns Grid */}
+                <div style={styles.grid}>
+                  {/* Left Box: Risk Analysis */}
+                  <div style={styles.riskBox}>
+                    <div style={styles.boxHeader}>
+                      <FontAwesomeIcon icon={faTriangleExclamation} style={{ color: "#dc2626", fontSize: "18px" }} />
+                      <h4 style={styles.riskTitle}>تحليل الخطر</h4>
                     </div>
 
-                    <div className="risk-item-header-meta">
-                      {/* Severity Pill */}
-                      <span
-                        className={`risk-severity-pill ${riskLevel.className}`}
-                        title={`الاحتمالية (${pLevel}) × التأثير (${iLevel}) = ${riskScore}`}
-                      >
-                        <FontAwesomeIcon icon={riskLevel.icon} />
-                        <span>
-                          درجة الخطورة: {riskScore} ({riskLevel.label})
-                        </span>
-                      </span>
+                    <div style={styles.infoRow}>
+                      <span style={styles.infoLabel}>الاحتمالية:</span>
+                      <LevelBadge text={r.risk_probability} />
+                    </div>
 
-                      {/* Status Badge */}
+                    <div style={styles.infoRow}>
+                      <span style={styles.infoLabel}>مستوى التأثير:</span>
+                      <LevelBadge text={r.risk_impact} />
+                    </div>
+
+                    <div style={styles.infoBlock}>
+                      <span style={styles.infoLabel}>وصف الخطر:</span>
+                      <p style={styles.descText}>{r.risk_description || "لا يوجد وصف"}</p>
+                    </div>
+
+                    <div style={styles.infoRow}>
+                      <span style={styles.infoLabel}>الحالة:</span>
                       <StatusBadge status={r.risk_status} />
                     </div>
                   </div>
 
-                  {/* Card Body Grid: Risk vs Mitigation */}
-                  <div className="risk-item-body">
-                    {/* 1. Initial Risk Side */}
-                    <div className="risk-section-box initial-risk">
-                      <div className="risk-section-title">
-                        <FontAwesomeIcon icon={faTriangleExclamation} />
-                        <span>تقييم الخطر الأولي</span>
-                      </div>
-
-                      <div className="risk-metrics-row">
-                        <div className="risk-metric-box">
-                          <span className="risk-metric-label">الاحتمالية</span>
-                          <span className="risk-metric-value">
-                            {r.risk_probability || pLevel || "-"}
-                          </span>
-                        </div>
-
-                        <div className="risk-metric-box">
-                          <span className="risk-metric-label">مستوى التأثير</span>
-                          <span className="risk-metric-value">
-                            {r.risk_impact || iLevel || "-"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="risk-description-wrapper">
-                        <div className="risk-description-label">وصف الخطر:</div>
-                        <p className="risk-description-content">
-                          {r.risk_description || "لا يوجد وصف مدخل لهذا الخطر."}
-                        </p>
-                      </div>
-
-                      <div className="risk-status-row">
-                        <span className="risk-status-row-label">حالة الخطر:</span>
-                        <StatusBadge status={r.risk_status} />
-                      </div>
+                  {/* Right Box: Mitigation Plan */}
+                  <div style={styles.mitigationBox}>
+                    <div style={styles.boxHeader}>
+                      <FontAwesomeIcon icon={faShieldHalved} style={{ color: "#16a34a", fontSize: "18px" }} />
+                      <h4 style={styles.mitigationTitle}>إجراءات وخطة التخفيف</h4>
                     </div>
 
-                    {/* 2. Mitigation Strategy Side */}
-                    <div className="risk-section-box mitigation">
-                      <div className="risk-section-title">
-                        <FontAwesomeIcon icon={faShieldHalved} />
-                        <span>إجراءات التخفيف والمعالجة</span>
-                      </div>
-
-                      <div className="risk-metrics-row">
-                        <div className="risk-metric-box">
-                          <span className="risk-metric-label">
-                            الاحتمالية بعد المعالجة
-                          </span>
-                          <span className="risk-metric-value">
-                            {r.mitigation_probability || "-"}
-                          </span>
-                        </div>
-
-                        <div className="risk-metric-box">
-                          <span className="risk-metric-label">
-                            التأثير بعد المعالجة
-                          </span>
-                          <span className="risk-metric-value">
-                            {r.mitigation_impact || "-"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="risk-description-wrapper">
-                        <div className="risk-description-label">
-                          إجراءات وخطة المعالجة:
-                        </div>
-                        <p className="risk-description-content">
-                          {r.mitigation_description ||
-                            "لم يتم تدوين إجراءات تخفيف محددة بعد."}
-                        </p>
-                      </div>
-
-                      <div className="risk-status-row">
-                        <span className="risk-status-row-label">
-                          حالة المعالجة:
-                        </span>
-                        <StatusBadge status={r.mitigation_status} />
-                      </div>
+                    <div style={styles.infoRow}>
+                      <span style={styles.infoLabel}>الاحتمالية بعد المعالجة:</span>
+                      <LevelBadge text={r.mitigation_probability} />
                     </div>
+
+                    <div style={styles.infoRow}>
+                      <span style={styles.infoLabel}>مستوى التأثير بعد المعالجة:</span>
+                      <LevelBadge text={r.mitigation_impact} />
+                    </div>
+
+                    <div style={styles.infoBlock}>
+                      <span style={styles.infoLabel}>إجراءات التخفيف المتخذة:</span>
+                      <p style={hasMitigation ? styles.descText : styles.emptyDescText}>
+                        {r.mitigation_description}
+                      </p>
+                    </div>
+
+                    <div style={styles.infoRow}>
+                      <span style={styles.infoLabel}>حالة المعالجة:</span>
+                      <StatusBadge status={r.mitigation_status} />
+                    </div>
+
+                    {!hasMitigation && (
+                      <div style={{ marginTop: "16px", textAlign: "left" }} className="no-print">
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/riskmitigation/${r.id}`)}
+                          style={styles.addMitigationBtn}
+                        >
+                          <FontAwesomeIcon icon={faPlus} style={{ marginLeft: "6px" }} />
+                          تسجيل خطة التخفيف لهذا الخطر
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
+};
+
+const styles = {
+  wrapper: {
+    padding: "30px 40px",
+    minHeight: "100vh",
+    direction: "rtl",
+    fontFamily: "Tajawal, Tahoma, Arial, sans-serif",
+    background: "var(--background-color, #f8fafc)",
+  },
+  topBar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    maxWidth: "1150px",
+    margin: "0 auto 25px auto",
+  },
+  printBtn: {
+    background: "#ffffff",
+    color: "#334155",
+    border: "1px solid #cbd5e1",
+    padding: "9px 18px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: "600",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+  },
+  backBtn: {
+    background: "var(--primary-color, #c29a64)",
+    color: "#ffffff",
+    border: "none",
+    padding: "9px 20px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: "600",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+  },
+  cardsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "30px",
+    maxWidth: "1150px",
+    margin: "0 auto",
+  },
+  card: {
+    background: "#ffffff",
+    borderRadius: "16px",
+    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03)",
+    overflow: "hidden",
+    border: "1px solid #e2e8f0",
+  },
+  header: {
+    background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+    padding: "22px 28px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    color: "#ffffff",
+  },
+  headerSubtitle: {
+    fontSize: "12px",
+    color: "#94a3b8",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    display: "block",
+    marginBottom: "4px",
+  },
+  headerTitle: {
+    fontSize: "20px",
+    fontWeight: "700",
+    margin: 0,
+    color: "#ffffff",
+  },
+  scoreBadge: (riskLevel) => ({
+    background: riskLevel.bg,
+    color: riskLevel.color,
+    border: `1px solid ${riskLevel.border}`,
+    padding: "8px 18px",
+    borderRadius: "10px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
+  }),
+  formulaBar: {
+    background: "#f8fafc",
+    borderBottom: "1px solid #e2e8f0",
+    padding: "12px 28px",
+    fontSize: "14px",
+    color: "#475569",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+  },
+  riskBox: {
+    padding: "26px 28px",
+    borderLeft: "1px solid #e2e8f0",
+    background: "#ffffff",
+  },
+  mitigationBox: {
+    padding: "26px 28px",
+    background: "#fafafa",
+  },
+  boxHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    marginBottom: "18px",
+    paddingBottom: "10px",
+    borderBottom: "2px solid #f1f5f9",
+  },
+  riskTitle: {
+    color: "#b91c1c",
+    fontSize: "16px",
+    fontWeight: "700",
+    margin: 0,
+  },
+  mitigationTitle: {
+    color: "#15803d",
+    fontSize: "16px",
+    fontWeight: "700",
+    margin: 0,
+  },
+  infoRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "14px",
+    fontSize: "14px",
+  },
+  infoBlock: {
+    marginBottom: "14px",
+  },
+  infoLabel: {
+    fontWeight: "600",
+    color: "#334155",
+    fontSize: "14px",
+  },
+  descText: {
+    marginTop: "6px",
+    color: "#1e293b",
+    fontSize: "14px",
+    lineHeight: "1.6",
+    background: "#f8fafc",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    border: "1px solid #e2e8f0",
+  },
+  emptyDescText: {
+    marginTop: "6px",
+    color: "#94a3b8",
+    fontSize: "13px",
+    fontStyle: "italic",
+    background: "#f1f5f9",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    border: "1px dashed #cbd5e1",
+  },
+  addMitigationBtn: {
+    background: "#15803d",
+    color: "#ffffff",
+    border: "none",
+    padding: "8px 16px",
+    borderRadius: "6px",
+    fontSize: "13px",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+  emptyCard: {
+    maxWidth: "700px",
+    margin: "60px auto",
+    background: "#ffffff",
+    borderRadius: "16px",
+    padding: "50px 30px",
+    textAlign: "center",
+    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05)",
+    border: "1px solid #e2e8f0",
+  },
+  addBtn: {
+    background: "var(--primary-color, #c29a64)",
+    color: "#ffffff",
+    border: "none",
+    padding: "10px 22px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
 };
 
 export default RiskAssessmentReport;

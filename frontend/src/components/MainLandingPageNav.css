@@ -159,131 +159,6 @@
 }
 
 /* ==========================================================================
-   Mobile Menu Button & Drawer Styles
-   ========================================================================== */
-.navMenuToggleBtn {
-  display: none !important;
-  background: rgba(200, 146, 74, 0.12) !important;
-  border: 1px solid rgba(200, 146, 74, 0.3) !important;
-  outline: none !important;
-  cursor: pointer !important;
-  width: 34px !important;
-  height: 34px !important;
-  border-radius: 8px !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 16px !important;
-  color: var(--text-color) !important;
-  transition: all 0.2s ease !important;
-  flex-shrink: 0 !important;
-}
-
-.navMenuToggleBtn:hover {
-  background: rgba(200, 146, 74, 0.22) !important;
-  color: var(--primary-color, #c8924a) !important;
-}
-
-/* Mobile Nav Backdrop */
-.mobileNavBackdrop {
-  position: fixed !important;
-  inset: 0 !important;
-  top: 56px !important;
-  background: rgba(0, 0, 0, 0.5) !important;
-  z-index: 99997 !important;
-  animation: fadeInBackdrop 0.2s ease-out forwards;
-}
-
-@keyframes fadeInBackdrop {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Mobile Nav Drawer */
-.mobileNavDrawer {
-  position: fixed !important;
-  top: 56px !important;
-  right: 0 !important;
-  left: 0 !important;
-  background: var(--card--background, #1b120c) !important;
-  border-bottom: 2px solid var(--primary-color, #c8924a) !important;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35) !important;
-  z-index: 99998 !important;
-  padding: 16px 20px 24px 20px !important;
-  animation: slideDownNav 0.25s ease-out forwards;
-}
-
-.dark-mode .mobileNavDrawer {
-  background: rgba(26, 15, 7, 0.98) !important;
-}
-
-.light-mode .mobileNavDrawer {
-  background: rgba(245, 237, 224, 0.98) !important;
-}
-
-@keyframes slideDownNav {
-  from {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.mobileNavLinksList {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 8px !important;
-  width: 100% !important;
-}
-
-.mobileNavLinkItem {
-  width: 100% !important;
-  text-align: right !important;
-  padding: 12px 16px !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  border-radius: 10px !important;
-  color: var(--text-color) !important;
-  font-family: inherit !important;
-  font-size: 15px !important;
-  font-weight: 700 !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  text-decoration: none !important;
-  display: block !important;
-}
-
-.mobileNavLinkItem:hover,
-.mobileNavLinkItem.activeFeatureLink {
-  background: rgba(200, 146, 74, 0.14) !important;
-  color: var(--primary-color, #c8924a) !important;
-  border-color: rgba(200, 146, 74, 0.25) !important;
-  padding-right: 20px !important;
-}
-
-.mobileNavLoginBtn {
-  width: 100% !important;
-  margin-top: 10px !important;
-  padding: 12px !important;
-  border-radius: 10px !important;
-  background: linear-gradient(135deg, var(--buttonbackground-color, #c8924a), #9c6c2e) !important;
-  color: #ffffff !important;
-  border: none !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  font-family: inherit !important;
-  cursor: pointer !important;
-  text-align: center !important;
-  box-shadow: 0 4px 14px rgba(200, 146, 74, 0.35) !important;
-}
-
-/* ==========================================================================
    Responsive Breakpoints for Navigation
    ========================================================================== */
 @media (max-width: 991px) {
@@ -292,15 +167,20 @@
   }
 
   .navCenterLinks {
-    display: none !important;
+    gap: 10px;
+    margin: 0 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
   }
 
-  .desktopLoginBtn {
-    display: none !important;
+  .navCenterLinks::-webkit-scrollbar {
+    display: none;
   }
 
-  .navMenuToggleBtn {
-    display: flex !important;
+  .mainNavLink {
+    font-size: 13.5px !important;
+    padding: 5px 8px !important;
   }
 }
 
@@ -311,5 +191,10 @@
 
   .navBrandText {
     display: none;
+  }
+
+  .navLoginBtn {
+    padding: 5px 12px !important;
+    font-size: 12.5px !important;
   }
 }

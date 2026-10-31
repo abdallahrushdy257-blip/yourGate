@@ -230,6 +230,7 @@ class HumanCaseService
             'social_status_string' => $case->social_status_string,
             'case_status'          => (string) ($case->case_status ?? 'موافقة'),
             'case_status_string'   => $case->case_status_string,
+            'case_status_code'     => $case->case_status_code,
             'nationality'        => $case->nationality ?? '',
             'phonenum'           => $case->phonenum ?? '',
             'phone'              => $case->phonenum ?? '',
@@ -254,14 +255,17 @@ class HumanCaseService
         ];
 
         return [
-            'status'         => 200,
-            'id'             => $case->id,
-            'name'           => $case->name,
-            'case'           => $caseData,
-            'details'        => $details,
-            'work_education' => $workEducation,
-            'health'         => $health,
-            'dependants'     => $dependants,
+            'status'             => 200,
+            'id'                 => $case->id,
+            'name'               => $case->name,
+            'case'               => $caseData,
+            'case_status'        => $case->case_status,
+            'case_status_string' => $case->case_status_string,
+            'case_status_code'   => $case->case_status_code,
+            'details'            => $details,
+            'work_education'     => $workEducation,
+            'health'             => $health,
+            'dependants'         => $dependants,
         ];
     }
 

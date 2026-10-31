@@ -130,19 +130,11 @@ body {
 /**************************************************************************************************************************************/
 
 .printcasedata-container {
-  width: 80%;
-  margin: auto;
-}
-
-.printTabel-container {
-  direction: rtl;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  padding-top: 1%;
-  -webkit-overflow-scrolling: touch;
-  width: 80%;
-  margin: auto;
+  width: 95% !important;
+  max-width: 1440px !important;
+  margin: 15px auto 40px !important;
+  direction: rtl !important;
+  box-sizing: border-box !important;
 }
 
 .printTabel {

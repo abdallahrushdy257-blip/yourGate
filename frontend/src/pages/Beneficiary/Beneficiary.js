@@ -23,7 +23,15 @@ function Beneficiary(props) {
   ];
 
   const transformRow = (row) => {
-    const rawDecision = row.case_status_string || row.case_status || "موافقة";
+    let rawDecision = row.case_status_string || row.case_status || "موافقة";
+    if (rawDecision === "200" || rawDecision === "2" || rawDecision === "approved") {
+      rawDecision = "موافقة";
+    } else if (rawDecision === "3" || rawDecision === "rejected" || rawDecision === "رفض") {
+      rawDecision = "مرفوض";
+    } else if (rawDecision === "1" || rawDecision === "pending" || rawDecision === "معلق" || rawDecision === "قيد المراجعة") {
+      rawDecision = "معلق";
+    }
+
     const statusConfig = {
       موافقة: { bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7", icon: "✓" },
       معلق: { bg: "#fff8e1", color: "#f57f17", border: "#ffe082", icon: "⏳" },
@@ -36,7 +44,8 @@ function Beneficiary(props) {
       ...row,
       social_status_string: row.social_status_string || row.status_string || "-",
       case_status_badge: badge,
-      case_status_string: badge,
+      case_status_text: rawDecision,
+      case_status_string: rawDecision,
     };
   };
 
@@ -149,20 +158,20 @@ function Beneficiary(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if(!name){
+          return toast.error("الرجاء ادخال الإسم")
+        }
     const today = new Date().toLocaleDateString("en-CA");
     let validationErrors = {};
 
-    if (!name) {
-      toast.error("حقل الإسم مطلوب");
-      return
+    if (!name.trim()) {
+      validationErrors.name = "حقل الإسم مطلوب";
     }
     if (dob && dob > today) {
-      toast.error("تاريخ الميلاد لا يمكن أن يكون في المستقبل");
-      return
+      validationErrors.dob = "تاريخ الميلاد لا يمكن أن يكون في المستقبل";
     }
     if (iddate && iddate < today) {
-      toast.error("تاريخ انتهاء الهوية لا يمكن أن يكون في الماضي");
-      return
+      validationErrors.iddate = "تاريخ انتهاء الهوية لا يمكن أن يكون في الماضي";
     }
 
     if (Object.keys(validationErrors).length > 0) {

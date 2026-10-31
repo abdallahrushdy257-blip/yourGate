@@ -1,27 +1,18 @@
-import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "./title";
-import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
-function LandingInfo({ text = [], title = "المميزات والخدمات" }) {
-  if (!text || text.length === 0) return null;
-
+function LandingInfo({ text , title }) {
   return (
-    <div className="infoContainer" dir="rtl">
-      <div className="subLandingSectionTitle">
-        <Title title={title} />
-        <p className="subLandingSectionDesc">
-          أهم المزايا والخصائص المتطورة المصممة خصيصاً لخدمة أهداف جمعيتك
-        </p>
-      </div>
-
-      <div className="featureCardsGrid">
+    <div className="infoContainer">
+      <Title title={title} />
+      <div className="textContainer">
         {text.map((item, index) => (
-          <div className="featureCardItem" key={index}>
-            <div className="featureIconBadge">
-              <FontAwesomeIcon icon={faCircleCheck} />
+          <div className="infoText" key={index}>
+            <div className="iconCreateContainer">
+              <FontAwesomeIcon icon={faCheck} className="infoCheck" />
             </div>
-            <p className="featureCardText">{item}</p>
+            <p className="infoBody">{item}</p>
           </div>
         ))}
       </div>

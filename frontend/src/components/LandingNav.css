@@ -1,60 +1,13 @@
-/* ==========================================================================
-   LandingNav - Feature Sub-Landings Navigation Styling
-   ========================================================================== */
-
-.featureLandingNav {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+.themeToggleBtn {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 20px;
+  margin-left: 15px;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.featureNavLinks {
-  overflow-x: auto !important;
-  scrollbar-width: none !important;
-  -webkit-overflow-scrolling: touch !important;
-  white-space: nowrap !important;
-  padding: 4px 8px !important;
-  justify-content: center !important;
-  max-width: 70vw !important;
-}
-
-.featureNavLinks::-webkit-scrollbar {
-  display: none !important;
-}
-
-.featureNavLink {
-  font-size: 13.5px !important;
-  padding: 5px 11px !important;
-  border-radius: 8px !important;
-  text-decoration: none !important;
-  transition: all 0.2s ease !important;
-  flex-shrink: 0 !important;
-}
-
-.activeFeatureLink {
-  color: var(--primary-color, #c8924a) !important;
-  background: rgba(200, 146, 74, 0.16) !important;
-  font-weight: 800 !important;
-  box-shadow: inset 0 -2px 0 var(--primary-color, #c8924a) !important;
-}
-
-/* Mobile Nav Drawer for Feature Landings */
-.mobileNavGridLinks {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 8px 10px !important;
-  width: 100% !important;
-  max-height: 60vh !important;
-  overflow-y: auto !important;
-  padding-bottom: 8px !important;
-}
-
-@media (max-width: 991px) {
-  .featureNavLinks {
-    display: none !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .mobileNavGridLinks {
-    grid-template-columns: 1fr !important;
-  }
+.themeToggleBtn:hover {
+  transform: rotate(20deg) scale(1.1);
 }

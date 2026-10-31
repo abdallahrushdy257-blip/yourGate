@@ -124,11 +124,11 @@ function Hcvendor(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name){
-      return toast.error("الاسم مطلوب")
+    if(!name){
+      return toast.error("الرجاء ادخال اسم المورد")
     }
-    if (!phone){
-      return toast.error("رقم الهاتف مطلوب")
+    if(!phone){
+      return toast.error("الرجاء ادخال رقم الجوال")
     }
     setIsSubmitting(true);
     const mForm = new FormData();

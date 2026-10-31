@@ -135,6 +135,13 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
   const [caseNotes, setCaseNotes] = useState("");
   const lastFetchedKeyRef = useRef(null);
 
+  const mapCaseStatusToCode = (val) => {
+    const s = String(val ?? "").trim();
+    if (s === "3" || s === "مرفوض" || s === "rejected" || s === "رفض") return "3";
+    if (s === "1" || s === "معلق" || s === "pending" || s === "قيد المراجعة") return "1";
+    return "2"; // 2, 200, موافقة, approved, default
+  };
+
   useEffect(() => {
     if (!activePopup?.id) return;
 
@@ -148,7 +155,10 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
     if (activePopup.record) {
       const r = activePopup.record;
       if (r.accnumber) setIban(r.accnumber);
-      if (r.status) setDecision(String(r.status));
+      const initialStatus = r.case_status_code ?? r.case_status_text ?? r.case_status_string ?? r.case_status;
+      if (initialStatus !== undefined && initialStatus !== null) {
+        setDecision(mapCaseStatusToCode(initialStatus));
+      }
       if (r.note) setCaseNotes(r.note);
       const prevImg = r.bankdetails_upload || r.bank_image || r.image || r.details?.bankdetails_upload || r.details?.bankdetails?.upload;
       if (prevImg) setExistingBankUpload(prevImg);
@@ -239,11 +249,21 @@ function BeneficiarySubModal({ activePopup, onClose, onSuccess }) {
         }
 
         // Case study / Status
-        if (res.data.status) {
-          setDecision(String(res.data.status));
+        const c = res.data.case || {};
+        const fetchedStatus =
+          c.case_status_code ??
+          res.data.case_status_code ??
+          c.case_status_string ??
+          res.data.case_status_string ??
+          c.case_status ??
+          res.data.case_status ??
+          details.decision;
+
+        if (fetchedStatus !== undefined && fetchedStatus !== null) {
+          setDecision(mapCaseStatusToCode(fetchedStatus));
         }
-        if (res.data.note) {
-          setCaseNotes(res.data.note);
+        if (c.note || res.data.note) {
+          setCaseNotes(c.note || res.data.note || "");
         }
       } catch (err) {
         if (err?.name !== "CanceledError" && err?.code !== "ERR_CANCELED") {

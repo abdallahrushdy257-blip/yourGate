@@ -42,7 +42,9 @@ class HumanCase extends Model
         'gender_string',
         'status_string',
         'social_status_string',
+        'case_status',
         'case_status_string',
+        'case_status_code',
         'dateofbirth',
     ];
 
@@ -81,13 +83,25 @@ class HumanCase extends Model
      */
     public function getCaseStatusStringAttribute(): string
     {
-        $val = trim((string) ($this->case_status ?? 'موافقة'));
+        $val = trim((string) ($this->attributes['case_status'] ?? 'موافقة'));
 
         return match ($val) {
             '1', 'pending', 'معلق', 'قيد المراجعة'    => 'معلق',
-            '2', 'approved', 'موافقة', 'مقبول'        => 'موافقة',
+            '2', 'approved', 'موافقة', 'مقبول', '200' => 'موافقة',
             '3', 'rejected', 'مرفوض', 'رفض', 'مستبعد' => 'مرفوض',
-            default                                   => $val !== '' ? $val : 'موافقة',
+            default                                   => ($val !== '' && !is_numeric($val)) ? $val : 'موافقة',
+        };
+    }
+
+    /**
+     * Get numeric code for case study decision (1: معلق, 2: موافقة, 3: مرفوض).
+     */
+    public function getCaseStatusCodeAttribute(): string
+    {
+        return match ($this->case_status_string) {
+            'مرفوض' => '3',
+            'معلق'  => '1',
+            default => '2',
         };
     }
 

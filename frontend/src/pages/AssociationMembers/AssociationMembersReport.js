@@ -1,34 +1,67 @@
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsersBetweenLines,
+  faUsers,
+  faUserGroup,
+  faBuildingColumns,
+  faCoins,
   faXmark,
+  faPenToSquare,
+  faTrashCan,
+  faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
-import "../CaseDetails/CaseDetails.css";
-import "./associationMembers.css";
-import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import TableComponent from "../../components/TableComponent";
-import NewButton from "../../components/NewButton";
 import { Modal, Row, Col, Button, Spinner } from "react-bootstrap";
+import TableComponent from "../../components/TableComponent";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import UploadInput from "../../components/UploadInput";
 import API from "../../api/axiosConfig";
+import "../CaseDetails/CaseDetails.css";
+import "./associationMembers.css";
 import { toast } from "react-toastify";
 
-function AssociationMembersReport(params) {
+function AssociationMembersReport() {
+  const navigate = useNavigate();
+
   const columns = [
-    { name: "رقم العضو", key: "membership_serial" },
+    { name: "رقم العضو", key: "membership_serial_badge" },
     { name: "اسم العضو", key: "name" },
-    { name: "نوع العضوية", key: "status" },
+    { name: "نوع العضو", key: "status_badge" },
+    { name: "نوع العضوية", key: "subscription_badge" },
+    { name: "قيمة الاشتراك", key: "subscription_fees_formatted" },
     { name: "تاريخ العضوية", key: "start_membership_date" },
     { name: "تاريخ الإشتراك", key: "start_subscription_date" },
     { name: "", key: "actions" },
   ];
 
-  const [rows, setRows] = useState([]);
   const [tableReloadKey, setTableReloadKey] = useState(Date.now());
-  const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    total_members: 0,
+    board_members: 0,
+    general_members: 0,
+    total_fees: 0,
+  });
+
+  // ── Fetch aggregate statistics ───────────────────────────
+  useEffect(() => {
+    let isMounted = true;
+    const fetchStats = async () => {
+      try {
+        const res = await API.get("/assemblymembers/stats");
+        if (isMounted && res.data?.success && res.data?.data) {
+          setStats(res.data.data);
+        }
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      }
+    };
+    fetchStats();
+    return () => {
+      isMounted = false;
+    };
+  }, [tableReloadKey]);
 
   // ── Add Modal state ─────────────────────────────────────
   const [showModal, setShowModal] = useState(false);
@@ -36,53 +69,53 @@ function AssociationMembersReport(params) {
   const [error, setError] = useState({});
 
   const [name, setName] = useState(
-    () => sessionStorage.getItem("assemblyname") || "",
+    () => sessionStorage.getItem("assemblyname") || ""
   );
   const [dob, setDob] = useState(
     () =>
       sessionStorage.getItem("assemblydob") ||
-      new Date().toISOString().substr(0, 10),
+      new Date().toISOString().substr(0, 10)
   );
   const [nationalid, setNationalid] = useState(
-    () => sessionStorage.getItem("assemblyid") || "",
+    () => sessionStorage.getItem("assemblyid") || ""
   );
   const [idexpire, setIdexpire] = useState(
     () =>
       sessionStorage.getItem("assemblyidexpire") ||
-      new Date().toISOString().substr(0, 10),
+      new Date().toISOString().substr(0, 10)
   );
   const [startjoin, setStartjoin] = useState(
     () =>
       sessionStorage.getItem("assemblystartjoin") ||
-      new Date().toISOString().substr(0, 10),
+      new Date().toISOString().substr(0, 10)
   );
   const [endjoin, setEndjoin] = useState(
     () =>
       sessionStorage.getItem("assemblyendjoin") ||
-      new Date().toISOString().substr(0, 10),
+      new Date().toISOString().substr(0, 10)
   );
   const [status, setStatus] = useState(
-    () => sessionStorage.getItem("assemblystatus") || "",
+    () => sessionStorage.getItem("assemblystatus") || "2"
   );
   const [membertype, setMembertype] = useState(
-    () => sessionStorage.getItem("assemblymembertype") || "",
+    () => sessionStorage.getItem("assemblymembertype") || ""
   );
   const [job, setJob] = useState(
-    () => sessionStorage.getItem("assemblyjob") || "",
+    () => sessionStorage.getItem("assemblyjob") || ""
   );
   const [jobAddress, setJobAddress] = useState(
-    () => sessionStorage.getItem("assemblyjobAddress") || "",
+    () => sessionStorage.getItem("assemblyjobAddress") || ""
   );
   const [fees, setFees] = useState(
-    () => sessionStorage.getItem("assemblyfees") || "",
+    () => sessionStorage.getItem("assemblyfees") || ""
   );
   const [notes, setNotes] = useState(
-    () => sessionStorage.getItem("assemblynotes") || "",
+    () => sessionStorage.getItem("assemblynotes") || ""
   );
   const [startmember, setStartmember] = useState(
     () =>
       sessionStorage.getItem("assemblystartmember") ||
-      new Date().toISOString().substr(0, 10),
+      new Date().toISOString().substr(0, 10)
   );
   const [upload, setUpload] = useState(null);
 
@@ -109,7 +142,7 @@ function AssociationMembersReport(params) {
     setIdexpire(new Date().toISOString().substr(0, 10));
     setStartjoin(new Date().toISOString().substr(0, 10));
     setEndjoin(new Date().toISOString().substr(0, 10));
-    setStatus("");
+    setStatus("2");
     setMembertype("");
     setJob("");
     setJobAddress("");
@@ -141,27 +174,14 @@ function AssociationMembersReport(params) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
-    // Client-side validation
     const newErrors = {};
     const today = new Date().toISOString().split("T")[0];
 
-    if (!name) {
-      toast.error("حقل الاسم مطلوب");
-      return;
+    if (!name.trim()) {
+     return toast.error("اسم العضو مطلوب");
     }
-
     if (dob && dob > today) {
-      toast.error("تاريخ الميلاد لا يمكن أن يكون في المستقبل");
-      return;
-    }
-    if (endjoin && endjoin < today) {
-      toast.error("تاريخ انتهاء الاشتراك لا يمكن أن يكون في الماضي");
-      return;
-    }
-    if (idexpire && idexpire < today) {
-      toast.error("تاريخ انتهاء الهوية لا يمكن أن يكون في الماضي");
-      return;
+     return toast.error("تاريخ الميلاد لا يمكن أن يكون في المستقبل");
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -181,7 +201,7 @@ function AssociationMembersReport(params) {
     formData.append("startmember", startmember);
     formData.append("job", job);
     formData.append("jobAddress", jobAddress);
-    formData.append("fees", fees);
+    formData.append("fees", fees || 0);
     formData.append("notes", notes);
     formData.append("status", status);
     if (upload) formData.append("upload", upload);
@@ -204,160 +224,122 @@ function AssociationMembersReport(params) {
     }
   };
 
-  const formatDateForInput = (dateStr) => {
-    if (!dateStr) return "";
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
-      const [day, month, year] = dateStr.split("-");
-      return `${year}-${month}-${day}`;
-    }
-    return dateStr;
-  };
-
-  // ── Edit Member Modal State & Handlers ──────────────────
+  // ── Edit Modal state ────────────────────────────────────
   const [showEditModal, setShowEditModal] = useState(false);
+  const [editingMemberId, setEditingMemberId] = useState(null);
   const [isEditSubmitting, setIsEditSubmitting] = useState(false);
+  const [isFetchingMember, setIsFetchingMember] = useState(false);
   const [editError, setEditError] = useState({});
-  const [editId, setEditId] = useState(null);
-  const isFetchingEditRef = useRef(false);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    dob: "",
+    nationalid: "",
+    idexpire: "",
+    startjoin: "",
+    endjoin: "",
+    status: "2",
+    membertype: "",
+    job: "",
+    jobAddress: "",
+    fees: "",
+    notes: "",
+    startmember: "",
+    upload: null,
+  });
 
-  const [editName, setEditName] = useState("");
-  const [editDob, setEditDob] = useState("");
-  const [editNationalid, setEditNationalid] = useState("");
-  const [editIdexpire, setEditIdexpire] = useState("");
-  const [editStartjoin, setEditStartjoin] = useState("");
-  const [editEndjoin, setEditEndjoin] = useState("");
-  const [editStatus, setEditStatus] = useState("");
-  const [editMembertype, setEditMembertype] = useState("");
-  const [editJob, setEditJob] = useState("");
-  const [editJobAddress, setEditJobAddress] = useState("");
-  const [editFees, setEditFees] = useState("");
-  const [editNotes, setEditNotes] = useState("");
-  const [editStartmember, setEditStartmember] = useState("");
-  const [editUpload, setEditUpload] = useState(null);
+  // ── Delete Modal state ──────────────────────────────────
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingMember, setDeletingMember] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleOpenEditModal = async (memberId, record) => {
-    if (isFetchingEditRef.current) return;
-    isFetchingEditRef.current = true;
-    setEditId(memberId);
+  const handleOpenEditModal = async (targetId, record) => {
+    const id = record?.id || targetId;
+    setEditingMemberId(id);
     setEditError({});
+    setShowEditModal(true);
+    setIsFetchingMember(true);
+
+    if (record) {
+      setEditFormData({
+        name: record.name || "",
+        dob: record.dateofbirth || record.dob || "",
+        nationalid: record.nationalid || "",
+        idexpire: record.nationalid_expire || record.idexpire || "",
+        startjoin: record.start_subscription_date || record.startjoin || "",
+        endjoin: record.end_subscription_date || record.endjoin || "",
+        status: String(record.status ?? "2"),
+        membertype: String(record.subscription_type || record.membertype || ""),
+        job: record.job || "",
+        jobAddress: record.jobaddress || record.jobAddress || "",
+        fees: record.subscription_fees ?? record.fees ?? "",
+        notes: record.notes || "",
+        startmember: record.start_membership_date || record.startmember || "",
+        upload: null,
+      });
+    }
 
     try {
-      const res = await API.get(`/assemblymembers/${memberId}`);
-      const m = res.data?.data || res.data || record || {};
-      setEditName(m.name || "");
-      setEditDob(formatDateForInput(m.dateofbirth || m.dob || ""));
-      setEditNationalid(m.nationalid || "");
-      setEditIdexpire(
-        formatDateForInput(m.nationalid_expire || m.idexpire || ""),
-      );
-      setEditStartjoin(
-        formatDateForInput(m.start_subscription_date || m.startjoin || ""),
-      );
-      setEditEndjoin(
-        formatDateForInput(m.end_subscription_date || m.endjoin || ""),
-      );
-      setEditStatus(m.status !== undefined ? String(m.status) : "");
-      setEditMembertype(
-        m.subscription_type !== undefined
-          ? String(m.subscription_type)
-          : m.membertype !== undefined
-            ? String(m.membertype)
-            : "",
-      );
-      setEditJob(m.job || "");
-      setEditJobAddress(m.jobaddress || m.jobAddress || "");
-      setEditFees(
-        m.subscription_fees !== undefined
-          ? m.subscription_fees
-          : m.fees || "",
-      );
-      setEditNotes(m.notes || "");
-      setEditStartmember(
-        formatDateForInput(m.start_membership_date || m.startmember || ""),
-      );
-      setEditUpload(null);
-      setShowEditModal(true);
+      const res = await API.get(`/assemblymembers/${id}`);
+      const data = res.data?.data || res.data;
+      if (data) {
+        setEditFormData({
+          name: data.name || "",
+          dob: data.dateofbirth || data.dob || "",
+          nationalid: data.nationalid || "",
+          idexpire: data.nationalid_expire || data.idexpire || "",
+          startjoin: data.start_subscription_date || data.startjoin || "",
+          endjoin: data.end_subscription_date || data.endjoin || "",
+          status: String(data.status ?? "2"),
+          membertype: String(data.subscription_type || data.membertype || ""),
+          job: data.job || "",
+          jobAddress: data.jobaddress || data.jobAddress || "",
+          fees: data.subscription_fees ?? data.fees ?? "",
+          notes: data.notes || "",
+          startmember: data.start_membership_date || data.startmember || "",
+          upload: null,
+        });
+      }
     } catch (err) {
-      console.error(err);
-      const m = record || {};
-      setEditName(m.name || "");
-      setEditDob(formatDateForInput(m.dateofbirth || m.dob || ""));
-      setEditNationalid(m.nationalid || "");
-      setEditIdexpire(
-        formatDateForInput(m.nationalid_expire || m.idexpire || ""),
-      );
-      setEditStartjoin(
-        formatDateForInput(m.start_subscription_date || m.startjoin || ""),
-      );
-      setEditEndjoin(
-        formatDateForInput(m.end_subscription_date || m.endjoin || ""),
-      );
-      setEditStatus(m.status !== undefined ? String(m.status) : "");
-      setEditMembertype(
-        m.subscription_type !== undefined
-          ? String(m.subscription_type)
-          : "",
-      );
-      setEditJob(m.job || "");
-      setEditJobAddress(m.jobaddress || "");
-      setEditFees(m.subscription_fees || "");
-      setEditNotes(m.notes || "");
-      setEditStartmember(
-        formatDateForInput(m.start_membership_date || ""),
-      );
-      setEditUpload(null);
-      setShowEditModal(true);
+      console.error("Error loading member details:", err);
     } finally {
-      isFetchingEditRef.current = false;
+      setIsFetchingMember(false);
     }
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    if (isEditSubmitting) return;
-
-    if (!editName) {
-      return toast.error("حقل الاسم مطلوب");
+    if (!editFormData.name?.trim()) {
+      toast.error("اسم العضو مطلوب");
+      return;
     }
-
-    const today = new Date().toISOString().split("T")[0];
-    if (editDob && editDob > today) {
-      return toast.error("تاريخ الميلاد لا يمكن أن يكون في المستقبل");
-    }
-    if (editEndjoin && editEndjoin < today) {
-      return toast.error("تاريخ انتهاء الاشتراك لا يمكن أن يكون في الماضي");
-    }
-    if (editIdexpire && editIdexpire < today) {
-      return toast.error("تاريخ انتهاء الهوية لا يمكن أن يكون في الماضي");
-    }
-
     setIsEditSubmitting(true);
+    setEditError({});
+
     const formData = new FormData();
-    formData.append("id", editId);
-    formData.append("name", editName);
-    formData.append("dob", editDob);
-    formData.append("nationalid", editNationalid);
-    formData.append("idexpire", editIdexpire);
-    formData.append("startjoin", editStartjoin);
-    formData.append("endjoin", editEndjoin);
-    formData.append("membertype", editMembertype);
-    formData.append("startmember", editStartmember);
-    formData.append("job", editJob);
-    formData.append("jobAddress", editJobAddress);
-    formData.append("fees", editFees);
-    formData.append("notes", editNotes);
-    formData.append("status", editStatus);
-    if (editUpload) {
-      formData.append("upload", editUpload);
-    }
+    formData.append("id", editingMemberId);
+    formData.append("name", editFormData.name);
+    if (editFormData.dob) formData.append("dob", editFormData.dob);
+    if (editFormData.nationalid) formData.append("nationalid", editFormData.nationalid);
+    if (editFormData.idexpire) formData.append("idexpire", editFormData.idexpire);
+    if (editFormData.status) formData.append("status", editFormData.status);
+    if (editFormData.membertype) formData.append("membertype", editFormData.membertype);
+    if (editFormData.startmember) formData.append("startmember", editFormData.startmember);
+    if (editFormData.startjoin) formData.append("startjoin", editFormData.startjoin);
+    if (editFormData.endjoin) formData.append("endjoin", editFormData.endjoin);
+    formData.append(
+      "fees",
+      editFormData.fees !== "" && editFormData.fees !== null ? editFormData.fees : 0
+    );
+    if (editFormData.job) formData.append("job", editFormData.job);
+    if (editFormData.jobAddress) formData.append("jobAddress", editFormData.jobAddress);
+    if (editFormData.notes) formData.append("notes", editFormData.notes);
+    if (editFormData.upload) formData.append("upload", editFormData.upload);
 
     try {
       const res = await API.post("/assemblymembers/update", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (res.status === 200 || res.status === 201) {
-        toast.success("تم تعديل بيانات العضو بنجاح");
         setShowEditModal(false);
         setTableReloadKey(Date.now());
       } else {
@@ -365,48 +347,149 @@ function AssociationMembersReport(params) {
       }
     } catch (err) {
       console.error(err);
-      toast.error(
-        err.response?.data?.message || "حدث خطأ أثناء تعديل بيانات العضو",
-      );
       setEditError(err.response?.data?.errors || {});
     } finally {
       setIsEditSubmitting(false);
     }
   };
 
+  const handleOpenDeleteModal = (targetId, record) => {
+    const member = record || { id: targetId, name: `عضو #${targetId}` };
+    setDeletingMember(member);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingMember?.id) return;
+    setIsDeleting(true);
+    try {
+      await API.delete(`/assemblymembers/${deletingMember.id}`);
+      setShowDeleteModal(false);
+      setDeletingMember(null);
+      setTableReloadKey(Date.now());
+    } catch (err) {
+      console.error("Error deleting member:", err);
+      alert("حدث خطأ أثناء محاولة حذف العضو");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const dropdownOptions = [
     {
       label: "تعديل",
-      action: (id, record) => {
-        handleOpenEditModal(id, record);
-      },
+      action: (id, record) => handleOpenEditModal(id, record),
     },
     { label: "سند قبض", route: "/associationMemberspayment/:id" },
     { label: "سند دفع", route: "/associationMembersRecieve/:id" },
+    {
+      label: "حذف العضو",
+      action: (id, record) => handleOpenDeleteModal(id, record),
+    },
   ];
 
   const modifyRow = (row) => {
-    let modifiedRow = { ...row };
-    modifiedRow.status =
-      modifiedRow.status === 1 ? "عضو مجلس ادارة" : " عضو جمعية عمومية";
-    return modifiedRow;
+    const isBoard = Number(row.status) === 1;
+
+    return {
+      ...row,
+      membership_serial_badge: `<span class="badge-serial">${row.membership_serial || `MEM-${row.id}`}</span>`,
+      status_badge: isBoard
+        ? `<span class="badge-board">مجلس إدارة</span>`
+        : `<span class="badge-assembly">جمعية عمومية</span>`,
+      subscription_badge: `<span class="badge-sub">${row.subscription_type_string || row.membertype || "عادية"}</span>`,
+      subscription_fees_formatted: `<span class="badge-fees">${Number(row.subscription_fees ?? row.fees ?? 0).toLocaleString()} ر.س</span>`,
+    };
   };
 
   return (
     <div className="ass-mem">
       <div className="printcasedata-container">
-        {/* <NewButton name={"عضو"} onClick={() => setShowModal(true)} /> */}
+        {/* ── Page Header ── */}
+        <div className="ass-page-header">
+          <div className="ass-header-title-box">
+            <div className="ass-header-icon">
+              <FontAwesomeIcon icon={faUsersBetweenLines} />
+            </div>
+            <div>
+              <h1 className="ass-header-title">تقرير أعضاء الجمعية</h1>
+              <p className="ass-header-subtitle">
+                إدارة بيانات أعضاء مجلس الإدارة والجمعية العمومية وتتبع اشتراكاتهم
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── KPI Stats Cards ── */}
+        <div className="ass-stats-grid">
+          <div className="ass-stat-card total">
+            <div className="ass-stat-info">
+              <span className="ass-stat-label">إجمالي الأعضاء</span>
+              <div className="ass-stat-value-wrap">
+                <span className="ass-stat-value">{stats.total_members}</span>
+                <span className="ass-stat-unit">عضو</span>
+              </div>
+            </div>
+            <div className="ass-stat-icon-wrap">
+              <FontAwesomeIcon icon={faUsers} />
+            </div>
+          </div>
+
+          <div className="ass-stat-card board">
+            <div className="ass-stat-info">
+              <span className="ass-stat-label">مجلس الإدارة</span>
+              <div className="ass-stat-value-wrap">
+                <span className="ass-stat-value">{stats.board_members}</span>
+                <span className="ass-stat-unit">عضو</span>
+              </div>
+            </div>
+            <div className="ass-stat-icon-wrap">
+              <FontAwesomeIcon icon={faBuildingColumns} />
+            </div>
+          </div>
+
+          <div className="ass-stat-card general">
+            <div className="ass-stat-info">
+              <span className="ass-stat-label">الجمعية العمومية</span>
+              <div className="ass-stat-value-wrap">
+                <span className="ass-stat-value">{stats.general_members}</span>
+                <span className="ass-stat-unit">عضو</span>
+              </div>
+            </div>
+            <div className="ass-stat-icon-wrap">
+              <FontAwesomeIcon icon={faUserGroup} />
+            </div>
+          </div>
+
+          <div className="ass-stat-card fees">
+            <div className="ass-stat-info">
+              <span className="ass-stat-label">إجمالي الاشتراكات</span>
+              <div className="ass-stat-value-wrap">
+                <span className="ass-stat-value">
+                  {Number(stats.total_fees || 0).toLocaleString()}
+                </span>
+                <span className="ass-stat-unit">ر.س</span>
+              </div>
+            </div>
+            <div className="ass-stat-icon-wrap">
+              <FontAwesomeIcon icon={faCoins} />
+            </div>
+          </div>
+        </div>
+
+        {/* ── Table Component ── */}
         <TableComponent
           apiUrl="/assemblymembers"
           columns={columns}
           title="تقرير الأعضاء"
           titleIcon={<FontAwesomeIcon icon={faUsersBetweenLines} />}
+          placeholderSearch="ابحث باسم العضو، رقم العضو، أو الهوية الوطنية..."
           dropdownOptions={dropdownOptions}
           transformRowFn={modifyRow}
           triggerReload={tableReloadKey}
           addBtn={true}
           onAddClick={() => setShowModal(true)}
-          addBtnName="عضو"
+          addBtnName="عضو جديد"
         />
       </div>
 
@@ -419,7 +502,7 @@ function AssociationMembersReport(params) {
         centered
       >
         <Modal.Header>
-          <Modal.Title>إضافة عضو</Modal.Title>
+          <Modal.Title>إضافة عضو جديد</Modal.Title>
           <Button
             className="custom-close-button cls-btn"
             variant="link"
@@ -434,7 +517,7 @@ function AssociationMembersReport(params) {
             <Col md={6}>
               <RegisterTextbox
                 id="mem-name"
-                label="إسم العضو"
+                label="إسم العضو *"
                 type="text"
                 value={name}
                 onChange={(e) => {
@@ -449,9 +532,9 @@ function AssociationMembersReport(params) {
                 className="mb-3"
                 style={{ display: "flex", flexDirection: "column" }}
               >
-                <p style={{ marginBottom: "10px", textAlign: "right" }}>
+                <label className="register-label">
                   تاريخ الميلاد
-                </p>
+                </label>
                 <input
                   type="date"
                   className="custom-datepicker"
@@ -463,9 +546,7 @@ function AssociationMembersReport(params) {
                   style={{ width: "100%" }}
                 />
                 {error.dob && (
-                  <span className="error-text" style={{ color: "red" }}>
-                    {error.dob}
-                  </span>
+                  <span className="error-text">{error.dob}</span>
                 )}
               </div>
             </Col>
@@ -475,8 +556,8 @@ function AssociationMembersReport(params) {
             <Col md={6}>
               <RegisterTextbox
                 id="mem-id"
-                label="رقم الهوية"
-                type="number"
+                label="رقم الهوية الوطنية / الإقامة"
+                type="text"
                 value={nationalid}
                 onChange={(e) => {
                   setNationalid(e.target.value);
@@ -490,9 +571,9 @@ function AssociationMembersReport(params) {
                 className="mb-3"
                 style={{ display: "flex", flexDirection: "column" }}
               >
-                <p style={{ marginBottom: "10px", textAlign: "right" }}>
+                <label className="register-label">
                   تاريخ انتهاء الهوية
-                </p>
+                </label>
                 <input
                   type="date"
                   className="custom-datepicker"
@@ -504,62 +585,7 @@ function AssociationMembersReport(params) {
                   style={{ width: "100%" }}
                 />
                 {error.idexpire && (
-                  <span className="error-text" style={{ color: "red" }}>
-                    {error.idexpire}
-                  </span>
-                )}
-              </div>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <div
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                <p style={{ marginBottom: "10px", textAlign: "right" }}>
-                  تاريخ بداية الاشتراك
-                </p>
-                <input
-                  type="date"
-                  className="custom-datepicker"
-                  value={startjoin}
-                  onChange={(e) => {
-                    setStartjoin(e.target.value);
-                    sessionStorage.setItem("assemblystartjoin", e.target.value);
-                  }}
-                  style={{ width: "100%" }}
-                />
-                {error.startjoin && (
-                  <span className="error-text" style={{ color: "red" }}>
-                    {error.startjoin}
-                  </span>
-                )}
-              </div>
-            </Col>
-            <Col md={6}>
-              <div
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                <p style={{ marginBottom: "10px", textAlign: "right" }}>
-                  تاريخ انتهاء الاشتراك
-                </p>
-                <input
-                  type="date"
-                  className="custom-datepicker"
-                  value={endjoin}
-                  onChange={(e) => {
-                    setEndjoin(e.target.value);
-                    sessionStorage.setItem("assemblyendjoin", e.target.value);
-                  }}
-                  style={{ width: "100%" }}
-                />
-                {error.endjoin && (
-                  <span className="error-text" style={{ color: "red" }}>
-                    {error.endjoin}
-                  </span>
+                  <span className="error-text">{error.idexpire}</span>
                 )}
               </div>
             </Col>
@@ -569,9 +595,8 @@ function AssociationMembersReport(params) {
             <Col md={6}>
               <RegisterSelect
                 id="mem-status"
-                label="نوع العضو"
+                label="فئة العضو *"
                 options={[
-                  { value: "", label: "إختر نوع العضو" },
                   { value: "1", label: "عضو مجلس ادارة" },
                   { value: "2", label: "عضو جمعية عمومية" },
                 ]}
@@ -587,7 +612,7 @@ function AssociationMembersReport(params) {
             <Col md={6}>
               <RegisterSelect
                 id="mem-type"
-                label="نوع العضوية"
+                label="صفة / نوع العضوية"
                 options={
                   memberTypeOptionsByStatus[status] || [
                     { value: "", label: "إختر نوع العضوية" },
@@ -599,8 +624,86 @@ function AssociationMembersReport(params) {
                   sessionStorage.setItem("assemblymembertype", e.target.value);
                 }}
                 error={error.membertype}
-                disabled={!status}
               />
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={6}>
+              <div
+                className="mb-3"
+                style={{ display: "flex", flexDirection: "column" }}
+              >
+                <label className="register-label">
+                  تاريخ بداية العضوية
+                </label>
+                <input
+                  type="date"
+                  className="custom-datepicker"
+                  value={startmember}
+                  onChange={(e) => {
+                    setStartmember(e.target.value);
+                    sessionStorage.setItem("assemblystartmember", e.target.value);
+                  }}
+                  style={{ width: "100%" }}
+                />
+              </div>
+            </Col>
+            <Col md={6}>
+              <RegisterTextbox
+                id="mem-fees"
+                label="قيمة الإشتراك السنوي (ر.س)"
+                type="number"
+                value={fees}
+                onChange={(e) => {
+                  setFees(e.target.value);
+                  sessionStorage.setItem("assemblyfees", e.target.value);
+                }}
+                error={error.fees}
+              />
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={6}>
+              <div
+                className="mb-3"
+                style={{ display: "flex", flexDirection: "column" }}
+              >
+                <label className="register-label">
+                  تاريخ بداية الاشتراك
+                </label>
+                <input
+                  type="date"
+                  className="custom-datepicker"
+                  value={startjoin}
+                  onChange={(e) => {
+                    setStartjoin(e.target.value);
+                    sessionStorage.setItem("assemblystartjoin", e.target.value);
+                  }}
+                  style={{ width: "100%" }}
+                />
+              </div>
+            </Col>
+            <Col md={6}>
+              <div
+                className="mb-3"
+                style={{ display: "flex", flexDirection: "column" }}
+              >
+                <label className="register-label">
+                  تاريخ انتهاء الاشتراك
+                </label>
+                <input
+                  type="date"
+                  className="custom-datepicker"
+                  value={endjoin}
+                  onChange={(e) => {
+                    setEndjoin(e.target.value);
+                    sessionStorage.setItem("assemblyendjoin", e.target.value);
+                  }}
+                  style={{ width: "100%" }}
+                />
+              </div>
             </Col>
           </Row>
 
@@ -636,21 +739,8 @@ function AssociationMembersReport(params) {
           <Row>
             <Col md={6}>
               <RegisterTextbox
-                id="mem-fees"
-                label="قيمة الإشتراك السنوي"
-                type="number"
-                value={fees}
-                onChange={(e) => {
-                  setFees(e.target.value);
-                  sessionStorage.setItem("assemblyfees", e.target.value);
-                }}
-                error={error.fees}
-              />
-            </Col>
-            <Col md={6}>
-              <RegisterTextbox
                 id="mem-notes"
-                label="ملاحظات اخري"
+                label="ملاحظات"
                 type="text"
                 value={notes}
                 onChange={(e) => {
@@ -660,41 +750,10 @@ function AssociationMembersReport(params) {
                 error={error.notes}
               />
             </Col>
-          </Row>
-
-          <Row>
             <Col md={6}>
-              <div
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                <p style={{ marginBottom: "10px", textAlign: "right" }}>
-                  تاريخ بداية العضوية
-                </p>
-                <input
-                  type="date"
-                  className="custom-datepicker"
-                  value={startmember}
-                  onChange={(e) => {
-                    setStartmember(e.target.value);
-                    sessionStorage.setItem(
-                      "assemblystartmember",
-                      e.target.value,
-                    );
-                  }}
-                  style={{ width: "100%" }}
-                />
-                {error.startmember && (
-                  <span className="error-text" style={{ color: "red" }}>
-                    {error.startmember}
-                  </span>
-                )}
-              </div>
-            </Col>
-            <Col style={{ marginTop: "16px" }} md={6}>
               <UploadInput
                 id="mem-paper"
-                label="إرفاق اوراق اخري"
+                label="إرفاق مستند أو بطاقة"
                 onChange={(e) => {
                   setUpload(e.target.files[0]);
                 }}
@@ -714,7 +773,7 @@ function AssociationMembersReport(params) {
             </Button>
           ) : (
             <Button variant="primary" onClick={handleSubmit}>
-              حفظ
+              حفظ العضو
             </Button>
           )}
         </Modal.Footer>
@@ -729,7 +788,13 @@ function AssociationMembersReport(params) {
         centered
       >
         <Modal.Header>
-          <Modal.Title>تعديل بيانات العضو</Modal.Title>
+          <Modal.Title>
+            <FontAwesomeIcon
+              icon={faPenToSquare}
+              style={{ marginLeft: "8px", color: "var(--primary-color)" }}
+            />
+            تعديل بيانات العضو
+          </Modal.Title>
           <Button
             className="custom-close-button cls-btn"
             variant="link"
@@ -740,258 +805,392 @@ function AssociationMembersReport(params) {
         </Modal.Header>
 
         <Modal.Body style={{ paddingBottom: "0", direction: "rtl" }}>
-          <Row>
-            <Col md={6}>
-              <RegisterTextbox
-                id="edit-mem-name"
-                label="إسم العضو *"
-                type="text"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                error={editError.name}
+          {isFetchingMember ? (
+            <div style={{ textAlign: "center", padding: "40px" }}>
+              <Spinner
+                animation="border"
+                style={{ color: "var(--primary-color)" }}
               />
-            </Col>
-            <Col md={6}>
-              <div
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                <p style={{ marginBottom: "10px", textAlign: "right" }}>
-                  تاريخ الميلاد
-                </p>
-                <input
-                  type="date"
-                  className="custom-datepicker"
-                  value={editDob}
-                  onChange={(e) => setEditDob(e.target.value)}
-                  style={{ width: "100%" }}
-                />
-                {editError.dob && (
-                  <span className="error-text" style={{ color: "red" }}>
-                    {editError.dob}
-                  </span>
-                )}
-              </div>
-            </Col>
-          </Row>
+              <p style={{ marginTop: "10px", color: "var(--label-color)" }}>
+                جاري تحميل بيانات العضو...
+              </p>
+            </div>
+          ) : (
+            <>
+              <Row>
+                <Col md={6}>
+                  <RegisterTextbox
+                    id="edit-mem-name"
+                    label="إسم العضو *"
+                    type="text"
+                    value={editFormData.name}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, name: e.target.value })
+                    }
+                    error={editError.name}
+                  />
+                </Col>
+                <Col md={6}>
+                  <div
+                    className="mb-3"
+                    style={{ display: "flex", flexDirection: "column" }}
+                  >
+                    <label className="register-label">
+                      تاريخ الميلاد
+                    </label>
+                    <input
+                      type="date"
+                      className="custom-datepicker"
+                      value={editFormData.dob}
+                      onChange={(e) =>
+                        setEditFormData({
+                          ...editFormData,
+                          dob: e.target.value,
+                        })
+                      }
+                      style={{ width: "100%" }}
+                    />
+                    {editError.dob && (
+                      <span className="error-text">{editError.dob}</span>
+                    )}
+                  </div>
+                </Col>
+              </Row>
 
-          <Row>
-            <Col md={6}>
-              <RegisterTextbox
-                id="edit-mem-id"
-                label="رقم الهوية"
-                type="number"
-                value={editNationalid}
-                onChange={(e) => setEditNationalid(e.target.value)}
-                error={editError.nationalid}
-              />
-            </Col>
-            <Col md={6}>
-              <div
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                <p style={{ marginBottom: "10px", textAlign: "right" }}>
-                  تاريخ انتهاء الهوية
-                </p>
-                <input
-                  type="date"
-                  className="custom-datepicker"
-                  value={editIdexpire}
-                  onChange={(e) => setEditIdexpire(e.target.value)}
-                  style={{ width: "100%" }}
-                />
-                {editError.idexpire && (
-                  <span className="error-text" style={{ color: "red" }}>
-                    {editError.idexpire}
-                  </span>
-                )}
-              </div>
-            </Col>
-          </Row>
+              <Row>
+                <Col md={6}>
+                  <RegisterTextbox
+                    id="edit-mem-id"
+                    label="رقم الهوية الوطنية / الإقامة"
+                    type="text"
+                    value={editFormData.nationalid}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        nationalid: e.target.value,
+                      })
+                    }
+                    error={editError.nationalid}
+                  />
+                </Col>
+                <Col md={6}>
+                  <div
+                    className="mb-3"
+                    style={{ display: "flex", flexDirection: "column" }}
+                  >
+                    <label className="register-label">
+                      تاريخ انتهاء الهوية
+                    </label>
+                    <input
+                      type="date"
+                      className="custom-datepicker"
+                      value={editFormData.idexpire}
+                      onChange={(e) =>
+                        setEditFormData({
+                          ...editFormData,
+                          idexpire: e.target.value,
+                        })
+                      }
+                      style={{ width: "100%" }}
+                    />
+                    {editError.idexpire && (
+                      <span className="error-text">{editError.idexpire}</span>
+                    )}
+                  </div>
+                </Col>
+              </Row>
 
-          <Row>
-            <Col md={6}>
-              <div
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                <p style={{ marginBottom: "10px", textAlign: "right" }}>
-                  تاريخ بداية الاشتراك
-                </p>
-                <input
-                  type="date"
-                  className="custom-datepicker"
-                  value={editStartjoin}
-                  onChange={(e) => setEditStartjoin(e.target.value)}
-                  style={{ width: "100%" }}
-                />
-                {editError.startjoin && (
-                  <span className="error-text" style={{ color: "red" }}>
-                    {editError.startjoin}
-                  </span>
-                )}
-              </div>
-            </Col>
-            <Col md={6}>
-              <div
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                <p style={{ marginBottom: "10px", textAlign: "right" }}>
-                  تاريخ انتهاء الاشتراك
-                </p>
-                <input
-                  type="date"
-                  className="custom-datepicker"
-                  value={editEndjoin}
-                  onChange={(e) => setEditEndjoin(e.target.value)}
-                  style={{ width: "100%" }}
-                />
-                {editError.endjoin && (
-                  <span className="error-text" style={{ color: "red" }}>
-                    {editError.endjoin}
-                  </span>
-                )}
-              </div>
-            </Col>
-          </Row>
+              <Row>
+                <Col md={6}>
+                  <RegisterSelect
+                    id="edit-mem-status"
+                    label="فئة العضو *"
+                    options={[
+                      { value: "1", label: "عضو مجلس ادارة" },
+                      { value: "2", label: "عضو جمعية عمومية" },
+                    ]}
+                    value={editFormData.status}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        status: e.target.value,
+                        membertype: "",
+                      })
+                    }
+                    error={editError.status}
+                  />
+                </Col>
+                <Col md={6}>
+                  <RegisterSelect
+                    id="edit-mem-type"
+                    label="صفة / نوع العضوية"
+                    options={
+                      memberTypeOptionsByStatus[editFormData.status] || [
+                        { value: "", label: "إختر نوع العضوية" },
+                      ]
+                    }
+                    value={editFormData.membertype}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        membertype: e.target.value,
+                      })
+                    }
+                    error={editError.membertype}
+                  />
+                </Col>
+              </Row>
 
-          <Row>
-            <Col md={6}>
-              <RegisterSelect
-                id="edit-mem-status"
-                label="نوع العضو"
-                options={[
-                  { value: "", label: "إختر نوع العضو" },
-                  { value: "1", label: "عضو مجلس ادارة" },
-                  { value: "2", label: "عضو جمعية عمومية" },
-                ]}
-                value={editStatus}
-                onChange={(e) => {
-                  setEditStatus(e.target.value);
-                  setEditMembertype("");
-                }}
-                error={editError.status}
-              />
-            </Col>
-            <Col md={6}>
-              <RegisterSelect
-                id="edit-mem-type"
-                label="نوع العضوية"
-                options={
-                  memberTypeOptionsByStatus[editStatus] || [
-                    { value: "", label: "إختر نوع العضوية" },
-                  ]
-                }
-                value={editMembertype}
-                onChange={(e) => setEditMembertype(e.target.value)}
-                error={editError.membertype}
-                disabled={!editStatus}
-              />
-            </Col>
-          </Row>
+              <Row>
+                <Col md={6}>
+                  <div
+                    className="mb-3"
+                    style={{ display: "flex", flexDirection: "column" }}
+                  >
+                    <label className="register-label">
+                      تاريخ بداية العضوية
+                    </label>
+                    <input
+                      type="date"
+                      className="custom-datepicker"
+                      value={editFormData.startmember}
+                      onChange={(e) =>
+                        setEditFormData({
+                          ...editFormData,
+                          startmember: e.target.value,
+                        })
+                      }
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </Col>
+                <Col md={6}>
+                  <RegisterTextbox
+                    id="edit-mem-fees"
+                    label="قيمة الإشتراك السنوي (ر.س)"
+                    type="number"
+                    value={editFormData.fees}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        fees: e.target.value,
+                      })
+                    }
+                    error={editError.fees}
+                  />
+                </Col>
+              </Row>
 
-          <Row>
-            <Col md={6}>
-              <RegisterTextbox
-                id="edit-mem-job"
-                label="المهنة"
-                type="text"
-                value={editJob}
-                onChange={(e) => setEditJob(e.target.value)}
-                error={editError.job}
-              />
-            </Col>
-            <Col md={6}>
-              <RegisterTextbox
-                id="edit-mem-job-addr"
-                label="عنوان العمل"
-                type="text"
-                value={editJobAddress}
-                onChange={(e) => setEditJobAddress(e.target.value)}
-                error={editError.jobAddress}
-              />
-            </Col>
-          </Row>
+              <Row>
+                <Col md={6}>
+                  <div
+                    className="mb-3"
+                    style={{ display: "flex", flexDirection: "column" }}
+                  >
+                    <label className="register-label">
+                      تاريخ بداية الاشتراك
+                    </label>
+                    <input
+                      type="date"
+                      className="custom-datepicker"
+                      value={editFormData.startjoin}
+                      onChange={(e) =>
+                        setEditFormData({
+                          ...editFormData,
+                          startjoin: e.target.value,
+                        })
+                      }
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </Col>
+                <Col md={6}>
+                  <div
+                    className="mb-3"
+                    style={{ display: "flex", flexDirection: "column" }}
+                  >
+                    <label className="register-label">
+                      تاريخ انتهاء الاشتراك
+                    </label>
+                    <input
+                      type="date"
+                      className="custom-datepicker"
+                      value={editFormData.endjoin}
+                      onChange={(e) =>
+                        setEditFormData({
+                          ...editFormData,
+                          endjoin: e.target.value,
+                        })
+                      }
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </Col>
+              </Row>
 
-          <Row>
-            <Col md={6}>
-              <RegisterTextbox
-                id="edit-mem-fees"
-                label="قيمة الإشتراك السنوي"
-                type="number"
-                value={editFees}
-                onChange={(e) => setEditFees(e.target.value)}
-                error={editError.fees}
-              />
-            </Col>
-            <Col md={6}>
-              <RegisterTextbox
-                id="edit-mem-notes"
-                label="ملاحظات اخري"
-                type="text"
-                value={editNotes}
-                onChange={(e) => setEditNotes(e.target.value)}
-                error={editError.notes}
-              />
-            </Col>
-          </Row>
+              <Row>
+                <Col md={6}>
+                  <RegisterTextbox
+                    id="edit-mem-job"
+                    label="المهنة"
+                    type="text"
+                    value={editFormData.job}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, job: e.target.value })
+                    }
+                    error={editError.job}
+                  />
+                </Col>
+                <Col md={6}>
+                  <RegisterTextbox
+                    id="edit-mem-job-addr"
+                    label="عنوان العمل"
+                    type="text"
+                    value={editFormData.jobAddress}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        jobAddress: e.target.value,
+                      })
+                    }
+                    error={editError.jobAddress}
+                  />
+                </Col>
+              </Row>
 
-          <Row>
-            <Col md={6}>
-              <div
-                className="mb-3"
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                <p style={{ marginBottom: "10px", textAlign: "right" }}>
-                  تاريخ بداية العضوية
-                </p>
-                <input
-                  type="date"
-                  className="custom-datepicker"
-                  value={editStartmember}
-                  onChange={(e) => setEditStartmember(e.target.value)}
-                  style={{ width: "100%" }}
-                />
-                {editError.startmember && (
-                  <span className="error-text" style={{ color: "red" }}>
-                    {editError.startmember}
-                  </span>
-                )}
-              </div>
-            </Col>
-            <Col style={{ marginTop: "16px" }} md={6}>
-              <UploadInput
-                id="edit-mem-paper"
-                label="إرفاق اوراق اخري (اختياري)"
-                onChange={(e) => setEditUpload(e.target.files[0])}
-                error={editError.upload}
-              />
-            </Col>
-          </Row>
+              <Row>
+                <Col md={6}>
+                  <RegisterTextbox
+                    id="edit-mem-notes"
+                    label="ملاحظات"
+                    type="text"
+                    value={editFormData.notes}
+                    onChange={(e) =>
+                      setEditFormData({
+                        ...editFormData,
+                        notes: e.target.value,
+                      })
+                    }
+                    error={editError.notes}
+                  />
+                </Col>
+                <Col md={6}>
+                  <UploadInput
+                    id="edit-mem-paper"
+                    label="تحديث المستند أو البطاقة (اختياري)"
+                    onChange={(e) => {
+                      setEditFormData({
+                        ...editFormData,
+                        upload: e.target.files[0],
+                      });
+                    }}
+                    error={editError.upload}
+                  />
+                </Col>
+              </Row>
+            </>
+          )}
         </Modal.Body>
 
         <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            إلغاء
+          </Button>
+          {isEditSubmitting ? (
+            <Button variant="primary" disabled>
+              <Spinner animation="border" size="sm" />
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              onClick={handleEditSubmit}
+              disabled={isFetchingMember}
+            >
+              حفظ التعديلات
+            </Button>
+          )}
+        </Modal.Footer>
+      </Modal>
+
+      {/* ── Delete Confirmation Modal ── */}
+      <Modal
+        show={showDeleteModal}
+        onHide={() => setShowDeleteModal(false)}
+        className="modal-table archModal donor-modal delete-modal"
+        centered
+        size="md"
+      >
+        <Modal.Header>
+          <Modal.Title style={{ color: "#e53e3e" }}>
+            <FontAwesomeIcon
+              icon={faTriangleExclamation}
+              style={{ marginLeft: "8px" }}
+            />
+            تأكيد حذف العضو
+          </Modal.Title>
+          <Button
+            className="custom-close-button cls-btn"
+            variant="link"
+            onClick={() => setShowDeleteModal(false)}
+          >
+            <FontAwesomeIcon icon={faXmark} className="closeModal" />
+          </Button>
+        </Modal.Header>
+
+        <Modal.Body
+          style={{ padding: "24px", direction: "rtl", textAlign: "right" }}
+        >
+          <p
+            style={{
+              fontSize: "15px",
+              color: "var(--text-color)",
+              marginBottom: "10px",
+            }}
+          >
+            هل أنت متأكد من رغبتك في حذف العضو{" "}
+            <strong>"{deletingMember?.name || ""}"</strong>؟
+          </p>
+          <p
+            style={{
+              fontSize: "13px",
+              color: "var(--label-color)",
+              margin: 0,
+            }}
+          >
+            سيتم حذف العضو وجميع بياناته بشكل نهائي من النظام، ولن تتمكن من
+            استرجاعها.
+          </p>
+        </Modal.Body>
+
+        <Modal.Footer style={{ justifyContent: "flex-start", gap: "10px" }}>
           <Button
             variant="secondary"
-            onClick={() => setShowEditModal(false)}
-            disabled={isEditSubmitting}
+            onClick={() => setShowDeleteModal(false)}
+            disabled={isDeleting}
           >
             إلغاء
           </Button>
           <Button
-            variant="primary"
-            onClick={handleEditSubmit}
-            disabled={isEditSubmitting}
+            variant="danger"
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
+            style={{
+              backgroundColor: "#e53e3e",
+              borderColor: "#e53e3e",
+              color: "#fff",
+              fontWeight: "700",
+            }}
           >
-            {isEditSubmitting ? (
-              <>
-                <Spinner animation="border" size="sm" className="ms-2" />
-                <span>جاري الحفظ...</span>
-              </>
+            {isDeleting ? (
+              <Spinner animation="border" size="sm" />
             ) : (
-              "حفظ التعديلات"
+              <>
+                <FontAwesomeIcon
+                  icon={faTrashCan}
+                  style={{ marginLeft: "6px" }}
+                />
+                تأكيد الحذف
+              </>
             )}
           </Button>
         </Modal.Footer>

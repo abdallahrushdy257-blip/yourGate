@@ -177,5 +177,59 @@ class DatabaseSeeder extends Seeder
                 $bData
             );
         }
+
+        // 9. Assembly Members
+        $this->call(AssemblyMemberSeeder::class);
+
+        // 10. Initial Shop Cases & Transactions
+        $case = \App\Models\HumanCase::where('store_id', $store->id)->first();
+        $donor = \App\Models\Donor::where('store_id', $store->id)->first();
+
+        $shop = \App\Models\Shop::firstOrCreate(
+            ['store_id' => $store->id, 'title' => 'كفالة أسرة متعففة بالرياض'],
+            [
+                'human_cases_id'   => $case?->id,
+                'casetype'         => 'حالة اغاثة',
+                'subcasetype'      => 'كفالة أسرة',
+                'total'            => 15000.00,
+                'amount'           => 6500.00,
+                'status'           => 0,
+                'marketingmethod'  => 1,
+                'dateoflaunch'     => '2026-01-01',
+                'dateofcompletion' => '2026-12-31',
+                'description'      => 'مشروع كفالة متكامل للأسر المحتاجة بالرياض',
+            ]
+        );
+
+        if ($shop && $donor) {
+            \App\Models\ShopTransaction::firstOrCreate(
+                ['store_id' => $store->id, 'invoice_number' => 'REC-20260101-001'],
+                [
+                    'shop_id'          => $shop->id,
+                    'donor_id'         => $donor->id,
+                    'human_cases_id'   => $case?->id,
+                    'transaction_type' => 1,
+                    'type'             => '2',
+                    'amount'           => 4500.00,
+                    'date'             => '2026-02-15',
+                    'account'          => 'مصرف الراجحي',
+                    'notes'            => 'تبرع كفالة أسرة',
+                ]
+            );
+
+            \App\Models\ShopTransaction::firstOrCreate(
+                ['store_id' => $store->id, 'invoice_number' => 'PAY-20260201-001'],
+                [
+                    'shop_id'          => $shop->id,
+                    'human_cases_id'   => $case?->id,
+                    'transaction_type' => 2,
+                    'type'             => '1',
+                    'amount'           => 2000.00,
+                    'date'             => '2026-02-20',
+                    'account'          => 'الصندوق الرئيسي',
+                    'notes'            => 'صرف سلة غذائية ومستلزمات للأسرة',
+                ]
+            );
+        }
     }
 }

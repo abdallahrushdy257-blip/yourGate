@@ -8,7 +8,6 @@ import API from "../../api/axiosConfig";
 import { useParams } from "react-router";
 import RegisterSelect from "../../components/RegisterSelect";
 import TestPreLoader from "../TestPreLoader/TestPreLoader";
-import { toast } from "react-toastify";
 
 function ProjectRisk() {
   const columns = [
@@ -34,9 +33,6 @@ function ProjectRisk() {
 
   const handleRisk = async (e) => {
     e.preventDefault();
-    if(!description){
-      return toast.error("الوصف مطلوب")
-    }
     setIsSubmitting(true);
     const formData = new FormData();
     formData.append("project_id", id);
@@ -52,7 +48,7 @@ function ProjectRisk() {
         },
       });
       const data = await res;
-      if (data.status === 200) {
+      if (data.status === 200 || data.status === 201) {
         setPhases("");
         setDescription("");
         setImpactLevel("");
@@ -63,6 +59,8 @@ function ProjectRisk() {
         setIsSubmitting(false);
         setRows(data.data);
         setTableReloadKey(Date.now());
+      } else {
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error(error);
@@ -75,18 +73,21 @@ function ProjectRisk() {
     { label: "خطة التخفيف", route: `/riskmitigation/:id` },
   ];
 
-  const [phase, setPhase] = useState({});
+  const [phase, setPhase] = useState([]);
 
   const getPhases = async () => {
     try {
       const response = await API.get(`/projectphase/${id}/all`);
       const data = await response;
-      setPhase(data.data);
+      const list = Array.isArray(data.data) ? data.data : (data.data?.data || []);
+      setPhase(list);
       setLoading(false);
     } catch (error) {
       console.log(error);
-      setError(error.response.data.errors);
-      setMessage(error.response.data.message);
+      setError(error.response?.data?.errors || {});
+      setMessage(error.response?.data?.message || "");
+      setPhase([]);
+      setLoading(false);
     }
   };
 
@@ -136,7 +137,7 @@ function ProjectRisk() {
                   label="المرحلة"
                   options={[
                     { value: "", label: "اختر المرحلة" },
-                    ...phase.map((p) => ({ value: p.id, label: p.name })),
+                    ...(Array.isArray(phase) ? phase : []).map((p) => ({ value: p.id, label: p.name })),
                   ]}
                   name="phases"
                   value={phases}

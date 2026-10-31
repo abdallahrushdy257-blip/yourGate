@@ -151,8 +151,8 @@ function Interest() {
       <Modal
         show={showModal}
         onHide={() => setShowModal(false)}
-        className="modal-table small-modall archModal"
-        dialogClassName="fit-content-modal"
+        className="interest-modal"
+        centered
       >
         <Modal.Header>
           <Modal.Title>إضافة اهتمام</Modal.Title>
@@ -203,8 +203,8 @@ function Interest() {
       <Modal
         show={showModal2}
         onHide={() => setShowModal2(false)}
-        className="modal-table small-modall archModal"
-        dialogClassName="fit-content-modal"
+        className="interest-modal"
+        centered
       >
         <Modal.Header>
           <Modal.Title>تعديل اهتمام</Modal.Title>

@@ -87,47 +87,44 @@ function ReceiptVoucherProject(props) {
 const getDoner = async () => {
   try {
     const res = await API.post("/donor");
-    const data = await res;
-    console.log(data);
-    setDonor(data.data);
-    setLoading(false);
+    const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+    setDonor(Array.isArray(list) ? list : []);
   } catch (error) {
     console.error(error);
-    
+    setDonor([]);
   }
 };
 
 const getAccount = async () => {
   try {
     const res = await API.get("/transactions/components/donations");
-    const data = await res;
-    console.log(data);
-    setAccount(data.data);
-    setLoading(false);
+    const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+    setAccount(Array.isArray(list) ? list : []);
   } catch (error) {
     console.error(error);
-
+    setAccount([]);
   }
 };
 
 const getProject = async () => {
   try {
     const response = await API.get(`/projects/${id}`);
-    const data = await response;
-    setRows(data.data);
-    setLoading(false);
+    const projectData = response.data?.data || response.data || {};
+    setRows(projectData);
   } catch (error) {
     console.log(error);
-    setError(error.response.data.errors);
-    setMessage(error.response.data.message);
+    setRows({});
   }
 };
  
 useEffect(() => {
-  getDoner();
-  getAccount();
-  getProject();
-}, []);
+  const fetchData = async () => {
+    setLoading(true);
+    await Promise.allSettled([getDoner(), getAccount(), getProject()]);
+    setLoading(false);
+  };
+  fetchData();
+}, [id]);
   return (
     loading ? <TestPreLoader /> :
     <>
@@ -188,7 +185,7 @@ useEffect(() => {
                 }}
                 options={[
                   { value: "", label: "إختر الحساب" },
-                  ...account.map((item) => ({
+                  ...(Array.isArray(account) ? account : []).map((item) => ({
                     value: item.id,
                     label: item.name,
                   }))
@@ -211,7 +208,7 @@ useEffect(() => {
                 options={[
                   { value: "", label: "إختر المانح" },
                   { value: "0", label: "لا يوجد المانح" },
-                  ...donor.map((item) => ({
+                  ...(Array.isArray(donor) ? donor : []).map((item) => ({
                     value: item.id,
                     label: item.name,
                   }))

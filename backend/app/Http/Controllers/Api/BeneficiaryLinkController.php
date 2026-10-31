@@ -50,11 +50,13 @@ class BeneficiaryLinkController extends Controller
     public function tokens(Request $request): JsonResponse
     {
         $user = $request->user();
-        $tokens = $this->beneficiaryLinkService->listTokens($user?->store_id);
+        $limit = (int) $request->input('limit', 50);
+        $tokens = $this->beneficiaryLinkService->listTokens($user?->store_id, $limit);
 
         return response()->json([
             'status'  => Response::HTTP_OK,
             'success' => true,
+            'total'   => $tokens->count(),
             'data'    => BeneficiaryTokenResource::collection($tokens),
         ], Response::HTTP_OK);
     }

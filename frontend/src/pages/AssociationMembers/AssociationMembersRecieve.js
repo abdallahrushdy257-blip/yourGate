@@ -98,7 +98,7 @@ useEffect(() => {
     try {
       const res = await API.get("/transactions/components/donations");
       const data = await res;
-      setAccount(data.data?.data);
+      setAccount(data.data);
       setLoading(false);
     } catch (error) {
       console.error(error);

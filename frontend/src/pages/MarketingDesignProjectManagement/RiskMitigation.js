@@ -1,176 +1,231 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { faShieldHalved, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { Spinner, Form } from "react-bootstrap";
+import { Spinner, Form, Card, Row, Col, Badge } from "react-bootstrap";
 import RegisterTextbox from "../../components/RegisterTextBox";
-import RegisterSelect from "../../components/RegisterSelect";
-import CustomButton from "../../components/CustomButton";
-import Title from "../../components/title";
 import API from "../../api/axiosConfig";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
+import RegisterSelect from "../../components/RegisterSelect";
+import TestPreLoader from "../TestPreLoader/TestPreLoader";
+import Title from "../../components/title";
+import CustomButton from "../../components/CustomButton";
 import { toast } from "react-toastify";
 
 function RiskMitigation() {
-  const [description, setDescription] = useState("");
-  const [impectlevel, setImpactLevel] = useState("");
-  const [probability, setProbability] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState({});
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [risk, setRisk] = useState(null);
+  const [description, setDescription] = useState("");
+  const [impactlevel, setImpactLevel] = useState("1");
+  const [probability, setProbability] = useState("1");
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState({});
+
+  const getRiskDetails = async () => {
+    try {
+      setLoading(true);
+      const res = await API.get(`/projectrisk/mitigation/${id}`);
+      const data = res.data?.data || res.data || {};
+      setRisk(data);
+
+      if (data.mitigation_description || data.action_plan) {
+        setDescription(data.mitigation_description || data.action_plan || "");
+      }
+      if (data.mitigation_impactlevel) {
+        setImpactLevel(String(data.mitigation_impactlevel));
+      } else {
+        setImpactLevel("1");
+      }
+      if (data.mitigation_probability) {
+        setProbability(String(data.mitigation_probability));
+      } else {
+        setProbability("1");
+      }
+    } catch (err) {
+      console.error("Error fetching risk details:", err);
+      toast.error("فشل في تحميل بيانات الخطر");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getRiskDetails();
+  }, [id]);
+
   const handleMitigation = async (e) => {
     e.preventDefault();
-
-    if (!impectlevel && impectlevel !== 0) {
-      return toast.error("يرجى اختيار مستوى التأثير");
-    }
-    if (!probability && probability !== 0) {
-      return toast.error("يرجى اختيار الاحتمالية");
-    }
-    if (!description.trim()) {
-      return toast.error("الوصف مطلوب");
-    }
-
     setIsSubmitting(true);
-    const formData = new FormData();
-    formData.append("risk_id", id);
-    formData.append("description", description);
-    formData.append("impactlevel", impectlevel);
-    formData.append("probability", probability);
+    setError({});
+
+    const payload = {
+      risk_id: Number(id),
+      description: description,
+      impactlevel: Number(impactlevel) || 1,
+      probability: Number(probability) || 1,
+      status: "قيد المعالجة",
+    };
 
     try {
-      const res = await API.post(`/projectrisk/mitigation/store`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
+      const res = await API.post(`/projectrisk/mitigation/store`, payload);
       if (res.status === 200 || res.status === 201) {
         toast.success("تم حفظ خطة التخفيف بنجاح");
         navigate(-1);
       }
     } catch (err) {
-      console.error("Error submitting mitigation:", err);
-      const errMsg =
-        err.response?.data?.message || "حدث خطأ أثناء حفظ خطة التخفيف";
-      toast.error(errMsg);
-      setError(err.response?.data?.errors || {});
+      console.error("Submission error:", err);
+      const errs = err.response?.data?.errors || {};
+      setError(errs);
+      toast.error(err.response?.data?.message || "حدث خطأ أثناء حفظ خطة التخفيف");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (loading) return <TestPreLoader />;
+
   return (
-    <div className="printcasedata-container" dir="rtl" style={{ padding: "20px" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: "20px",
-          flexWrap: "wrap",
-          gap: "10px",
-        }}
-      >
+    <>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
         <Title
           title="خطة تخفيف المخاطر"
           icon={<FontAwesomeIcon icon={faShieldHalved} />}
+          style={{ width: "unset", margin: 0 }}
         />
-
         <button
           type="button"
-          className="btn btn-outline-secondary"
           onClick={() => navigate(-1)}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            borderRadius: "10px",
-            fontWeight: "700",
-          }}
+          className="btn btn-outline-secondary"
+          style={{ borderRadius: "8px", fontWeight: "600" }}
         >
-          <FontAwesomeIcon icon={faArrowRight} />
-          <span>رجوع</span>
+          <FontAwesomeIcon icon={faArrowRight} style={{ marginLeft: "6px" }} />
+          العودة
         </button>
       </div>
 
-      <div className="global-form-container" style={{ width: "80%", margin: "0 auto" }}>
-        <Form onSubmit={handleMitigation} encType="multipart/form-data">
-          <div className="row g-3">
-            <div className="col-md-6">
+      {risk && (
+        <Card
+          className="mb-4 shadow-sm"
+          style={{
+            background: "var(--card-bg, #fff)",
+            border: "1px solid var(--border-color, #e2e8f0)",
+            borderRadius: "12px",
+            padding: "16px",
+          }}
+        >
+          <Card.Header
+            style={{
+              background: "transparent",
+              borderBottom: "1px solid var(--border-color, #e2e8f0)",
+              fontWeight: "bold",
+              fontSize: "16px",
+            }}
+          >
+            تفاصيل الخطر المحدد
+          </Card.Header>
+          <Card.Body>
+            <Row className="g-3">
+              <Col md={3}>
+                <strong>المرحلة: </strong>
+                <span>{risk.phase_name || "المشروع ككل"}</span>
+              </Col>
+              <Col md={3}>
+                <strong>مستوى التأثير الأصلي: </strong>
+                <Badge bg={risk.impactlevel === 3 ? "danger" : risk.impactlevel === 1 ? "success" : "warning"}>
+                  {risk.impact_level_string || "متوسط"}
+                </Badge>
+              </Col>
+              <Col md={3}>
+                <strong>الاحتمالية الأصلية: </strong>
+                <Badge bg={risk.probability === 3 ? "danger" : risk.probability === 1 ? "success" : "warning"}>
+                  {risk.probability_string || "متوسط"}
+                </Badge>
+              </Col>
+              <Col md={3}>
+                <strong>الحالة الحالية: </strong>
+                <Badge bg={risk.status === "مغلق" ? "success" : "info"}>
+                  {risk.status_string || "مفتوح"}
+                </Badge>
+              </Col>
+              <Col md={12} className="mt-2">
+                <strong>وصف الخطر: </strong>
+                <p style={{ margin: "4px 0 0", color: "var(--text-secondary, #64748b)" }}>
+                  {risk.description || "لا يوجد وصف"}
+                </p>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Card>
+      )}
+
+      <div className="createManageCon">
+        <Form onSubmit={handleMitigation}>
+          <div className="createManege-inputs">
+            <div className="case-name">
               <RegisterSelect
                 id="impectlevel"
-                label="مستوى التأثير بعد المعالجة"
+                label="مستوى التأثير بعد التخفيف"
                 stylee={{ width: "100%" }}
-                parentStyle={{ width: "100%" }}
+                parentStyle={{ width: "80%" }}
                 options={[
                   { value: "", label: "اختر مستوى التأثير" },
-                  { value: "0", label: "منخفض" },
-                  { value: "1", label: "متوسط" },
-                  { value: "2", label: "مرتفع" },
+                  { value: "1", label: "منخفض" },
+                  { value: "2", label: "متوسط" },
+                  { value: "3", label: "مرتفع" },
                 ]}
                 name="impactLevel"
-                value={impectlevel}
+                value={impactlevel}
                 onChange={(e) => setImpactLevel(e.target.value)}
               />
-              {error && error.impactlevel && (
-                <span className="error text-danger">{error.impactlevel[0]}</span>
-              )}
-            </div>
 
-            <div className="col-md-6">
               <RegisterSelect
                 id="probability"
-                label="الاحتمالية بعد المعالجة"
+                label="الاحتمالية بعد التخفيف"
                 stylee={{ width: "100%" }}
-                parentStyle={{ width: "100%" }}
+                parentStyle={{ width: "80%" }}
                 options={[
                   { value: "", label: "اختر الاحتمالية" },
-                  { value: "0", label: "منخفض" },
-                  { value: "1", label: "متوسط" },
-                  { value: "2", label: "مرتفع" },
+                  { value: "1", label: "منخفض" },
+                  { value: "2", label: "متوسط" },
+                  { value: "3", label: "مرتفع" },
                 ]}
                 name="probability"
                 value={probability}
                 onChange={(e) => setProbability(e.target.value)}
               />
-              {error && error.probability && (
-                <span className="error text-danger">{error.probability[0]}</span>
-              )}
-            </div>
 
-            <div className="col-md-12">
               <RegisterTextbox
-                label="وصف خطة وإجراءات التخفيف"
+                label="إجراءات وخطة التخفيف"
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 stylee={{ width: "100%" }}
-                parentStyle={{ width: "100%" }}
+                parentStyle={{ width: "80%" }}
+                placeholder="أدخل تفاصيل خطة التخفيف والإجراءات الوقائية..."
+                required
               />
               {error && error.description && (
-                <span className="error text-danger">{error.description[0]}</span>
+                <span className="error">{error.description[0]}</span>
               )}
             </div>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "24px",
-            }}
-          >
-            {isSubmitting ? (
-              <Spinner animation="border" variant="primary" />
-            ) : (
+          {isSubmitting ? (
+            <Spinner
+              animation="border"
+              variant="primary"
+              style={{ display: "block", margin: "20px auto" }}
+            />
+          ) : (
+            <div className="createManege-inputs createManege-buttonCon">
               <CustomButton text="حفظ خطة التخفيف" />
-            )}
-          </div>
+            </div>
+          )}
         </Form>
       </div>
-    </div>
+    </>
   );
 }
 

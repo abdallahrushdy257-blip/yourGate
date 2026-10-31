@@ -15,58 +15,6 @@ function PaymentReport(props) {
         { name: "", key: "actions" },
     ];
 
-    const dummyData = [
-  {
-    id: 1,
-    human_case_name: "أحمد محمد علي",
-    amount: 12500,
-  },
-  {
-    id: 2,
-    human_case_name: "سارة أحمد",
-    amount: 8000,
-  },
-  {
-    id: 3,
-    human_case_name: "محمد خالد",
-    amount: 15750,
-  },
-  {
-    id: 4,
-    human_case_name: "ريم عبدالله",
-    amount: 4200,
-  },
-  {
-    id: 5,
-    human_case_name: "يوسف حسن",
-    amount: 9300,
-  },
-  {
-    id: 6,
-    human_case_name: "منى السيد",
-    amount: 6100,
-  },
-  {
-    id: 7,
-    human_case_name: "خالد إبراهيم",
-    amount: 20000,
-  },
-  {
-    id: 8,
-    human_case_name: "هبة محمود",
-    amount: 3750,
-  },
-  {
-    id: 9,
-    human_case_name: "طارق جمال",
-    amount: 11400,
-  },
-  {
-    id: 10,
-    human_case_name: "نجلاء مصطفى",
-    amount: 7950,
-  },
-];
 
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -149,7 +97,6 @@ function PaymentReport(props) {
                     transformRowFn={modifyRow}
                     searchTextProp={true}
                     searchDate={false}
-                    data={dummyData}
                 />
             </div>
         </>

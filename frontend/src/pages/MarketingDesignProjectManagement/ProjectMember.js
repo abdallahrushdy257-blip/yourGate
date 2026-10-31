@@ -70,7 +70,7 @@ function ProjectMember() {
         },
       });
       const data = await res;
-      if (data.status === 200) {
+      if (data.status === 200 || data.status === 201) {
         setName("");
         setTitle("");
         setTask("");
@@ -80,6 +80,8 @@ function ProjectMember() {
         setIsSubmitting(false);
         setRows(data.data);
         setTableReloadKey(Date.now());
+      } else {
+        setIsSubmitting(false);
       }
     } catch (error) {
       console.error(error);
@@ -92,12 +94,15 @@ function ProjectMember() {
     try {
       const response = await API.get(`/projectphase/${id}/all`);
       const data = await response;
-      setPhase(data.data);
+      const list = Array.isArray(data.data) ? data.data : (data.data?.data || []);
+      setPhase(list);
       setLoading(false);
     } catch (error) {
       console.log(error);
-      setError(error.response.data.errors);
-      setMessage(error.response.data.message);
+      setError(error.response?.data?.errors || {});
+      setMessage(error.response?.data?.message || "");
+      setPhase([]);
+      setLoading(false);
     }
   };
 
@@ -105,13 +110,15 @@ function ProjectMember() {
     try {
       const response = await API.get(`/employees/all`);
       const data = await response;
-      setEmployees(data.data);
+      const list = Array.isArray(data.data) ? data.data : (data.data?.data || []);
+      setEmployees(list);
       setLoading(false);
       setShowEmployeesSelect(true);
     } catch (error) {
       console.log(error);
-      setError(error.response.data.errors);
-      setMessage(error.response.data.message);
+      setError(error.response?.data?.errors || {});
+      setMessage(error.response?.data?.message || "");
+      setEmployees([]);
     }
   };
 
@@ -119,13 +126,15 @@ function ProjectMember() {
     try {
       const response = await API.get(`/volunteers/all`);
       const data = await response;
-      setVolunteers(data.data);
+      const list = Array.isArray(data.data) ? data.data : (data.data?.data || []);
+      setVolunteers(list);
       setLoading(false);
       setShowVolunteerSelect(true);
     } catch (error) {
       console.log(error);
-      setError(error.response.data.errors);
-      setMessage(error.response.data.message);
+      setError(error.response?.data?.errors || {});
+      setMessage(error.response?.data?.message || "");
+      setVolunteers([]);
     }
   };
 
@@ -230,7 +239,7 @@ function ProjectMember() {
                   label="المرحلة المرتبطة"
                   options={[
                     { value: "", label: "اختر المرحلة" },
-                    ...phase.map((p) => ({ value: p.id, label: p.name })),
+                    ...(Array.isArray(phase) ? phase : []).map((p) => ({ value: p.id, label: p.name })),
                   ]}
                   name="phases"
                   value={phases}
@@ -245,7 +254,7 @@ function ProjectMember() {
                     label="اختيار الموظف"
                     options={[
                       { value: "", label: "اختر الموظف" },
-                      ...employees.map((e) => ({ value: e.id, label: e.name })),
+                      ...(Array.isArray(employees) ? employees : []).map((e) => ({ value: e.id, label: e.name })),
                     ]}
                     name="employees"
                     value={employeesValue}
@@ -261,7 +270,7 @@ function ProjectMember() {
                     label="اختيار المتطوع"
                     options={[
                       { value: "", label: "اختر المتطوع" },
-                      ...volunteers.map((v) => ({
+                      ...(Array.isArray(volunteers) ? volunteers : []).map((v) => ({
                         value: v.id,
                         label: v.name,
                       })),

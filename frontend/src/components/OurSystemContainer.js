@@ -1,80 +1,35 @@
-import React from "react";
+import { useState } from "react";
 import Title from "./title";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faStar, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
 
-function OurSystemContainer({ items = [], title = "باقات الاشتراك" }) {
-  if (!items || items.length === 0) return null;
+function OurSystemContainer({ items }) {
+  const [index, setIndex] = useState(0);
+
+  const next = () => {
+    setIndex((prev) => (prev + 1) % items.length);
+  };
 
   return (
-    <div className="ourSystemContainer" dir="rtl">
-      <div className="subLandingSectionTitle">
-        <Title title={title} />
-        <p className="subLandingSectionDesc">
-          اختر الخطة المناسبة لحجم ونشاط جمعيتك، مع إمكانية الترقية والدعم الفني المستمر
-        </p>
-      </div>
+    <div className="ourSystemContainer">
+      <Title title="نظامنا" />
 
-      <div className="plansGridContainer">
-        {items.map((item, index) => {
-          const isFeatured =
-            item.disc ||
-            (item.mainText && item.mainText.includes("ثلاث")) ||
-            index === 0;
-
-          return (
-            <div
-              key={index}
-              className={`planCardItem ${isFeatured ? "featuredPlanCard" : ""}`}
-            >
-              {isFeatured && (
-                <div className="planBadgeFeatured">
-                  <FontAwesomeIcon icon={faStar} />
-                  <span>{item.disc || "الأكثر طلباً وتوفيراً"}</span>
-                </div>
-              )}
-
-              <div className="planHeader">
-                <h4 className="planTitle">
-                  {item.mainText || `الباقة ${index + 1}`}
-                </h4>
-                <p className="planTextDesc">{item.text}</p>
-              </div>
-
-              {item.price && (
-                <div className="planPriceBox">
-                  <span className="planPriceValue">{item.price}</span>
-                  {!item.price.includes("حسب") && (
-                    <span className="planPriceCurrency">ر.س</span>
-                  )}
-                </div>
-              )}
-
-              {item.list && item.list.length > 0 && (
-                <div className="planFeaturesWrap">
-                  <div className="planFeaturesTitle">مميزات الباقة:</div>
-                  <ul className="planFeaturesList">
-                    {item.list.map((feat, fIndex) => (
-                      <li key={fIndex} className="planFeatureItem">
-                        <div className="planCheckIconWrap">
-                          <FontAwesomeIcon icon={faCheck} />
-                        </div>
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <Link to="/charityregistration" className="planCtaBtn">
-                <span>اشترك الآن</span>
-                <FontAwesomeIcon icon={faArrowLeft} />
-              </Link>
+      <div className="carouselWrapper">
+        <div
+          className="carouselTrack"
+          style={{
+            transform: `translateX(-${index * 50}%)`,
+          }}
+        >
+          {items.map((item, i) => (
+            <div key={i} className="ourSystemcard">
+              {item.price && <h6 className="ourPrice">{item.price}</h6>}
+              <h5 className="ourSystext">{item.text}</h5>
+              {item.list && <p className="ourNote">{item.list.map((item, i) => <li key={i}>{item}</li>)}</p>}
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
+
+      <button className="carouselBtn" style={{background:"transparent" , color:"var(--text-color)"}} onClick={next}>&#62;</button>
     </div>
   );
 }

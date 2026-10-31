@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 import API from "../../api/axiosConfig";
 import TestPreLoader from "../TestPreLoader/TestPreLoader";
 import TableComponent from "../../components/TableComponent";
+import { toLocal } from "../../Utils/toLocal";
 
 function AssociationPaymentReport(props) {
     const columns = [
@@ -60,11 +61,11 @@ function AssociationPaymentReport(props) {
     const dropdownOptions = [
         { label: "تفاصيل المدفوعات", route: "/associationpaymentDetails/:id" },
     ];
-    const modifyRow = (row) => {
-        let modifiedRow = { ...row };
-        modifiedRow.status = modifiedRow.status === 1 ? "عضو مجلس ادارة" : " عضو جمعية عمومية";
-        return modifiedRow;
-    };
+    const modifyRow = (row) => ({
+        ...row,
+        status: row.status === 1 ? "عضو مجلس إدارة" : "عضو جمعية عمومية",
+        amount: `${toLocal(row.amount)} ر.س`,
+    });
     return (
         <>
             <div className="printcasedata-container">
