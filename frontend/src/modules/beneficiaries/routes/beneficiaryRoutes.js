@@ -66,7 +66,7 @@ export const beneficiaryRouteConfigs = [
   { path: "/addbeneficiaryall", element: withSuspense(AddBeneficiaryAllPage) },
   { path: "/editbeneficiary/:id", element: withSuspense(EditBeneficiaryPage) },
   { path: "/createbeneficiarylink", element: withSuspense(CreateBeneficiaryLinkPage) },
-  { path: "/beneficiaryAddDetails/:id", element: withSuspense(BenefitAddDetailsPage) },
+  { path: "/benefitadddetails/:id", element: withSuspense(BenefitAddDetailsPage) },
   { path: "/mainbeneficiarydata", element: withSuspense(MainBeneficiaryDataPage) },
   { path: "/additionalnformation", element: withSuspense(Additionalnformation) },
   { path: "/membershipdata", element: withSuspense(MembershipData) },

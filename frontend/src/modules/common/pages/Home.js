@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Dashboard from "../../Dashboard/Dashboard";
+import Dashboard from "../../../Dashboard/Dashboard";
 function Home(props) {
   return (
     <>
