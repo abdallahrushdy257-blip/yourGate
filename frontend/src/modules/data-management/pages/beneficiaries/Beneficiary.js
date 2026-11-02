@@ -10,6 +10,7 @@ import RegisterTextbox from "../../../../components/RegisterTextBox";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import { useNavigate } from "react-router-dom";
 import BeneficiarySubModal from "./BeneficiarySubModal";
+import { toast } from "react-toastify";
 
 function Beneficiary(props) {
   const columns = [
@@ -157,6 +158,9 @@ function Beneficiary(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if(!name){
+          return toast.error("الرجاء ادخال الإسم")
+        }
     const today = new Date().toLocaleDateString("en-CA");
     let validationErrors = {};
 

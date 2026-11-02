@@ -133,7 +133,7 @@ const RightSidebar = ({ isVisible, toggleSidebar }) => {
     //{ label: "التصميمات", route: "/designsdetails" , permission : "projectdetails_view" },
     //{ label: "عمليات الادارة", route: "/marketingdetails" , permission : "projectdetails_view" },
     {
-      label: "تقرير المدفعات",
+      label: "تقرير المدفوعات",
       route: "/projectpaymentreport",
       // permission: "projectpaymentreport_view",
     },

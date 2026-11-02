@@ -31,6 +31,7 @@ import {
   CaseReceiptVoucherModal,
   CaseEditModal,
 } from "./CaseActionModals";
+import { toast } from "react-toastify";
 
 function CaseDetails(props) {
   const navigate = useNavigate();
@@ -189,6 +190,9 @@ function CaseDetails(props) {
 
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
+    if(!name){
+      return toast.error("اسم الحالة مطلوب")
+    }
     setIsSubmitting(true);
     setError({});
 

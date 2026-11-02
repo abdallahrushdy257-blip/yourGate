@@ -20,6 +20,7 @@ import UploadInput from "../../../../components/UploadInput";
 import API from "../../../../api/axiosConfig";
 import "../../../cases/pages/CaseDetails/CaseDetails.css";
 import "./associationMembers.css";
+import { toast } from "react-toastify";
 
 function AssociationMembersReport() {
   const navigate = useNavigate();
@@ -177,10 +178,10 @@ function AssociationMembersReport() {
     const today = new Date().toISOString().split("T")[0];
 
     if (!name.trim()) {
-      newErrors.name = "اسم العضو مطلوب";
+     return toast.error("اسم العضو مطلوب");
     }
     if (dob && dob > today) {
-      newErrors.dob = "تاريخ الميلاد لا يمكن أن يكون في المستقبل";
+     return toast.error("تاريخ الميلاد لا يمكن أن يكون في المستقبل");
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -308,7 +309,7 @@ function AssociationMembersReport() {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     if (!editFormData.name?.trim()) {
-      setEditError({ name: "اسم العضو مطلوب" });
+      toast.error("اسم العضو مطلوب");
       return;
     }
     setIsEditSubmitting(true);

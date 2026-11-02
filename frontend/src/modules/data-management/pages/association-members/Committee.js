@@ -17,6 +17,7 @@ import RegisterTextbox from "../../../../components/RegisterTextBox";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import API from "../../../../api/axiosConfig";
 import "./committee.css";
+import { toast } from "react-toastify";
 
 function Committee() {
   const [tableReloadKey, setTableReloadKey] = useState(Date.now());
@@ -96,6 +97,9 @@ function Committee() {
   // Submit Add Committee
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
+    if(!name){
+      return toast.error("اسم اللجنة مطلوب")
+    }
     setIsSubmitting(true);
     setError({});
 

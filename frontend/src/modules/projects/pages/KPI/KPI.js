@@ -50,6 +50,10 @@ function KPI() {
 
   const handlekpi = async (e) => {
     e.preventDefault();
+    if(!quiz){
+      toast.error("الرجاء ادخال نص المؤشر");
+      return;
+    }
     setIsSubmitting(true);
     setError({});
 

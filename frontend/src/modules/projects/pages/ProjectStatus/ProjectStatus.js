@@ -65,6 +65,9 @@ function ProjectStatus() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
+    if(!name){
+      return toast.error("اسم المشروع مطلوب")
+    }
     setIsSubmit(true);
     const mForm = new FormData();
     mForm.append("name", name);
