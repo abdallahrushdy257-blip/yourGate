@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
 import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 
+// ── شجرة الحسابات والقيود والتقارير المالية ───────────────────
 const ChartofaccountsPage = lazy(() => import("../../../pages/Accounting/Chartofaccounts/Chartofaccounts"));
 const AccountingEntryPage = lazy(() => import("../../../pages/Accounting/AccountingEntry/AccountingEntry"));
 const AccountingEntryViewPage = lazy(() => import("../../../pages/Accounting/AccountingEntry/AccountingEntryView"));
@@ -9,6 +10,7 @@ const AccountsReportPage = lazy(() => import("../../../pages/Accounting/Accounts
 const BalanceSheetPage = lazy(() => import("../../../pages/Accounting/Reports/BalanceSheet"));
 const IncomeStatementPage = lazy(() => import("../../../pages/Accounting/Reports/IncomeStatement"));
 
+// ── كشوفات الحسابات ───────────────────────────────────────────
 const AccountstatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/Accountstatement"));
 const CustomersStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/CustomersStatement"));
 const SuppliersStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/SuppliersStatement"));
@@ -19,6 +21,15 @@ const HumanCaseStatementPage = lazy(() => import("../../../pages/Accounting/Acco
 const ManagementMemberStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/ManagementMemberStatement"));
 const WarrantorsStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/WarrantorsStatement"));
 
+// ── السندات والأموال ───────────────────────────────────────────
+const GeneralReceiptVoucherCashPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralReceiptVoucherCash"));
+const GeneralReceiptVoucherPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralReceiptVoucher"));
+const GeneralPaymentVoucherCashPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralPaymentVoucherCash"));
+const GeneralPaymentVoucherPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralPaymentVoucher"));
+const Moneyreceiptreports = lazy(() => import("../../../pages/MoneyReports/Moneyreceiptreports"));
+const Moneytransferreports = lazy(() => import("../../../pages/MoneyReports/Moneytransferreports"));
+
+// ── المشتريات والمبيعات والمخازن ──────────────────────────────
 const AddClientPage = lazy(() => import("../../../pages/Accounting/AddClient/AddClient"));
 const AdditemPage = lazy(() => import("../../../pages/Accounting/Additem/Additem"));
 const AddSupplierPage = lazy(() => import("../../../pages/Accounting/AddSupplier/AddSupplier"));
@@ -27,13 +38,11 @@ const ItemDetailsPage = lazy(() => import("../../../pages/Accounting/Items/ItemD
 const ItemsinStockPage = lazy(() => import("../../../pages/Accounting/Items/ItemsinStock"));
 const PriceListPage = lazy(() => import("../../../pages/Accounting/PriceList/PricelList/PriceList"));
 const UpdatePricesPage = lazy(() => import("../../../pages/Accounting/PriceList/UpdatePrices/UpdatePrices"));
-
 const NewPurchaseInvoicePage = lazy(() => import("../../../pages/Accounting/SalesInvoice/NewPurchaseInvoice"));
 const NewPurchaseRefundInvoicePage = lazy(() => import("../../../pages/Accounting/SalesInvoice/NewPurchaseRefundInvoice"));
 const NewSalesInvoicePage = lazy(() => import("../../../pages/Accounting/SalesInvoice/NewSalesInvoice"));
 const NewSalesRefundInvoicePage = lazy(() => import("../../../pages/Accounting/SalesInvoice/NewSalesRefundInvoice"));
 const PrintPurchasePage = lazy(() => import("../../../pages/Accounting/SalesInvoice/PrintPurchase"));
-
 const CustomerReportPage = lazy(() => import("../../../pages/Accounting/CustomerReport/CustomerReport"));
 const PurchasesReportPage = lazy(() => import("../../../pages/Accounting/PurchasesReport/PurchasesReport"));
 const PurecommandPage = lazy(() => import("../../../pages/Accounting/Purecommand/Purecommand"));
@@ -54,20 +63,33 @@ const withSuspense = (Component) => (
 );
 
 export const accountingRouteConfigs = [
-  // ── Core Accounting ───────────────────────────────────────────
+  // ── الحسابات ──────────────────────────────────────────────────
   { path: "/chartofaccounts", element: withSuspense(ChartofaccountsPage) },
   { path: "/accountingEntry", element: withSuspense(AccountingEntryPage) },
+  { path: "/accountingentry", element: withSuspense(AccountingEntryPage) },
   { path: "/accountingentryview/:id", element: withSuspense(AccountingEntryViewPage) },
   { path: "/accountsreport", element: withSuspense(AccountsReportPage) },
   { path: "/newaccountsReport", element: withSuspense(AccountsReportPage) },
+
+  // ── الأموال والسندات ──────────────────────────────────────────
+  { path: "/generalreceiptvouchercash", element: withSuspense(GeneralReceiptVoucherCashPage) },
+  { path: "/generalreceiptvoucher", element: withSuspense(GeneralReceiptVoucherPage) },
+  { path: "/generalpaymentvouchercash", element: withSuspense(GeneralPaymentVoucherCashPage) },
+  { path: "/generalpaymentvoucher", element: withSuspense(GeneralPaymentVoucherPage) },
+  { path: "/moneyreceiptreports", element: withSuspense(Moneyreceiptreports) },
+  { path: "/moneyreceiptreports/:id", element: withSuspense(Moneyreceiptreports) },
+  { path: "/moneytransferreports", element: withSuspense(Moneytransferreports) },
+  { path: "/moneytransferreports/:id", element: withSuspense(Moneytransferreports) },
+
+  // ── القوائم المالية ───────────────────────────────────────────
   { path: "/balancesheet", element: withSuspense(BalanceSheetPage) },
   { path: "/incomestatement", element: withSuspense(IncomeStatementPage) },
 
-  // ── Statements ────────────────────────────────────────────────
+  // ── كشوفات الحسابات ───────────────────────────────────────────
   { path: "/accountstatement", element: withSuspense(AccountstatementPage) },
+  { path: "/accountstatement/accounts", element: withSuspense(AccountsStatementPage) },
   { path: "/accountstatement/customers", element: withSuspense(CustomersStatementPage) },
   { path: "/accountstatement/suppliers", element: withSuspense(SuppliersStatementPage) },
-  { path: "/accountstatement/accounts", element: withSuspense(AccountsStatementPage) },
   { path: "/accountstatement/associationmember", element: withSuspense(AssociationMemberStatementPage) },
   { path: "/accountstatement/donor", element: withSuspense(DonorStatementPage) },
   { path: "/accountstatement/donors", element: withSuspense(DonorStatementPage) },
@@ -75,7 +97,7 @@ export const accountingRouteConfigs = [
   { path: "/accountstatement/managementmember", element: withSuspense(ManagementMemberStatementPage) },
   { path: "/accountstatement/warrantors", element: withSuspense(WarrantorsStatementPage) },
 
-  // ── Clients, Items & Suppliers ────────────────────────────────
+  // ── العملاء والموردين والأصناف والمشتريات والمبيعات والمخازن ──
   { path: "/addClient", element: withSuspense(AddClientPage) },
   { path: "/newadditem", element: withSuspense(AdditemPage) },
   { path: "/addSupplier", element: withSuspense(AddSupplierPage) },
@@ -91,15 +113,11 @@ export const accountingRouteConfigs = [
   { path: "/supplierRreports", element: withSuspense(SupplieRreportsPage) },
   { path: "/pricelist", element: withSuspense(PriceListPage) },
   { path: "/updateprices/:id", element: withSuspense(UpdatePricesPage) },
-
-  // ── Invoices ──────────────────────────────────────────────────
   { path: "/newpurchaseinvoice", element: withSuspense(NewPurchaseInvoicePage) },
   { path: "/newpurchaserefundinvoice", element: withSuspense(NewPurchaseRefundInvoicePage) },
   { path: "/newsalesinvoice", element: withSuspense(NewSalesInvoicePage) },
   { path: "/newsalesrefundinvoice", element: withSuspense(NewSalesRefundInvoicePage) },
   { path: "/printpurchase/:id", element: withSuspense(PrintPurchasePage) },
-
-  // ── Inventory & Reports ───────────────────────────────────────
   { path: "/customerreport", element: withSuspense(CustomerReportPage) },
   { path: "/purchasesreport", element: withSuspense(PurchasesReportPage) },
   { path: "/purecommand", element: withSuspense(PurecommandPage) },

@@ -1,0 +1,1 @@
+import{a1 as a,aa as d}from"./vendor-ui-CUh85MhK.js";function c(e){const n=e.id||`radio-${e.value}`;return a.jsx("div",{className:"mb-3",children:a.jsx(d.Check,{id:n,inline:!0,label:e.label,name:e.name?e.name:"name",type:"radio",className:"createManage-redio",value:e.value,onChange:e.onChange,defaultChecked:e.defaultChecked,checked:e.checked})})}export{c as R};

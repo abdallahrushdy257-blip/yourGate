@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CustomTable from "../../../components/CustomTable";
 import { faLocationDot, faUsersBetweenLines, faPlus } from "@fortawesome/free-solid-svg-icons";
-import "../../../pages/CaseDetails/CaseDetails.css";
+import "../../cases/pages/CaseDetails/CaseDetails.css";
 import { useState, useEffect } from "react";
 import TableComponent from "../../../components/TableComponent";
 import { Modal, Form, Spinner } from 'react-bootstrap';
@@ -12,7 +12,7 @@ import Title from "../../../components/title";
 import API from '../../../api/axiosConfig';
 import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 import "../../../pages/CreateLoan/createLoan.css";
-import "../../../pages/AddBeneficiary/addBeneficiary.css";
+import "../../data-management/pages/beneficiaries/addBeneficiary.css";
 import './endowments.css';
 import NewButton from "../../../components/NewButton";
 

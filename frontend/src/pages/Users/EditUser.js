@@ -1,4 +1,4 @@
-import '../AddDonor/addDonor.css'
+import '../../modules/data-management/pages/donors/addDonor.css'
 import Title from "../../components/title";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import CustomButton from "../../components/CustomButton";

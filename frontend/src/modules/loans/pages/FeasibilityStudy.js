@@ -3,7 +3,7 @@ import "../../../pages/CreateLoan/createLoan.css"
 import Title from '../../../components/title';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faPlus } from '@fortawesome/free-solid-svg-icons';
-import "../../../pages/AddBeneficiary/addBeneficiary.css"
+import "../../data-management/pages/beneficiaries/addBeneficiary.css"
 import './endowments.css'
 
 import API from '../../../api/axiosConfig';

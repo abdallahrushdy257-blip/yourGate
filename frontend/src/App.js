@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy } from "react";
 import "./App.css";
 import "./print.css";
 import ProtectedRoute from "./context/ProtectedRoute";
@@ -14,7 +14,7 @@ import ReviewData from "./pages/ReviewData/ReviewData";
 import CompletingData from "./pages/CompletingData/CompletingData";
 import MarketingDesignProjectManagement from "./pages/MarketingDesignProjectManagement/MarketingDesignProjectManagement";
 import ThemeContextProvider from "./context/theme-context";
-import ProjectStatus from "./pages/ProjectStatus/ProjectStatus";
+// import ProjectStatus from "./modules/projects/pages/ProjectStatus/ProjectStatus";
 // import MonthlySalary from "./pages/MonthlySalary/MonthlySalary";
 import TestPreLoader from "./pages/TestPreLoader/TestPreLoader";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
@@ -28,19 +28,19 @@ import CarouselComponent from "./pages/CarouselCom/CarouselCom";
 import CommitmentCompliance from "./pages/CommitmentCompliance/CommitmentCompliance";
 // import AddDonor from "./pages/AddDonor/AddDonor";
 import TestPrint from "./pages/TestPrint/TestPrint";
-import Additionalnformation from "./pages/AddBeneficiary/Additionalnformation";
-import MembershipData from "./pages/AddBeneficiary/MembershipData";
-import BankData from "./pages/AddBeneficiary/BankData";
-import CallingData from "./pages/AddBeneficiary/CallingData";
-import QualificationPosition from "./pages/AddBeneficiary/QualificationPosition";
-import HousingData from "./pages/AddBeneficiary/HousingData";
-import HealthData from "./pages/AddBeneficiary/HealthData";
-import DependentsData from "./pages/AddBeneficiary/DependentsData";
+
+
+
+
+
+
+
+
 // import Verify from "./pages/Verify/Verify";
-import AddBenef from "./pages/AddBeneficiary/AddBenef";
+
 import LandingStore from "./pages/LandingStore/LandingStore";
 import TestNewTable from "./pages/TestNewTable/TestNewTable";
-import EditProjectStatus from "./pages/MarketingDesignProjectManagement/EditProjectStatus";
+// import EditProjectStatus from "./modules/projects/pages/ProjectStatus/EditProjectStatus";
 import OrganizationalChart from "./pages/OrganizationalChart/OrganizationalChart";
 import Users from "./pages/Users/Users";
 import Terms from "./pages/TermsandCondition/Terms";
@@ -48,7 +48,7 @@ import Privacy from "./pages/TermsandCondition/Privacy";
 import NotificationItem from "./pages/notification/Notification";
 import WebsiteLanding from "./landings/WebsiteLanding";
 // import NotFound from "./components/NotFound";
-import Interest from "./pages/interests/Interest";
+
 import MainApp from "./components/MainApp";
 //TODO Make 404 page
 //admin dashboard
@@ -60,21 +60,24 @@ import EndowmentsLanding from "./landings/EndowmentsLanding";
 import TasksLanding from "./landings/TasksLanding";
 import AccountingLanding from "./landings/AccountingLanding";
 import { ProjectRoutes } from "./modules/projects";
-import { OrganizationRoutes } from "./modules/organization";
+
 import AddOrganization from "./admin/organization/AddOrganization";
 import { FinanceRoutes } from "./modules/finance";
 import { HrRoutes } from "./modules/hr";
-import { BeneficiaryRoutes, CaseDataPage, BenefitAddDetailsPage } from "./modules/beneficiaries";
+import { CaseRoutes } from "./modules/cases";
+const BenefitAddDetailsPage = lazy(() => import("./modules/data-management/pages/beneficiaries/BenefitAddDetails"));
+import { DataManagementRoutes } from "./modules/data-management";
 import { AccountingRoutes } from "./modules/accounting";
 import { SettingsRoutes } from "./modules/settings";
 import { MarketingRoutes } from "./modules/marketing";
 import { PartnerRoutes } from "./modules/partners";
 import { LoanRoutes } from "./modules/loans";
-import { VoucherRoutes } from "./modules/vouchers";
-import { GovernanceRoutes } from "./modules/governance";
+
+
 import { EndowmentRoutes } from "./modules/endowments";
-import { TrainingRoutes } from "./modules/training";
-import { DonationRoutes } from "./modules/donations";
+
+import { ArchiveRoutes } from "./modules/archives";
+import { TaskRoutes } from "./modules/tasks";
 import UserProfile from "./pages/Users/UserProfile";
 import CommonRoutes from "./modules/common/routes/commonRoutes";
 import { PublicRoutes } from "./modules/common";
@@ -122,7 +125,7 @@ function App() {
     !location.pathname.startsWith("/organizationshow/") &&
     !location.pathname.startsWith("/organizationmodules/") &&
     !location.pathname.startsWith("/organizationrequests/") &&
-    !location.pathname.startsWith("/benefitadddetails/");
+    !location.pathname.startsWith("/benefitadddetails");
   const showSidebar =
     location.pathname !== "/login" &&
     location.pathname !== "/ibgates/adminlogin" &&
@@ -159,7 +162,7 @@ function App() {
     !location.pathname.startsWith("/organizationshow/") &&
     !location.pathname.startsWith("/organizationmodules/") &&
     !location.pathname.startsWith("/organizationrequests/") &&
-    !location.pathname.startsWith("/benefitadddetails/");
+    !location.pathname.startsWith("/benefitadddetails");
 
   const toggleSidebar = () => {
     setSidebarVisible((prevState) => !prevState);
@@ -232,7 +235,8 @@ function App() {
                 {/* <Route path="/review" element={<ReviewData />} /> */}
                 {/*<Route path="/complete" element={<CompletingData  */}
                 {/* <Route path="/createandmanege" element={<CreateAndManege />} /> */}
-                {BeneficiaryRoutes}
+                {CaseRoutes}
+                {DataManagementRoutes}
                 
                 {FinanceRoutes}
                 {/* <Route
@@ -292,7 +296,7 @@ function App() {
                 {/* <Route path="/addBenef" element={<AddBenef />} /> */}
                 {/* {/* <Route path="/addMinutes" element={<AddMinutes />} /> */}
                 {/* <Route path="/paymentsDue" element={<PaymentsDue />} />
-                <Route path="/paymentHistory" element={<PaymentHistory />} />
+                
                 <Route
                   path="/donationDetails/:id"
                   element={<DonationDetails />}
@@ -309,12 +313,13 @@ function App() {
                 {MarketingRoutes}
                 {PartnerRoutes}
                 {LoanRoutes}
-                {VoucherRoutes}
-                {GovernanceRoutes}
+
+
                 {EndowmentRoutes}
-                {TrainingRoutes}
-                {DonationRoutes}
-                {OrganizationRoutes}
+
+                {ArchiveRoutes}
+                {TaskRoutes}
+
                 {/* <Route path="/bankdata" element={<BankData />} /> */}
 
                 {/* <Route path="/qualificationposition" element={<QualificationPosition />} /> */}

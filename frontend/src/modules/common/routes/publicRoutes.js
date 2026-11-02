@@ -1,12 +1,19 @@
 import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
 import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
+import GuestRoute from "../../../context/GuestRoute";
 
 // Authentication & Registration
 const Login = lazy(() => import("../../../pages/Login/Login"));
 const Verify = lazy(() => import("../../../pages/Verify/Verify"));
 const CharityRegistration = lazy(() =>
   import("../../../pages/CharityRegistration/CharityRegistration")
+);
+const ForgotPassword = lazy(() =>
+  import("../../../pages/ForgotPassword/ForgotPassword")
+);
+const SetnewPassword = lazy(() =>
+  import("../../../pages/ForgotPassword/SetnewPassword")
 );
 
 // Main Landing
@@ -45,6 +52,11 @@ const Privacy = lazy(() =>
   import("../../../pages/TermsandCondition/Privacy")
 );
 
+// External Beneficiary Registration Form
+const BenefitAddDetails = lazy(() =>
+  import("../../data-management/pages/beneficiaries/BenefitAddDetails")
+);
+
 // Suspense Wrapper
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>
@@ -52,17 +64,29 @@ const withSuspense = (Component) => (
   </Suspense>
 );
 
+// Guest Only Wrapper (Redirects authenticated users to /home)
+const withGuest = (Component) => (
+  <GuestRoute>
+    <Suspense fallback={<TestPreLoader />}>
+      <Component />
+    </Suspense>
+  </GuestRoute>
+);
+
 // Public Route Configurations
 export const publicRouteConfigs = [
-  { path: "/login", element: withSuspense(Login) },
-  { path: "/:id/verify", element: withSuspense(Verify) },
+  // Authentication & Registration (Guest Only)
+  { path: "/login", element: withGuest(Login) },
+  { path: "/:id/verify", element: withGuest(Verify) },
   {
     path: "/charityregistration",
-    element: withSuspense(CharityRegistration),
+    element: withGuest(CharityRegistration),
   },
-  { path: "/", element: withSuspense(MainLanding) },
+  { path: "/forgotpassword", element: withGuest(ForgotPassword) },
+  { path: "/setnewpassword", element: withGuest(SetnewPassword) },
 
-  // Landing Pages
+  // Main Landing & Landing Pages
+  { path: "/", element: withSuspense(MainLanding) },
   {
     path: "/createMangelanding",
     element: withSuspense(CreateMangeLanding),
@@ -94,6 +118,9 @@ export const publicRouteConfigs = [
   { path: "/terms", element: withSuspense(Terms) },
   { path: "/privacy", element: withSuspense(Privacy) },
 
+  // رابط إضافة مستفيد خارجي (عام)
+  { path: "/benefitadddetails/:id", element: withSuspense(BenefitAddDetails) },
+  { path: "/benefitadddetails", element: withSuspense(BenefitAddDetails) },
 ];
 
 // Public Routes

@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CustomTable from "../../../components/CustomTable";
 import { faDollarSign, faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import "../../../pages/CaseDetails/CaseDetails.css";
+import "../../cases/pages/CaseDetails/CaseDetails.css";
 import { useState } from "react";
 import TableComponent from "../../../components/TableComponent";
 

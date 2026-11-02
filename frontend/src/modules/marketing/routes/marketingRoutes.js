@@ -22,18 +22,29 @@ const withSuspense = (Component) => (
 );
 
 export const marketingRouteConfigs = [
+  // طلبات التصميم والتسويق للمشاريع
+  { path: "/senddesignrequest", element: withSuspense(SendDesignRequest) },
   { path: "/senddesignrequest/:id", element: withSuspense(SendDesignRequest) },
-  { path: "/senddesignrequestshop/:id", element: withSuspense(SendDesignRequestshop) },
+  { path: "/sendmarketingrequest", element: withSuspense(SendMarketingRequest) },
   { path: "/sendmarketingrequest/:id", element: withSuspense(SendMarketingRequest) },
+
+  // طلبات التصميم والتسويق للحالات
+  { path: "/senddesignrequestshop", element: withSuspense(SendDesignRequestshop) },
+  { path: "/senddesignrequestshop/:id", element: withSuspense(SendDesignRequestshop) },
+  { path: "/sendmarketingrequestshop", element: withSuspense(SendMarketingRequestshop) },
   { path: "/sendmarketingrequestshop/:id", element: withSuspense(SendMarketingRequestshop) },
-  { path: "/marketingreports", element: withSuspense(MarketingReports) },
-  { path: "/complexdesignmarketingrequest/:id", element: withSuspense(ComplexDesignMarketingRequest) },
+
+  // تفاصيل التصميم والتسويق والمرفقات
   { path: "/designsdetails", element: withSuspense(DesignsDetails) },
   { path: "/marketingdetails", element: withSuspense(MarketingDetails) },
-  { path: "/marketingdetailsshop", element: withSuspense(DesignsDetailsshop) },
-  { path: "/designsdetailsshop", element: withSuspense(MarketingDetailsshop) },
+  { path: "/designsdetailsshop", element: withSuspense(DesignsDetailsshop) },
+  { path: "/marketingdetailsshop", element: withSuspense(MarketingDetailsshop) },
   { path: "/designattachments/:id", element: withSuspense(DesignAttachments) },
   { path: "/designattachmentsshop/:id", element: withSuspense(DesignAttachmentsshop) },
+
+  // التقارير والطلبات المجمعة
+  { path: "/marketingreports", element: withSuspense(MarketingReports) },
+  { path: "/complexdesignmarketingrequest/:id", element: withSuspense(ComplexDesignMarketingRequest) },
 ];
 
 export const MarketingRoutes = (
@@ -45,4 +56,3 @@ export const MarketingRoutes = (
 );
 
 export default MarketingRoutes;
-

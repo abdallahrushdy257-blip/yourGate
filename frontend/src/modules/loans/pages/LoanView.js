@@ -1,4 +1,4 @@
-import "../../../pages/AddDonor/addDonor.css"
+import "../../data-management/pages/donors/addDonor.css"
 import Title from "../../../components/title";
 import RegisterTextbox from "../../../components/RegisterTextBox";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
