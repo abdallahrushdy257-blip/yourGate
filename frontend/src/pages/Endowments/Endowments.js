@@ -3,7 +3,7 @@ import "../CreateLoan/createLoan.css";
 import Title from "../../components/title";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faPlus } from "@fortawesome/free-solid-svg-icons";
-import "../AddBeneficiary/addBeneficiary.css";
+import "../../modules/data-management/pages/beneficiaries/addBeneficiary.css";
 import "./endowments.css";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";

@@ -1,5 +1,5 @@
 import React from "react";
-import "../CaseDetails/CaseDetails.css";
+import "../../modules/cases/pages/CaseDetails/CaseDetails.css";
 import TableComponent from "../../components/TableComponent";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";

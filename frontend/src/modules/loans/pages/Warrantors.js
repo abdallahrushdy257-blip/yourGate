@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faReceipt, faXmark } from "@fortawesome/free-solid-svg-icons";
-import "../../../pages/CaseDetails/CaseDetails.css";
+import "../../cases/pages/CaseDetails/CaseDetails.css";
 import API from "../../../api/axiosConfig";
 import TableComponent from "../../../components/TableComponent";
 import { Modal, Button, Row, Col, Spinner, Form } from "react-bootstrap";

@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Spinner, Form } from "react-bootstrap";
 import API from "../../../../api/axiosConfig";
 import "../../../../pages/CreateLoan/createLoan.css";
-import "../../../../pages/AddBeneficiary/addBeneficiary.css";
+import "../../../data-management/pages/beneficiaries/addBeneficiary.css";
 import "./endowments.css";
 
 function Endowments() {

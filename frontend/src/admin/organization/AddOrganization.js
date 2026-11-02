@@ -13,6 +13,7 @@ import API from "../../api/axiosConfig";
 function AddOrganization() {
   const navigate = useNavigate();
   const [error, setError] = useState([]);
+  const [description, setDescription] = useState([]);
   const [message, setMessage] = useState([]);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");

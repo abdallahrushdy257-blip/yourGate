@@ -2,10 +2,18 @@ import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
 import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 
+// ── إعدادات النظام ───────────────────────────────────────────
 const SettingTabsPage = lazy(() => import("../../../pages/Setting/SettingTabs"));
 const GenSettingPage = lazy(() => import("../../../pages/Setting/GenSetting"));
 const EnterSettingPage = lazy(() => import("../../../pages/Setting/EnterSetting"));
+const PrintSettingPage = lazy(() => import("../../../pages/Setting/PrintSetting"));
 
+// ── المستخدمين والملف الشخصي ───────────────────────────────────
+const UsersPage = lazy(() => import("../../../pages/Users/Users"));
+const EditUserPage = lazy(() => import("../../../pages/Users/EditUser"));
+const UserProfilePage = lazy(() => import("../../../pages/Users/UserProfile"));
+
+// ── الصلاحيات والأدوار ─────────────────────────────────────────
 const RolesPage = lazy(() => import("../../../pages/Roles/Roles"));
 const EditRolePage = lazy(() => import("../../../pages/Roles/EditRole"));
 const PermissionsTabsPage = lazy(() => import("../../../pages/Roles/PermissionsTabs"));
@@ -31,12 +39,19 @@ const withSuspense = (Component) => (
 );
 
 export const settingsRouteConfigs = [
-  // ── System Settings ───────────────────────────────────────────
+  // ── الإعدادات ─────────────────────────────────────────────────
   { path: "/settingTabs", element: withSuspense(SettingTabsPage) },
   { path: "/setting/general", element: withSuspense(GenSettingPage) },
   { path: "/setting/enter", element: withSuspense(EnterSettingPage) },
+  { path: "/setting/print", element: withSuspense(PrintSettingPage) },
 
-  // ── Roles & Permissions ───────────────────────────────────────
+  // ── المستخدمين ─────────────────────────────────────────────────
+  { path: "/users", element: withSuspense(UsersPage) },
+  { path: "/useredit/:id", element: withSuspense(EditUserPage) },
+  { path: "/userprofile", element: withSuspense(UserProfilePage) },
+  { path: "/profile", element: withSuspense(UserProfilePage) },
+
+  // ── الصلاحيات والأدوار ─────────────────────────────────────────
   { path: "/roles", element: withSuspense(RolesPage) },
   { path: "/groupShow/:id", element: withSuspense(RolesPage) },
   { path: "/groupEdit/:id", element: withSuspense(EditRolePage) },

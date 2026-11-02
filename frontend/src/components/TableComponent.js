@@ -619,6 +619,7 @@ function TableComponent({
                                     <Dropdown.Item
                                       key={idx}
                                       onClick={(e) => {
+                                        if (e && e.preventDefault) e.preventDefault();
                                         if (e && e.stopPropagation) e.stopPropagation();
                                         if (option.action) {
                                           option.action(record.id, record);

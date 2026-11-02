@@ -18,16 +18,26 @@ const withSuspense = (Component) => (
 );
 
 export const endowmentRouteConfigs = [
+  // ── الأوقاف والتقارير ─────────────────────────────────────────
   { path: "/endowments", element: withSuspense(Endowments) },
-  { path: "/editEndowments/:id", element: withSuspense(EditEndowments) },
+  { path: "/endowmentsReport", element: withSuspense(EndowmentsReport) },
   { path: "/endowmentsreport", element: withSuspense(EndowmentsReport) },
+  { path: "/editEndowments/:id", element: withSuspense(EditEndowments) },
+  { path: "/editendowments/:id", element: withSuspense(EditEndowments) },
+  { path: "/viewendowments/:id", element: withSuspense(ViewEndowments) },
+  { path: "/viewEndowments/:id", element: withSuspense(ViewEndowments) },
+
+  // ── مستحقات الدفعات وتاريخ المدفوعات ──────────────────────────
+  { path: "/paymentsDue", element: withSuspense(PaymentsDue) },
   { path: "/paymentsdue", element: withSuspense(PaymentsDue) },
-  { path: "/endowmentsreceiptvoucher/:id", element: withSuspense(PaymentsDue) },
+  { path: "/paymentHistory", element: withSuspense(PaymentHistory) },
   { path: "/paymenthistory", element: withSuspense(PaymentHistory) },
   { path: "/showpaymentHistory/:id", element: withSuspense(ShowpaymentHistory) },
+  { path: "/endowmentsreceiptvoucher/:id", element: withSuspense(PaymentsDue) },
+
+  // ── ملخص الوقف ───────────────────────────────────────────────
   { path: "/endowmentsammary", element: withSuspense(EndowmentSammary) },
   { path: "/endowmentsSammary/:id", element: withSuspense(EndowmentSammary) },
-  { path: "/viewendowments/:id", element: withSuspense(ViewEndowments) },
 ];
 
 export const EndowmentRoutes = (
@@ -39,4 +49,3 @@ export const EndowmentRoutes = (
 );
 
 export default EndowmentRoutes;
-

@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
 import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 
+// ── الموظفون والإدارة ─────────────────────────────────────────
 const EmployeeListPage = lazy(() => import("../../../pages/EmployeeName/EmployeeName"));
 const AddNewEmployeePage = lazy(() => import("../../../pages/AddNewEmployee/AddNewEmployee"));
 const EditEmployeePage = lazy(() => import("../../../pages/AddNewEmployee/EditEmployee"));
@@ -11,46 +12,68 @@ const EmployeePaperPage = lazy(() => import("../../../pages/HRreports/reports/Em
 const ShowEmployeeCardPage = lazy(() => import("../../../pages/Card/ShowEmployeeCard"));
 const EmployeeWithdrawalsPage = lazy(() => import("../../../pages/employeeWithdrawals/EmployeeWithdrawals"));
 const CreateEmployeeAdvancePage = lazy(() => import("../../../pages/employeeAdvance/CreateEmployeeAdvance"));
+const OrganizationalChartPage = lazy(() => import("../../../pages/OrganizationalChart/OrganizationalChart"));
+const SectionsReportPage = lazy(() => import("../../../pages/sections/SectionsReport"));
 
+// ── الرواتب والمسيرات ─────────────────────────────────────────
 const PayrollPage = lazy(() => import("../../../pages/Payroll/Payroll"));
 const PayrollVoucherPage = lazy(() => import("../../../pages/Payroll/PayrollVoucher"));
 const PaySalaryPage = lazy(() => import("../../../pages/PaySalary/PaySalary"));
 const SalaryCertificatePage = lazy(() => import("../../../pages/Salarycertificate/Salarycertificate"));
 
+// ── الحضور والانصراف وقواعد التأخير ───────────────────────────
 const AttendanceDeparturePage = lazy(() => import("../../../pages/AttendanceDeparture/AttendanceDeparture"));
 const AttendanceDepartureReportPage = lazy(() => import("../../../pages/AttendanceDepartureReport/AttendanceDepartureReport"));
+const ComeLeave = lazy(() => import("../pages/ComeLeave/ComeLeave"));
+const LatePoliciesPage = lazy(() => import("../../../pages/latePolitics/LatePoliciesPage"));
 
+// ── الإجازات والأذونات ─────────────────────────────────────────
 const VacationRequestPage = lazy(() => import("../../../pages/VacationRequest/VacationRequest"));
 const VacationDetailsPage = lazy(() => import("../../../pages/VacationDetails/VacationDetails"));
+const LeaveType = lazy(() => import("../pages/LeaveType/LeaveType"));
+const EditLeave = lazy(() => import("../pages/LeaveType/EditLeave"));
+const RequestPermission = lazy(() => import("../pages/RequestPermission/RequestPermission"));
 
+// ── التقييمات ومؤشرات الأداء ──────────────────────────────────
 const JobPerformanceEvaluationPage = lazy(() => import("../../../pages/JobPerformanceEvaluation/JobPerformanceEvaluation"));
 const ShowJobPerformanceEvaluationPage = lazy(() => import("../../../pages/ShowJobPerformanceEvaluation/ShowJobPerformanceEvaluation"));
 const ShowPerformancePage = lazy(() => import("../../../pages/ShowPerformance/ShowPerformance"));
 const KPIEvaluationPage = lazy(() => import("../../../pages/KPIEvaluation/KPIEvaluation"));
 
-const HRReportsPage = lazy(() => import("../../../pages/HRreports/HRreports"));
-const EmployeeReportPage = lazy(() => import("../../../pages/HRreports/reports/EmployeeReport"));
-const SalaryReportPage = lazy(() => import("../../../pages/HRreports/reports/SalaryReport"));
-const LeaveReportPage = lazy(() => import("../../../pages/HRreports/reports/LeaveReport"));
-
-// ── Additional HR Pages ─────────────────────────────────────────
+// ── المسميات الوظيفية والمستندات ─────────────────────────────
 const Jobtitle = lazy(() => import("../pages/JobTitle/JobTitle"));
 const EditJobTitle = lazy(() => import("../pages/JobTitle/EditJobTitle"));
 const AddEmpPaper = lazy(() => import("../pages/EmployPaper/AddEmpPaper"));
 const EditEmploypaper = lazy(() => import("../pages/EmployPaper/EditEmploypaper"));
+
+// ── الخصومات والتحقيقات ───────────────────────────────────────
 const Discounts = lazy(() => import("../pages/Discounts/Discounts"));
 const Investigations = lazy(() => import("../pages/Investigations/Investigations"));
 const EditInvestigations = lazy(() => import("../pages/Investigations/EditInvestigations"));
-const ComeLeave = lazy(() => import("../pages/ComeLeave/ComeLeave"));
-const LeaveType = lazy(() => import("../pages/LeaveType/LeaveType"));
-const EditLeave = lazy(() => import("../pages/LeaveType/EditLeave"));
-const RequestPermission = lazy(() => import("../pages/RequestPermission/RequestPermission"));
+
+// ── المهام ───────────────────────────────────────────────────
 const Missions = lazy(() => import("../pages/Missions/Missions"));
 const AddMissions = lazy(() => import("../pages/Missions/AddMissions"));
 const EditMissions = lazy(() => import("../pages/Missions/EditMissions"));
 const ShowMissions = lazy(() => import("../pages/Missions/ShowMissions"));
 
-// ── Reports ─────────────────────────────────────────────────────
+// ── المتطوعون ─────────────────────────────────────────────────
+const Volunteers = lazy(() => import("../../../pages/Volunteers/Volunteers"));
+const VolunterReport = lazy(() => import("../../../pages/HRreports/reports/VolunterReport"));
+const VolunteerCertificate = lazy(() => import("../../../pages/HRreports/reports/VolunteerCertificate"));
+const VolunteersVoucher = lazy(() => import("../../../pages/HRreports/reports/VolunteersVoucher"));
+
+// ── التدريب والمهارات والمعرفة ───────────────────────────────
+const TrainingForm = lazy(() => import("../../../pages/Training/TrainingForm"));
+const TrainingList = lazy(() => import("../../../pages/Training/TrainingList"));
+const KsaForm = lazy(() => import("../../../pages/Ksa/KsaForm"));
+const KsaList = lazy(() => import("../../../pages/Ksa/KsaList"));
+
+// ── تقارير الموارد البشرية ─────────────────────────────────────
+const HRReportsPage = lazy(() => import("../../../pages/HRreports/HRreports"));
+const EmployeeReportPage = lazy(() => import("../../../pages/HRreports/reports/EmployeeReport"));
+const SalaryReportPage = lazy(() => import("../../../pages/HRreports/reports/SalaryReport"));
+const LeaveReportPage = lazy(() => import("../../../pages/HRreports/reports/LeaveReport"));
 const JobtitleReport = lazy(() => import("../../../pages/HRreports/reports/JobtitleReport"));
 const KpiReport = lazy(() => import("../../../pages/HRreports/reports/KpiReport"));
 const LeaveNameReport = lazy(() => import("../../../pages/HRreports/reports/LeaveNameReport"));
@@ -68,31 +91,34 @@ const withSuspense = (Component) => (
 );
 
 export const hrRouteConfigs = [
-  // ── Employees ─────────────────────────────────────────────────
+  // ── الموظفون والهيكل والأقسام ─────────────────────────────────
   { path: "/employeename", element: withSuspense(EmployeeListPage) },
   { path: "/addnewemployee", element: withSuspense(AddNewEmployeePage) },
   { path: "/editemployee/:id", element: withSuspense(EditEmployeePage) },
   { path: "/showEmployee/:id", element: withSuspense(ShowEmployeePage) },
   { path: "/generalemployeereports/:id", element: withSuspense(GeneralEmployeeReportsPage) },
   { path: "/employeepaper/:id", element: withSuspense(EmployeePaperPage) },
+  { path: "/employpaper", element: withSuspense(EmployeePaperPage) },
   { path: "/showEmployeeCard/:id", element: withSuspense(ShowEmployeeCardPage) },
   { path: "/employeeWithdrawals", element: withSuspense(EmployeeWithdrawalsPage) },
   { path: "/employeeAdvance", element: withSuspense(CreateEmployeeAdvancePage) },
+  { path: "/organizationalChart", element: withSuspense(OrganizationalChartPage) },
+  { path: "/organizationalchart", element: withSuspense(OrganizationalChartPage) },
+  { path: "/SectionsReport", element: withSuspense(SectionsReportPage) },
+  { path: "/sectionsreport", element: withSuspense(SectionsReportPage) },
 
-  // ── Job Titles ────────────────────────────────────────────────
+  // ── المسميات الوظيفية والمستندات ─────────────────────────────
   { path: "/jobtitle", element: withSuspense(Jobtitle) },
   { path: "/editjobtitle/:id", element: withSuspense(EditJobTitle) },
-
-  // ── Employee Papers ───────────────────────────────────────────
   { path: "/addempaper/:id", element: withSuspense(AddEmpPaper) },
   { path: "/editemploypaper/:id", element: withSuspense(EditEmploypaper) },
 
-  // ── Discounts & Investigations ────────────────────────────────
+  // ── الخصومات والتحقيقات ───────────────────────────────────────
   { path: "/discounts/:id", element: withSuspense(Discounts) },
   { path: "/investigations/:id", element: withSuspense(Investigations) },
   { path: "/editInvestigations/:id", element: withSuspense(EditInvestigations) },
 
-  // ── Attendance, Leaves & Permissions ──────────────────────────
+  // ── الحضور والانصراف والإجازات والأذونات وقواعد التأخير ───────
   { path: "/attendancedeparture", element: withSuspense(AttendanceDeparturePage) },
   { path: "/attendancedeparturereport", element: withSuspense(AttendanceDepartureReportPage) },
   { path: "/comeleave", element: withSuspense(ComeLeave) },
@@ -101,27 +127,49 @@ export const hrRouteConfigs = [
   { path: "/requestpermission", element: withSuspense(RequestPermission) },
   { path: "/vacationrequest", element: withSuspense(VacationRequestPage) },
   { path: "/vacationdetails", element: withSuspense(VacationDetailsPage) },
+  { path: "/latepolitics", element: withSuspense(LatePoliciesPage) },
+  { path: "/LatePoliciesPage", element: withSuspense(LatePoliciesPage) },
 
-  // ── Payroll & Salaries ────────────────────────────────────────
+  // ── الرواتب والمسيرات ─────────────────────────────────────────
   { path: "/payroll", element: withSuspense(PayrollPage) },
   { path: "/payroll/:id", element: withSuspense(PayrollVoucherPage) },
   { path: "/paysalary", element: withSuspense(PaySalaryPage) },
   { path: "/salarycertificate", element: withSuspense(SalaryCertificatePage) },
 
-  // ── Performance & Evaluation ──────────────────────────────────
+  // ── التقييمات ومؤشرات الأداء ──────────────────────────────────
+  { path: "/JobPerformanceEvaluation", element: withSuspense(JobPerformanceEvaluationPage) },
   { path: "/jobperformanceevaluation", element: withSuspense(JobPerformanceEvaluationPage) },
   { path: "/showJobPerformanceEvaluation", element: withSuspense(ShowJobPerformanceEvaluationPage) },
   { path: "/showperformance", element: withSuspense(ShowPerformancePage) },
   { path: "/kpievaluation", element: withSuspense(KPIEvaluationPage) },
   { path: "/kpievaluation/:id", element: withSuspense(KPIEvaluationPage) },
 
-  // ── Missions ──────────────────────────────────────────────────
+  // ── المهام ───────────────────────────────────────────────────
   { path: "/missions", element: withSuspense(Missions) },
   { path: "/addmission", element: withSuspense(AddMissions) },
   { path: "/editMissions/:id", element: withSuspense(EditMissions) },
   { path: "/showMissions/:id", element: withSuspense(ShowMissions) },
 
-  // ── HR Reports ────────────────────────────────────────────────
+  // ── المتطوعون ─────────────────────────────────────────────────
+  { path: "/volunteers", element: withSuspense(Volunteers) },
+  { path: "/editvolunteer/:id", element: withSuspense(Volunteers) },
+  { path: "/volunteerWorkHours/:id", element: withSuspense(Volunteers) },
+  { path: "/hrreport/volunteers", element: withSuspense(VolunterReport) },
+  { path: "/volunteercertificate/:id", element: withSuspense(VolunteerCertificate) },
+  { path: "/volunteersvoucher/:id", element: withSuspense(VolunteersVoucher) },
+
+  // ── التدريب والمهارات والمعرفة ───────────────────────────────
+  { path: "/traininglist", element: withSuspense(TrainingList) },
+  { path: "/employeetraining", element: withSuspense(TrainingList) },
+  { path: "/trainingform", element: withSuspense(TrainingForm) },
+  { path: "/trainingform/:id", element: withSuspense(TrainingForm) },
+  { path: "/employeetraining/:id", element: withSuspense(TrainingForm) },
+  { path: "/ksalist", element: withSuspense(KsaList) },
+  { path: "/employeeksa", element: withSuspense(KsaList) },
+  { path: "/ksaform", element: withSuspense(KsaForm) },
+  { path: "/ksa/:id", element: withSuspense(KsaForm) },
+
+  // ── تقارير الموارد البشرية ─────────────────────────────────────
   { path: "/hrreports", element: withSuspense(HRReportsPage) },
   { path: "/hrreport/employees", element: withSuspense(EmployeeReportPage) },
   { path: "/hrreport/salary", element: withSuspense(SalaryReportPage) },

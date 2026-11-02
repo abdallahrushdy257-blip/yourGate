@@ -12,7 +12,7 @@ import Title from "../../components/title";
 import API from '../../api/axiosConfig';
 import TestPreLoader from '../TestPreLoader/TestPreLoader';
 import '../CreateLoan/createLoan.css';
-import '../AddBeneficiary/addBeneficiary.css';
+import '../../modules/data-management/pages/beneficiaries/addBeneficiary.css';
 import './endowments.css';
 import NewButton from "../../components/NewButton";
 
