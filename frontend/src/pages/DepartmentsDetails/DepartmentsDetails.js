@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../components/title";
-import "../VacationDetails/VacationDetails.css";
+import "../../modules/hr/pages/VacationDetails/VacationDetails.css";
 import { faList } from "@fortawesome/free-solid-svg-icons";
 import CustomTable from "../../components/CustomTable";
 import { useState } from "react";

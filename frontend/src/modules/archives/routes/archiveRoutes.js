@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
 import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 
-const ArchiveReport = lazy(() => import("../../../pages/Archives/ArchiveReport"));
+const ArchiveReport = lazy(() => import("../pages/Archives/ArchiveReport"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>

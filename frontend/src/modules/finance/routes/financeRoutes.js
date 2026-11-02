@@ -15,10 +15,10 @@ const PaymentVoucherProjectPage = lazy(() => import("../../../pages/PaymentVouch
 const EndowmentsVoucherPage = lazy(() => import("../../../pages/PaymentVoucher/EndowmentsVoucher"));
 const PaymentVoucherLoanPage = lazy(() => import("../../../pages/PaymentVoucher/PaymentVoucherLoan"));
 
-const GeneralReceiptVoucherPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralReceiptVoucher"));
-const GeneralReceiptVoucherCashPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralReceiptVoucherCash"));
-const GeneralPaymentVoucherPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralPaymentVoucher"));
-const GeneralPaymentVoucherCashPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralPaymentVoucherCash"));
+const GeneralReceiptVoucherPage = lazy(() => import("../../accounting/pages/GeneralPayment/GeneralReceiptVoucher"));
+const GeneralReceiptVoucherCashPage = lazy(() => import("../../accounting/pages/GeneralPayment/GeneralReceiptVoucherCash"));
+const GeneralPaymentVoucherPage = lazy(() => import("../../accounting/pages/GeneralPayment/GeneralPaymentVoucher"));
+const GeneralPaymentVoucherCashPage = lazy(() => import("../../accounting/pages/GeneralPayment/GeneralPaymentVoucherCash"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>

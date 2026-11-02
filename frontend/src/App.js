@@ -41,8 +41,8 @@ import TestPrint from "./pages/TestPrint/TestPrint";
 import LandingStore from "./pages/LandingStore/LandingStore";
 import TestNewTable from "./pages/TestNewTable/TestNewTable";
 // import EditProjectStatus from "./modules/projects/pages/ProjectStatus/EditProjectStatus";
-import OrganizationalChart from "./pages/OrganizationalChart/OrganizationalChart";
-import Users from "./pages/Users/Users";
+// import OrganizationalChart from "./modules/hr/pages/OrganizationalChart/OrganizationalChart";
+// import Users from "./pages/Users/Users";
 import Terms from "./pages/TermsandCondition/Terms";
 import Privacy from "./pages/TermsandCondition/Privacy";
 import NotificationItem from "./pages/notification/Notification";
@@ -78,7 +78,9 @@ import { EndowmentRoutes } from "./modules/endowments";
 
 import { ArchiveRoutes } from "./modules/archives";
 import { TaskRoutes } from "./modules/tasks";
-import UserProfile from "./pages/Users/UserProfile";
+import { RoleRoutes } from "./modules/roles";
+import { UserRoutes } from "./modules/users";
+// import UserProfile from "./pages/Users/UserProfile";
 import CommonRoutes from "./modules/common/routes/commonRoutes";
 import { PublicRoutes } from "./modules/common";
 import { AdminRoutes } from "./admin/routes/adminRoutes";
@@ -310,6 +312,8 @@ function App() {
                   element={<OrganizationalChart />}
                 /> */}
                 {SettingsRoutes}
+                {RoleRoutes}
+                {UserRoutes}
                 {MarketingRoutes}
                 {PartnerRoutes}
                 {LoanRoutes}

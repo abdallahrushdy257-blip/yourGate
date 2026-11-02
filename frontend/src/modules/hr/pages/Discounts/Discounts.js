@@ -93,6 +93,7 @@ function DiscountsModal({ show, handleClose, employeeId, onSuccess }) {
   };
 
   return (
+  <>
     <Modal show={show} onHide={handleClose} size="md" centered>
       <Modal.Header closeButton>
         <Modal.Title>
@@ -313,6 +314,8 @@ function DiscountsModal({ show, handleClose, employeeId, onSuccess }) {
         </Form>
       </Modal.Body>
     </Modal>
+  
+  </>
   );
 }
 

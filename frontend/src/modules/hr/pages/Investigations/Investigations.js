@@ -106,6 +106,7 @@ function InvestigationsModal({
   };
 
   return (
+    <>
     <Modal show={show} onHide={handleClose} size="md" centered>
       <Modal.Header closeButton>
         <Modal.Title>
@@ -241,6 +242,7 @@ function InvestigationsModal({
         </Form>
       </Modal.Body>
     </Modal>
+    </>
   );
 }
 

@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../../components/title";
-import "../../../../pages/VacationRequest/VacationRequest.css";
+import "../VacationRequest/VacationRequest.css";
 import { faHand } from "@fortawesome/free-solid-svg-icons";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import { Form } from "react-bootstrap";

@@ -17,7 +17,7 @@ const RiskAssessmentReportPage = lazy(() => import("../../../pages/MarketingDesi
 const ProjectAttachmentsPage = lazy(() => import("../../../pages/MarketingDesignProjectManagement/ProjectAttachment"));
 const DepartmentsDetailsPage = lazy(() => import("../../../pages/DepartmentsDetails/DepartmentsDetails"));
 const ProjectChartPage = lazy(() => import("../../cases/pages/CaseDetailsChart/ProjectChart"));
-const SectionsReportPage = lazy(() => import("../../../pages/sections/SectionsReport"));
+const SectionsReportPage = lazy(() => import("../../hr/pages/sections/SectionsReport"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>
