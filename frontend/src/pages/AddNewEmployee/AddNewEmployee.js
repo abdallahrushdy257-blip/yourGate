@@ -103,89 +103,6 @@ const handleDocFileChange = (index, file) => {
     { name: "", key: "actions" },
   ];
 
-  const dummyData = [
-    {
-      id: 1,
-      name: "أحمد محمد علي",
-      nationalid: "1023456789",
-      phone: "0501234567",
-      dateofhire: "2023-01-15",
-      jobname: "مدير مشاريع",
-    },
-    {
-      id: 2,
-      name: "سارة إبراهيم",
-      nationalid: "1023456790",
-      phone: "0502345678",
-      dateofhire: "2022-09-10",
-      jobname: "محاسب",
-    },
-    {
-      id: 3,
-      name: "محمد خالد",
-      nationalid: "1023456791",
-      phone: "0503456789",
-      dateofhire: "2021-06-20",
-      jobname: "موظف استقبال",
-    },
-    {
-      id: 4,
-      name: "ريم عبدالله",
-      nationalid: "1023456792",
-      phone: "0504567890",
-      dateofhire: "2020-11-05",
-      jobname: "أخصائي موارد بشرية",
-    },
-    {
-      id: 5,
-      name: "يوسف حسن",
-      nationalid: "1023456793",
-      phone: "0505678901",
-      dateofhire: "2024-02-01",
-      jobname: "مطور برمجيات",
-    },
-    {
-      id: 6,
-      name: "منى السيد",
-      nationalid: "1023456794",
-      phone: "0506789012",
-      dateofhire: "2019-08-18",
-      jobname: "سكرتير تنفيذي",
-    },
-    {
-      id: 7,
-      name: "خالد محمود",
-      nationalid: "1023456795",
-      phone: "0507890123",
-      dateofhire: "2022-04-30",
-      jobname: "مشرف ميداني",
-    },
-    {
-      id: 8,
-      name: "هبة علي",
-      nationalid: "1023456796",
-      phone: "0508901234",
-      dateofhire: "2023-12-12",
-      jobname: "أخصائي تسويق",
-    },
-    {
-      id: 9,
-      name: "طارق جمال",
-      nationalid: "1023456797",
-      phone: "0509012345",
-      dateofhire: "2021-03-25",
-      jobname: "محلل بيانات",
-    },
-    {
-      id: 10,
-      name: "نجلاء مصطفى",
-      nationalid: "1023456798",
-      phone: "0501122334",
-      dateofhire: "2020-07-14",
-      jobname: "مدير موارد بشرية",
-    },
-  ];
-
   const dropdownOptions = [
     // { label: "إضافة مكافآة او خصم ", route: "/discounts/:id" },
     // { label: "إضافة تحقيق ", route: "/investigations/:id" },
@@ -454,7 +371,6 @@ const handleDocFileChange = (index, file) => {
         <TableComponent
           key={refreshKey}
           apiUrl="/employees"
-          data={dummyData}
           columns={columns}
           titleIcon={<FontAwesomeIcon icon={faTable} />}
           title="إدارة الموظفين"

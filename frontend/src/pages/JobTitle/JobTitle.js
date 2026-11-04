@@ -94,27 +94,6 @@ function Jobtitle() {
     { name: "", key: "actions" },
   ];
 
-  const dummyData = [
-    {
-      id: 1,
-      title: "مدير مالي",
-      description: "يشرف على العمليات المالية", 
-      note: "إدارة المشتريات والمصاريف",
-      parent: { title: "مدير عام" },
-      workdayspermonth: 22,
-      workhoursperday: 8,
-    },
-    {
-      id: 2,
-      title: "موظف دعم",
-      description: "يدعم العمليات الإدارية",
-      note: "متابعة الطلبات الداخلية",
-      parent: { title: "مدير مالي" },
-      workdayspermonth: 22,
-      workhoursperday: 8,
-    },
-  ];
-
   // flatten nested parent object → show title string
   const transformRowFn = (row) => {
     const newRow = { ...row };
@@ -135,7 +114,6 @@ function Jobtitle() {
         <TableComponent
           key={refreshKey}
           apiUrl="/jobtitle"
-          data={dummyData}
           columns={columns}
           addBtn={true}
           onAddClick={() => setShowModal(true)}

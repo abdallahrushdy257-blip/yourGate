@@ -10,8 +10,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Form } from "react-bootstrap";
 
 function InventoryReport() {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(() => dayjs().startOf("month"));
+  const [endDate, setEndDate] = useState(() => dayjs().endOf("month"));
   const [selectedStore, setSelectedStore] = useState("");
 
   const tableData = [

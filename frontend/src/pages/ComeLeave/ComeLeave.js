@@ -20,35 +20,10 @@ function ComeLeave() {
     setTriggerReload((prev) => prev + 1);
   };
 
-  const dummyData = [
-    {
-      id: 1,
-      name: "أحمد السالم",
-      att: "08:00",
-      dateleave: "16:00",
-      recorddate: "2026-07-23",
-    },
-    {
-      id: 2,
-      name: "سارة محمد",
-      att: "07:50",
-      dateleave: "15:30",
-      recorddate: "2026-07-23",
-    },
-    {
-      id: 3,
-      name: "خالد إبراهيم",
-      att: "08:30",
-      dateleave: "17:00",
-      recorddate: "2026-07-24",
-    },
-  ];
-
   return (
     <div className="ComeLeave">
       <TableComponent
         apiUrl="/attendances"
-        data={dummyData}
         columns={columns}
         titleIcon={<FontAwesomeIcon icon={faTable} />}
         title="إدارة الحضور والانصراف"

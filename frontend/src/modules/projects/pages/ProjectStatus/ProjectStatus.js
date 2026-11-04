@@ -18,10 +18,16 @@ import RegisterSelect from "../../../../components/RegisterSelect";
 import RegisterTextarea from "../../../../components/RegisterTextarea";
 
 import { toLocal } from "../../../../Utils/toLocal";
+import { toast } from "react-toastify";
+import PaymentVoucherProject from "../../../../pages/PaymentVoucher/PaymentVoucherProject";
 
 function ProjectStatus() {
   const navigate = useNavigate();
   const [tableReloadKey, setTableReloadKey] = useState(Date.now());
+
+  // ── Payment Voucher Modal State ─────────────────────────
+  const [showVoucherModal, setShowVoucherModal] = useState(false);
+  const [voucherProjectId, setVoucherProjectId] = useState(null);
 
   // ── Progress Modal State ────────────────────────────────
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -65,8 +71,8 @@ function ProjectStatus() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-    if(!name){
-      return toast.error("اسم المشروع مطلوب")
+    if (!name) {
+      return toast.error("اسم المشروع مطلوب");
     }
     setIsSubmit(true);
     const mForm = new FormData();
@@ -115,7 +121,13 @@ function ProjectStatus() {
     { label: "المرفقات", route: "/projectattachments/:id" },
     { label: "المخاطر", route: "/projectrisks/:id" },
     { label: "تقرير المخاطر", route: "/riskassessmentreport/:id" },
-    { label: "سند صرف", route: "/paymentvoucherproject/:id" },
+    {
+      label: "سند صرف",
+      action: (id) => {
+        setVoucherProjectId(id);
+        setShowVoucherModal(true);
+      },
+    },
     {
       label: "سندات الدفع",
       action: (id, record) => {
@@ -220,10 +232,16 @@ function ProjectStatus() {
     if (marketingVal === 1 || row.marketingmethodstring === "المانحون") {
       marketingBadge =
         '<span style="background: rgba(217, 119, 6, 0.12); color: #d97706; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">المانحون</span>';
-    } else if (marketingVal === 2 || row.marketingmethodstring === "المنصات الحكومية") {
+    } else if (
+      marketingVal === 2 ||
+      row.marketingmethodstring === "المنصات الحكومية"
+    ) {
       marketingBadge =
         '<span style="background: rgba(124, 58, 237, 0.12); color: #7c3aed; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">المنصات الحكومية</span>';
-    } else if (marketingVal === 3 || row.marketingmethodstring === "متاجر الجمعيات") {
+    } else if (
+      marketingVal === 3 ||
+      row.marketingmethodstring === "متاجر الجمعيات"
+    ) {
       marketingBadge =
         '<span style="background: rgba(79, 70, 229, 0.12); color: #4f46e5; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">متاجر الجمعيات</span>';
     }
@@ -420,6 +438,19 @@ function ProjectStatus() {
           </Form>
         </Modal.Body>
       </Modal>
+
+      {/* ── Payment Voucher Modal ── */}
+      <PaymentVoucherProject
+        show={showVoucherModal}
+        projectId={voucherProjectId}
+        onHide={() => {
+          setShowVoucherModal(false);
+          setVoucherProjectId(null);
+        }}
+        onSuccess={() => {
+          setTableReloadKey(Date.now());
+        }}
+      />
     </>
   );
 }

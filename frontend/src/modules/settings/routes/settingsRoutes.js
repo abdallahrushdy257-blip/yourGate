@@ -7,6 +7,7 @@ const SettingTabsPage = lazy(() => import("../../../pages/Setting/SettingTabs"))
 const GenSettingPage = lazy(() => import("../../../pages/Setting/GenSetting"));
 const EnterSettingPage = lazy(() => import("../../../pages/Setting/EnterSetting"));
 const PrintSettingPage = lazy(() => import("../../../pages/Setting/PrintSetting"));
+const SurveySettingPage = lazy(() => import("../../../pages/Setting/SurveySetting"));
 
 // ── المستخدمين والملف الشخصي ───────────────────────────────────
 const UsersPage = lazy(() => import("../../../pages/Users/Users"));
@@ -42,6 +43,7 @@ export const settingsRouteConfigs = [
   // ── الإعدادات ─────────────────────────────────────────────────
   { path: "/settingTabs", element: withSuspense(SettingTabsPage) },
   { path: "/setting/general", element: withSuspense(GenSettingPage) },
+  { path: "/setting/survey", element: withSuspense(SurveySettingPage) },
   { path: "/setting/enter", element: withSuspense(EnterSettingPage) },
   { path: "/setting/print", element: withSuspense(PrintSettingPage) },
 

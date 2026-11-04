@@ -3,6 +3,7 @@ export { default as SettingTabsPage } from "../../../pages/Setting/SettingTabs";
 export { default as GenSettingPage } from "../../../pages/Setting/GenSetting";
 export { default as PrintSettingPage } from "../../../pages/Setting/PrintSetting";
 export { default as EnterSettingPage } from "../../../pages/Setting/EnterSetting";
+export { default as SurveySettingPage } from "../../../pages/Setting/SurveySetting";
 
 // ── Roles & Permissions ─────────────────────────────────────────
 export { default as RolesPage } from "../../../pages/Roles/Roles";

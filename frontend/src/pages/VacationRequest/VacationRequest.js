@@ -199,14 +199,18 @@ function VacationRequest() {
   const modifyVacationRow = (row) => {
     let newRow = { ...row };
     newRow.status =
-      row.status === 0 ? "قيد الانتظار" : row.status === 1 ? "قبول" : "رفض";
+      row.status == "مرفوض"
+        ? "مرفوض"
+        : row.status == "مقبول"
+        ? "مقبول"
+        : "قيد الانتظار";
     return newRow;
   };
 
   const modifyPermissionRow = (row) => {
     let newRow = { ...row };
     const transStatus = (s) =>
-      s == "0" ? "قيد الانتظار" : s == "1" ? "موافقة" : "مرفوضة";
+      s == "مرفوض" ? "مرفوض" : s == "مقبول" ? "مقبول" : "قيد الانتظار";
     const transType = (t) => {
       const types = {
         1: "أثناء اليوم",
@@ -303,7 +307,6 @@ function VacationRequest() {
           <TableComponent
             key={`vac-${refreshKey}`}
             apiUrl="/vacationrequests"
-            data={vacationDummyData}
             columns={vacationColumns}
             titleIcon={<FontAwesomeIcon icon={faCalendarCheck} />}
             title="إدارة طلبات الإجازات"
@@ -321,7 +324,6 @@ function VacationRequest() {
           <TableComponent
             key={`perm-${refreshKey}`}
             apiUrl="/leaverequests"
-            data={permissionDummyData}
             columns={permissionColumns}
             titleIcon={<FontAwesomeIcon icon={faClock} />}
             title="إدارة طلبات الأذونات"

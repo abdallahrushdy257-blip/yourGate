@@ -31,7 +31,7 @@ export const projectRouteConfigs = [
   { path: "/projectstatus", element: withSuspense(ProjectListPage) },
   { path: "/sectionsreport", element: withSuspense(SectionsReportPage) },
   { path: "/SectionsReport", element: withSuspense(SectionsReportPage) },
-  { path: "/projectpaymentreport", element: withSuspense(ProjectListPage) },
+  // { path: "/projectpaymentreport", element: withSuspense(ProjectListPage) },
 
   // إدارة المشاريع والتعديل
   { path: "/marketingdesignprojectmanagement", element: withSuspense(MarketingDesignProjectManagementPage) },

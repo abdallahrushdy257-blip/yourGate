@@ -124,7 +124,6 @@
 
 /* Form Container */
 .survey-form-box {
-  background: linear-gradient(135deg, #ffffff 0%, #faf6ef 100%);
   border: 2px dashed #b89358;
   border-radius: 20px;
   padding: 28px;
@@ -146,7 +145,6 @@
 .survey-form-title {
   font-size: 18px;
   font-weight: 800;
-  color: #3d3121;
   margin-bottom: 22px;
   display: flex;
   align-items: center;

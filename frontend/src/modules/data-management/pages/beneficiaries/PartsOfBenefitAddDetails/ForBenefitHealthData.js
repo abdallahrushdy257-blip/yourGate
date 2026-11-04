@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,6 +11,7 @@ import {
   faCloudArrowUp,
   faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 import API from "../../../../../api/axiosConfig";
 import "../BenefitAddDetailsUnified.css";
 
@@ -66,6 +67,15 @@ function ForBenefitHealthData({ initialData, onNext, onPrev, onSaved }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (hasHealthIssues) {
+      for (let i = 0; i < illnesses.length; i++) {
+        if (!illnesses[i].name?.trim()) {
+          return toast.error(`يرجى إدخال اسم المرض / التشخيص للحالة المرضية رقم ${i + 1}`);
+        }
+      }
+    }
+
     setIsSubmitting(true);
     setError({});
 

@@ -10,6 +10,7 @@ import RegisterTextbox from "../../../../components/RegisterTextBox";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import { useNavigate } from "react-router-dom";
 import BeneficiarySubModal from "./BeneficiarySubModal";
+import BeneficiaryReportModal from "../../../../components/BeneficiaryReportModal";
 import { toast } from "react-toastify";
 
 function Beneficiary(props) {
@@ -59,6 +60,8 @@ function Beneficiary(props) {
   const [editingId, setEditingId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState({});
+  const [showReportPdfModal, setShowReportPdfModal] = useState(false);
+  const [selectedBeneficiaryId, setSelectedBeneficiaryId] = useState(null);
 
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
@@ -258,6 +261,13 @@ function Beneficiary(props) {
     {
       label: "دراسة حالة",
       action: (id, record) => setActivePopup({ type: "casestudy", id, record, title: "دراسة حالة" }),
+    },
+    {
+      label: "تقرير PDF",
+      action: (id) => {
+        setSelectedBeneficiaryId(id);
+        setShowReportPdfModal(true);
+      },
     },
   ];
 
@@ -609,6 +619,16 @@ function Beneficiary(props) {
           onSuccess={() => setTableReloadKey((prev) => prev + 1)}
         />
       )}
+
+      {/* ── Beneficiary Full PDF Report Modal ── */}
+      <BeneficiaryReportModal
+        show={showReportPdfModal}
+        onHide={() => {
+          setShowReportPdfModal(false);
+          setSelectedBeneficiaryId(null);
+        }}
+        beneficiaryId={selectedBeneficiaryId}
+      />
     </>
   );
 }

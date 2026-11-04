@@ -12,10 +12,11 @@ import "react-datepicker/dist/react-datepicker.css";
 
 
 function AccountsReport() {
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState(() => dayjs().startOf("month"));
+  const [endDate, setEndDate] = useState(() => dayjs().endOf("month"));
   const [selectedName, setSelectedName] = useState("");
 
+  
   const tableData = [
     {
       accountNum: "111001",

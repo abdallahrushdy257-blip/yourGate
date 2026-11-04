@@ -24,11 +24,6 @@ function LeaveType() {
     { name: "", key: "actions" },
   ];
   const dropdownOptions = [{ label: "تعديل", route: "/editLeave/:id" }];
-  const dummyData = [
-    { id: 1, name: "إجازة سنوية", description: "إجازة اعتيادية للموظفين", days: 21 },
-    { id: 2, name: "إجازة مرضية", description: "إجازة حسب الشهادة الطبية", days: 7 },
-    { id: 3, name: "إجازة وضع", description: "إجازة خاصة بالموظفة الحامل", days: 90 },
-  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +34,7 @@ function LeaveType() {
     mFormData.append("days", days);
     try {
       const res = await hrService.createVacation(mFormData);
-      if (res.status === 200) {
+      if (res.status === 200 || res.status === 201) {
         setTableReloadKey(Date.now());
         setShowModal(false);
       } else {
@@ -66,7 +61,6 @@ function LeaveType() {
           addBtn={true}
           onAddClick={() => setShowModal(true)}
           apiUrl="/vacations"
-          data={dummyData}
           columns={columns}
           triggerReload={tableReloadKey}
           searchDate={false}

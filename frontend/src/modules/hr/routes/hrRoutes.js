@@ -42,7 +42,6 @@ const KPIEvaluationPage = lazy(() => import("../../../pages/KPIEvaluation/KPIEva
 
 // ── المسميات الوظيفية والمستندات ─────────────────────────────
 const Jobtitle = lazy(() => import("../pages/JobTitle/JobTitle"));
-const EditJobTitle = lazy(() => import("../pages/JobTitle/EditJobTitle"));
 const AddEmpPaper = lazy(() => import("../pages/EmployPaper/AddEmpPaper"));
 const EditEmploypaper = lazy(() => import("../pages/EmployPaper/EditEmploypaper"));
 
@@ -109,7 +108,6 @@ export const hrRouteConfigs = [
 
   // ── المسميات الوظيفية والمستندات ─────────────────────────────
   { path: "/jobtitle", element: withSuspense(Jobtitle) },
-  { path: "/editjobtitle/:id", element: withSuspense(EditJobTitle) },
   { path: "/addempaper/:id", element: withSuspense(AddEmpPaper) },
   { path: "/editemploypaper/:id", element: withSuspense(EditEmploypaper) },
 
