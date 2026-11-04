@@ -126,14 +126,14 @@ const RightSidebar = ({ isVisible, toggleSidebar }) => {
     // { label: "إنشاء طلب تصميم", route: "/senddesignrequest" },`
     // { label: "إنشاء طلب تسويق", route: "/sendmarketingrequest" },
     {
-      label: "التقارير",
-      route: "/projectStatus",
-      // permission: "project_view"
-    },
-    {
       label: "مؤشرات الاداء",
       route: "/kpi",
       // permission: "kpi_view"
+    },
+    {
+      label: "التقارير",
+      route: "/projectStatus",
+      // permission: "project_view"
     },
     //{ label: "التصميمات", route: "/designsdetails" , permission : "projectdetails_view" },
     //{ label: "عمليات الادارة", route: "/marketingdetails" , permission : "projectdetails_view" },
@@ -290,13 +290,13 @@ const RightSidebar = ({ isVisible, toggleSidebar }) => {
           route: "/generalreceiptvouchercash",
           // permission: "generalvoucher_view",
         },
-        // { label: "سند قبض عيني", route: "/generalreceiptvoucher" },
+        { label: "سند قبض عيني", route: "/generalreceiptvoucher" },
         {
           label: "سند صرف نقدي",
           route: "/generalpaymentvouchercash",
           // permission: "generalvoucher_view",
         },
-        // { label: "سند صرف عيني", route: "/generalpaymentvoucher" },
+        { label: "سند صرف عيني", route: "/generalpaymentvoucher" },
         // { label: "قائمة الأسعار", route: "/pricelist" },
         {
           label: " كشف الحساب",
@@ -310,7 +310,7 @@ const RightSidebar = ({ isVisible, toggleSidebar }) => {
       category: "القوائم المالية",
       subChoices: [
         {
-          label: "الميزانبة العمومية",
+          label: "الميزانية العمومية",
           route: "/balancesheet",
           // permission: "generalbudget_view",
         },

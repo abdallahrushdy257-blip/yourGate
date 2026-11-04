@@ -1,4 +1,4 @@
-﻿export { default as ProjectListPage } from "./ProjectStatus/ProjectStatus";
+export { default as ProjectListPage } from "./ProjectStatus/ProjectStatus";
 export { default as ProjectDetailsPage } from "./MarketingDesignProjectManagement/ProjectDetailsView";
 export { default as EditProjectStatusPage } from "./ProjectStatus/EditProjectStatus";
 export { default as MarketingDesignProjectManagementPage } from "./MarketingDesignProjectManagement/MarketingDesignProjectManagement";
@@ -11,6 +11,7 @@ export { default as ProjectRisksPage } from "./MarketingDesignProjectManagement/
 export { default as RiskMitigationPage } from "./MarketingDesignProjectManagement/RiskMitigation";
 export { default as RiskAssessmentReportPage } from "./MarketingDesignProjectManagement/RiskAssessmentReport";
 export { default as ProjectAttachmentsPage } from "./MarketingDesignProjectManagement/ProjectAttachment";
+export { default as ProjectPaymentReportPage } from "./ProjectPaymentReport/ProjectPaymentReport";
 export { default as DepartmentsDetailsPage } from "./DepartmentsDetails/DepartmentsDetails";
 export { default as ProjectChartPage } from "../../cases/pages/CaseDetailsChart/ProjectChart";
 export { default as SectionsReportPage } from "../../hr/pages/sections/SectionsReport";

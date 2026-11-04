@@ -1,4 +1,4 @@
-﻿import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
 import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
 
@@ -15,6 +15,7 @@ const ProjectRisksPage = lazy(() => import("../pages/MarketingDesignProjectManag
 const RiskMitigationPage = lazy(() => import("../pages/MarketingDesignProjectManagement/RiskMitigation"));
 const RiskAssessmentReportPage = lazy(() => import("../pages/MarketingDesignProjectManagement/RiskAssessmentReport"));
 const ProjectAttachmentsPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectAttachment"));
+const ProjectPaymentReportPage = lazy(() => import("../pages/ProjectPaymentReport/ProjectPaymentReport"));
 const DepartmentsDetailsPage = lazy(() => import("../pages/DepartmentsDetails/DepartmentsDetails"));
 const ProjectChartPage = lazy(() => import("../../cases/pages/CaseDetailsChart/ProjectChart"));
 const SectionsReportPage = lazy(() => import("../../hr/pages/sections/SectionsReport"));
@@ -31,7 +32,7 @@ export const projectRouteConfigs = [
   { path: "/projectstatus", element: withSuspense(ProjectListPage) },
   { path: "/sectionsreport", element: withSuspense(SectionsReportPage) },
   { path: "/SectionsReport", element: withSuspense(SectionsReportPage) },
-  { path: "/projectpaymentreport", element: withSuspense(ProjectListPage) },
+  { path: "/projectpaymentreport", element: withSuspense(ProjectPaymentReportPage) },
 
   // إدارة المشاريع والتعديل
   { path: "/marketingdesignprojectmanagement", element: withSuspense(MarketingDesignProjectManagementPage) },
@@ -64,5 +65,3 @@ export const ProjectRoutes = (
     ))}
   </React.Fragment>
 );
-
-export default ProjectRoutes;

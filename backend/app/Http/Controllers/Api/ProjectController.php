@@ -485,4 +485,23 @@ class ProjectController extends Controller
 
         return response()->json($volunteers);
     }
+
+    // ── Payment Report Endpoints ────────────────────────────────
+
+    public function paymentReport(Request $request): JsonResponse
+    {
+        $projects = $this->projectService->paymentReport($request->all());
+
+        return $this->successResponse(
+            \App\Http\Resources\ProjectPaymentReportResource::collection($projects),
+            'Project payments report retrieved successfully.'
+        );
+    }
+
+    public function paymentReportStats(Request $request): JsonResponse
+    {
+        $stats = $this->projectService->paymentReportStats($request->all());
+
+        return $this->successResponse($stats, 'Project payment statistics retrieved successfully.');
+    }
 }

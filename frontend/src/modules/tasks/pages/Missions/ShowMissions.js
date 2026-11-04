@@ -28,21 +28,21 @@ function ShowMissions() {
         setLoading(true);
         try {
             const res = await API.get(`/missions/${id}`);
-            const data = await res;
-            if (data.status === 200) {
-                setMission(data.data);
+            const payload = res.data?.data ? res.data.data : res.data;
+            if (res.status === 200 && payload) {
+                setMission(payload);
                 setLoading(false);
             }
         } catch (error) {
             console.error(error);
-            setError(error.response.data.errors);
+            setError(error.response?.data?.errors || {});
             setLoading(false);
         }
     };
 
     useEffect(() => {
         getMissionDetails();
-    }, []);
+    }, [id]);
 
     const formatDateForInput = (dateStr) => {
         if (!dateStr) return "";

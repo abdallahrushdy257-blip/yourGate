@@ -32,32 +32,33 @@ function EditMissions() {
     setLoading(true);
     try {
       const res = await API.get(`/missions/${id}`);
-      const data = await res;
-      if (data.status === 200) {
-        setMission(data.data);
+      const payload = res.data?.data ? res.data.data : res.data;
+      if (res.status === 200 && payload) {
+        setMission(payload);
         setLoading(false);
       }
     } catch (error) {
       console.error(error);
-      setError(error.response.data.errors);
+      setError(error.response?.data?.errors || {});
       setLoading(false);
     }
   };
 
   useEffect(() => {
     getMissionDetails();
-  }, []);
+  }, [id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const mForm = new FormData();
-    mForm.append("mission_type", mission.mission_type);
-    mForm.append("title", mission.title);
-    mForm.append("description", mission.description);
-    mForm.append("start_date", mission.start_date);
-    mForm.append("end_date", mission.end_date);
-    mForm.append("upload", mission.upload);
-    //mForm.append("incharge", JSON.stringify(selectedEmployees));
+    mForm.append("mission_type", mission.mission_type ?? "");
+    mForm.append("title", mission.title ?? "");
+    mForm.append("description", mission.description ?? "");
+    mForm.append("start_date", mission.start_date ?? "");
+    mForm.append("end_date", mission.end_date ?? "");
+    if (missionfile) {
+      mForm.append("upload", missionfile);
+    }
     mForm.append("id", id);
     setIsSubmitting(true);
     API.post("/missions/update", mForm, {
@@ -66,14 +67,13 @@ function EditMissions() {
       },
     })
       .then((res) => {
-        const data = res;
-        if (data.status === 200) {
+        if (res.status === 200 || res.status === 201) {
           navigate("/missions");
         }
       })
       .catch((error) => {
         console.error(error);
-        setError(error.response.data.errors);
+        setError(error.response?.data?.errors || {});
         setIsSubmitting(false);
       });
   };

@@ -67,6 +67,9 @@ class AuthService
                 ]);
             }
 
+            // 5. Seed initial Chart of Accounts for this new tenant
+            app(\App\Services\Accounting\ChartOfAccountTemplateService::class)->seedForStore($store->id);
+
             return $user->load('store');
         });
     }

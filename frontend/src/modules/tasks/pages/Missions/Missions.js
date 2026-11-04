@@ -64,7 +64,8 @@ function Missions() {
     const getAllEmp = async () => {
         try {
             const response = await API.get("missions/eams");
-            setEmployeesOptions(response.data);
+            const data = Array.isArray(response.data) ? response.data : (Array.isArray(response.data?.data) ? response.data.data : []);
+            setEmployeesOptions(data);
         } catch (error) {
             console.error("Error fetching employees:", error);
         } finally {
@@ -95,7 +96,9 @@ function Missions() {
         mForm.append("description", missionDescription);
         mForm.append("start_date", missionDate);
         mForm.append("end_date", missionEndDate);
-        mForm.append("upload", missionfile);
+        if (missionfile) {
+            mForm.append("upload", missionfile);
+        }
         mForm.append("incharge", JSON.stringify(selectedEmployees));
         setIsSubmitting(true);
         API.post("/missions/store", mForm, {
@@ -119,8 +122,8 @@ function Missions() {
     };
 
     const selectedEmployeeNames = selectedEmployees.map((employeeId) => {
-        const cleanId = employeeId.split(",")[0];
-        const employee = employeesOptions.find((e) => e.id === cleanId);
+        const cleanId = String(employeeId).split(",")[0];
+        const employee = Array.isArray(employeesOptions) ? employeesOptions.find((e) => String(e.id) === cleanId) : null;
         return employee ? employee.name : employeeId;
     });
 
@@ -305,10 +308,12 @@ function Missions() {
                                     parentStyle={{ width: "45%" }}
                                     options={[
                                         { value: "", label: "إختر الموظفين" },
-                                        ...employeesOptions.map((option) => ({
-                                            value: [option.id, option.type],
-                                            label: option.name,
-                                        }))
+                                        ...(Array.isArray(employeesOptions)
+                                            ? employeesOptions.map((option) => ({
+                                                value: `${option.id},${option.type || 'employee'}`,
+                                                label: option.name,
+                                            }))
+                                            : [])
                                     ]}
                                     onChange={handleAddEmployee}
                                 />

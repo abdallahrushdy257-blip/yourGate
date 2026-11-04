@@ -1,0 +1,5 @@
+<<<<<<<< HEAD:frontend/dist/assets/SettingTabs-D-uzwaac.js
+import{a1 as e}from"./vendor-ui-C0qJgwTt.js";import{l as i}from"./index-NfjUeeYa.js";import"./vendor-docs-C7f96qr1.js";import"./vendor-charts-B5qCAqNB.js";function m({activeTab:t}){const s=i(),a=[{id:"/setting/general",label:"البيانات العامه للجمعية",key:"general"}];return e.jsx("div",{className:"permissions-tabs",children:a.map(u=>e.jsx("button",{className:`tab-button ${t===u.key?"active":""}`,onClick:()=>s(u.id),children:u.label},u.id))})}export{m as default};
+========
+import{a1 as e}from"./vendor-ui-oBzl4G4Y.js";import{l as i}from"./index-Ce5E23VJ.js";import"./vendor-docs-C3OQxyq3.js";import"./vendor-charts-Cy0VtZR3.js";function m({activeTab:t}){const s=i(),a=[{id:"/setting/general",label:"البيانات العامه للجمعية",key:"general"}];return e.jsx("div",{className:"permissions-tabs",children:a.map(u=>e.jsx("button",{className:`tab-button ${t===u.key?"active":""}`,onClick:()=>s(u.id),children:u.label},u.id))})}export{m as default};
+>>>>>>>> origin/main:frontend/dist/assets/SettingTabs-B5bpX0nw.js

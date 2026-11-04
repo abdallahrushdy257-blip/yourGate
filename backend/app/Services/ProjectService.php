@@ -445,12 +445,22 @@ class ProjectService
 
     public function findRisk(int $id): \App\Models\ProjectRisk
     {
-        return \App\Models\ProjectRisk::with(['phase', 'project'])->findOrFail($id);
+        $risk = \App\Models\ProjectRisk::with(['phase', 'project'])->find($id)
+            ?? \App\Models\ProjectRisk::withoutGlobalScopes()->with(['phase', 'project'])->find($id)
+            ?? \App\Models\ProjectRisk::with(['phase', 'project'])->where('project_id', $id)->first()
+            ?? \App\Models\ProjectRisk::withoutGlobalScopes()->with(['phase', 'project'])->where('project_id', $id)->first();
+
+        if (! $risk) {
+            abort(404, 'العنصر أو المسار المطلوب غير موجود');
+        }
+
+        return $risk;
     }
 
     public function storeRiskMitigation(array $data): \App\Models\ProjectRisk
     {
-        $risk = \App\Models\ProjectRisk::findOrFail($data['risk_id']);
+        $risk = \App\Models\ProjectRisk::find($data['risk_id'])
+            ?? \App\Models\ProjectRisk::withoutGlobalScopes()->findOrFail($data['risk_id']);
 
         $risk->update([
             'mitigation_description' => $data['description'],
@@ -481,5 +491,71 @@ class ProjectService
     public function listVolunteers(): Collection
     {
         return \App\Models\Donor::select('id', 'name', 'phone')->get();
+    }
+
+    // ── Payment Report ──────────────────────────────────────────
+
+    public function paymentReport(array $filters = []): Collection
+    {
+        $query = Project::with(['transactions'])->latest('id');
+
+        if (! empty($filters['id']) || ! empty($filters['project_id'])) {
+            $projectId = (int) ($filters['id'] ?? $filters['project_id']);
+            $query->where('id', $projectId);
+        }
+
+        if (! empty($filters['search'])) {
+            $search = trim($filters['search']);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if (! empty($filters['searchfrom']) || ! empty($filters['datefrom'])) {
+            $dateFrom = $filters['searchfrom'] ?? $filters['datefrom'];
+            $query->whereDate('dateoflaunch', '>=', $dateFrom);
+        }
+
+        if (! empty($filters['searchto']) || ! empty($filters['dateto'])) {
+            $dateTo = $filters['searchto'] ?? $filters['dateto'];
+            $query->whereDate('dateoflaunch', '<=', $dateTo);
+        }
+
+        if (isset($filters['status']) && $filters['status'] !== '') {
+            $query->where('status', (int) $filters['status']);
+        }
+
+        return $query->get();
+    }
+
+    public function paymentReportStats(array $filters = []): array
+    {
+        $query = Project::with('transactions');
+
+        if (! empty($filters['id']) || ! empty($filters['project_id'])) {
+            $projectId = (int) ($filters['id'] ?? $filters['project_id']);
+            $query->where('id', $projectId);
+        }
+
+        $projects = $query->get();
+
+        $totalBudget = (float) $projects->sum('total');
+        $totalPaid = 0.0;
+        $totalVouchers = 0;
+
+        foreach ($projects as $project) {
+            $vouchers = $project->transactions->where('transaction_type', 2);
+            $totalPaid += (float) $vouchers->sum('amount');
+            $totalVouchers += $vouchers->count();
+        }
+
+        return [
+            'total_projects'  => $projects->count(),
+            'total_budget'    => $totalBudget,
+            'total_paid'      => $totalPaid,
+            'total_remaining' => max(0.0, $totalBudget - $totalPaid),
+            'total_vouchers'  => $totalVouchers,
+        ];
     }
 }

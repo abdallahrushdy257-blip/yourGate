@@ -6,7 +6,7 @@ import RightSidebar from "../components/RightSidebar";
 import HomeNavbar from "../components/HomeNavbar";
 
 //import PublicLayout from "./layouts/PublicLayout";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, Navigate, useParams } from "react-router-dom";
 import ThemeContextProvider from "./providers/theme-context";
 import MainApp from "../components/MainApp";
 import AdminLogin from "../admin/Login/AdminLogin";
@@ -38,6 +38,10 @@ import { AdminRoutes } from "../admin/routes/adminRoutes";
 // import EmployeeCardPhoto from "./pages/EmployeeCard/EmployeeCardPhoto";
 // import ShowEmployeeCard from "./pages/EmployeeCard/ShowEmployeeCard";
 
+function ProjectPaymentVouchersRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/projectdetailsview/${id}?tab=financials&filter=payments`} replace />;
+}
 function App() {
   const location = useLocation();
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -254,11 +258,12 @@ function App() {
                   path="/donationDetails/:id"
                   element={<DonationDetails />}
                 />
-                <Route path="/testNewTable" element={<TestNewTable />} />                                      {/*                                                 
-                {/* <Route path="/addmission" element={<AddMissions />} /> */}
+<Route path="/testNewTable" element={<TestNewTable />} />
                 {AccountingRoutes}
-                {/* Edit project routes integrated via ProjectRoutes */}
-                {/* <Route
+                <Route
+                  path="/projectpaymentvouchers/:id"
+                  element={<ProjectPaymentVouchersRedirect />}
+                />
                   path="organizationalChart"
                   element={<OrganizationalChart />}
                 /> */}

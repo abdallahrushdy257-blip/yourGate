@@ -1,0 +1,5 @@
+<<<<<<<< HEAD:frontend/dist/assets/CheckboxComponent -CvVBBIJL.js
+import{a1 as e}from"./vendor-ui-C0qJgwTt.js";const i=({label:o,id:c,type:s="checkbox",name:r,value:l,checked:a,onChange:m,className:n,inline:t})=>e.jsxs("div",{className:`form-check ${t?"form-check-inline":""}`+n,children:[e.jsx("input",{className:"form-check-input prepolable2",type:s,id:c,name:r,value:l,checked:a,onChange:m}),e.jsx("label",{className:"form-check-label",htmlFor:c,children:o})]});export{i as C};
+========
+import{a1 as e}from"./vendor-ui-oBzl4G4Y.js";const i=({label:o,id:c,type:s="checkbox",name:r,value:l,checked:a,onChange:m,className:n,inline:t})=>e.jsxs("div",{className:`form-check ${t?"form-check-inline":""}`+n,children:[e.jsx("input",{className:"form-check-input prepolable2",type:s,id:c,name:r,value:l,checked:a,onChange:m}),e.jsx("label",{className:"form-check-label",htmlFor:c,children:o})]});export{i as C};
+>>>>>>>> origin/main:frontend/dist/assets/CheckboxComponent -iNIeY0Yp.js

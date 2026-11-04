@@ -1,0 +1,238 @@
+/* ==========================================================================
+   Luxury Unified Voucher Design System (Receipt & Payment Vouchers)
+   ========================================================================== */
+
+.voucher-page-wrapper {
+  direction: rtl;
+  font-family: 'Cairo', sans-serif;
+  width: 95%;
+  max-width: 1100px;
+  margin: 0 auto 50px auto;
+  padding: 15px 0;
+}
+
+.voucher-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.voucher-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-size: 13.5px;
+  font-weight: 700;
+  border: 1px solid rgba(194, 154, 100, 0.35);
+  background: rgba(194, 154, 100, 0.1);
+  color: var(--label-color, #5a3510);
+}
+
+.dark-mode .voucher-badge {
+  background: rgba(200, 146, 74, 0.15);
+  color: #f0d9b5;
+  border-color: rgba(200, 146, 74, 0.3);
+}
+
+.voucher-badge.receipt {
+  background: rgba(46, 125, 50, 0.1);
+  border-color: rgba(46, 125, 50, 0.3);
+  color: #2e7d32;
+}
+
+.dark-mode .voucher-badge.receipt {
+  background: rgba(46, 125, 50, 0.2);
+  color: #81c784;
+  border-color: rgba(129, 199, 132, 0.35);
+}
+
+.voucher-badge.payment {
+  background: rgba(198, 40, 40, 0.1);
+  border-color: rgba(198, 40, 40, 0.3);
+  color: #c62828;
+}
+
+.dark-mode .voucher-badge.payment {
+  background: rgba(198, 40, 40, 0.2);
+  color: #ef9a9a;
+  border-color: rgba(239, 154, 154, 0.35);
+}
+
+.voucher-card {
+  background-color: var(--surface-color, #ffffff);
+  border: 1px solid rgba(194, 154, 100, 0.28);
+  border-radius: 24px;
+  padding: 36px 42px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+}
+
+.dark-mode .voucher-card {
+  background-color: var(--surface-color, #241408);
+  border-color: rgba(212, 168, 112, 0.25);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+.voucher-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--label-color, #5a3510);
+  margin: 20px 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(194, 154, 100, 0.18);
+}
+
+.dark-mode .voucher-section-title {
+  color: var(--label-color, #d4a870);
+  border-bottom-color: rgba(212, 168, 112, 0.18);
+}
+
+.voucher-section-title:first-of-type {
+  margin-top: 0;
+}
+
+.voucher-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.voucher-grid.single-col {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 768px) {
+  .voucher-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .voucher-card {
+    padding: 24px 20px;
+  }
+}
+
+.voucher-field-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.voucher-field-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--label-color, #5a3510);
+  margin-bottom: 8px;
+}
+
+.dark-mode .voucher-field-label {
+  color: var(--label-color, #d4a870);
+}
+
+.voucher-field-label .required-star {
+  color: #d32f2f;
+  margin-right: 4px;
+}
+
+.voucher-input,
+.voucher-select {
+  height: 48px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(194, 154, 100, 0.35);
+  background-color: var(--input-background, #fdf6ec);
+  color: var(--text-color, #3d2000);
+  font-size: 14.5px;
+  font-family: 'Cairo', sans-serif;
+  padding: 8px 16px;
+  transition: all 0.25s ease;
+  width: 100%;
+  outline: none;
+}
+
+.dark-mode .voucher-input,
+.dark-mode .voucher-select {
+  background-color: var(--input-background, #160d04);
+  color: var(--text-color, #f0d9b5);
+  border-color: rgba(212, 168, 112, 0.3);
+}
+
+.voucher-input:focus,
+.voucher-select:focus {
+  border-color: var(--accent-color, #c8924a);
+  box-shadow: 0 0 0 4px rgba(200, 146, 74, 0.15);
+  background-color: var(--surface-color, #ffffff);
+}
+
+.dark-mode .voucher-input:focus,
+.dark-mode .voucher-select:focus {
+  background-color: var(--input-background, #160d04);
+}
+
+.voucher-amount-input {
+  font-size: 18px;
+  font-weight: 800;
+  color: #c8924a;
+  letter-spacing: 0.5px;
+}
+
+.voucher-barcode-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 30px auto 10px auto;
+  padding: 18px;
+  max-width: 340px;
+  background: rgba(194, 154, 100, 0.05);
+  border: 1.5px dashed rgba(194, 154, 100, 0.35);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.voucher-barcode-wrapper svg {
+  max-width: 250px;
+  height: auto;
+}
+
+.voucher-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.voucher-submit-btn {
+  background: linear-gradient(135deg, #c8924a 0%, #ab7632 100%);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 50px;
+  padding: 13px 52px;
+  font-size: 16px;
+  font-weight: 800;
+  font-family: 'Cairo', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(200, 146, 74, 0.35);
+  transition: all 0.3s ease;
+  min-width: 200px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.voucher-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(200, 146, 74, 0.45);
+}
+
+.voucher-submit-btn:active {
+  transform: translateY(0);
+}

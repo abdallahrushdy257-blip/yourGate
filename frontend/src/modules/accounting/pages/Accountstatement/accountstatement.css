@@ -1,26 +1,125 @@
-.Accountstatement {
-    margin: auto;
-    width: 80%;
-    margin-top: 100px;
-    direction: rtl !important;
+.account-statement-page-wrapper {
+  direction: rtl !important;
+  font-family: inherit;
+  padding-bottom: 50px;
+}
 
+.Accountstatement {
+  margin: 0 auto 20px auto;
+  width: 95%;
+  max-width: 1400px;
+  direction: rtl !important;
 }
 
 .type-user {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: auto;
-    gap: 50px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 12px 20px;
+  background: #ffffff;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  border: 1px solid #eae2d6;
+  margin: 15px auto 25px auto;
+  width: fit-content;
 }
 
+.type-user .form-check {
+  margin-bottom: 0;
+  padding: 6px 16px;
+  border-radius: 30px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
 
+.type-user .form-check:hover {
+  background-color: #faf5ed;
+}
 
-.Accountstatement-form {
-    display: flex;
-    width: 80%;
-    margin: auto;
-    gap: 50px;
-    margin-top: 50px;
+.type-user .form-check-input {
+  cursor: pointer;
+  margin-left: 8px;
+}
 
+.type-user .form-check-label {
+  cursor: pointer;
+  font-weight: 600;
+  color: #4a3f35;
+  font-size: 0.95rem;
+}
+
+.statement-filter-card {
+  background: #ffffff;
+  border: 1px solid #ede5d8 !important;
+}
+
+.luxury-filter-select,
+.luxury-filter-input {
+  border-radius: 10px !important;
+  padding: 8px 12px !important;
+  border-color: #ddd4c7 !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.luxury-filter-select:focus,
+.luxury-filter-input:focus {
+  border-color: #bfa67a !important;
+  box-shadow: 0 0 0 3px rgba(191, 166, 122, 0.15) !important;
+}
+
+.statement-summary-row .card {
+  border: 1px solid #ece4d8 !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statement-summary-row .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06) !important;
+}
+
+.statement-table thead tr {
+  background-color: #f7f3ed !important;
+  color: #4a3f35;
+  font-weight: 700;
+}
+
+.statement-table th {
+  padding: 14px 12px !important;
+  font-size: 0.9rem;
+  border-bottom: 2px solid #e5ded3 !important;
+}
+
+.statement-table td {
+  padding: 12px !important;
+  font-size: 0.92rem;
+  border-bottom: 1px solid #f1ece4 !important;
+}
+
+.statement-table tbody tr:hover {
+  background-color: #fcfaf7 !important;
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+  .type-user,
+  .statement-filter-card,
+  .action-button-wrapper,
+  .sidebar,
+  header {
+    display: none !important;
+  }
+  .account-statement-page-wrapper {
+    padding: 0 !important;
+  }
+  .card {
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .statement-table {
+    border: 1px solid #ccc !important;
+  }
 }

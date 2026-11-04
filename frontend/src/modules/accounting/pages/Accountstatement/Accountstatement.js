@@ -9,23 +9,25 @@ import "./accountstatement.css";
 function Accountstatement() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState("accounts");
 
   useEffect(() => {
-    // if (location.pathname.includes("customers")) {
-    //   setSelectedOption("customers");
-    // } else if (location.pathname.includes("suppliers")) {
-    //   setSelectedOption("suppliers");
-    if (location.pathname.includes("humancase")) {
+    if (location.pathname.includes("accounts")) {
+      setSelectedOption("accounts");
+    } else if (location.pathname.includes("humancase")) {
       setSelectedOption("humancase");
-    }else if (location.pathname.includes("donors")) {
+    } else if (location.pathname.includes("donors")) {
       setSelectedOption("donors");
-    }else if (location.pathname.includes("warrantors")) {
+    } else if (location.pathname.includes("warrantors")) {
       setSelectedOption("warrantors");
-    }else if (location.pathname.includes("assemblymembers")) {
+    } else if (location.pathname.includes("assemblymembers")) {
       setSelectedOption("assemblymembers");
-    }else if (location.pathname.includes("managementmembers")) {
+    } else if (location.pathname.includes("managementmembers")) {
       setSelectedOption("managementmembers");
+    } else if (location.pathname.includes("customers")) {
+      setSelectedOption("customers");
+    } else if (location.pathname.includes("suppliers")) {
+      setSelectedOption("suppliers");
     }
   }, [location.pathname]);
 
@@ -38,25 +40,16 @@ function Accountstatement() {
     <>
       <Title title="كشف الحساب" icon={<FontAwesomeIcon icon={faFileInvoiceDollar} />} />
       <div className="Accountstatement">
-        <div className="type-user">
-          {/* <Form.Check
-            inline
-            label="عملاء"
-            type="radio"
-            className="createManage-redio"
-            name="accountType"
-            checked={selectedOption === "customers"}
-            onChange={() => handleRadioChange("/accountstatement/customers", "customers")}
-          />
+        <div className="type-user d-flex flex-wrap justify-content-center gap-3">
           <Form.Check
             inline
-            label="موردون"
+            label="الحسابات المالية"
             type="radio"
             className="createManage-redio"
             name="accountType"
-            checked={selectedOption === "suppliers"}
-            onChange={() => handleRadioChange("/accountstatement/suppliers", "suppliers")}
-          /> */}
+            checked={selectedOption === "accounts"}
+            onChange={() => handleRadioChange("/accountstatement/accounts", "accounts")}
+          />
           <Form.Check
             inline
             label="مستفيدون"
@@ -84,22 +77,21 @@ function Accountstatement() {
             checked={selectedOption === "warrantors"}
             onChange={() => handleRadioChange("/accountstatement/warrantors", "warrantors")}
           />
-           <Form.Check
+          <Form.Check
             inline
-            label="أعضاء مجلس ادارة"
+            label="أعضاء مجلس إدارة"
             type="radio"
             className="createManage-redio"
             name="accountType"
             checked={selectedOption === "managementmembers"}
             onChange={() => handleRadioChange("/accountstatement/managementmembers", "managementmembers")}
           />
-           <Form.Check
+          <Form.Check
             inline
             label="أعضاء جمعية عمومية"
             type="radio"
             className="createManage-redio"
             name="accountType"
-           
             checked={selectedOption === "assemblymembers"}
             onChange={() => handleRadioChange("/accountstatement/assemblymembers", "assemblymembers")}
           />

@@ -7,7 +7,7 @@ import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import Title from "../../../../components/title";
 import CustomButton from "../../../../components/CustomButton";
 import { useEffect, useState } from "react";
-import { hrService } from "../../services/hrService";
+import API from "../../../../api/axiosConfig";
 
 function EditLeave() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,7 +22,7 @@ function EditLeave() {
   useEffect(() => {
     const fetchLeave = async () => {
       try {
-        const res = await hrService.getVacation(id);
+        const res = await API.get(`/vacations/${id}`);
         if (res.status === 200) {
           const data = res.data;
           setName(data.name || "");
@@ -48,13 +48,17 @@ function EditLeave() {
     mFormData.append("days", days);
 
     try {
-      const res = await hrService.updateVacation(mFormData);
+      const res = await API.post("/vacations/update", mFormData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       if (res.status === 200) {
-        navigate("/hrreport/vacdetails");
+        navigate("/leavestype");
       } else {
         setError(res.data.errors);
       }
     } catch (err) {
+      console.error(err);
       setError(err.response?.data?.errors || {});
       setMessage(err.response?.data?.message || "حدث خطأ");
     } finally {
@@ -63,61 +67,66 @@ function EditLeave() {
   };
 
   return (
-    <div className="investigations">
-      <Title title="تعديل إجازة" icon={<FontAwesomeIcon icon={faPlusCircle} />} />
-
-      <Form
-        className="global-form-container w-25"
-        onSubmit={handleSubmit}
-        encType="multipart/form-data"
-      >
-        <RegisterTextbox
-          parentStyle={{ marginBottom: "20px" }}
-          id="name"
-          label="اسم الإجازة"
-          type="text"
-          stylee={{ width: "30%" }}
-          name="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          error={error?.name}
+    <>
+      <div className="investigations">
+        <Title
+          title="تعديل إجازة"
+          icon={<FontAwesomeIcon icon={faPlusCircle} />}
         />
 
-        <RegisterTextbox
-          parentStyle={{ marginBottom: "20px" }}
-          id="leaveDesc"
-          label="وصف الإجازة"
-          type="text"
-          stylee={{ width: "30%" }}
-          name="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          error={error?.description}
-        />
+        <Form
+          className="global-form-container w-25"
+          onSubmit={handleSubmit}
+          encType="multipart/form-data"
+        >
+          <RegisterTextbox
+            parentStyle={{ marginBottom: "20px" }}
+            id="name"
+            label="اسم الإجازة"
+            type="text"
+            stylee={{ width: "30%" }}
+            name="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            error={error?.name}
+          />
 
-        <RegisterTextbox
-          parentStyle={{}}
-          id="days"
-          label="عدد الايام"
-          type="number"
-          stylee={{ width: "40%" }}
-          name="days"
-          value={days}
-          onChange={(e) => setDays(e.target.value)}
-          error={error?.days}
-        />
+          <RegisterTextbox
+            parentStyle={{ marginBottom: "20px" }}
+            id="leaveDesc"
+            label="وصف الإجازة"
+            type="text"
+            stylee={{ width: "30%" }}
+            name="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            error={error?.description}
+          />
 
-        {isSubmitting ? (
-          <Spinner animation="border" variant="primary" />
-        ) : (
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
-            <CustomButton text="حفظ" className="addClietBtn" />
-          </div>
-        )}
+          <RegisterTextbox
+            parentStyle={{}}
+            id="days"
+            label="عدد الايام"
+            type="number"
+            stylee={{ width: "40%" }}
+            name="days"
+            value={days}
+            onChange={(e) => setDays(e.target.value)}
+            error={error?.days}
+          />
 
-        {message && <div className="error">{message}</div>}
-      </Form>
-    </div>
+          {isSubmitting ? (
+            <Spinner animation="border" variant="primary" />
+          ) : (
+            <div style={{ textAlign: "center", marginTop: "20px" }}>
+              <CustomButton text="حفظ" className="addClietBtn" />
+            </div>
+          )}
+
+          {message && <div className="error">{message}</div>}
+        </Form>
+      </div>
+    </>
   );
 }
 
