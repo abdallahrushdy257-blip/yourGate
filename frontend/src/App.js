@@ -301,21 +301,15 @@ function App() {
                 {/* code below up mohamed hany قبل اضافة ال backend */}
                 {/* <Route path="/addBenef" element={<AddBenef />} /> */}
                 {/* {/* <Route path="/addMinutes" element={<AddMinutes />} /> */}
-                {/* <Route path="/paymentsDue" element={<PaymentsDue />} />
-                
-                <Route
-                  path="/donationDetails/:id"
-                  element={<DonationDetails />}
-                />
-<Route path="/testNewTable" element={<TestNewTable />} />
+                {/* <Route path="/paymentsDue" element={<PaymentsDue />} /> */}
+                {/* <Route path="/donationDetails/:id" element={<DonationDetails />} /> */}
+
+                <Route path="/testNewTable" element={<TestNewTable />} />
                 {AccountingRoutes}
                 <Route
                   path="/projectpaymentvouchers/:id"
                   element={<ProjectPaymentVouchersRedirect />}
                 />
-                  path="organizationalChart"
-                  element={<OrganizationalChart />}
-                /> */}
                 {SettingsRoutes}
                 {RoleRoutes}
                 {UserRoutes}
