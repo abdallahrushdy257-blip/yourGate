@@ -1,139 +1,397 @@
-.empHead {
-    background: linear-gradient(to right, rgb(17, 56, 138), rgb(45, 176, 236));
-    border: 2px solid rgb(17, 56, 138);
-    height: 80px;
-    width: 80%;
-    margin: auto;
-    /* border-top-right-radius: 13px;
-    border-top-left-radius: 13px; */
+/* Show Employee Profile Modern Luxury Design */
+.show-emp-container {
+  width: 92%;
+  max-width: 1200px;
+  margin: 25px auto 50px;
+  direction: rtl;
+  font-family: inherit;
 }
 
-.empPhotoEditContainer {
-    direction: rtl;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 25px 50px 10px;
-    margin: auto;
-    border-bottom: 1px solid var(--border-color);
-    width: 75%;
-    /* border-left: 1px solid rgb(17, 56, 138);
-    border-right: 1px solid rgb(17, 56, 138); */
+/* Action Header */
+.show-emp-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
-.empPhotoContainer {
-    display: flex;
-    align-items: center;
-    gap: 40px;
+.show-emp-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.empImg {
-    overflow: hidden;
-    border-radius: 50%;
+.show-emp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 0.25s ease;
+  cursor: pointer;
 }
 
-
-.empName {
-    margin: unset;
-    font-size: 18px;
-    font-weight: 700;
+.show-emp-btn-primary {
+  background: linear-gradient(135deg, #c29a64 0%, #b28647 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(194, 154, 100, 0.3);
 }
 
-.empEmail {
-    font-size: 15px;
-    opacity: 0.8;
+.show-emp-btn-primary:hover {
+  background: linear-gradient(135deg, #b28647 0%, #9e7235 100%);
+  color: #ffffff;
+  transform: translateY(-2px);
 }
 
-
-.EmpEditBtn {
-    background: var(--buttonbackground-color);
-    padding: 7px 22px;
-    color: var(--buttontext-color) !important;
-    font-weight: 600;
-    font-size: 16px;
-    border-radius: 4px;
-    transition: .3s;
+.show-emp-btn-outline {
+  background: #ffffff;
+  border-color: #d8d0c2;
+  color: #554734;
 }
 
-.EmpEditBtn:hover {
-    background: var(--buttonbackgroundhover-color);
-
+.show-emp-btn-outline:hover {
+  background: #f7f3ec;
+  border-color: #c29a64;
+  color: #3a2e1d;
 }
 
-.empInfoContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 75%;
-    margin: auto;
-    padding-top: 2%;
-    padding-bottom: 35px;
-    /* border-left: 1px solid rgb(17, 56, 138);
-    border-right: 1px solid rgb(17, 56, 138);
-    border-bottom: 1px solid rgb(17, 56, 138); */
+/* Hero Profile Card */
+.show-emp-hero-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fbf9f5 100%);
+  border: 1px solid rgba(194, 154, 100, 0.25);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
 }
 
-.empInfoContainerRow {
-    display: flex;
-    direction: rtl;
-    justify-content: space-evenly;
-    width: 100%;
-}
-.EmpInfoField {
-    background: transparent;
-    width: 45%;
-    padding: 11px;
-    /* border-bottom: 1px solid #11398b; */
+.show-emp-hero-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #c29a64 0%, #dfc298 50%, #b28647 100%);
 }
 
-
-
-.EmpInfoField2 {
-    text-align: center;
+.show-emp-hero-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
+.show-emp-avatar-wrapper {
+  position: relative;
+}
 
+.show-emp-avatar {
+  width: 95px;
+  height: 95px;
+  border-radius: 24px;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  box-shadow: 0 8px 24px rgba(194, 154, 100, 0.28);
+}
 
-.infoFeld {
-    font-size: 13px;
-    margin-bottom: 5px;
-    display: inline-block;
+.show-emp-online-indicator {
+  position: absolute;
+  bottom: -4px;
+  left: -4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #2ec4b6;
+  border: 3px solid #ffffff;
+}
+
+.show-emp-hero-details h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #2b2317;
+  margin: 0 0 6px 0;
+}
+
+.show-emp-hero-tags {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.show-emp-job-badge {
+  background: rgba(194, 154, 100, 0.15);
+  color: #9c7336;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.show-emp-status-badge {
+  background: rgba(46, 196, 182, 0.12);
+  color: #1a8f84;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+/* Metric Strip */
+.show-emp-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.show-emp-metric-card {
+  background: #ffffff;
+  border: 1px solid #e9e3d8;
+  border-radius: 18px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s ease;
+}
+
+.show-emp-metric-card:hover {
+  transform: translateY(-2px);
+  border-color: #c29a64;
+  box-shadow: 0 8px 24px rgba(194, 154, 100, 0.12);
+}
+
+.show-emp-metric-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.show-emp-metric-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.show-emp-metric-label {
+  font-size: 12px;
+  color: #7b6f5d;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.show-emp-metric-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: #2b2317;
+}
+
+/* Section Tabs */
+.show-emp-nav-tabs {
+  display: flex;
+  gap: 12px;
+  border-bottom: 2px solid #e8e1d5;
+  margin-bottom: 24px;
+  padding-bottom: 4px;
+}
+
+.show-emp-tab-btn {
+  padding: 10px 22px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #7b6f5d;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: -6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.show-emp-tab-btn.active {
+  color: #a87e45;
+  border-bottom-color: #c29a64;
+}
+
+.show-emp-tab-btn:hover:not(.active) {
+  color: #3a2e1d;
+}
+
+/* Detail Card */
+.show-emp-card {
+  background: #ffffff;
+  border: 1px solid #ebe4d8;
+  border-radius: 20px;
+  padding: 26px 30px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+  margin-bottom: 24px;
+}
+
+.show-emp-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: #3a2e1d;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0e9dc;
+}
+
+.show-emp-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 26px;
+}
+
+.show-emp-field {
+  display: flex;
+  flex-direction: column;
+  background: #faf8f5;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #efe8dc;
+  transition: all 0.2s ease;
+}
+
+.show-emp-field:hover {
+  background: #ffffff;
+  border-color: #c29a64;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.show-emp-field-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8c7e6c;
+  margin-bottom: 4px;
+}
+
+.show-emp-field-content {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2b2317;
+  word-break: break-all;
+}
+
+/* Document List */
+.show-emp-docs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.show-emp-doc-item {
+  background: #faf8f5;
+  border: 1px solid #e7ded2;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.show-emp-doc-item:hover {
+  border-color: #c29a64;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.show-emp-doc-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #3a2e1d;
+  margin-bottom: 12px;
+}
+
+.show-emp-doc-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(194, 154, 100, 0.15);
+  color: #9c7336;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.show-emp-doc-link:hover {
+  background: #c29a64;
+  color: #ffffff;
+}
+
+@media (max-width: 992px) {
+  .show-emp-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .show-emp-docs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
-    .empInfoContainerRow {
-        flex-direction: column;
-        width: 100%;
-        align-items: center;
-    }
+  .show-emp-hero-card {
+    flex-direction: column;
+    text-align: center;
+  }
 
-    .EmpInfoField {
-        width: 70%;
-        margin-bottom: 20px;
-    }
+  .show-emp-hero-content {
+    flex-direction: column;
+  }
+
+  .show-emp-fields-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .show-emp-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .show-emp-docs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .show-emp-nav-tabs {
+    flex-wrap: wrap;
+  }
 }
 
+@media print {
+  .no-print,
+  .show-emp-topbar,
+  .show-emp-nav-tabs {
+    display: none !important;
+  }
 
-
-h5.infoContent {
-    padding: 10px;
-    border-radius: 10px;
-    /* text-wrap: word-break; */
-    /* background: #e8ebf4; */
-    /* background: #213048; */
-    /* background: var(--profile-info-background-color); */
-    background: var(--background-color);
-}
-.more-btn {
-  background: #0d6efd;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: none;
-  display: block;
-  cursor: pointer;
-  margin: 10px auto;
-}
-.more-btn:hover {
-  background: #0954bd;
+  .show-emp-card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
 }

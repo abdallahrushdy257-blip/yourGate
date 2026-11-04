@@ -49,7 +49,8 @@ function ShowEmployeeCard() {
       try {
         const res = await API.get(`/employees/${id}`);
         if (res.status === 200) {
-          setRows(res.data);
+          const item = res.data?.data || res.data || {};
+          setRows(item);
           setLoading(false);
         }
       } catch (error) {
@@ -60,9 +61,8 @@ function ShowEmployeeCard() {
     getEmployee();
   }, [id]);
 
-
   const [waveColor, setWaveColor] = useState(() => {
-    return localStorage.getItem("waveColor") || "#b3c0b3";
+    return localStorage.getItem("waveColor") || "#c29a64";
   });
 
   const handleColorChange = (e) => {
@@ -72,15 +72,23 @@ function ShowEmployeeCard() {
   };
 
   const resetToDefaultColor = () => {
-    const defaultColor = "#b3c0b3";
+    const defaultColor = "#c29a64";
     setWaveColor(defaultColor);
     localStorage.setItem("waveColor", defaultColor);
   };
 
+  const defaultAvatar =
+    "https://img.freepik.com/free-vector/user-blue-gradient_78370-4692.jpg?semt=ais_hybrid";
 
   return (
     <>
-      <Title title= {`${rows?.name || ""} كارت`} classname='no-print' icon={<FontAwesomeIcon icon={faUser} />} />
+      <div className="d-flex justify-content-between align-items-center w-75 mx-auto no-print my-3" dir="rtl">
+        <Title title={`${rows?.name || ""} - كارت الموظف`} classname="no-print" icon={<FontAwesomeIcon icon={faUser} />} />
+        <a href="/addnewemployee" className="btn btn-outline-secondary btn-sm">
+          العودة للموظفين
+        </a>
+      </div>
+
       <>
         <div className="card-viewer-container">
           <div className="employee-card">
@@ -91,7 +99,7 @@ function ShowEmployeeCard() {
                 alt="شعار الشركة"
                 className="company-logo-card"
               />
-              <h3 className="company-name-card">اسم الشركة</h3>
+              <h3 className="company-name-card">بوابة يور جيتس</h3>
             </div>
             <TopWave color={waveColor} />
           </div>
@@ -102,7 +110,7 @@ function ShowEmployeeCard() {
               <div className="cardfrist">
                 <div className="back-top-section">
                   <img
-                    src={rows?.photo}
+                    src={rows?.photo || defaultAvatar}
                     alt="صورة الموظف"
                     className="employee-photo"
                   />
@@ -110,31 +118,27 @@ function ShowEmployeeCard() {
                 </div>
                 <div className="cardQR">
                   <QRCodeCanvas
-                    value={rows?.id}
+                    value={String(rows?.id || id || "1")}
                     size={80}
                     bgColor="#ffffff"
                     fgColor="#000000"
                     level="H"
                   />
                 </div>
-
               </div>
               <div className="back-bottom-section">
-
                 <div className="employee-details">
                   <p>
-                    <p>
-                      <strong>المسمى الوظيفي:</strong>{" "}
-                      <span>{rows?.jobtitle?.title || "غير محدد"}</span>
-                    </p>
+                    <strong>المسمى الوظيفي:</strong>{" "}
+                    <span>{rows?.jobname || rows?.jobtitle?.title || "غير محدد"}</span>
                   </p>
-                  {/* <p>
-                    <strong>البريد الالكتروني :</strong>{" "}
-                    <span>{rows?.email || "غير محدد"}</span>
-                  </p> */}
                   <p>
-                    <strong>الرقم الوظيفي:</strong>{" "}
-                    <span>{rows?.ibannumber || "غير محدد"}</span>
+                    <strong>الرقم الوظيفي / الهوية:</strong>{" "}
+                    <span>{rows?.nationalid || rows?.idnumber || `EMP-${rows?.id || ""}`}</span>
+                  </p>
+                  <p>
+                    <strong>رقم الجوال:</strong>{" "}
+                    <span dir="ltr">{rows?.phone || "غير محدد"}</span>
                   </p>
                 </div>
               </div>

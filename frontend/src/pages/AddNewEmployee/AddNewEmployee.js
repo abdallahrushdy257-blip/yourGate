@@ -5,1290 +5,950 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTable,
   faUserPlus,
-  faClipboardUser,
-  faPercent,
+  faPenToSquare,
+  faTrash,
+  faEye,
+  faIdCard,
+  faExclamationTriangle,
+  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import Title from "../../components/title";
-import RegisterTextbox from "../../components/RegisterTextBox";
-import UploadInput from "../../components/UploadInput";
-import RegisterSelect from "../../components/RegisterSelect";
-import { useParams } from "react-router";
-import CustomButton from "../../components/CustomButton";
-import { useNavigate } from "react-router";
 import API from "../../api/axiosConfig";
-import TestPreloader from "../TestPreLoader/TestPreLoader";
-import "react-datepicker/dist/react-datepicker.css";
 import TableComponent from "../../components/TableComponent";
 import { toast } from "react-toastify";
 
 function AddNewEmployee() {
+  // ── Modal & Stepper State ──
   const [showModal, setShowModal] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [activeTab, setActiveTab] = useState(0);
-  const [error, setError] = useState({});
-  const [incomeTaxType, setIncomeTaxType] = useState("value");
-  const { startingTab } = useParams();
-
-  const navigate = useNavigate();
-  const [message, setMessage] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [iban, setIban] = useState("");
-  const [address, setAddress] = useState("");
-  const [nationality, setNationality] = useState("");
-  const [qualification, setQualification] = useState("");
-  const [upload, setUpload] = useState("");
-  const [workType, setWorkType] = useState("");
-
-  const shouldShowAllTabs = ["general", "job", "salary"].includes(startingTab);
-
-  const [workDate, setWorkDate] = useState(
-    new Date().toISOString().substr(0, 10),
-  );
-  const [dob, setDob] = useState(new Date().toISOString().substr(0, 10));
-  const [status, setStatus] = useState(0);
-  const [idexpireDate, setIdexpireDate] = useState(
-    new Date().toISOString().substr(0, 10),
-  );
-  const [jobtitle, setJobtitle] = useState("");
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [idtype, setIdtype] = useState(0);
-  const [idnumber, setIdnumber] = useState("");
-  const [gender, setGender] = useState("");
-  const [empid, setEmpid] = useState("");
-  const [expirehire, setExpirehire] = useState(
-    new Date().toISOString().substr(0, 10),
-  );
+  const [activeStep, setActiveStep] = useState(1);
+  const [editingId, setEditingId] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ show: false, item: null });
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitting2, setIsSubmitting2] = useState(false);
-  const [house, setHouse] = useState(0);
-  const [transportation, setTransportation] = useState(0);
-  const [communication, setCommunication] = useState(0);
-  const [life, setLife] = useState(0);
-  const [work, setWork] = useState(0);
-// حالة لتخزين المستندات المتعددة
-const [documents, setDocuments] = useState([{ title: "", file: null }]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-// دالة لإضافة حقل مستند جديد
-const handleAddDocument = () => {
-  setDocuments([...documents, { title: "", file: null }]);
-};
+  // ── Job Titles Options ──
+  const [jobTitles, setJobTitles] = useState([]);
 
-// دالة لحذف حقل مستند معين
-const handleRemoveDocument = (index) => {
-  const updatedDocs = documents.filter((_, i) => i !== index);
-  setDocuments(updatedDocs);
-};
+  // ── Form State (Step 1: General Info) ──
+  const [name, setName] = useState("");
+  const [gender, setGender] = useState("0");
+  const [dob, setDob] = useState("");
+  const [idtype, setIdtype] = useState(0);
+  const [nationalid, setNationalid] = useState("");
+  const [nationalidExpire, setNationalidExpire] = useState("");
+  const [dateofhire, setDateofhire] = useState("");
+  const [contractexpiration, setContractexpiration] = useState("");
+  const [status, setStatus] = useState(0);
+  const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [nationality, setNationality] = useState("");
+  const [iban, setIban] = useState("");
+  const [qualification, setQualification] = useState("");
+  const [jobTitleId, setJobTitleId] = useState("");
+  const [worktype, setWorktype] = useState(0);
+  const [photo, setPhoto] = useState(null);
 
-// دالة لتحديث عنوان المستند
-const handleDocTitleChange = (index, value) => {
-  const updatedDocs = [...documents];
-  updatedDocs[index].title = value;
-  setDocuments(updatedDocs);
-};
+  // ── Form State (Step 2: Salary & Allowances) ──
+  const [basicSalary, setBasicSalary] = useState(0);
+  const [socialInsuranceRatio, setSocialInsuranceRatio] = useState(10);
+  const [socialInsurance, setSocialInsurance] = useState(0);
+  const [housingAllowance, setHousingAllowance] = useState(0);
+  const [transportAllowance, setTransportAllowance] = useState(0);
+  const [communicationAllowance, setCommunicationAllowance] = useState(0);
+  const [lifeAllowance, setLifeAllowance] = useState(0);
+  const [workAllowance, setWorkAllowance] = useState(0);
+  const [salaryAccount, setSalaryAccount] = useState("");
 
-// دالة لتحديث ملف المستند
-const handleDocFileChange = (index, file) => {
-  const updatedDocs = [...documents];
-  updatedDocs[index].file = file;
-  setDocuments(updatedDocs);
-};
+  // ── Form State (Step 3: Documents) ──
+  const [documents, setDocuments] = useState([{ title: "", file: null }]);
+
+  // ── Validation Errors ──
+  const [error, setError] = useState({});
+
+  // Fetch job titles for dropdown
+  const fetchJobTitles = async () => {
+    try {
+      const res = await API.post("/jobtitle");
+      const list = Array.isArray(res.data)
+        ? res.data
+        : Array.isArray(res.data?.data)
+        ? res.data.data
+        : [];
+      setJobTitles(list);
+    } catch (err) {
+      console.error("Error fetching job titles:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobTitles();
+  }, []);
+
+  // Recalculate social insurance when ratio or basic changes
+  const handleBasicSalaryChange = (val) => {
+    const num = parseFloat(val) || 0;
+    setBasicSalary(num);
+    const calculatedSocial = (num * (parseFloat(socialInsuranceRatio) || 0)) / 100;
+    setSocialInsurance(calculatedSocial);
+  };
+
+  const handleRatioChange = (val) => {
+    const num = parseFloat(val) || 0;
+    setSocialInsuranceRatio(num);
+    const calculatedSocial = ((parseFloat(basicSalary) || 0) * num) / 100;
+    setSocialInsurance(calculatedSocial);
+  };
+
+  // Calculate total salary
+  const calculateTotalSalary = () => {
+    const total =
+      (parseFloat(basicSalary) || 0) +
+      (parseFloat(housingAllowance) || 0) +
+      (parseFloat(transportAllowance) || 0) +
+      (parseFloat(communicationAllowance) || 0) +
+      (parseFloat(lifeAllowance) || 0) +
+      (parseFloat(workAllowance) || 0) -
+      (parseFloat(socialInsurance) || 0);
+
+    return Math.max(0, total).toFixed(2);
+  };
+
+  // Document Helpers
+  const handleAddDocument = () => {
+    setDocuments([...documents, { title: "", file: null }]);
+  };
+
+  const handleRemoveDocument = (index) => {
+    setDocuments(documents.filter((_, i) => i !== index));
+  };
+
+  const handleDocTitleChange = (index, value) => {
+    const updated = [...documents];
+    updated[index].title = value;
+    setDocuments(updated);
+  };
+
+  const handleDocFileChange = (index, file) => {
+    const updated = [...documents];
+    updated[index].file = file;
+    setDocuments(updated);
+  };
+
+  // Reset form
+  const resetForm = () => {
+    setEditingId(null);
+    setActiveStep(1);
+    setName("");
+    setGender("0");
+    setDob("");
+    setIdtype(0);
+    setNationalid("");
+    setNationalidExpire("");
+    setDateofhire("");
+    setContractexpiration("");
+    setStatus(0);
+    setAddress("");
+    setEmail("");
+    setPhone("");
+    setNationality("");
+    setIban("");
+    setQualification("");
+    setJobTitleId("");
+    setWorktype(0);
+    setPhoto(null);
+    setBasicSalary(0);
+    setSocialInsuranceRatio(10);
+    setSocialInsurance(0);
+    setHousingAllowance(0);
+    setTransportAllowance(0);
+    setCommunicationAllowance(0);
+    setLifeAllowance(0);
+    setWorkAllowance(0);
+    setSalaryAccount("");
+    setDocuments([{ title: "", file: null }]);
+    setError({});
+  };
+
+  // Open modal for Create
+  const handleOpenAdd = () => {
+    resetForm();
+    setShowModal(true);
+  };
+
+  // Open modal for Edit
+  const handleOpenEdit = (record) => {
+    setEditingId(record.id);
+    setActiveStep(1);
+    setName(record.name || "");
+    setGender(record.gender !== undefined ? String(record.gender) : "0");
+    setDob(record.dob || record.dateofbirth || "");
+    setIdtype(record.idtype ?? 0);
+    setNationalid(record.nationalid || record.idnumber || "");
+    setNationalidExpire(record.nationalid_expire || record.idexpiredate || "");
+    setDateofhire(record.dateofhire || record.workdate || "");
+    setContractexpiration(record.contractexpiration || record.expirehire || "");
+    setStatus(record.status ?? 0);
+    setAddress(record.address || "");
+    setEmail(record.email || "");
+    setPhone(record.phone || "");
+    setNationality(record.nationality || "");
+    setIban(record.iban || record.ibannumber || "");
+    setQualification(record.qualification || "");
+    setJobTitleId(record.job_title_id ?? record.jobtitle?.id ?? "");
+    setWorktype(record.worktype ?? 0);
+    setPhoto(null);
+
+    const b = record.basic_salary ?? record.basic ?? 0;
+    const s = record.social_insurance ?? record.socialinsurance ?? 0;
+    setBasicSalary(b);
+    setSocialInsurance(s);
+    setSocialInsuranceRatio(b > 0 ? Math.round((s / b) * 100) : 10);
+    setHousingAllowance(record.housing_allowance ?? record.house ?? 0);
+    setTransportAllowance(record.transport_allowance ?? record.transport ?? 0);
+    setCommunicationAllowance(record.communication_allowance ?? record.communication ?? 0);
+    setLifeAllowance(record.life_allowance ?? record.life ?? 0);
+    setWorkAllowance(record.work_allowance ?? record.work ?? 0);
+    setSalaryAccount(record.salary_account ?? record.account ?? "");
+
+    if (record.documents && record.documents.length > 0) {
+      setDocuments(record.documents.map((d) => ({ title: d.title, file: null, existingUrl: d.url })));
+    } else {
+      setDocuments([{ title: "", file: null }]);
+    }
+
+    setError({});
+    setShowModal(true);
+  };
+
+  // Validate Step 1 before proceeding
+  const validateStep1 = () => {
+    const err = {};
+    if (!name.trim()) err.name = "إسم الموظف مطلوب";
+    if (email && !/\S+@\S+\.\S+/.test(email)) err.email = "صيغة البريد الإلكتروني غير صحيحة";
+    if (phone && phone.length < 8) err.phone = "رقم الجوال غير صحيح";
+    if (nationalid && nationalid.length < 5) err.nationalid = "رقم الهوية غير صحيح";
+
+    setError(err);
+    return Object.keys(err).length === 0;
+  };
+
+  // Submit complete employee data
+  const handleSubmit = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+
+    if (!validateStep1()) {
+      setActiveStep(1);
+      toast.error("يرجى ملء الحقول الإلزامية في البيانات العامة");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const mFormData = new FormData();
+
+    // Step 1 Fields
+    mFormData.append("name", name.trim());
+    mFormData.append("gender", gender);
+    if (dob) mFormData.append("dob", dob);
+    mFormData.append("idtype", idtype);
+    if (nationalid) mFormData.append("nationalid", nationalid);
+    if (nationalidExpire) mFormData.append("nationalid_expire", nationalidExpire);
+    if (dateofhire) mFormData.append("dateofhire", dateofhire);
+    if (contractexpiration) mFormData.append("contractexpiration", contractexpiration);
+    mFormData.append("status", status);
+    if (address) mFormData.append("address", address);
+    if (email) mFormData.append("email", email);
+    if (phone) mFormData.append("phone", phone);
+    if (nationality) mFormData.append("nationality", nationality);
+    if (iban) mFormData.append("iban", iban);
+    if (qualification) mFormData.append("qualification", qualification);
+    if (jobTitleId) mFormData.append("job_title_id", jobTitleId);
+    mFormData.append("worktype", worktype);
+    if (photo instanceof File) mFormData.append("photo", photo);
+
+    // Step 2 Fields
+    mFormData.append("basic_salary", basicSalary || 0);
+    mFormData.append("social_insurance", socialInsurance || 0);
+    mFormData.append("housing_allowance", housingAllowance || 0);
+    mFormData.append("transport_allowance", transportAllowance || 0);
+    mFormData.append("communication_allowance", communicationAllowance || 0);
+    mFormData.append("life_allowance", lifeAllowance || 0);
+    mFormData.append("work_allowance", workAllowance || 0);
+    if (salaryAccount) mFormData.append("salary_account", salaryAccount);
+
+    // Step 3 Documents
+    documents.forEach((doc, index) => {
+      if (doc.file instanceof File) {
+        mFormData.append(`documents[${index}][title]`, doc.title || doc.file.name);
+        mFormData.append(`documents[${index}][file]`, doc.file);
+      }
+    });
+
+    try {
+      if (editingId) {
+        mFormData.append("id", editingId);
+        await API.post(`/employees/${editingId}/update`, mFormData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("تم تحديث بيانات الموظف بنجاح");
+      } else {
+        await API.post("/employees/store", mFormData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("تم إضافة الموظف بنجاح");
+      }
+      setShowModal(false);
+      resetForm();
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      console.error("Save employee error:", err);
+      const validationErrors = err?.response?.data?.errors || {};
+      setError(validationErrors);
+      toast.error(err?.response?.data?.message || "حدث خطأ أثناء حفظ بيانات الموظف");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Delete Handler
+  const handleConfirmDelete = async () => {
+    if (!deleteModal.item) return;
+    setIsDeleting(true);
+    try {
+      await API.delete(`/employees/${deleteModal.item.id}`);
+      toast.success("تم حذف الموظف بنجاح");
+      setDeleteModal({ show: false, item: null });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      console.error("Delete employee error:", err);
+      toast.error(err?.response?.data?.message || "حدث خطأ أثناء حذف الموظف");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Table Columns
   const columns = [
     { name: "إسم الموظف", key: "name" },
     { name: "رقم الهوية", key: "nationalid" },
     { name: "رقم الجوال", key: "phone" },
     { name: "تاريخ التعيين", key: "dateofhire" },
-    { name: "المسمي الوظيفي", key: "jobname" },
-    { name: "", key: "actions" },
+    { name: "المسمى الوظيفي", key: "jobname" },
+    { name: "الإجراءات", key: "actions" },
   ];
 
-  const dummyData = [
-    {
-      id: 1,
-      name: "أحمد محمد علي",
-      nationalid: "1023456789",
-      phone: "0501234567",
-      dateofhire: "2023-01-15",
-      jobname: "مدير مشاريع",
-    },
-    {
-      id: 2,
-      name: "سارة إبراهيم",
-      nationalid: "1023456790",
-      phone: "0502345678",
-      dateofhire: "2022-09-10",
-      jobname: "محاسب",
-    },
-    {
-      id: 3,
-      name: "محمد خالد",
-      nationalid: "1023456791",
-      phone: "0503456789",
-      dateofhire: "2021-06-20",
-      jobname: "موظف استقبال",
-    },
-    {
-      id: 4,
-      name: "ريم عبدالله",
-      nationalid: "1023456792",
-      phone: "0504567890",
-      dateofhire: "2020-11-05",
-      jobname: "أخصائي موارد بشرية",
-    },
-    {
-      id: 5,
-      name: "يوسف حسن",
-      nationalid: "1023456793",
-      phone: "0505678901",
-      dateofhire: "2024-02-01",
-      jobname: "مطور برمجيات",
-    },
-    {
-      id: 6,
-      name: "منى السيد",
-      nationalid: "1023456794",
-      phone: "0506789012",
-      dateofhire: "2019-08-18",
-      jobname: "سكرتير تنفيذي",
-    },
-    {
-      id: 7,
-      name: "خالد محمود",
-      nationalid: "1023456795",
-      phone: "0507890123",
-      dateofhire: "2022-04-30",
-      jobname: "مشرف ميداني",
-    },
-    {
-      id: 8,
-      name: "هبة علي",
-      nationalid: "1023456796",
-      phone: "0508901234",
-      dateofhire: "2023-12-12",
-      jobname: "أخصائي تسويق",
-    },
-    {
-      id: 9,
-      name: "طارق جمال",
-      nationalid: "1023456797",
-      phone: "0509012345",
-      dateofhire: "2021-03-25",
-      jobname: "محلل بيانات",
-    },
-    {
-      id: 10,
-      name: "نجلاء مصطفى",
-      nationalid: "1023456798",
-      phone: "0501122334",
-      dateofhire: "2020-07-14",
-      jobname: "مدير موارد بشرية",
-    },
-  ];
-
+  // Dropdown options for each table row
   const dropdownOptions = [
-    // { label: "إضافة مكافآة او خصم ", route: "/discounts/:id" },
-    // { label: "إضافة تحقيق ", route: "/investigations/:id" },
-    // { label: " مستندات التوظيف", route: "/employeepaper/:id" },
-    { label: "تعديل", route: "/editemployee/:id" },
-    { label: "كارت الموظف", route: "/showEmployeeCard/:id" },
-    { label: "عرض", route: "/showEmployee/:id" },
+    {
+      label: "تعديل",
+      action: (_id, record) => handleOpenEdit(record),
+    },
+    {
+      label: "عرض",
+      route: "/showEmployee/:id",
+    },
+    {
+      label: "كارت الموظف",
+      route: "/showEmployeeCard/:id",
+    },
+    {
+      label: "حذف",
+      action: (_id, record) => setDeleteModal({ show: true, item: record }),
+    },
   ];
 
-  const getJobtitle = async () => {
-    try {
-      const res = await API.post("/jobtitle");
-      if (res.status === 200) {
-        setRows(res.data || []);
-      }
-    } catch (error) {
-      console.error("API Error:", error);
-      if (error.response?.data) {
-        setError(error.response.data.errors || {});
-        setMessage(error.response.data.message || "An error occurred");
-      }
-    } finally {
-      // هذا السطر يضمن اختفاء الـ Preloader فوراً مهما كانت النتيجة
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getJobtitle();
-  }, []);
-
-  const resetForm = () => {
-    setName("");
-    setEmail("");
-    setIban("");
-    setAddress("");
-    setNationality("");
-    setQualification("");
-    setUpload("");
-    setWorkType("");
-    setWorkDate(new Date().toISOString().substr(0, 10));
-    setDob(new Date().toISOString().substr(0, 10));
-    setStatus(0);
-    setIdexpireDate(new Date().toISOString().substr(0, 10));
-    setJobtitle("");
-    setIdtype(0);
-    setIdnumber("");
-    setGender("");
-    setEmpid("");
-    setExpirehire(new Date().toISOString().substr(0, 10));
-    setHouse(0);
-    setTransportation(0);
-    setCommunication(0);
-    setLife(0);
-    setWork(0);
-    setError({});
-    setActiveTab(0);
-  };
-
-  useEffect(() => {
-    if (startingTab) {
-      switch (startingTab) {
-        case "general":
-          setActiveTab(0);
-          break;
-        case "salary":
-          setActiveTab(1);
-          break;
-        case "documents":
-          setActiveTab(2);
-          break;
-        default:
-          setActiveTab(0);
-      }
-    }
-  }, [startingTab]);
-
-  const handleTabClick = (tabIndex) => {
-    if (shouldShowAllTabs || tabIndex <= activeTab) {
-      setActiveTab(tabIndex);
-    }
-  };
-
-  const handleIncomeTaxTypeChange = (e) => {
-    setIncomeTaxType(e.target.value);
-  };
-
-  const [salaryDetails, setSalaryDetails] = useState({
-    mainBudget: "",
-    socialWelfare: "",
-  });
-
-  const handleCardNumChange = (e) => {
-    const { value } = e.target;
-    if (value.length <= 10) {
-      setSalaryDetails((prevState) => ({
-        ...prevState,
-        cardnum: value,
-      }));
-      setError((prevState) => ({ ...prevState, cardnum: "" }));
-    } else {
-      setError((prevState) => ({
-        ...prevState,
-        cardnum: "الرقم التعريفي لا يمكن أن يزيد عن 10 أرقام",
-      }));
-    }
-  };
-
-  const handleMobileNumChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-
-    if (value.length <= 10) {
-      setSalaryDetails((prev) => ({
-        ...prev,
-        mobnum: value,
-      }));
-    }
-  };
-
-  const calculateTotal = () => {
-    const basic = parseFloat(salaryDetails.mainBudget) || 0;
-    const social = parseFloat(salaryDetails.socialWelfare) || 0;
-
-    const total =
-      basic +
-      (parseFloat(house) || 0) +
-      (parseFloat(transportation) || 0) +
-      (parseFloat(communication) || 0) +
-      (parseFloat(life) || 0) +
-      (parseFloat(work) || 0) -
-      social;
-
-    return total.toFixed(2);
-  };
-
-  const handleSalaryChange = (e) => {
-    const { id, value } = e.target;
-    setSalaryDetails((prevState) => ({
-      ...prevState,
-      [id]: value,
-    }));
-  };
-
-  const handleNextTab = async (e) => {
-    e.preventDefault();
-
-    // const cardNum = salaryDetails.cardnum;
-    // const mobileNum = salaryDetails.mobnum;
-
-    // if (!salaryDetails.mobnum || salaryDetails.mobnum.length !== 10) {
-    //   setError((prev) => ({
-    //     ...prev,
-    //     mobnum: "رقم الجوال يجب أن يكون 10 أرقام",
-    //   }));
-    //   return;
-    // }
-
-    // if (cardNum && cardNum.length !== 10) {
-    //   setError((prevState) => ({
-    //     ...prevState,
-    //     cardnum: "رقم الهوية يجب ان يكون 10 أرقام",
-    //   }));
-    //   return;
-    // } else {
-    //   setError((prevState) => ({ ...prevState, cardnum: "" }));
-    // }
-
-    // if (mobileNum && mobileNum.length !== 10) {
-    //   setError((prevState) => ({
-    //     ...prevState,
-    //     mobnum: "رقم الجوال يجب ان يكون 10 أرقام",
-    //   }));
-    //   return;
-    // } else {
-    //   setError((prevState) => ({ ...prevState, mobnum: "" }));
-    // }
-    // setIsSubmitting(true);
-    // const mFormData = new FormData();
-    // mFormData.append("name", name);
-    // mFormData.append("dob", dob);
-    // mFormData.append("workdate", workDate);
-    // mFormData.append("status", status);
-    // mFormData.append("phone", salaryDetails.mobnum);
-    // mFormData.append("iban", iban);
-    // mFormData.append("idexpiredate", idexpireDate);
-    // mFormData.append("gender", gender);
-    // mFormData.append("idtype", idtype);
-    // mFormData.append("idnumber", idnumber);
-    // mFormData.append("address", address);
-    // mFormData.append("email", email);
-    // mFormData.append("nationality", nationality);
-    // mFormData.append("jobtitle", jobtitle);
-    // mFormData.append("qualification", qualification);
-    // mFormData.append("expirehire", expirehire);
-    // mFormData.append("upload", upload);
-    // // إرسال المستندات المتعددة
-    // documents.forEach((doc, index) => {
-    //   if (doc.file) {
-    //     mFormData.append(`documents[${index}][title]`, doc.title);
-    //     mFormData.append(`documents[${index}][file]`, doc.file);
-    //   }
-    // });
-    // mFormData.append("worktype", workType);
-    // try {
-    //   const res = API.post("/employees/store", mFormData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   });
-    //   const data = await res;
-    //   if (data.status === 200) {
-    //     setEmpid(data.data.id);
-    //     setActiveTab(activeTab + 1);
-    //   } else {
-    //     setError(data.data.errors);
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    //   setIsSubmitting(false);
-    //   setError(error.response.data.errors);
-    //   setMessage(error.response.data.message);
-    // }
-    setActiveTab((prev) => prev + 1);
-  };
-  const [salarydescription, setSalarydescription] = useState("");
-  const [type, setType] = useState("");
-
-  const handleNextTab2 = async (e) => {
-    e.preventDefault();
-    // setIsSubmitting2(true);
-    // const mForm = new FormData();
-    // mForm.append("basic", salaryDetails.mainBudget);
-    // mForm.append("employees_id", empid);
-    // mForm.append("socialinsurance", salaryDetails.socialWelfare);
-    // mForm.append("account", type);
-    // mForm.append("house", house);
-    // mForm.append("communication", communication);
-    // mForm.append("transport", transportation);
-    // mForm.append("life", life);
-    // mForm.append("work", work);
-    // try {
-    //   const res = await API.post("/salary/store", mForm);
-    //   const data = await res;
-    //   if (data.status === 200) {
-    //     setShowModal(false);
-    //     setRefreshKey((prev) => prev + 1);
-    //     resetForm();
-    //     toast.success("تم إضافة الموظف بنجاح");
-    //   } else {
-    //     setError(data.data.errors);
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    //   setIsSubmitting2(false);
-    //   setError(error.response.data.errors);
-    //   setMessage(error.response.data.message);
-    // }
-    setActiveTab((prev) => prev + 1);
-  };
-
-  return loading ? (
-    <TestPreloader />
-  ) : (
+  return (
     <div className="addnewemployee-container">
-      <div className="employee-list-page" style={{ padding: "20px" }}>
+      <div className="employee-list-page">
         <TableComponent
           key={refreshKey}
           apiUrl="/employees"
-          data={dummyData}
           columns={columns}
           titleIcon={<FontAwesomeIcon icon={faTable} />}
           title="إدارة الموظفين"
           addBtn={true}
-          onAddClick={() => {
-            resetForm();
-            setShowModal(true);
-          }}
+          addBtnName="موظف"
+          onAddClick={handleOpenAdd}
           dropdownOptions={dropdownOptions}
-          searchDate={false}
+          triggerReload={refreshKey}
         />
       </div>
 
+      {/* ── Multi-Step Add / Edit Modal ── */}
       <Modal
         show={showModal}
-        onHide={() => setShowModal(false)}
+        onHide={() => !isSubmitting && setShowModal(false)}
         size="lg"
         centered
+        dir="rtl"
         className="add-employee-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>إضافة موظف جديد</Modal.Title>
+          <div className="emp-modal-title">
+            <span className="emp-modal-title-icon">
+              <FontAwesomeIcon icon={editingId ? faPenToSquare : faUserPlus} />
+            </span>
+            <span>{editingId ? "تعديل بيانات الموظف" : "إضافة موظف جديد"}</span>
+          </div>
         </Modal.Header>
+
         <Modal.Body>
-          <div className="addnewemployee">
-            <div className="addnewemployee-tabs">
-              <div
-                className={`addemp-tab ${activeTab === 0 ? "active" : ""}`}
-                onClick={() => handleTabClick(0)}
-              >
-                1
+          {/* ── Stepper Navigation ── */}
+          <div className="emp-stepper">
+            <div
+              className={`emp-step-item ${activeStep === 1 ? "active" : ""} ${
+                activeStep > 1 ? "completed" : ""
+              }`}
+              onClick={() => setActiveStep(1)}
+            >
+              <div className="emp-step-circle">
+                {activeStep > 1 ? <FontAwesomeIcon icon={faCheckCircle} /> : 1}
               </div>
-
-              <div
-                className={`addemp-tab ${activeTab === 1 ? "active" : ""}`}
-                onClick={() => handleTabClick(1)}
-              >
-                2
-              </div>
-              <div
-                className={`addemp-tab ${activeTab === 2 ? "active" : ""}`}
-                onClick={() => handleTabClick(2)}
-              >
-                3
-              </div>
-              <hr className="addHr" />
+              <span className="emp-step-label">البيانات العامة</span>
             </div>
 
-            <div className="addnewemployee-content">
-              {activeTab === 0 && (
-                <Form onSubmit={handleNextTab} encType="multipart/form-data">
-                  <div className="addempTitle">
-                    <Title
-                      title="البيانات العامة للموظف"
-                      className="marketingtitle"
-                      icon={<FontAwesomeIcon icon={faUserPlus} />}
-                    />{" "}
-                    <div className="addnewemployee-form1">
-                      <div className="addnewemployee-sec1">
-                        <RegisterTextbox
-                          parentStyle={{
-                            width: "80%",
-                            marginBottom:"1rem"
-                          }}
-                          id="empname"
-                          label="إسم الموظف"
-                          type="text"
-                          stylee={{
-                            width: "55%",
-                          }}
-                          name="name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                        />
+            <div className="emp-step-divider" />
 
-                        {error && error.name && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.name}
-                          </div>
-                        )}
-                        {/* <RegisterTextbox
-                      parentStyle={{
-                        width: "80%",
-                      }}
-                      id="dob"
-                      label="تاريخ الميلاد"
-                      type="date"
-                      onChange={handleDobChange}
-                      stylee={{
-                        width: "55%",
-                      }}
-                    /> */}
-                        <div className="responParent mb-3" style={{ width: "100%" }}>
-                          <p className="datelable">تاريخ الميلاد</p>
-                          <input
-                            type="date"
-                            id="date"
-                            onChange={(e) => setDob(e.target.value)}
-                            value={dob}
-                            className="custom-datepicker"
-                            style={{ height: "42px" }}
-                          />
-                        </div>
-                        {error && error.dob && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.dob}
-                          </div>
-                        )}
-                        {/* <RegisterTextbox
-                      parentStyle={{
-                        width: "80%",
-                      }}
-                      id="workdate"
-                      label="تاريخ الإلتحاق بالعمل"
-                      type="date"
-                      onChange={handleWorkDateChange}
-                      stylee={{
-                        width: "55%",
-                      }}
-                      name="workdate"
-                    /> */}
-                        <div className="responParent" style={{ width: "100%" }}>
-                          <p className="datelable">تاريخ الإلتحاق بالعمل</p>
-                          <input
-                            type="date"
-                            id="date"
-                            onChange={(e) => setWorkDate(e.target.value)}
-                            value={workDate}
-                            className="custom-datepicker"
-                            style={{ height: "42px" }}
-                          />
-                        </div>
-                        {error && error.workDate && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.workDate}
-                          </div>
-                        )}
-                        {/* <RegisterTextbox
-                      parentStyle={{
-                        width: "80%",
-                      }}
-                      id="dob"
-                      label="تاريخ انتهاء التعاقد"
-                      type="date"
-                      stylee={{
-                        width: "55%",
-                      }}
-                    /> */}
-                        <div className="responParent" style={{ width: "100%" }}>
-                          <p className="datelable">تاريخ انتهاء التعاقد</p>
-                          <input
-                            type="date"
-                            id="date"
-                            onChange={(e) => setExpirehire(e.target.value)}
-                            value={expirehire}
-                            className="custom-datepicker"
-                            style={{ height: "42px" }}
-                          />
-                        </div>
-                        {error && error.expirehire && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.expirehire}
-                          </div>
-                        )}
-                        <RegisterSelect
-                          id="status"
-                          label="الحالة الإجتماعية"
-                          stylee={{ width: "55%" }}
-                          parentStyle={{ width: "80%" }}
-                          options={[
-                            { value: "", label: "اختر الحالة الاجتماعية" },
-                            { value: 1, label: "متزوج" },
-                            { value: 2, label: "أرمل" },
-                            { value: 3, label: "مطلق" },
-                            { value: 4, label: "اعزب" },
-                          ]}
-                          value={status}
-                          onChange={(e) => setStatus(e.target.value)}
-                        />
-                        {error && error.status && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.status}
-                          </div>
-                        )}
-                        <RegisterTextbox
-                          type="text"
-                          id="phone"
-                          label="رقم الجوال"
-                          stylee={{ width: "55%" }}
-                          parentStyle={{ width: "80%" }}
-                          inputMode="numeric"
-                          value={salaryDetails.mobnum || ""}
-                          onChange={handleMobileNumChange}
-                          prefix="+966"
-                        />
-                        {error.phone && (
-                          <div style={{ color: "red", fontSize: "0.8em" }}>
-                            {error.phone ==
-                            "رقم الهاتف يجب ان يكون 10 ارقام على الاقل"
-                              ? "رقم الجوال يجب ان يكون 10 ارقام على الاقل"
-                              : error.phone}
-                          </div>
-                        )}
-                        <RegisterTextbox
-                          parentStyle={{
-                            width: "80%"
-                            ,marginBottom:"1rem"
-                          }}
-                          id="iban"
-                          label="رقم IBAN"
-                          type="text"
-                          stylee={{
-                            width: "55%",
-                          }}
-                          name="iban"
-                          value={iban}
-                          onChange={(e) => setIban(e.target.value)}
-                        />
-                        {error && error.iban && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.iban}
-                          </div>
-                        )}
-                        {/* <RegisterTextbox
-                      parentStyle={{
-                        width: "80%",
-                      }}
-                      id="idexpiredate"
-                      label="تاريخ انتهاء الهوية "
-                      type="date"
-                      stylee={{
-                        width: "55%",
-                      }}
-                      onChange={handleidexpireDateChange}
-                      name="idexpiredate"
-                    /> */}
-                        <div className="responParent" style={{ width: "100%" }}>
-                          <p className="datelable">تاريخ انتهاء الهوية</p>
-                          <input
-                            type="date"
-                            id="date"
-                            onChange={(e) => setIdexpireDate(e.target.value)}
-                            value={idexpireDate}
-                            className="custom-datepicker"
-                            style={{ height: "42px" }}
-                          />
-                        </div>
-                        <UploadInput
-                          id="empdocumentUpload"
-                          parentStyle={{
-                            marginBottom: "20px",
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                          label="رفع الصورة الشخصية"
-                          name="upload"
-                          onChange={(e) => {
-                            setUpload(e.target.files[0]);
-                          }}
-                          accept="image/*"
-                        />
-                      </div>
-                      <div className="addnewemployee-sec1">
-                        <RegisterSelect
-                          id="status"
-                          label="النوع"
-                          stylee={{ width: "55%" }}
-                          parentStyle={{ width: "80%" }}
-                          options={[
-                            { value: "", label: "اختر النوع" },
-                            { value: "0", label: "ذكر" },
-                            { value: "1", label: "أنثي" },
-                          ]}
-                          value={gender}
-                          onChange={(e) => setGender(e.target.value)}
-                        />
-                        {error && error.gender && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.gender}
-                          </div>
-                        )}
-                        <RegisterSelect
-                          id="status"
-                          label="الهوية"
-                          stylee={{ width: "55%" }}
-                          parentStyle={{ width: "80%" }}
-                          options={[
-                            { value: "", label: "اختر نوع الهوية" },
-                            { value: "1", label: "رقم الهوية" },
-                            { value: "2", label: "رقم الاقامة" },
-                          ]}
-                          value={idtype}
-                          onChange={(e) => setIdtype(e.target.value)}
-                        />
-                        {error && error.idtype && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.idtype}
-                          </div>
-                        )}
-                        <RegisterTextbox
-                          parentStyle={{
-                            width: "80%",
-                          }}
-                          id="idnumber"
-                          label={
-                            idtype == 0
-                              ? "الرقم"
-                              : idtype == 1
-                                ? "رقم الهوية"
-                                : "رقم الاقامة"
-                          }
-                          type="text"
-                          stylee={{
-                            width: "55%",
-                          }}
-                          name="idnumber"
-                          value={idnumber}
-                          onChange={(e) => setIdnumber(e.target.value)}
-                        />
-                        {error && error.idnumber && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.idnumber ==
-                            "The idnumber field must be at least 10 characters."
-                              ? "رقم الهوية يجب ان يكون 10 ارقام على الاقل "
-                              : error.idnumber}
-                          </div>
-                        )}
-
-                        <RegisterTextbox
-                          parentStyle={{
-                            width: "80%",
-                          }}
-                          id="address"
-                          label="العنوان"
-                          type="text"
-                          stylee={{
-                            width: "55%",
-                          }}
-                          name="address"
-                          value={address}
-                          onChange={(e) => setAddress(e.target.value)}
-                        />
-                        {error && error.address && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.address}
-                          </div>
-                        )}
-
-                        <RegisterTextbox
-                          parentStyle={{
-                            width: "80%"
-                            ,marginBottom:"1rem"
-                          }}
-                          id="empemail"
-                          label="البريد الإلكتروني"
-                          type="email"
-                          stylee={{
-                            width: "55%",
-                          }}
-                          name="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-                        {error && error.email && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.email}
-                          </div>
-                        )}
-
-                        <RegisterTextbox
-                          parentStyle={{
-                            width: "80%",
-                          }}
-                          id="empname"
-                          label="الجنسية"
-                          type="text"
-                          stylee={{
-                            width: "55%",
-                          }}
-                          name="nationality"
-                          value={nationality}
-                          onChange={(e) => setNationality(e.target.value)}
-                        />
-                        {error && error.nationality && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.nationality}
-                          </div>
-                        )}
-                        <RegisterSelect
-                          id="jobtitle"
-                          label="المسمى الوظيفي"
-                          parentStyle={{
-                            width: "80%",
-                          }}
-                          stylee={{ width: "55%" }}
-                          options={[
-                            { value: "", label: " اختر المسمى الوظيفي " },
-                            { value: "0", label: " لا يوجد" },
-                            ...rows.map((row) => ({
-                              value: row.id,
-                              label: row.title,
-                            })),
-                          ]}
-                          name="jobtitle"
-                          value={jobtitle}
-                          onChange={(e) => setJobtitle(e.target.value)}
-                        />
-                        {error && error.jobtitle && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.jobtitle}
-                          </div>
-                        )}
-                        <RegisterTextbox
-                          parentStyle={{
-                            width: "80%",
-                          }}
-                          id="degree"
-                          label="المؤهل"
-                          type="text"
-                          stylee={{
-                            width: "55%",
-                          }}
-                          name="quaification"
-                          value={qualification}
-                          onChange={(e) => setQualification(e.target.value)}
-                        />
-                        {error && error.quaification && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.quaification}
-                          </div>
-                        )}
-                        <RegisterSelect
-                          parentStyle={{
-                            width: "80%",
-                          }}
-                          id="worktype"
-                          label="نوع العمل"
-                          stylee={{
-                            width: "50%",
-                          }}
-                          options={[
-                            { value: "", label: "اختر نوع العمل" },
-                            { value: "0", label: "دوام كامل" },
-                            { value: "1", label: "دوام جزئي" },
-                          ]}
-                          name="worktype"
-                          value={workType}
-                          onChange={(e) => setWorkType(e.target.value)}
-                        />
-                        {error && error.worktype && (
-                          <div
-                            style={{
-                              color: "red",
-                              fontSize: "12px",
-                              marginTop: "5px",
-                              marginBottom: "5px",
-                            }}
-                          >
-                            {error.worktype}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="addnewemployee-sec2"></div>
-                  </div>
-                  <div className="addnewemployee-btnCon">
-                    {isSubmitting ? (
-                      <Spinner animation="border" variant="primary" />
-                    ) : (
-                      <CustomButton text="التالي" />
-                    )}
-                  </div>
-                </Form>
-              )}
+            <div
+              className={`emp-step-item ${activeStep === 2 ? "active" : ""} ${
+                activeStep > 2 ? "completed" : ""
+              }`}
+              onClick={() => validateStep1() && setActiveStep(2)}
+            >
+              <div className="emp-step-circle">
+                {activeStep > 2 ? <FontAwesomeIcon icon={faCheckCircle} /> : 2}
+              </div>
+              <span className="emp-step-label">الراتب والبدلات</span>
             </div>
-            <div className="addnewemployee-salary w-100">
-            {activeTab === 1 && (
-              <Form onSubmit={handleNextTab2} className="w-100 px-2 px-md-3">
-                <Title
-                  title="راتب الموظف"
-                  className="marketingtitle text-center mb-4"
-                  icon={<FontAwesomeIcon icon={faClipboardUser} />}
+
+            <div className="emp-step-divider" />
+
+            <div
+              className={`emp-step-item ${activeStep === 3 ? "active" : ""}`}
+              onClick={() => validateStep1() && setActiveStep(3)}
+            >
+              <div className="emp-step-circle">3</div>
+              <span className="emp-step-label">المستندات</span>
+            </div>
+          </div>
+
+          {/* ── Step 1: General Info ── */}
+          {activeStep === 1 && (
+            <div className="emp-form-grid">
+              {/* Name */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">
+                  إسم الموظف <span className="req">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="emp-input"
+                  placeholder="أدخل الاسم الرباعي"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (error.name) setError((prev) => ({ ...prev, name: null }));
+                  }}
                 />
+                {error.name && <span className="emp-field-error">{error.name}</span>}
+              </div>
 
-                {/* استخدام Bootstrap Grid يضمن استجابة الشاشة تلقائياً */}
-                <div className="row g-3 justify-content-center">
-                  
-                  {/* 1. الراتب الأساسي */}
-                  <div className="col-12 col-sm-6">
-                    <RegisterTextbox
-                      id="mainBudget"
-                      label="الراتب الأساسي"
-                      type="number"
-                      value={salaryDetails.mainBudget}
-                      onChange={handleSalaryChange}
-                      parentStyle={{ width: "100%" }}
+              {/* Gender */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">النوع</label>
+                <select
+                  className="emp-select"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                >
+                  <option value="0">ذكر</option>
+                  <option value="1">أنثى</option>
+                </select>
+              </div>
+
+              {/* ID Type */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">نوع الهوية</label>
+                <select
+                  className="emp-select"
+                  value={idtype}
+                  onChange={(e) => setIdtype(e.target.value)}
+                >
+                  <option value={0}>بطاقة هوية وطنية</option>
+                  <option value={1}>جواز سفر</option>
+                  <option value={2}>إقامة نظامية</option>
+                </select>
+              </div>
+
+              {/* ID Number */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">رقم الهوية / الإقامة</label>
+                <input
+                  type="text"
+                  className="emp-input"
+                  placeholder="أدخل رقم الهوية"
+                  value={nationalid}
+                  onChange={(e) => setNationalid(e.target.value)}
+                />
+                {error.nationalid && (
+                  <span className="emp-field-error">{error.nationalid}</span>
+                )}
+              </div>
+
+              {/* Date of Birth */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">تاريخ الميلاد</label>
+                <input
+                  type="date"
+                  className="emp-input"
+                  value={dob}
+                  onChange={(e) => setDob(e.target.value)}
+                />
+              </div>
+
+              {/* National ID Expire Date */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">تاريخ انتهاء الهوية</label>
+                <input
+                  type="date"
+                  className="emp-input"
+                  value={nationalidExpire}
+                  onChange={(e) => setNationalidExpire(e.target.value)}
+                />
+              </div>
+
+              {/* Date of Hire */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">تاريخ التعيين</label>
+                <input
+                  type="date"
+                  className="emp-input"
+                  value={dateofhire}
+                  onChange={(e) => setDateofhire(e.target.value)}
+                />
+              </div>
+
+              {/* Contract Expiration */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">تاريخ انتهاء التعاقد</label>
+                <input
+                  type="date"
+                  className="emp-input"
+                  value={contractexpiration}
+                  onChange={(e) => setContractexpiration(e.target.value)}
+                />
+              </div>
+
+              {/* Social Status */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">الحالة الاجتماعية</label>
+                <select
+                  className="emp-select"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value={0}>أعزب</option>
+                  <option value={1}>متزوج</option>
+                  <option value={2}>مطلق</option>
+                  <option value={3}>أرمل</option>
+                </select>
+              </div>
+
+              {/* Phone */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">رقم الجوال</label>
+                <input
+                  type="text"
+                  dir="ltr"
+                  className="emp-input text-end"
+                  placeholder="05XXXXXXXX"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+                {error.phone && <span className="emp-field-error">{error.phone}</span>}
+              </div>
+
+              {/* Email */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">البريد الإلكتروني</label>
+                <input
+                  type="email"
+                  dir="ltr"
+                  className="emp-input text-end"
+                  placeholder="employee@domain.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                {error.email && <span className="emp-field-error">{error.email}</span>}
+              </div>
+
+              {/* Nationality */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">الجنسية</label>
+                <input
+                  type="text"
+                  className="emp-input"
+                  placeholder="سعودي، مصري، ..."
+                  value={nationality}
+                  onChange={(e) => setNationality(e.target.value)}
+                />
+              </div>
+
+              {/* Job Title */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">المسمى الوظيفي</label>
+                <select
+                  className="emp-select"
+                  value={jobTitleId}
+                  onChange={(e) => setJobTitleId(e.target.value)}
+                >
+                  <option value="">اختر المسمى الوظيفي</option>
+                  {jobTitles.map((jt) => (
+                    <option key={jt.id} value={jt.id}>
+                      {jt.title || jt.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Work Type */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">نوع العمل</label>
+                <select
+                  className="emp-select"
+                  value={worktype}
+                  onChange={(e) => setWorktype(e.target.value)}
+                >
+                  <option value={0}>دوام كامل</option>
+                  <option value={1}>دوام جزئي</option>
+                </select>
+              </div>
+
+              {/* Qualification */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">المؤهل العلمي</label>
+                <input
+                  type="text"
+                  className="emp-input"
+                  placeholder="بكالوريوس، دبلوم، ..."
+                  value={qualification}
+                  onChange={(e) => setQualification(e.target.value)}
+                />
+              </div>
+
+              {/* IBAN */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">رقم الحساب البنكي (IBAN)</label>
+                <input
+                  type="text"
+                  dir="ltr"
+                  className="emp-input text-end"
+                  placeholder="SAXXXXXXXXXXXXXXXXXXXXXXXX"
+                  value={iban}
+                  onChange={(e) => setIban(e.target.value)}
+                />
+              </div>
+
+              {/* Address */}
+              <div className="emp-field-group emp-full-width">
+                <label className="emp-field-label">العنوان الوطني / السكن</label>
+                <input
+                  type="text"
+                  className="emp-input"
+                  placeholder="المدينة، الحي، الشارع"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              </div>
+
+              {/* Photo Upload */}
+              <div className="emp-field-group emp-full-width">
+                <label className="emp-field-label">الصورة الشخصية</label>
+                <input
+                  type="file"
+                  className="emp-input"
+                  accept="image/*"
+                  onChange={(e) => setPhoto(e.target.files[0])}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ── Step 2: Salary & Allowances ── */}
+          {activeStep === 2 && (
+            <div className="emp-form-grid">
+              {/* Basic Salary */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">الراتب الأساسي (ريال)</label>
+                <input
+                  type="number"
+                  className="emp-input"
+                  value={basicSalary}
+                  onChange={(e) => handleBasicSalaryChange(e.target.value)}
+                />
+              </div>
+
+              {/* Social Insurance Ratio */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">نسبة التأمين الاجتماعي (%)</label>
+                <input
+                  type="number"
+                  className="emp-input"
+                  value={socialInsuranceRatio}
+                  onChange={(e) => handleRatioChange(e.target.value)}
+                />
+              </div>
+
+              {/* Social Insurance Value */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">مبلغ التأمين الاجتماعي المستقطع</label>
+                <input
+                  type="number"
+                  className="emp-input"
+                  value={socialInsurance}
+                  onChange={(e) => setSocialInsurance(parseFloat(e.target.value) || 0)}
+                />
+              </div>
+
+              {/* Housing Allowance */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">بدل السكن (ريال)</label>
+                <input
+                  type="number"
+                  className="emp-input"
+                  value={housingAllowance}
+                  onChange={(e) => setHousingAllowance(parseFloat(e.target.value) || 0)}
+                />
+              </div>
+
+              {/* Transport Allowance */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">بدل المواصلات (ريال)</label>
+                <input
+                  type="number"
+                  className="emp-input"
+                  value={transportAllowance}
+                  onChange={(e) => setTransportAllowance(parseFloat(e.target.value) || 0)}
+                />
+              </div>
+
+              {/* Communication Allowance */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">بدل اتصال (ريال)</label>
+                <input
+                  type="number"
+                  className="emp-input"
+                  value={communicationAllowance}
+                  onChange={(e) => setCommunicationAllowance(parseFloat(e.target.value) || 0)}
+                />
+              </div>
+
+              {/* Life Allowance */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">بدل إعاشة (ريال)</label>
+                <input
+                  type="number"
+                  className="emp-input"
+                  value={lifeAllowance}
+                  onChange={(e) => setLifeAllowance(parseFloat(e.target.value) || 0)}
+                />
+              </div>
+
+              {/* Work Allowance */}
+              <div className="emp-field-group">
+                <label className="emp-field-label">بدل طبيعة عمل (ريال)</label>
+                <input
+                  type="number"
+                  className="emp-input"
+                  value={workAllowance}
+                  onChange={(e) => setWorkAllowance(parseFloat(e.target.value) || 0)}
+                />
+              </div>
+
+              {/* Salary Account */}
+              <div className="emp-field-group emp-full-width">
+                <label className="emp-field-label">حساب ترحيل الراتب</label>
+                <select
+                  className="emp-select"
+                  value={salaryAccount}
+                  onChange={(e) => setSalaryAccount(e.target.value)}
+                >
+                  <option value="">اختر حساب ترحيل الراتب</option>
+                  <option value="41101001,41101002">الرواتب والأجور النقدية</option>
+                  <option value="42301001,42301002">مصاريف التشغيل المحملة على النشاط</option>
+                  <option value="44101001,44101002">مصاريف جمع الأموال</option>
+                </select>
+              </div>
+
+              {/* Salary Total Summary */}
+              <div className="emp-full-width emp-salary-summary">
+                <span className="emp-salary-label">إجمالي الراتب الصافي:</span>
+                <span className="emp-salary-total">{calculateTotalSalary()} ريال</span>
+              </div>
+            </div>
+          )}
+
+          {/* ── Step 3: Documents ── */}
+          {activeStep === 3 && (
+            <div>
+              {documents.map((doc, idx) => (
+                <div key={idx} className="emp-doc-card">
+                  {documents.length > 1 && (
+                    <button
+                      type="button"
+                      className="emp-doc-delete-btn"
+                      onClick={() => handleRemoveDocument(idx)}
+                    >
+                      حذف المستند
+                    </button>
+                  )}
+
+                  <div className="emp-field-group mb-2">
+                    <label className="emp-field-label">
+                      عنوان المستند {idx + 1}
+                    </label>
+                    <input
+                      type="text"
+                      className="emp-input"
+                      placeholder="مثال: صورة الهوية، العقد الموقع، الشهادة..."
+                      value={doc.title}
+                      onChange={(e) => handleDocTitleChange(idx, e.target.value)}
                     />
                   </div>
 
-                  {/* 2. التأمين الاجتماعي */}
-                  <div className="col-12 col-sm-6">
-                    <RegisterTextbox
-                      id="socialWelfare"
-                      label="التأمين الاجتماعي"
-                      type="number"
-                      value={salaryDetails.socialWelfare}
-                      onChange={handleSalaryChange}
-                      parentStyle={{ width: "100%" }}
+                  <div className="emp-field-group">
+                    <label className="emp-field-label">ملف المستند</label>
+                    <input
+                      type="file"
+                      className="emp-input"
+                      accept=".pdf,.doc,.docx,image/*"
+                      onChange={(e) => handleDocFileChange(idx, e.target.files[0])}
                     />
-                  </div>
-
-                  {/* 3. بدل السكن */}
-                  <div className="col-12 col-sm-6">
-                    <RegisterTextbox
-                      id="house"
-                      label="بدل السكن"
-                      type="number"
-                      value={house}
-                      onChange={(e) => setHouse(e.target.value)}
-                      parentStyle={{ width: "100%" }}
-                    />
-                  </div>
-
-                  {/* 4. بدل المواصلات */}
-                  <div className="col-12 col-sm-6">
-                    <RegisterTextbox
-                      id="transport"
-                      label="بدل المواصلات"
-                      type="number"
-                      value={transportation}
-                      onChange={(e) => setTransportation(e.target.value)}
-                      parentStyle={{ width: "100%" }}
-                    />
-                  </div>
-
-                  {/* 5. بدل اتصال */}
-                  <div className="col-12 col-sm-6">
-                    <RegisterTextbox
-                      id="communication"
-                      label="بدل اتصال"
-                      type="number"
-                      value={communication}
-                      onChange={(e) => setCommunication(e.target.value)}
-                      parentStyle={{ width: "100%" }}
-                    />
-                  </div>
-
-                  {/* 6. بدل اعاشة */}
-                  <div className="col-12 col-sm-6">
-                    <RegisterTextbox
-                      id="life"
-                      label="بدل اعاشة"
-                      type="number"
-                      value={life}
-                      onChange={(e) => setLife(e.target.value)}
-                      parentStyle={{ width: "100%" }}
-                    />
-                  </div>
-
-                  {/* 7. بدل طبيعة عمل */}
-                  <div className="col-12 col-sm-6">
-                    <RegisterTextbox
-                      id="work"
-                      label="بدل طبيعة عمل"
-                      type="number"
-                      value={work}
-                      onChange={(e) => setWork(e.target.value)}
-                      parentStyle={{ width: "100%" }}
-                    />
-                  </div>
-
-                  {/* 8. نسبة التأمين الاجتماعي */}
-                  <div className="col-12 col-sm-6">
-                    <RegisterTextbox
-                      id="socialWelfareRatio"
-                      label="نسبة التأمين الاجتماعي"
-                      type="number"
-                      onChange={(e) => {
-                        const { id, value } = e.target;
-                        setSalaryDetails((prevState) => ({
-                          ...prevState,
-                          [id]: value <= 100 ? value : prevState[id],
-                          socialWelfare:
-                            value <= 100
-                              ? ((value * prevState.mainBudget) / 100).toFixed(1)
-                              : prevState.socialWelfareRatio,
-                        }));
-                      }}
-                      value={salaryDetails.socialWelfareRatio}
-                      prefix={<FontAwesomeIcon icon={faPercent} />}
-                      customPrefixLeft="4px"
-                      parentStyle={{ width: "100%" }}
-                    />
-                  </div>
-
-                  {/* 9. حساب ترحيل الراتب */}
-                  <div className="col-12 col-sm-6">
-                    <RegisterSelect
-                      id="jobtitle"
-                      label="حساب ترحيل الراتب"
-                      options={[
-                        { value: "", label: " اختر حساب ترحيل الراتب " },
-                        {
-                          value: "41101001,41101002,41101003,41101004,41101005,41101006,41101007,41101008",
-                          label: "الرواتب والأجور النقدية",
-                        },
-                        {
-                          value: "42301001,42301002,42301003,42301004,42301005,42301006,42301007,42301008",
-                          label: "مصاريف التشغيل المحمله على النشاط",
-                        },
-                        {
-                          value: "44101001,44101002,44101003,44101004,44101005,44101006,44101007,44101008",
-                          label: "مصاريف جمع الاموال",
-                        },
-                      ]}
-                      name="type"
-                      value={type}
-                      onChange={(e) => setType(e.target.value)}
-                      parentStyle={{ width: "100%" }}
-                    />
-                    {error && error.account && (
-                      <div className="text-danger fs-6 mt-1">{error.account}</div>
+                    {doc.existingUrl && !doc.file && (
+                      <span className="text-muted small mt-1">
+                        ملف مرفق حالياً: <a href={doc.existingUrl} target="_blank" rel="noreferrer">عرض</a>
+                      </span>
                     )}
                   </div>
-
-                  {/* 10. الإجمالي */}
-                  <div className="col-12 col-sm-6">
-                    <RegisterTextbox
-                      label="الإجمالي"
-                      value={calculateTotal()}
-                      disabled
-                      stylee={{
-                        backgroundColor: "var(--background-color)",
-                        fontWeight: "bold",
-                        fontSize: "18px",
-                      }}
-                      parentStyle={{ width: "100%" }}
-                    />
-                  </div>
                 </div>
+              ))}
 
-                {/* زر الحفظ متمركز وبمسافة متناسقة */}
-                <div className="d-flex justify-content-center mt-4 mb-2">
-                  {isSubmitting2 ? (
-                    <Spinner animation="border" variant="primary" />
-                  ) : (
-                    <CustomButton text="حفظ" />
-                  )}
-                </div>
-              </Form>
+              <button
+                type="button"
+                className="emp-add-doc-btn"
+                onClick={handleAddDocument}
+              >
+                + إضافة مستند إضافي
+              </button>
+            </div>
+          )}
+        </Modal.Body>
+
+        <Modal.Footer>
+          <div>
+            {activeStep > 1 && (
+              <button
+                type="button"
+                className="emp-btn-secondary"
+                onClick={() => setActiveStep((prev) => prev - 1)}
+                disabled={isSubmitting}
+              >
+                السابق
+              </button>
             )}
           </div>
-           <div>
-  {activeTab === 2 && (
-    <div
-      className="dynamic-documents-section"
-       style={{ width: "80%", marginTop: "",margin:"20px auto 0" }}
-    >
-      {/* قسم رفع المستندات المتعددة */}
 
-      <p
-        className="datelable"
-        style={{ fontWeight: "bold", marginBottom: "10px" }}
-      >
-        مستندات الموظف الإضافية
-      </p>
-
-      {documents.map((doc, index) => (
-        <div
-          key={index}
-          style={{
-            border: "1px solid #ccc",
-            padding: "15px",
-            borderRadius: "8px",
-            marginBottom: "15px",
-            position: "relative",
-          }}
-        >
-          {documents.length > 1 && (
+          <div className="d-flex gap-2">
             <button
               type="button"
-              className="btn btn-danger btn-sm"
-              style={{ position: "absolute", top: "10px", left: "10px" }}
-              onClick={() => handleRemoveDocument(index)}
+              className="emp-btn-secondary"
+              onClick={() => setShowModal(false)}
+              disabled={isSubmitting}
             >
-              حذف
+              إلغاء
             </button>
-          )}
 
-          <RegisterTextbox
-            parentStyle={{ width: "100%", marginBottom: "10px" }}
-            id={`doc-title-${index}`}
-            label={`عنوان المستند ${index + 1}`}
-            type="text"
-            stylee={{ width: "100%" }}
-            value={doc.title}
-            onChange={(e) =>
-              handleDocTitleChange(index, e.target.value)
-            }
-          />
-
-          <UploadInput
-            id={`doc-file-${index}`}
-            parentStyle={{
-              display: "flex",
-              alignItems: "center",
-              marginTop: "10px",
-            }}
-            label="اختر الملف"
-            onChange={(e) =>
-              handleDocFileChange(index, e.target.files[0])
-            }
-            accept=".pdf,.doc,.docx,image/*"
-          />
-
-          {doc.file && (
-            <span style={{ fontSize: "12px", color: "green" }}>
-              ملف تم اختياره: {doc.file.name}
-            </span>
-          )}
-        </div>
-      ))}
-
-      <button
-        type="button"
-        className="btn btn-secondary"
-        style={{ marginTop: "10px", width: "100%" }}
-        onClick={handleAddDocument}
-      >
-        + إضافة مستند آخر
-      </button>
-    </div>
-  )}
-</div>
+            {activeStep < 3 ? (
+              <button
+                type="button"
+                className="emp-btn-primary"
+                onClick={() => {
+                  if (activeStep === 1 && !validateStep1()) {
+                    toast.error("يرجى ملء الحقول الإلزامية");
+                    return;
+                  }
+                  setActiveStep((prev) => prev + 1);
+                }}
+              >
+                التالي
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="emp-btn-primary"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <Spinner size="sm" animation="border" />
+                ) : editingId ? (
+                  "حفظ التعديلات"
+                ) : (
+                  "حفظ الموظف"
+                )}
+              </button>
+            )}
           </div>
+        </Modal.Footer>
+      </Modal>
+
+      {/* ── Delete Confirmation Modal ── */}
+      <Modal
+        show={deleteModal.show}
+        onHide={() => !isDeleting && setDeleteModal({ show: false, item: null })}
+        centered
+        dir="rtl"
+        dialogClassName="add-employee-modal"
+      >
+        <Modal.Header closeButton>
+          <div className="emp-modal-title" style={{ color: "#dc3545" }}>
+            <span
+              className="emp-modal-title-icon"
+              style={{ background: "rgba(220, 53, 69, 0.12)", color: "#dc3545" }}
+            >
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+            </span>
+            <span>تأكيد حذف الموظف</span>
+          </div>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ margin: 0, fontSize: "15px", color: "#3a2e1d" }}>
+            هل أنت متأكد من حذف الموظف{" "}
+            <strong>"{deleteModal.item?.name}"</strong>؟
+          </p>
+          <p style={{ margin: "8px 0 0", fontSize: "13px", color: "#8a7a66" }}>
+            سيتم نقل سجل الموظف إلى سلة المحذوفات.
+          </p>
         </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="button"
+            className="emp-btn-secondary"
+            onClick={() => setDeleteModal({ show: false, item: null })}
+            disabled={isDeleting}
+          >
+            إلغاء
+          </button>
+          <button
+            type="button"
+            className="emp-btn-danger"
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? <Spinner size="sm" animation="border" /> : "حذف نهائي"}
+          </button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

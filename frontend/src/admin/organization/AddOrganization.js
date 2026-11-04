@@ -63,7 +63,12 @@ function AddOrganization() {
       const data = await res;
       console.log(data.data);
       if (data.status === 200) {
-        setRows(data.data);
+        const list = Array.isArray(data.data)
+          ? data.data
+          : Array.isArray(data.data?.data)
+          ? data.data.data
+          : [];
+        setRows(list);
         setLoading(false);
       }
     } catch (error) {
@@ -127,9 +132,9 @@ function AddOrganization() {
                   options={[
                     { value: "", label: " اختر المدير المباشر " },
                     { value: "0", label: " لا يوجد" },
-                    ...rows.map((row) => ({
+                    ...(Array.isArray(rows) ? rows : []).map((row) => ({
                       value: row.id,
-                      label: row.title,
+                      label: row.title || row.name,
                     })),
                   ]}
                   name="mangerjobtitle"

@@ -1,293 +1,345 @@
-
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../components/title";
-import { faFileInvoice, faPlus } from "@fortawesome/free-solid-svg-icons";
-import RegisterTextbox from "../../../components/RegisterTextBox";
-import "../../ReceiptVoucher/ReceiptVoucher.css";
-import { Form , Spinner } from "react-bootstrap";
-import CustomButton from "../../../components/CustomButton";
-import RegisterSelect from "../../../components/RegisterSelect";
+import {
+  faFileInvoice,
+  faBoxes,
+  faCheckCircle,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
+import { Form, Spinner, Alert } from "react-bootstrap";
 import { useEffect, useRef, useState } from "react";
 import JsBarcode from "jsbarcode";
-import { useNavigate , useParams } from "react-router";
+import { useNavigate } from "react-router";
 import API from "../../../api/axiosConfig";
 import TestPreLoader from "../../TestPreLoader/TestPreLoader";
-//import { set } from "react-datepicker/dist/date_utils";
+import "./voucherDesign.css";
 
-function GeneraReceiptVoucher(props) {
-
+function GeneraReceiptVoucher() {
   const barcodeRef = useRef(null);
-  const navigate = useNavigate('/')
-  const [selectedAccount, setSelectedAccount] = useState({ value: "", name: "" });
-  const [selectedPay, setSelectedPay] = useState({ value: "", name: "" });
-  const [money, setMoney] = useState("");
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
-  const [date , setDate] = useState(new Date().toISOString().substr(0, 10));
-  const [amount , setAmount] = useState(0);
-  const [selDonor , setSelDonor] = useState('');
-  const [type , setType] = useState(0);
-  const [error , setError] = useState([]);
-  const [message , setMessage] = useState([]);
-  const {id} = useParams();
-  const [isSubmitting , setIsSubmitting] = useState(false);
-  const [account , setAccount] = useState([]);
-  const [debt , setDebt] = useState('');
-  const [description , setDescription] = useState('');
-  const [cridet , setCridet] = useState('');
-  const [warehouseAccount , setWarehouseAccount] = useState([]);
+  const [date, setDate] = useState(new Date().toISOString().substr(0, 10));
+  const [amount, setAmount] = useState("");
+  const [type, setType] = useState("2");
+  const [account, setAccount] = useState([]);
+  const [warehouseAccount, setWarehouseAccount] = useState([]);
+  const [debt, setDebt] = useState("");
+  const [cridet, setCridet] = useState("");
+  const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [validationError, setValidationError] = useState("");
+  const [serverError, setServerError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const typeVoucher = 2;
 
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [resFrom, resWarehouse] = await Promise.all([
+        API.get("/generalvoucher/fromaccount").catch(() => ({ data: [] })),
+        API.post("warehouse/transaction/warehousecontentcode").catch(() =>
+          API.get("/transactions/components/donations").catch(() => ({ data: [] }))
+        ),
+      ]);
 
-  useEffect(() => {
-    const barcodeNum = '442002';
-    if (barcodeRef.current) {
-      JsBarcode(barcodeRef.current, barcodeNum, {
-        format: "CODE128",
-        displayValue: false,
-        fontSize: 14,
-      });
+      const fromList = Array.isArray(resFrom.data)
+        ? resFrom.data
+        : (Array.isArray(resFrom.data?.data) ? resFrom.data.data : []);
+
+      const warehouseList = Array.isArray(resWarehouse.data)
+        ? resWarehouse.data
+        : (Array.isArray(resWarehouse.data?.data) ? resWarehouse.data.data : []);
+
+      setAccount(fromList);
+      setWarehouseAccount(warehouseList);
+    } catch (err) {
+      console.error("Error fetching accounts:", err);
+    } finally {
+      setLoading(false);
     }
-  }, []);
-
-  const [hasTax, setHasTax] = useState(false);
-  const handleTaxChange = (e) => {
-    setHasTax(e.target.value === "yes");
   };
 
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const [paymentType, setPaymentType] = useState("");
-  const [paymentTypeError, setPaymentTypeError] = useState("");
-
-  const handleSubmit = async(e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    if (!selectedPay) {
-      setPaymentTypeError("يجب اختيار نوع الحالة");
-      return;
-    } else {
-      setPaymentTypeError("");
+  useEffect(() => {
+    if (barcodeRef.current && !loading) {
+      try {
+        const barcodeNum = "RV-IN" + Date.now().toString().slice(-6);
+        JsBarcode(barcodeRef.current, barcodeNum, {
+          format: "CODE128",
+          displayValue: true,
+          fontSize: 14,
+          lineColor: "#4a3f35",
+          height: 40,
+        });
+      } catch (err) {
+        console.error("Barcode generation error:", err);
+      }
     }
+  }, [loading]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setValidationError("");
+    setServerError("");
+    setSuccessMessage("");
+
+    const parsedAmount = parseFloat(amount);
+    if (!parsedAmount || parsedAmount <= 0) {
+      setValidationError("يرجى إدخال قيمة تقديرية صحيحة للسند العيني.");
+      return;
+    }
+    if (!debt) {
+      setValidationError("يرجى اختيار حساب الطرف المدين (من حساب).");
+      return;
+    }
+    if (!cridet) {
+      setValidationError("يرجى اختيار حساب الطرف الدائن / المخزن (إلى حساب).");
+      return;
+    }
+    if (debt === cridet) {
+      setValidationError("لا يمكن أن يكون حساب المدين وحساب الدائن نفس الحساب.");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      const res = await API.post("/generalvoucher/storecashvoucher", {
-        amount: amount,
-        type: type,
-        description: description,
+      const payload = {
+        amount: parsedAmount,
+        type: type || "2",
+        description: description || "سند قبض عيني",
         date: date,
         fromaccount: debt,
         toaccount: cridet,
-        typevoucher: typeVoucher
-      });
-      const data = await res;  
-      if (data.status === 200) {
-        navigate(`/accountingEntry`);
-      } else {
-        setError(data.data.errors);
-      }
-    } catch (error) {
-      console.error(error);
-      setIsSubmitting(false);
-      setError(error.response.data.errors);
-      setMessage(error.response.data.message);
-      }
+        typevoucher: typeVoucher,
+        voucher_type: "receipt",
+      };
 
+      const res = await API.post("/generalvoucher/storecashvoucher", payload);
+      if (res.status === 200 || res.status === 201 || res.data?.success) {
+        setSuccessMessage("تم حفظ وترحيل سند القبض العيني بنجاح!");
+        setTimeout(() => {
+          navigate("/accountingEntry");
+        }, 1200);
+      }
+    } catch (err) {
+      console.error("Error saving receipt voucher:", err);
+      const msg =
+        err?.response?.data?.message ||
+        (err?.response?.data?.errors
+          ? Object.values(err.response.data.errors).flat().join(" - ")
+          : "تعذر حفظ سند القبض العيني.");
+      setServerError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-
-
-const getAccount = async () => {
-  try {
-    const res = await API.get("/generalvoucher/fromaccount");
-    const data = await res;
-    setAccount(data.data);
-    console.log(data.data);
-    setLoading(false);
-  } catch (error) {
-    console.error(error);
-
+  if (loading) {
+    return (
+      <div style={{ height: "100vh" }}>
+        <TestPreLoader />
+      </div>
+    );
   }
-};
 
- const getAllWarehousesAccount = async () => {
-      try {
-        const response = await API.post(
-          "warehouse/transaction/warehousecontentcode"
-        );
-        const data = response.data;
-        setWarehouseAccount(data);
-      } catch (error) {
-        console.error("Error fetching level 4 accounts:", error);
-      }
-    };
- 
-useEffect(() => {
-  getAccount();
-  getAllWarehousesAccount();
-}, []);
   return (
-    loading ? <TestPreLoader /> :
-    <>
-    
-      <div className="ReceiptVoucher">
+    <div className="voucher-page-wrapper">
+      <div className="voucher-header-bar">
         <Title
-          title=" سند قبض عيني"
-          icon={<FontAwesomeIcon icon={faFileInvoice} />}
+          title="سند قبض عيني"
+          icon={<FontAwesomeIcon icon={faBoxes} />}
         />
-        {/* {message && <div className="alert alert-danger">{message}</div>} */}
-        <Form onSubmit={handleSubmit}>
+        <div className="voucher-badge receipt">
+          <span>سند قبض عيني - أصول وتبرعات عينية ومخازن</span>
+        </div>
+      </div>
 
-          <div className="ReceiptContainer">
-            <div className="vouHead">
-             
-              <div style={{    display: 'flex',width: '34%',flexDirection: 'column',}}>
-                <p>تاريخ السند</p>
-                
+      <div className="voucher-card">
+        {validationError && (
+          <Alert variant="warning" className="d-flex align-items-center mb-4 rounded-3 shadow-sm">
+            <FontAwesomeIcon icon={faExclamationTriangle} className="ms-2 fs-5 text-warning" />
+            <div>{validationError}</div>
+          </Alert>
+        )}
+        {serverError && (
+          <Alert variant="danger" className="d-flex align-items-center mb-4 rounded-3 shadow-sm">
+            <FontAwesomeIcon icon={faExclamationTriangle} className="ms-2 fs-5 text-danger" />
+            <div>{serverError}</div>
+          </Alert>
+        )}
+        {successMessage && (
+          <Alert variant="success" className="d-flex align-items-center mb-4 rounded-3 shadow-sm">
+            <FontAwesomeIcon icon={faCheckCircle} className="ms-2 fs-5" />
+            <div>{successMessage}</div>
+          </Alert>
+        )}
+
+        <Form onSubmit={handleSubmit}>
+          {/* القسم 1: المبلغ وتاريخ الحركة */}
+          <div className="voucher-section-title">
+            <FontAwesomeIcon icon={faBoxes} />
+            <span>البيانات الأساسية وتاريخ السند</span>
+          </div>
+
+          <div className="voucher-grid">
+            <div className="voucher-field-group">
+              <label className="voucher-field-label">
+                تاريخ السند <span className="required-star">*</span>
+              </label>
               <input
                 type="date"
                 id="date"
                 onChange={(e) => setDate(e.target.value)}
                 value={date}
-                className="custom-datepicker"
-                
+                className="voucher-input"
+                required
               />
-              </div>
-              {error && error.date && <div className="error">{error.date}</div>}
-              <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="amount"
-                label="المبلغ"
+            </div>
+
+            <div className="voucher-field-group">
+              <label className="voucher-field-label">
+                القيمة التقديرية (ج.م) <span className="required-star">*</span>
+              </label>
+              <input
                 type="number"
-                stylee={{
-                  width: "30%",
-                }}
-                name="amount"
+                step="0.01"
+                min="0.01"
+                id="amount"
+                placeholder="0.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
+                className="voucher-input voucher-amount-input"
+                required
               />
-              {error && error.amount && <div className="error">{error.amount}</div>}
             </div>
-            <div className="vouHead">
+          </div>
 
-              <RegisterSelect
-                id="acc"
-                label="من حساب "
-                stylee={{
-                  width: "35% !important",
-                }}
-                parentStyle={{
-                  width: "30%",
-                  marginBottom: "20px",
-                }}
-                options={[
-                  { value: "", label: "إختر الحساب" },
-                  ...account.map((item) => ({
-                    value: item.id,
-                    label: item.name,
-                  }))
-                ]}
+          {/* القسم 2: الحسابات والتوجيه المحاسبي */}
+          <div className="voucher-section-title">
+            <FontAwesomeIcon icon={faFileInvoice} />
+            <span>التوجيه المحاسبي والمخزني</span>
+          </div>
+
+          <div className="voucher-grid">
+            <div className="voucher-field-group">
+              <label className="voucher-field-label">
+                من حساب (الطرف المدين) <span className="required-star">*</span>
+              </label>
+              <select
+                className="voucher-select"
                 value={debt}
                 onChange={(e) => setDebt(e.target.value)}
-              />
-              {error && error.debt && <div className="error">{error.debt}</div>}
-              <RegisterSelect
-                id="acc"
-                label="الى حساب "
-                stylee={{
-                  width: "35% !important",
-                }}
-                parentStyle={{
-                  width: "30%",
-                  marginBottom: "20px",
-                }}
-                options={[
-                  { value: "", label: "إختر الحساب" },
-                  ...warehouseAccount.map((item) => ({
-                    value: item.id,
-                    label: item.name + " - " + item.code,
-                  }))
-                ]}
-                value={debt}
-                onChange={(e) => setCridet(e.target.value)}
-              />
-              {error && error.debt && <div className="error">{error.debt}</div>}
-             
+                required
+              >
+                <option value="">-- اختر الحساب --</option>
+                {account.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.label || item.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="vouHead">
+            <div className="voucher-field-group">
+              <label className="voucher-field-label">
+                إلى حساب / المخزن (الطرف الدائن) <span className="required-star">*</span>
+              </label>
+              <select
+                className="voucher-select"
+                value={cridet}
+                onChange={(e) => setCridet(e.target.value)}
+                required
+              >
+                <option value="">-- اختر حساب المخزن / المتبرع --</option>
+                {warehouseAccount.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name ? `${item.name}${item.code ? ` - ${item.code}` : ""}` : (item.label || item.id)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-              <RegisterSelect
-                id="location"
-                label="نوع التحويل"
-                stylee={{
-                  width: "35% !important",
-                }}
-                parentStyle={{
-                  width: "30%",
-                  marginBottom: "20px",
-                }}
-                options={[
-                  { value: "", label: "إختر النوع" },
-                  { value: "1", label: "الشبكة" },
-                  { value: "2", label: "تحويل" },
-                  { value: "3", label: "إيداع" },
-                  { value: "4", label: "شيك" },
-                  { value: "5", label: "نقدي" },
-                  { value: "6", label: "KNET" },
-                ]}
-                name="type"
-                onChange={(e) => {setType(e.target.value)}} />
-                  {error && error.type && <div className="error">{error.type}</div>}
-                  <RegisterTextbox
-                parentStyle={{
-                  width: "30%",
-                }}
-                id="badget"
-                label="الوصف"
+          {/* القسم 3: نوع التحويل والتصنيف */}
+          <div className="voucher-section-title">
+            <span>نوع التحويل والتصنيف</span>
+          </div>
+
+          <div className="voucher-grid">
+            <div className="voucher-field-group">
+              <label className="voucher-field-label">نوع التحويل</label>
+              <select
+                className="voucher-select"
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+              >
+                <option value="2">عيني / تحويل مواد</option>
+                <option value="1">الشبكة</option>
+                <option value="3">إيداع</option>
+                <option value="4">شيك</option>
+                <option value="5">نقدي</option>
+                <option value="6">KNET</option>
+              </select>
+            </div>
+
+            <div className="voucher-field-group">
+              <label className="voucher-field-label">نوع حساب الترحيل</label>
+              <select
+                className="voucher-select"
+                value={typeVoucher}
+                disabled
+              >
+                <option value="2">سند قبض عيني</option>
+              </select>
+            </div>
+          </div>
+
+          {/* القسم 4: البيان والملاحظات */}
+          <div className="voucher-section-title">
+            <span>البيان والشرح التوضيحي</span>
+          </div>
+
+          <div className="voucher-grid single-col">
+            <div className="voucher-field-group">
+              <label className="voucher-field-label">شرح السند / تفاصيل الأصناف العينية</label>
+              <input
                 type="text"
-                stylee={{
-                  width: "35%",
-                }}
+                className="voucher-input"
+                placeholder="مثال: استلام تبرع عيني عبارة عن أجهزة ومعدات طبية أو مواد غذائية..."
+                value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
           </div>
-          <div className="signatureCon1">
-              {/* <img
-                className="barCode"
-                src="https://i.pinimg.com/564x/5a/b4/fe/5ab4fec6fe13a25fb4649c2385245485.jpg"
-                alt="bar"
-              /> */}
 
+          {/* باركود السند */}
+          <div className="voucher-barcode-wrapper">
+            <span style={{ fontSize: "12px", color: "var(--label-color)", marginBottom: "4px", fontWeight: "600" }}>الرمز الشريطي للتوثيق</span>
+            <svg ref={barcodeRef}></svg>
+          </div>
 
-              <svg ref={barcodeRef}></svg>
-
-            </div>
-
-          {paymentTypeError && (
-            <p
-              style={{
-                color: "red",
-                width: "85%",
-                textAlign: "right",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-end",
-              }}
-            >
-              {paymentTypeError}
-            </p>
-          )}
-
-          {
-            isSubmitting ? <Spinner animation="border" variant="primary" style={{display:"block" , margin:"auto"}}/> :
-            <div className="signaturebuttonCon">
-            <CustomButton text="إستلام الآن" className='mb-3' />
-          </div>}
+          {/* زر الحفظ */}
+          <div className="voucher-actions">
+            {isSubmitting ? (
+              <Spinner animation="border" variant="primary" />
+            ) : (
+              <button
+                type="submit"
+                className="voucher-submit-btn"
+              >
+                <FontAwesomeIcon icon={faCheckCircle} />
+                <span>حفظ وترحيل السند العيني</span>
+              </button>
+            )}
+          </div>
         </Form>
       </div>
-    </>
+    </div>
   );
 }
 

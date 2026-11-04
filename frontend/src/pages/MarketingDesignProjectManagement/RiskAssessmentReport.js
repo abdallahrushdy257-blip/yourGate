@@ -10,7 +10,9 @@ import {
   faPrint,
   faFileContract,
   faPlus,
+  faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
+import RiskMitigation from "./RiskMitigation";
 
 const getRiskLevel = (score) => {
   if (score >= 6) {
@@ -81,6 +83,15 @@ const RiskAssessmentReport = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(true);
+
+  // Mitigation Modal state
+  const [showMitigationModal, setShowMitigationModal] = React.useState(false);
+  const [selectedRiskId, setSelectedRiskId] = React.useState(null);
+
+  const handleOpenMitigation = (riskId) => {
+    setSelectedRiskId(riskId);
+    setShowMitigationModal(true);
+  };
 
   const getRiskData = async () => {
     try {
@@ -241,18 +252,16 @@ const RiskAssessmentReport = () => {
                       <StatusBadge status={r.mitigation_status} />
                     </div>
 
-                    {!hasMitigation && (
-                      <div style={{ marginTop: "16px", textAlign: "left" }} className="no-print">
-                        <button
-                          type="button"
-                          onClick={() => navigate(`/riskmitigation/${r.id}`)}
-                          style={styles.addMitigationBtn}
-                        >
-                          <FontAwesomeIcon icon={faPlus} style={{ marginLeft: "6px" }} />
-                          تسجيل خطة التخفيف لهذا الخطر
-                        </button>
-                      </div>
-                    )}
+                    <div style={{ marginTop: "16px", textAlign: "left" }} className="no-print">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenMitigation(r.id)}
+                        style={styles.addMitigationBtn}
+                      >
+                        <FontAwesomeIcon icon={hasMitigation ? faPenToSquare : faPlus} style={{ marginLeft: "6px" }} />
+                        {hasMitigation ? "تعديل خطة التخفيف" : "تسجيل خطة التخفيف لهذا الخطر"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -260,6 +269,17 @@ const RiskAssessmentReport = () => {
           })}
         </div>
       )}
+
+      {/* In-place Risk Mitigation Modal */}
+      <RiskMitigation
+        show={showMitigationModal}
+        onHide={() => {
+          setShowMitigationModal(false);
+          setSelectedRiskId(null);
+        }}
+        riskId={selectedRiskId}
+        onSuccess={() => getRiskData()}
+      />
     </div>
   );
 };

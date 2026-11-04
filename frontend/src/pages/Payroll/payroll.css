@@ -1,8 +1,100 @@
-.payroll-container {
-    width: 80%;
-    margin: auto;
-    text-align: center;
+.payroll-page-wrapper {
+    width: 100%;
+    margin-top: 20px;
+    direction: rtl;
 }
-.calc-actions {
-    padding-top: 100px;
+
+.payroll-filters-bar {
+    background: var(--surface-color, #fff);
+    border-radius: 14px;
+    padding: 14px 20px;
+    border: 1.5px solid rgba(194, 154, 100, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.payroll-period-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--main-color, #493d2c);
+}
+
+.payroll-select {
+    border-radius: 25px !important;
+    border: 1.5px solid #d9c3a5 !important;
+    background-color: var(--input-background, #fff) !important;
+    color: var(--text-color, #493d2c) !important;
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    outline: none !important;
+    transition: all 0.25s ease !important;
+    box-shadow: none !important;
+}
+
+.payroll-select:focus {
+    border-color: #c29a64 !important;
+    box-shadow: 0 0 0 3px rgba(194, 154, 100, 0.25) !important;
+}
+
+.payroll-calc-btn {
+    background: linear-gradient(135deg, #c29a64 0%, #a87e45 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 25px !important;
+    padding: 8px 22px !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    box-shadow: 0 4px 12px rgba(168, 126, 69, 0.3) !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer;
+}
+
+.payroll-calc-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(168, 126, 69, 0.4) !important;
+    color: #fff !important;
+}
+
+.payroll-net-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    background: rgba(194, 154, 100, 0.15);
+    color: #875f28;
+    font-weight: 700;
+    border: 1px solid rgba(194, 154, 100, 0.3);
+}
+
+/* Modal styling */
+.payroll-voucher-modal .modal-content {
+    border-radius: 18px;
+    border: 1.5px solid rgba(194, 154, 100, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.payroll-voucher-modal .modal-header {
+    background: var(--surface-color, #fff);
+}
+
+.payroll-voucher-modal .modal-body {
+    background: var(--background-color, #fdfbf9);
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #printable-payroll-voucher,
+    #printable-payroll-voucher * {
+        visibility: visible;
+    }
+    #printable-payroll-voucher {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+    }
 }

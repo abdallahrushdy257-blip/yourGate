@@ -1,278 +1,319 @@
-import { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faReceipt, faFileInvoice } from "@fortawesome/free-solid-svg-icons";
-import { Modal, Button, Form, Alert } from "react-bootstrap";
+import {
+  faBuilding,
+  faPlus,
+  faPenToSquare,
+  faTrash,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
+import { Modal, Spinner } from "react-bootstrap";
 import TableComponent from "../../components/TableComponent";
-import RegisterTextbox from "../../components/RegisterTextBox";
-import RegisterSelect from "../../components/RegisterSelect";
-
-// 1. بيانات وهمية ابتدائية لأقسام الشركة (Mock Data)
-const INITIAL_DEPARTMENTS = [
-  {
-    uuid: "dep-101",
-    name: "إدارة الموارد البشرية",
-    description: "قسم مسئول عن التوظيف وشؤون الموظفين والتطوير.",
-    manager: { id: "m-1", name: "أحمد علي" },
-  },
-  {
-    uuid: "dep-102",
-    name: "إدارة الحسابات والمالية",
-    description: "متابعة الميزانيات، المبيعات، والمصروفات الإدارية.",
-    manager: { id: "m-2", name: "سارة محمود" },
-  },
-  {
-    uuid: "dep-103",
-    name: "تكنولوجيا المعلومات (IT)",
-    description: "الدعم الفني وتطوير الأنظمة والبنية التحتية.",
-    manager: { id: "m-3", name: "محمد إبراهيم" },
-  },
-];
-
-// 2. قائمة وهمية للمدراء الاختيار منهم
-const INITIAL_MANAGERS = [
-  { value: "m-1", label: "أحمد علي" },
-  { value: "m-2", label: "سارة محمود" },
-  { value: "m-3", label: "محمد إبراهيم" },
-  { value: "m-4", label: "خالد عبد الله" },
-];
+import API from "../../api/axiosConfig";
+import { toast } from "react-toastify";
+import "./SectionsReport.css";
 
 function SectionsReport() {
-  // ==========================================
-  // STATIC STATE MANAGEMENT (بديل الباك إند)
-  // ==========================================
-  const [departments, setDepartments] = useState(INITIAL_DEPARTMENTS);
-  const [managers] = useState(INITIAL_MANAGERS);
-
-  // حالات التحكم بالمودال والنموذج
+  // ── States ──
   const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [editId, setEditId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ show: false, item: null });
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validated, setValidated] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // تنبيهات الرسائل (CustomAlert Replacement)
-  const [alertData, setAlertData] = useState({ message: "", type: "" });
+  // ── Form fields ──
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [managerId, setManagerId] = useState("");
+  const [error, setError] = useState({});
 
-  const [departmentData, setDepartmentData] = useState({
-    name: "",
-    description: "",
-    manager_id: "",
-  });
+  // ── Managers dropdown options loaded from API ──
+  const [managers, setManagers] = useState([]);
 
-  const handleShowModal = () => {
-    setEditing(false);
-    setEditId(null);
-    setDepartmentData({ name: "", description: "", manager_id: "" });
-    setValidated(false);
+  // Fetch managers from employees API
+  const fetchManagers = async () => {
+    try {
+      const res = await API.get("/employees");
+      const list = Array.isArray(res.data)
+        ? res.data
+        : Array.isArray(res.data?.data)
+        ? res.data.data
+        : [];
+      setManagers(list);
+    } catch (err) {
+      console.error("Error fetching managers:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchManagers();
+  }, []);
+
+  // Open modal for Create
+  const handleOpenAdd = () => {
+    setEditingId(null);
+    setName("");
+    setDescription("");
+    setManagerId("");
+    setError({});
     setShowModal(true);
   };
 
-  const handleCloseModal = () => {
+  // Open modal for Edit
+  const handleOpenEdit = (record) => {
+    setEditingId(record.id);
+    setName(record.name || record.dapartmentname || "");
+    setDescription(record.description || record.desc || "");
+    setManagerId(
+      record.manager_id || (record.manager && typeof record.manager === "object" ? record.manager.id : "") || ""
+    );
+    setError({});
+    setShowModal(true);
+  };
+
+  // Close form modal
+  const handleClose = () => {
     setShowModal(false);
-    setEditing(false);
-    setEditId(null);
-    setDepartmentData({ name: "", description: "", manager_id: "" });
-    setValidated(false);
+    setEditingId(null);
+    setName("");
+    setDescription("");
+    setManagerId("");
+    setError({});
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setDepartmentData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleEdit = (row) => {
-    setEditing(true);
-    setEditId(row.uuid);
-    setDepartmentData({
-      name: row.name,
-      description: row.description || "",
-      manager_id: row.manager ? row.manager.id : "",
-    });
-    setValidated(false);
-    setShowModal(true);
-  };
-
-  // ==========================================
-  // HANDLERS (محاكاة حفظ وتحديث البيانات)
-  // ==========================================
-  const handleSubmit = (e) => {
+  // Submit form (Add or Edit)
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setValidated(true);
-
-    // التحقق من الحقول المطلوبة
-    if (!departmentData.name.trim() || !departmentData.manager_id) {
+    if (!name.trim()) {
+      setError({ name: "اسم القسم مطلوب" });
       return;
     }
 
     setIsSubmitting(true);
+    const payload = {
+      name: name.trim(),
+      description: description || "",
+      manager_id: managerId ? parseInt(managerId, 10) : null,
+    };
 
-    setTimeout(() => {
-      const selectedManagerObj = managers.find(
-        (m) => m.value === departmentData.manager_id,
-      );
-      const managerData = selectedManagerObj
-        ? { id: selectedManagerObj.value, name: selectedManagerObj.label }
-        : null;
-
-      if (editing && editId) {
-        // محاكاة التعديل (UPDATE)
-        setDepartments((prev) =>
-          prev.map((dep) =>
-            dep.uuid === editId
-              ? {
-                  ...dep,
-                  name: departmentData.name,
-                  description: departmentData.description,
-                  manager: managerData,
-                }
-              : dep,
-          ),
-        );
-        showAlert("تم تعديل القسم بنجاح", "success");
+    try {
+      if (editingId) {
+        await API.post(`/sections/${editingId}/update`, payload);
+        toast.success("تم تحديث بيانات القسم بنجاح");
       } else {
-        // محاكاة الإضافة (CREATE)
-        const newDepartment = {
-          uuid: `dep-${Date.now()}`,
-          name: departmentData.name,
-          description: departmentData.description,
-          manager: managerData,
-        };
-        setDepartments((prev) => [...prev, newDepartment]);
-        showAlert("تم إضافة القسم بنجاح", "success");
+        await API.post("/sections/store", payload);
+        toast.success("تم إضافة القسم بنجاح");
       }
-
+      handleClose();
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      console.error("Save section error:", err);
+      const validationErrors = err?.response?.data?.errors || {};
+      setError(validationErrors);
+      toast.error(err?.response?.data?.message || "حدث خطأ أثناء حفظ القسم");
+    } finally {
       setIsSubmitting(false);
-      handleCloseModal();
-    }, 400);
+    }
   };
 
-  const showAlert = (message, type) => {
-    setAlertData({ message, type });
-    setTimeout(() => {
-      setAlertData({ message: "", type: "" });
-    }, 3000);
+  // Delete Handler
+  const handleConfirmDelete = async () => {
+    if (!deleteModal.item) return;
+    setIsDeleting(true);
+    try {
+      await API.delete(`/sections/${deleteModal.item.id}`);
+      toast.success("تم حذف القسم بنجاح");
+      setDeleteModal({ show: false, item: null });
+      setRefreshKey((k) => k + 1);
+    } catch (err) {
+      console.error("Delete section error:", err);
+      toast.error(err?.response?.data?.message || "حدث خطأ أثناء حذف القسم");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
-  // إعداد البيانات للعرض في الجدول
-  const tableData = useMemo(() => {
-    return departments.map((dep, index) => ({
-      serialNumber: index + 1,
-      uuid: dep.uuid,
-      name: dep.name,
-      managerName: dep.manager ? dep.manager.name : "--",
-      description: dep.description || "--",
-      original: dep,
-    }));
-  }, [departments]);
-
-  // أعمدة الجدول
+  // Table columns (TableComponent provides serial row number automatically)
   const columns = [
-    { name: "م", key: "serialNumber" },
     { name: "اسم القسم", key: "name" },
     { name: "اسم المدير", key: "managerName" },
     { name: "الوصف", key: "description" },
-    { name: "", key: "actions" },
+    { name: "الإجراءات", key: "actions" },
   ];
 
-  // خيارات القائمة المنسدلة للإجراءات
+  // Dropdown options for each row
   const dropdownOptions = [
     {
       label: "تعديل",
-      action: (id, record) => handleEdit(record.original),
+      action: (_id, record) => handleOpenEdit(record),
+    },
+    {
+      label: "حذف",
+      action: (_id, record) => setDeleteModal({ show: true, item: record }),
     },
   ];
 
   return (
-    <div className="p-4 rounded shadow-sm position-relative">
-      {/* إشعار الرسائل */}
-      {alertData.message && (
-        <Alert
-          variant={alertData.type === "success" ? "success" : "danger"}
-          className="position-fixed top-0 start-50 translate-middle-x mt-3 z-3 shadow"
-        >
-          {alertData.message}
-        </Alert>
-      )}
-
-      {/* جدول الأقسام */}
+    <div className="sections-report-container">
       <TableComponent
+        key={refreshKey}
         title="تقرير الأقسام والإدارات"
-        titleIcon={<FontAwesomeIcon icon={faReceipt} />}
-        data={tableData}
+        titleIcon={<FontAwesomeIcon icon={faBuilding} />}
+        apiUrl="/sections"
         columns={columns}
         addBtn={true}
         addBtnName="قسم جديد"
-        onAddClick={handleShowModal}
+        onAddClick={handleOpenAdd}
         dropdownOptions={dropdownOptions}
         searchDate={false}
+        triggerReload={refreshKey}
       />
 
-      {/* مودال الإضافة والتعديل */}
-      <Modal show={showModal} onHide={handleCloseModal} centered size="md">
+      {/* ── Add / Edit Modal ── */}
+      <Modal
+        show={showModal}
+        onHide={() => !isSubmitting && handleClose()}
+        centered
+        size="lg"
+        dir="rtl"
+        dialogClassName="sections-modal"
+      >
         <Modal.Header closeButton>
-          <Modal.Title className="d-flex align-items-center gap-2">
-            <FontAwesomeIcon icon={faFileInvoice} className="text-primary" />
-            {editing ? "تعديل قسم" : "إضافة قسم جديد"}
-          </Modal.Title>
+          <div className="sections-modal-title">
+            <span className="sections-modal-title-icon">
+              <FontAwesomeIcon icon={editingId ? faPenToSquare : faBuilding} />
+            </span>
+            <span>{editingId ? "تعديل قسم" : "إضافة قسم جديد"}</span>
+          </div>
         </Modal.Header>
-        <Form noValidate validated={validated} onSubmit={handleSubmit}>
-          <Modal.Body className="grid grid-cols-2 gap-2">
-            {/* اسم القسم */}
-            <RegisterTextbox
-              id="name"
-              label="اسم القسم"
-              type="text"
-              required
-              value={departmentData.name}
-              onChange={handleChange}
-              placeholder="أدخل اسم القسم"
-              parentStyle={{ width: "100%",marginBottom:"0" }}
-              stylee={{ width: "100%" }}
-              error={
-                validated && !departmentData.name ? "برجاء إدخال اسم القسم" : ""
-              }
-            />
 
-            {/* اسم المدير */}
-            <RegisterSelect
-              id="manager_id"
-              label="اسم المدير"
-              required
-              value={departmentData.manager_id}
-              onChange={handleChange}
-              parentStyle={{ width: "100%",marginBottom:"0" }}
-              stylee={{ width: "100%" }}
-              options={[
-                { value: "", label: "اختر مدير القسم..." },
-                ...managers.map((m) => ({
-                  value: m.value,
-                  label: m.label,
-                })),
-              ]}
-            />
+        <form onSubmit={handleSubmit}>
+          <Modal.Body>
+            <div className="sections-grid">
+              {/* Section Name */}
+              <div className="sections-field-group">
+                <label className="sections-field-label">
+                  اسم القسم <span className="req">*</span>
+                </label>
+                <input
+                  type="text"
+                  className="sections-input"
+                  placeholder="أدخل اسم القسم أو الإدارة"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (error.name) setError((prev) => ({ ...prev, name: null }));
+                  }}
+                />
+                {error.name && (
+                  <span className="sections-field-error">{error.name}</span>
+                )}
+              </div>
 
-            {/* وصف القسم */}
-            <RegisterTextbox
-              id="description"
-              label="وصف القسم"
-              as="textarea"
-              rows={3}
-              value={departmentData.description}
-              onChange={handleChange}
-              placeholder="أدخل وصفاً مشروحاً للقسم..."
-              parentStyle={{ width: "100%" }}
-              stylee={{ width: "100%" }}
-            />
+              {/* Manager Name */}
+              <div className="sections-field-group">
+                <label className="sections-field-label">اسم المدير</label>
+                <select
+                  className="sections-select"
+                  value={managerId}
+                  onChange={(e) => setManagerId(e.target.value)}
+                >
+                  <option value="">اختر مدير القسم...</option>
+                  {managers.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.name} {m.jobname ? `(${m.jobname})` : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Section Description */}
+              <div className="sections-field-group sections-full-width">
+                <label className="sections-field-label">وصف القسم</label>
+                <textarea
+                  rows={3}
+                  className="sections-input"
+                  placeholder="أدخل وصفاً تفصيلياً لمهام ومسؤوليات القسم..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+            </div>
           </Modal.Body>
+
           <Modal.Footer>
-            <Button  className="my-3" variant="secondary" onClick={handleCloseModal}>
+            <button
+              type="button"
+              className="sections-btn-secondary"
+              onClick={handleClose}
+              disabled={isSubmitting}
+            >
               إلغاء
-            </Button>
-            <Button  className="my-3" variant="primary" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "جاري الحفظ..." : editing ? "تحديث" : "حفظ"}
-            </Button>
+            </button>
+            <button
+              type="submit"
+              className="sections-btn-primary"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <Spinner size="sm" animation="border" />
+              ) : editingId ? (
+                "حفظ التعديلات"
+              ) : (
+                "حفظ القسم"
+              )}
+            </button>
           </Modal.Footer>
-        </Form>
+        </form>
+      </Modal>
+
+      {/* ── Delete Confirmation Modal ── */}
+      <Modal
+        show={deleteModal.show}
+        onHide={() => !isDeleting && setDeleteModal({ show: false, item: null })}
+        centered
+        dir="rtl"
+        dialogClassName="sections-modal"
+      >
+        <Modal.Header closeButton>
+          <div className="sections-modal-title" style={{ color: "#dc3545" }}>
+            <span
+              className="sections-modal-title-icon"
+              style={{ background: "rgba(220, 53, 69, 0.12)", color: "#dc3545" }}
+            >
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+            </span>
+            <span>تأكيد حذف القسم</span>
+          </div>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ margin: 0, fontSize: "15px", color: "#3a2e1d" }}>
+            هل أنت متأكد من حذف القسم{" "}
+            <strong>"{deleteModal.item?.name}"</strong>؟
+          </p>
+          <p style={{ margin: "8px 0 0", fontSize: "13px", color: "#8a7a66" }}>
+            سيتم نقل سجل القسم إلى سلة المحذوفات.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="button"
+            className="sections-btn-secondary"
+            onClick={() => setDeleteModal({ show: false, item: null })}
+            disabled={isDeleting}
+          >
+            إلغاء
+          </button>
+          <button
+            type="button"
+            className="sections-btn-danger"
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? <Spinner size="sm" animation="border" /> : "حذف نهائي"}
+          </button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

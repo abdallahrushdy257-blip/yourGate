@@ -1,263 +1,231 @@
 .AccountingEntry-container {
   margin: auto;
-  width: 80%;
+  width: 90%;
+  direction: rtl;
+  padding: 20px 0;
 }
-
-/* .AccountingEntry {
-  width: 80%;
-  margin: auto;
-} */
 
 .AccountingEntry {
-  margin-top: 50px;
+  margin-top: 30px;
   direction: rtl;
   width: 100%;
 }
 
-.date-accounting-num {
-  display: flex;
-  justify-content: flex-start;
-  gap: 20px;
+/* Modal Luxury Styling */
+.modal.luxury-entry-modal,
+.modal.accountingModal,
+.modal.custom-delete-modal {
+  z-index: 1060 !important;
+}
+
+.luxury-entry-modal .modal-dialog {
+  max-width: 980px !important;
+  width: 95% !important;
+  margin: 1.75rem auto !important;
+  z-index: 1061 !important;
+}
+
+.luxury-entry-modal .modal-content {
+  border-radius: 20px !important;
+  border: 1px solid rgba(194, 154, 100, 0.25) !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25) !important;
+  background-color: var(--background-color, #faf8f5) !important;
   direction: rtl;
-
+  overflow: hidden;
 }
 
-.table-header {
-  margin-top: 33px;
-
-}
-.table-header4 {
-  direction: rtl !important;
-  width: 90%; 
-}
-
-.date-accounting {
-  display: flex;
-  gap: 70px;
+.modal-header-luxury {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 1.25rem 2rem !important;
+  background-color: #f7f2ea !important;
+  border-bottom: 1px solid rgba(194, 154, 100, 0.2) !important;
+  color: var(--text-color, #2b2b2b);
 }
 
-.btn-add {
-  display: flex;
-  gap: 5px;
+.modal-footer-luxury {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px;
+  padding: 1.25rem 2rem !important;
+  background-color: #fbf9f6 !important;
+  border-top: 1px solid rgba(194, 154, 100, 0.2) !important;
 }
 
-
-
-
-
-.transferbtn {
-  margin: auto;
-
-  margin-top: 25px;
+.accounting-entry-modal-body {
+  padding: 1.5rem 1rem;
 }
 
-.accounting-table {
-  width: 100%;
-  border-collapse: collapse;
-  direction: rtl;
-  margin-bottom: 17px;
+/* Inputs & Selects */
+.luxury-input {
+  border-radius: 12px !important;
+  border: 1.5px solid #d9cdbd !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease-in-out !important;
+  background-color: #fff !important;
 }
 
-.accounting-table th,
-.accounting-table td {
-  padding: 12px;
-  text-align: center;
+.luxury-input:focus,
+.luxury-select:focus,
+.luxury-input-sm:focus {
+  border-color: var(--primary-color, #c29a64) !important;
+  box-shadow: 0 0 0 3px rgba(194, 154, 100, 0.2) !important;
+  outline: none !important;
 }
 
-.tow th,
-.tow td {
-  padding: 12px;
-  text-align: center;
-  width: 150px;
-}
-
-.accounting-table th {
-  background-color: var(--printTabelHeadbackground--color);
-  font-weight: bold;
-  padding: 20px;
-}
-
-.accounting-table td {
-  background-color: var(--printTabelbackground--color);
-  padding: 25px;
-}
-
-.droplist-acc {
-  border-radius: 7px;
-}
-
-
-.input21:focus {
-  outline: none;
-}
-
-/* trash butom */
-.btn-trash {
-  background-color: var(--btn-trash);
-  color: #ff4d4d;
-  border: none;
-  padding: 5px 10px;
+.luxury-select {
+  border-radius: 10px !important;
+  border: 1.5px solid #d9cdbd !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  background-color: #fff !important;
   cursor: pointer;
-  border-radius: 5px;
 }
 
-.btn-trash:hover {
-  background-color: var(--btn-hovertrash);
+.luxury-input-sm {
+  border-radius: 10px !important;
+  border: 1.5px solid #d9cdbd !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  background-color: #fff !important;
 }
 
-.css-b62m3t-container {
-  position: relative;
-  box-sizing: border-box;
-  color: black;
+.border-primary-amount {
+  border-color: var(--primary-color, #c29a64) !important;
+  background-color: #fffdf9 !important;
 }
 
-.react-select__control {
-  width: 200px;
-  /* Set the width */
-  border-radius: 4px;
-  border: 1px solid #ccc;
+/* Lines Table */
+.lines-table-wrapper {
+  border-radius: 14px;
+  border: 1px solid #e2d9cb;
+  overflow: hidden;
+  background-color: #ffffff;
 }
 
-.react-select__menu {
-  max-height: 200px;
-  overflow-y: auto;
+.lines-table {
+  margin-bottom: 0 !important;
 }
 
-button.addrowInvoice.transferbtn {
-  width: 141px;
-  padding: 6px;
-  margin-bottom: 25px;
+.lines-table th {
+  background-color: #f4ecdf !important;
+  color: #4a3f35 !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 14px 12px !important;
+  border-bottom: 1.5px solid #d9cdbd !important;
 }
 
-.error-message {
-  color: red;
-  text-align: center;
-  margin: 10px 0;
-  background-color: transparent !important;
-  display: flex;
-  justify-content: center;
+.lines-table td {
+  padding: 10px 10px !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid #ede7dc !important;
+}
+
+.lines-table tbody tr:hover {
+  background-color: #faf7f2 !important;
+}
+
+.line-delete-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
   align-items: center;
-}
-
-.success-message {
-  color: green;
-  text-align: center;
-  margin: 10px 0;
-  background-color: transparent !important;
-  display: flex;
   justify-content: center;
-  align-items: center;
+  border: 1px solid #f8d7da;
+  color: #dc3545;
+  transition: all 0.2s ease;
 }
 
-.closed-field {
+.line-delete-btn:hover:not(:disabled) {
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+}
 
-  background-color: transparent;
-  border: 3px solid;
-  border-color: var(--border-color);
-  border-radius: 50px;
-  padding: .375rem .75rem;
-  color: var(--text-color) !important;
-  width: 50%;
+.line-delete-btn:disabled {
+  opacity: 0.3;
   cursor: not-allowed;
-  margin-bottom: 6px;
-  margin: auto;
 }
 
-.input21 {
-  background-color: transparent;
-  border: 3px solid;
-  border-color: var(--border-color);
-  border-radius: 50px;
-  padding: .375rem .75rem;
-  color: var(--text-color) !important;
-  width: 100%;
-  box-sizing: border-box;
-  transition: background-color 0.3s, border-color 0.3s;
-  margin-bottom: 6px;
-  margin: auto;
-  direction: var(--revtranslate-direction);
+/* Add Row Button */
+.luxury-add-row-btn {
+  border-radius: 10px !important;
+  border: 1.5px dashed var(--primary-color, #c29a64) !important;
+  color: var(--primary-color, #c29a64) !important;
+  background-color: transparent !important;
+  font-weight: 600 !important;
+  padding: 8px 18px !important;
+  transition: all 0.2s ease;
 }
 
-.save-transferbtn {
+.luxury-add-row-btn:hover {
+  background-color: rgba(194, 154, 100, 0.1) !important;
+  border-color: var(--primary-color, #c29a64) !important;
+  color: #9d7743 !important;
+}
+
+/* Balance Summary Card */
+.balance-summary-card {
+  background-color: #f7f2ea !important;
+  border: 1px solid rgba(194, 154, 100, 0.25) !important;
+}
+
+.balance-box {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* Action Buttons */
+.luxury-submit-btn {
+  background-color: var(--primary-color, #c29a64) !important;
+  border-color: var(--primary-color, #c29a64) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  padding: 10px 24px !important;
+  transition: all 0.2s ease;
+}
+
+.luxury-submit-btn:hover:not(:disabled) {
+  background-color: #ab824e !important;
+  border-color: #ab824e !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(194, 154, 100, 0.35);
+}
+
+.luxury-submit-btn:disabled {
+  background-color: #c9bdae !important;
+  border-color: #c9bdae !important;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.luxury-cancel-btn {
+  background-color: #e6dfd5 !important;
+  border-color: #e6dfd5 !important;
+  color: #4a3f35 !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  padding: 10px 20px !important;
+}
+
+.luxury-cancel-btn:hover {
+  background-color: #d8cfc3 !important;
+  border-color: #d8cfc3 !important;
+  color: #2b2b2b !important;
+}
+
+.luxury-close-btn {
+  filter: invert(30%);
+}
+
+.delete-warning-icon-wrapper {
+  width: 70px;
+  height: 70px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-}
-
-.body-accounting {
-  text-align: center !important;
-}
-
-
-.form-AccountingEntry {
-  display: flex;
-  justify-content: space-between;
-  gap: 50px;
-  margin-bottom: 15px;
-}
-
-/* .modal-dialog.modal-dialog-centered */
-
-.AccountingEntrymod {
-  overflow: auto;
-  width: 90%;
-  margin: auto;
-  padding-left: 10px;
-}
-
-.test {
-  margin-bottom: unset !important;
-}
-
-.newwid {
-  width: auto !important;
-}
-
-.tableEntry {
-  direction: rtl;
-}
-
-.haead-big {
-  direction: rtl !important;
-}
-
-
-
-
-
-
-
-/*****************/
-
-.addEnt {
-  display: flex;
-  justify-content: start;
-}
-
-
-.entmodalTitle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: row-reverse;
-}
-
-.enthead {
-  width: 100%;
-  margin: 29px auto;
-  align-items: baseline;
-}
-
-.accountingModal .modal-content {
-  margin: unset !important;
-}
-
-
-.tableEntry td {
-  width: 300px;
-}
-
-
-.AccountingEntry-container .actions-container {
-  margin-top: unset;
+  margin: 0 auto;
 }

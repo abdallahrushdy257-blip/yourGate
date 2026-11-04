@@ -36,7 +36,7 @@ function ProjectKPI({
       if (window.history.length > 1) {
         navigate(-1);
       } else {
-        navigate(`/projectkpiview/${id}`);
+        navigate("/projectStatus");
       }
     }
   };
@@ -111,9 +111,16 @@ function ProjectKPI({
   }, [id]);
 
   const handleChange = (index, value) => {
+    let val = value;
+    if (val !== "" && val !== null && !isNaN(val)) {
+      let num = Number(val);
+      if (num > 100) num = 100;
+      if (num < 0) num = 0;
+      val = num;
+    }
     const updated = [...kpis];
-    updated[index].actual = value;
-    updated[index].status = calculateStatus(value, updated[index].target);
+    updated[index].actual = val;
+    updated[index].status = calculateStatus(val, updated[index].target);
     setKpis(updated);
   };
 
@@ -237,18 +244,19 @@ function ProjectKPI({
 
                     <div className="col-12 col-md-6">
                       <label className="form-label small text-muted mb-1 fw-bold">
-                        القيمة الحالية (المحققة)
+                        القيمة الحالية (المحققة) %
                       </label>
                       <input
                         type="number"
                         min="0"
+                        max="100"
                         className="form-control text-center fw-bold"
                         value={
                           kpi.actual !== undefined && kpi.actual !== null
                             ? kpi.actual
                             : ""
                         }
-                        placeholder="أدخل القيمة الحالية"
+                        placeholder="0 - 100"
                         onChange={(e) => handleChange(index, e.target.value)}
                         autoFocus={index === 0}
                       />

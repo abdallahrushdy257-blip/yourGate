@@ -13,3 +13,34 @@
         margin: auto;
     }
 }
+
+/* Modal styling matching system theme */
+.investigations-modal .modal-content {
+    border-radius: 18px;
+    border: 1.5px solid rgba(194, 154, 100, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.investigations-modal .modal-header {
+    background: var(--surface-color, #fff);
+    border-bottom: 1.5px solid rgba(194, 154, 100, 0.2);
+}
+
+.investigations-modal .modal-body {
+    background: var(--background-color, #fdfbf9);
+}
+
+.investigations-modal .custom-datepicker {
+    border-radius: 25px !important;
+    border: 1.5px solid #d9c3a5 !important;
+    background-color: var(--input-background, #fff) !important;
+    color: var(--text-color, #493d2c) !important;
+    outline: none !important;
+    transition: all 0.25s ease !important;
+}
+
+.investigations-modal .custom-datepicker:focus {
+    border-color: #c29a64 !important;
+    box-shadow: 0 0 0 3px rgba(194, 154, 100, 0.25) !important;
+}

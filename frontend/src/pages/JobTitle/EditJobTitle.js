@@ -35,19 +35,20 @@ function EditJobTitle() {
       const res = await API.get(`/jobtitle/${id}`);
       const data = await res;
       if (data.status === 200) {
-        // setRows(data.data);
-        setName(data.data.title);
-        setDescription(data.data.description);
-        setDays(data.data.workdayspermonth);
-        setHours(data.data.workhoursperday);
-        setMangerjobtitle(data.data.parent_id);
-        setNote(data.data.note);
+        const item = data.data?.data || data.data || {};
+        setName(item.title || item.name || "");
+        setDescription(item.description || "");
+        setDays(item.workdayspermonth ?? item.days ?? 0);
+        setHours(item.workhoursperday ?? item.hours ?? 0);
+        setMangerjobtitle(item.parent_id ?? "");
+        setNote(item.note || "");
         setLoading(false);
       }
     } catch (error) {
       console.error(error);
-      setError(error.response.data.errors);
-      setMessage(error.response.data.message);
+      setError(error?.response?.data?.errors || {});
+      setMessage(error?.response?.data?.message || "");
+      setLoading(false);
     }
   }
 
@@ -56,7 +57,12 @@ function EditJobTitle() {
       const res = await API.post(`/jobtitle`);
       const data = await res;
       if (data.status === 200) {
-        setRows2(data.data);
+        const list = Array.isArray(data.data)
+          ? data.data
+          : Array.isArray(data.data?.data)
+          ? data.data.data
+          : [];
+        setRows2(list);
       }
     } catch (error) {
       console.error(error);

@@ -28,7 +28,7 @@ export const accountingService = {
   getIncomeStatement: (params) => API.get("/reports/incomestatement", { params }),
   getAccountsReport: (params) => API.get("/reports/accounts", { params }),
 
-  // ── Invoices & Purchases/Sales ────────────────────────────────
+  // ── Invoices & Purchases/Sales ──────────────────────────
   createPurchaseInvoice: (data) => API.post("/invoice/purchase/store", data),
   createSalesInvoice: (data) => API.post("/invoice/sales/store", data),
   getItems: (params) => API.get("/item", { params }),

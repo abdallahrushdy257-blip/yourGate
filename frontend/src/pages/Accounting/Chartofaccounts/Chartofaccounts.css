@@ -1,517 +1,673 @@
-/* CSS */
+/* ==========================================================================
+   Chart of Accounts (شجرة الحسابات) - Modern ERP Design System
+   ========================================================================== */
+
 .Chartofaccounts-container {
-  width: 80%;
-  margin: auto;
-}
-
-.title-sub{
-  text-align: center;
-
-}
-
-.table-tree-container {
-  margin-top: 80px;
+  max-width: 1400px;
+  width: 95%;
+  margin: 20px auto 50px auto;
   direction: rtl;
 }
 
-.form-tree {
-  display: flex;
-  width: 100%;
-  gap: 30px;
-}
-
-.addaccount-form {
-  margin-top: 15px;
-}
-
-.table-tree {
-  margin: auto;
+.title-sub {
   text-align: center;
-  width: 100%;
-}
-
-.head-Chartofaccounts {
-  background-color: var(--printTabelHeadbackground--color);
-}
-
-.th-Chartofaccounts {
-  padding: 20px !important;
-}
-
-.body-TChartofaccounts {
-  background-color: var(--printTabelbackground--color);
-}
-
-.td-Chartofaccounts {
-  padding: 20px;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: var(--background-color) !important;
-  padding: 20px;
-  border-radius: 8px;
-  /* width: 400px; */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  position: relative;
-  z-index: 1001;
-  /* border: 1px solid var(--border-color) !important; */
-  /* width: 2000px !important;
-  height: 1880px;
-} 
-  */
-}
-
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.Addasubaccount {
-  width: 80%;
-  margin: auto;
-}
-
-.form-Addasubaccount {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-top: 80px;
-  padding: 30px;
-}
-
-.input-Addasubaccount {
-  width: 32%;
-  border-radius: 20px;
-  background-color: transparent;
-  border: 3px solid #aec9ab;
-  margin-bottom: 15px;
-  padding: 15px;
+  font-weight: 700;
   color: var(--text-color);
 }
 
-.select-Addasubaccount {
-  width: 32%;
-  border-radius: 20px;
-  background-color: transparent;
-  border: 3px solid #aec9ab;
-  margin-bottom: 15px;
-  padding: 13px;
-  color: var(--text-color);
-}
-
-.option-Addasubaccount {
-  background-color: transparent !important;
-  color: var(--text-color) !important;
-}
-
-.input-Addasubaccount:focus,
-.select-Addasubaccount:focus {
-  outline: none;
-}
-
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.popup-container {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  max-width: 500px;
-  width: 90%;
-  position: relative;
-}
-
-.close-popup {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.save-button {
-  background-color: #768b77;
-  color: var(--text-color);
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.modal.show .modal-dialog {
-  transform: none;
-  max-width: 1048px;
-  max-height: 3000px;
-}
-
-.modalLabel {
-  color: var(--text-color);
-}
-
-.modal-footer {
-  display: unset !important;
-  /* margin: -23px; */
-}
-
-.select-component {
-  color: var(--text-color) !important;
-
-}
-select.form-select {
-  background-color: transparent !important;
-  color: var(--text-color) !important;
-  direction: rtl !important;
-  border: 3px solid var(--border-color);
-}
-
-input.mm-sub.form-control {
-  background-color: transparent !important;
-  color: var(--text-color) !important;
-  direction: rtl !important;
-  width: 100%;
-  border: 3px solid var(--border-color);
-}
-
-input.mm-sub.form-control:focus {
-  outline: none;
-}
-
-select.form-select option {
-  background-color: transparent !important;
-  color: var(--text-color) !important;
-}
-
-textarea.form-control {
-  background-color: transparent !important;
-  direction: rtl !important;
-  color: var(--text-color) !important;
-  border: 3px solid var(--border-color);
-}
-
-textarea.form-control:focus {
-  outline: none;
-}
-
-.modal-header {
-  direction: rtl !important;
-  display: flex;
-}
-
-button.btn.btn-primary {
-  background-color: var(--buttonbackground-color);
-  border: none;
-  color: var(--buttontext-color);
-}
-
-button.btn.btn-primary:hover {
-  background-color: var(--buttonbackgroundhover-color);
-}
-
-button.btn.btn-secondary {
-  background-color: var(--buttonbackground-color);
-  color: var(--buttontext-color);
-}
-
-button.btn.btn-secondary:hover {
-  background-color: var(--buttonbackgroundhover-color);
-}
-
-.model-subaccaount {
-  /* display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; */
-}
-
-.form-subaccc {}
-
-.from1-subacc {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 50px;
-  margin-bottom: 6px;
-}
-
-.opening-blancesubholder {
-  color: var(--text-color);
-  text-align: center !important;
-}
-
-
-
-.sub-inputs {
-  width: 350px;
-  text-align: right;
-}
-
-
-.main-form {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start !important;
-}
-
-.check-form {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  direction: rtl;
-}
-
-.addaccrow {
-  display: flex;
-}
-
-tbody,
-td,
-tfoot,
-th,
-thead,
-tr {
-  border-color: inherit;
-  border-style: solid;
-  border-width: 0;
-  padding: 20px;
-}
-
-select.form-select option {
-  /* background-color: transparent !important; */
-  /* color: var(--text-color) !important; */
-  background-color: var(--sidebar-color) !important;
-  color: var(--text-color) !important;
-}
-
-.buttons-container {
-  position: relative;
+/* ==========================================================================
+   Category Filter Tabs (الأقسام الرئيسية الخمسة)
+   ========================================================================== */
+.coa-categories-bar {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  padding: 15px;
-  margin-top: 80px;
-  direction: rtl;
+  padding: 12px 18px;
+  margin: 25px 0 20px 0;
+  flex-wrap: wrap;
+  background: var(--surface-color, #ffffff);
+  border-radius: 50px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
-.btntreesersh {
+.coa-cat-btn {
   background: transparent;
-  border: none;
+  border: 1.5px solid transparent;
   outline: none;
   cursor: pointer;
   color: var(--text-color);
-  font-size: 17px;
-  padding: 10px 20px;
+  font-size: 15px;
+  padding: 8px 22px;
+  border-radius: 30px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.coa-cat-btn:hover {
+  background: var(--hover-bg-color, #fdf6ec);
+  border-color: var(--border-color);
+  transform: translateY(-1px);
+}
+
+.coa-cat-btn.active {
+  background: var(--buttonbackground-color, #c8924a) !important;
+  color: var(--buttontext-color, #3d2000) !important;
+  border-color: var(--buttonbackground-color, #c8924a);
+  box-shadow: 0 4px 12px rgba(200, 146, 74, 0.3);
+}
+
+/* ==========================================================================
+   Action Bar & Search (شريط البحث والإجراءات)
+   ========================================================================== */
+.coa-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.coa-search-box {
   position: relative;
-  transition: color 0.3s ease;
+  flex: 1;
+  min-width: 280px;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+}
+
+.coa-search-icon {
+  position: absolute;
+  right: 18px;
+  color: var(--placeholder-color, #8a6a45);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.coa-search-input {
+  width: 100%;
+  padding: 11px 46px 11px 38px;
+  border-radius: 30px;
+  border: 2px solid var(--border-color);
+  background-color: var(--input-background, #fdf6ec);
+  color: var(--text-color);
+  font-size: 15px;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.coa-search-input:focus {
+  border-color: var(--accent-color, #c8924a);
+  box-shadow: 0 0 0 3px rgba(200, 146, 74, 0.2);
+  background-color: var(--surface-color, #ffffff);
+}
+
+.coa-clear-search {
+  position: absolute;
+  left: 14px;
+  background: none;
+  border: none;
+  color: var(--placeholder-color, #8a6a45);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.coa-clear-search:hover {
+  color: var(--text-color);
+}
+
+.coa-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.coa-btn-outline {
+  background: var(--surface-color, #ffffff);
+  border: 1.5px solid var(--border-color);
+  color: var(--text-color);
+  padding: 9px 18px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.coa-btn-outline:hover {
+  background: var(--hover-bg-color, #fdf6ec);
+  border-color: var(--accent-color, #c8924a);
+  transform: translateY(-1px);
+}
+
+.coa-btn-primary {
+  background: var(--buttonbackground-color, #c8924a);
+  color: var(--buttontext-color, #3d2000);
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(200, 146, 74, 0.35);
+  transition: all 0.25s ease;
+}
+
+.coa-btn-primary:hover {
+  background: var(--buttonbackgroundhover-color, #d4ab72);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(200, 146, 74, 0.45);
+}
+
+/* ==========================================================================
+   Tree Table Card (كارت جدول شجرة الحسابات)
+   ========================================================================== */
+.coa-table-card {
+  background: var(--surface-color, #ffffff);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.04);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.coa-tree-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+  direction: rtl;
+}
+
+.coa-table-header th {
+  background: var(--printTabelHeadbackground--color, #dbc3a0ad);
+  color: var(--text-color);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.coa-table-header th:first-child {
+  border-top-right-radius: 17px;
+}
+
+.coa-table-header th:last-child {
+  border-top-left-radius: 17px;
+}
+
+/* ==========================================================================
+   Table Rows & Hierarchy Levels (تدرج المستويات الشجرية)
+   ========================================================================== */
+.account-tree-row {
+  border-bottom: 1px solid rgba(212, 171, 114, 0.2);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.account-tree-row:last-child {
+  border-bottom: none;
+}
+
+.account-tree-row:hover {
+  background-color: rgba(200, 146, 74, 0.14) !important;
+}
+
+/* Level 0: الأصول، الخصوم، حقوق الملكية، الإيرادات، المصروفات */
+.account-tree-row.level-0 {
+  background-color: rgba(200, 146, 74, 0.12);
+  font-weight: 700;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.account-tree-row.level-0 td {
+  padding-top: 18px;
+  padding-bottom: 18px;
+  font-size: 16px;
+}
+
+/* Level 1: الحسابات العامة (11، 12، ...) */
+.account-tree-row.level-1 {
+  background-color: rgba(200, 146, 74, 0.05);
   font-weight: 600;
 }
 
-.btntreesersh::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border: 3px solid var(--border-color);
+.account-tree-row.level-1 td {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  font-size: 15px;
+}
+
+/* Level 2, 3, 4: الحسابات الفرعية والتفصيلية */
+.account-tree-row.level-2 td,
+.account-tree-row.level-3 td,
+.account-tree-row.level-4 td {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 14.5px;
+}
+
+/* ==========================================================================
+   Cells Content & Tree Guides (الأعمدة وأدلة الشجرة)
+   ========================================================================== */
+.acc-code-cell {
+  padding: 12px 18px;
+  white-space: nowrap;
+}
+
+.code-pill {
+  display: inline-block;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(200, 146, 74, 0.12);
+  border: 1px solid rgba(200, 146, 74, 0.35);
+  color: var(--text-color);
+  letter-spacing: 0.5px;
+}
+
+.level-pill-0 {
+  background: var(--buttonbackground-color, #c8924a);
+  color: #ffffff;
+  border-color: var(--buttonbackground-color, #c8924a);
+  font-size: 14px;
+}
+
+.acc-name-cell {
+  padding: 12px 18px;
+}
+
+.acc-name-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tree-toggle-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  color: var(--accent-color, #c8924a);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  transition: transform 0.2s ease, color 0.2s ease;
+  border-radius: 6px;
+}
+
+.tree-toggle-btn:hover {
+  background: rgba(200, 146, 74, 0.2);
+  color: var(--text-color);
+}
+
+.tree-chevron {
+  font-size: 12px;
+  width: 12px;
+}
+
+.tree-folder-icon {
+  font-size: 15px;
+  color: var(--accent-color, #c8924a);
+}
+
+.tree-leaf-spacer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+}
+
+.tree-branch-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--border-color);
+  opacity: 0.6;
+}
+
+.acc-name-text {
+  color: var(--text-color, #2b2b2b);
+  line-height: 1.6;
+  font-size: 14.5px;
+  transition: color 0.15s ease;
+}
+
+.account-tree-row.level-0 .acc-name-text {
+  font-size: 16px;
+  font-weight: 800;
+  color: #3d2612;
+}
+
+.account-tree-row.level-1 .acc-name-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: #4a341e;
+}
+
+.account-tree-row.is-leaf .acc-name-text {
+  font-weight: 500;
+  color: var(--text-color, #2b2b2b);
+}
+
+/* ==========================================================================
+   Badges (الشارات)
+   ========================================================================== */
+.acc-type-cell {
+  text-align: center;
+  padding: 12px 14px;
+  white-space: nowrap;
+}
+
+.badge-payable {
+  display: inline-block;
+  padding: 4px 12px;
   border-radius: 20px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
-.btntreesersh.active::after {
-  opacity: 1;
+.badge-leaf {
+  background-color: rgba(40, 167, 69, 0.15);
+  color: #1e7e34;
+  border: 1px solid rgba(40, 167, 69, 0.35);
 }
 
-
-
-.accnumpad {
-  direction: rtl;
+.badge-parent {
+  background-color: rgba(200, 146, 74, 0.18);
+  color: #7a4e16;
+  border: 1px solid rgba(200, 146, 74, 0.4);
 }
 
-.trtr {
-  direction: rtl;
+.acc-balance-cell {
+  text-align: center;
+  padding: 12px 18px;
+  white-space: nowrap;
 }
 
-.hoverd-account:hover {
-  border-bottom: 2px solid var(--border-color);
-  border-top: 2px solid var(--border-color);
+.balance-value {
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-color);
 }
 
+.balance-value.negative {
+  color: #dc3545;
+}
 
+.acc-cashflow-cell {
+  text-align: center;
+  padding: 12px 14px;
+  white-space: nowrap;
+}
 
-/* =============================================== */
+.badge-cashflow {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-cashflow.operating {
+  background-color: rgba(23, 162, 184, 0.15);
+  color: #117a8b;
+  border: 1px solid rgba(23, 162, 184, 0.35);
+}
+
+.badge-cashflow.investing {
+  background-color: rgba(111, 66, 193, 0.15);
+  color: #563d7c;
+  border: 1px solid rgba(111, 66, 193, 0.35);
+}
+
+.badge-cashflow.financing {
+  background-color: rgba(253, 126, 20, 0.15);
+  color: #c75c00;
+  border: 1px solid rgba(253, 126, 20, 0.35);
+}
+
+.badge-cashflow.none {
+  color: var(--placeholder-color, #8a6a45);
+}
+
+.coa-no-data {
+  text-align: center;
+  padding: 40px !important;
+  color: var(--placeholder-color, #8a6a45);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Details Modal Table (جدول تفاصيل الحساب)
+   ========================================================================== */
+.coa-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+}
+
+.coa-details-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14.5px;
+}
+
+.coa-details-table tr:last-child td {
+  border-bottom: none;
+}
+
+.details-label {
+  font-weight: 700;
+  color: var(--label-color, #5a3510);
+  width: 35%;
+  background: rgba(200, 146, 74, 0.06);
+}
+
+/* ==========================================================================
+   Add Sub-Account Modal (نافذة إضافة حساب)
+   ========================================================================== */
 .add-subacc-modal .modal-dialog {
-  max-width: 1000px !important;
+  max-width: 900px !important;
   display: flex !important;
   justify-content: center !important;
   margin: auto;
-
 }
 
 .add-subacc-modal .modal-content {
   height: auto !important;
-  max-height: 800px !important;
+  max-height: 90vh !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   border-radius: 20px !important;
   border: 1px solid var(--border-color) !important;
   background-color: var(--background-color) !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
-  padding: 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  padding: 24px 30px !important;
   width: 100% !important;
   margin: auto !important;
-
-
 }
 
 .add-subacc-modal .modal-header {
   justify-content: space-between !important;
-  direction: var(--revtranslate-direction) !important;
-
+  direction: rtl !important;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
 }
 
 .add-subacc-modal .modal-body {
-  direction: var(--revtranslate-direction) !important;
+  direction: rtl !important;
   display: flex !important;
   justify-content: center;
-
+  padding: 20px 0;
 }
 
 .add-subacc-modal .modal-footer {
   display: flex !important;
   justify-content: center !important;
-
+  gap: 15px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 15px;
 }
 
-/* ================================ */
-
-.showacc-modal .modal-dialog {
-  max-width: 800px !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-
+.form-subaccc {
+  width: 100%;
 }
 
-.showacc-modal .modal-content {
-  height: 580px !important;
-
-
-
+.from1-subacc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 16px;
+  width: 100%;
 }
 
-.showacc-modal .modal-header {
-  justify-content: space-between !important;
-  direction: var(--revtranslate-direction) !important;
-
+.sub-inputs {
+  flex: 1;
+  text-align: right;
+  direction: rtl;
 }
 
-.showacc-modal .modal-body {
-  direction: var(--revtranslate-direction) !important;
-
-
+.sub-inputs label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--label-color, #5a3510);
+  font-size: 14px;
 }
 
-.showacc-modal .modal-footer {
-  display: flex !important;
-  justify-content: center !important;
-
-}
-
-/* =============================== */
-
-
+/* ==========================================================================
+   Details Modal & Edit Modal
+   ========================================================================== */
+.showacc-modal .modal-dialog,
 .edit-acc-modal .modal-dialog {
-  max-width: 800px !important;
+  max-width: 750px !important;
   display: flex !important;
   justify-content: center !important;
-  align-items: center !important;
-
+  margin: auto;
 }
 
+.showacc-modal .modal-content,
 .edit-acc-modal .modal-content {
-  height: 800px !important;
-
-  overflow-y: scroll;
-
+  background: var(--background-color) !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  padding: 24px !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
 }
 
+.showacc-modal .modal-header,
 .edit-acc-modal .modal-header {
+  direction: rtl !important;
   justify-content: space-between !important;
-  direction: var(--revtranslate-direction) !important;
-
+  border-bottom: 1px solid var(--border-color);
 }
 
+.showacc-modal .modal-body,
 .edit-acc-modal .modal-body {
-  direction: var(--revtranslate-direction) !important;
-
-
+  direction: rtl !important;
+  padding: 20px 0;
 }
 
+.showacc-modal .modal-footer,
 .edit-acc-modal .modal-footer {
   display: flex !important;
   justify-content: center !important;
-
+  border-top: 1px solid var(--border-color);
 }
 
-.copyright {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  flex-direction: column;
-  width: 20%;
+/* General Controls */
+select.form-select {
+  background-color: var(--input-background, #fdf6ec) !important;
+  color: var(--text-color) !important;
+  direction: rtl !important;
+  border: 2px solid var(--border-color) !important;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14.5px;
 }
 
-.calculateDepreciation {
-  display: flex;
-  width: 40%;
-  gap: 30px;
-  text-align: center;
-
+select.form-select:focus {
+  border-color: var(--accent-color, #c8924a) !important;
+  box-shadow: 0 0 0 3px rgba(200, 146, 74, 0.2) !important;
 }
 
-.search {
-  margin-top: 7px;
-  width: 25%;
+select.form-select option {
+  background-color: var(--surface-color, #ffffff) !important;
+  color: var(--text-color) !important;
 }
 
-.copyright-form {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
+input.mm-sub.form-control,
+input.form-control {
+  background-color: var(--input-background, #fdf6ec) !important;
+  color: var(--text-color) !important;
+  direction: rtl !important;
+  border: 2px solid var(--border-color) !important;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14.5px;
+}
 
+input.mm-sub.form-control:focus,
+input.form-control:focus {
+  border-color: var(--accent-color, #c8924a) !important;
+  box-shadow: 0 0 0 3px rgba(200, 146, 74, 0.2) !important;
+  outline: none;
+}
+
+textarea.form-control {
+  background-color: var(--input-background, #fdf6ec) !important;
+  direction: rtl !important;
+  color: var(--text-color) !important;
+  border: 2px solid var(--border-color) !important;
+  border-radius: 12px;
+}
+
+button.btn.btn-primary {
+  background-color: var(--buttonbackground-color, #c8924a) !important;
+  border: none !important;
+  color: var(--buttontext-color, #3d2000) !important;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 8px 24px;
+}
+
+button.btn.btn-primary:hover {
+  background-color: var(--buttonbackgroundhover-color, #d4ab72) !important;
+}
+
+button.btn.btn-secondary {
+  background-color: transparent !important;
+  border: 1.5px solid var(--border-color) !important;
+  color: var(--text-color) !important;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 8px 24px;
+}
+
+button.btn.btn-secondary:hover {
+  background-color: var(--hover-bg-color, #fdf6ec) !important;
+}
+
+.custom-close-button.cls-btn {
+  color: var(--text-color);
+  font-size: 18px;
+  text-decoration: none;
 }

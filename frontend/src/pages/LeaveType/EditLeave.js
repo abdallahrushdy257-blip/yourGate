@@ -53,7 +53,7 @@ function EditLeave() {
       });
 
       if (res.status === 200) {
-        navigate("/hrreport/vacdetails");
+        navigate("/leavestype");
       } else {
         setError(res.data.errors);
       }

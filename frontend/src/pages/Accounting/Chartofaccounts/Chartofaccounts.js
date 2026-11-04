@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faXmark, faTree } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faXmark,
+  faTree,
+  faChevronDown,
+  faChevronLeft,
+  faSearch,
+  faFolder,
+  faFolderOpen,
+  faEye,
+  faEdit,
+} from "@fortawesome/free-solid-svg-icons";
 import { Modal, Button, Form } from "react-bootstrap";
 import Title from "../../../components/title";
 import "./Chartofaccounts.css";
@@ -16,16 +27,7 @@ import RegisterSelect from "../../../components/RegisterSelect";
 function Chartofaccounts() {
   const [showModal, setShowModal] = useState(false);
 
-  const handleButtonClick = (buttonName, filterFunction) => {
-    setActiveButton(buttonName);
-    filterFunction();
-  };
-  const [activeButton, setActiveButton] = useState("showAll");
-  const [originsFilter, setOriginsFilter] = useState(false);
-  const [commitmentsFilter, setCommitmentsFilter] = useState(false);
-  const [copyrightFilter, setCopyrightFilter] = useState(false);
-  const [debtFilter, setDebtFilter] = useState(false);
-  const [revenuesFilter, setRevenuesFilter] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("all");
   const [accounts, setAccounts] = useState([]);
   const [filteredData, setFilteredData] = useState(null);
   const [accountsData, setAccountsData] = useState([]);
@@ -38,37 +40,26 @@ function Chartofaccounts() {
   const [duration, setDuration] = useState(0);
   const [check, setCheck] = useState("1");
 
-  const showAllAccounts = () => {
-    setFilteredData(null);
-    setActiveButton("showAll");
+  const formatMoney = (val) => {
+    const num = parseFloat(val);
+    if (isNaN(num)) return "0.00";
+    return num.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
-  const toggleOriginsFilter = () => {
-    const origins = accountsData.filter(
-      (account) => account.code && account.code.startsWith("1"),
-    );
-    setFilteredData(origins);
-  };
-
-  const toggleCommitmentsFilter = () => {
-    const commitments = accountsData.filter(
-      (account) => account.code && account.code.startsWith("2"),
-    );
-    setFilteredData(commitments);
-  };
-
-  const toggleCopyrightFilter = () => {
-    const copyright = accountsData.filter(
-      (account) => account.code && account.code.startsWith("3"),
-    );
-    setFilteredData(copyright);
-  };
-
-  const toggleRevenuesFilter = () => {
-    const revenues = accountsData.filter(
-      (account) => account.code && account.code.startsWith("4"),
-    );
-    setFilteredData(revenues);
+  const handleCategorySelect = (categoryCode) => {
+    setActiveCategory(String(categoryCode));
+    if (categoryCode === "all") {
+      setFilteredData(null);
+    } else {
+      const filtered = accountsData.filter((account) => {
+        const code = String(account.code || "");
+        return code === String(categoryCode) || code.startsWith(String(categoryCode));
+      });
+      setFilteredData(filtered);
+    }
   };
 
   const [selectedNode, setSelectedNode] = useState(null);
@@ -124,37 +115,33 @@ function Chartofaccounts() {
       //setFormMessage(error.response.data.message);
     }
   };
-  const filterTree = (tree, searchTerm) => {
-    const lowerSearchTerm = searchTerm.toLowerCase();
 
-    const filterNode = (node) => {
-      const nameMatch =
-        node.name && node.name.toLowerCase().includes(lowerSearchTerm);
+  const filterTree = (tree, search) => {
+    const term = search.toLowerCase().trim();
+    if (!term) return tree;
 
-      // إذا كانت العقدة تطابق البحث، نعيدها فقط
-      if (nameMatch) {
-        return { ...node, children: [] }; // نعيد العقدة بدون الأطفال
-      }
-
-      // إذا كانت العقدة لا تطابق البحث، نتجاهلها تمامًا
-      return null;
-    };
-
-    // نبحث في الشجرة بالكامل (بما في ذلك الأطفال) ونرجع فقط العقد التي تطابق البحث
-    const flatFilter = (nodes) => {
+    const filterNodes = (nodes) => {
       let results = [];
       for (const node of nodes) {
-        if (filterNode(node)) {
-          results.push(filterNode(node)); // نضيف العقدة المطابقة
-        }
-        if (node.children) {
-          results = results.concat(flatFilter(node.children)); // نبحث في الأطفال
+        const nameMatches = node.name && node.name.toLowerCase().includes(term);
+        const codeMatches = node.code && String(node.code).toLowerCase().includes(term);
+        const isMatch = nameMatches || codeMatches;
+
+        const matchingChildren = node.children && node.children.length > 0
+          ? filterNodes(node.children)
+          : [];
+
+        if (isMatch || matchingChildren.length > 0) {
+          results.push({
+            ...node,
+            children: matchingChildren.length > 0 ? matchingChildren : (node.children || []),
+          });
         }
       }
       return results;
     };
 
-    return flatFilter(tree); // نرجع النتائج بعد البحث
+    return filterNodes(tree);
   };
   const getFilteredAccounts = () => {
     let dataToFilter = filteredData || accountsData;
@@ -168,17 +155,29 @@ function Chartofaccounts() {
 
   const filteredAccounts = getFilteredAccounts();
 
+  const flattenTree = (nodes) => {
+    let list = [];
+    if (!Array.isArray(nodes)) return list;
+    for (const node of nodes) {
+      list.push(node);
+      if (node.children && node.children.length > 0) {
+        list = list.concat(flattenTree(node.children));
+      }
+    }
+    return list;
+  };
+
   const getAllAcounts = async () => {
     try {
       const response = await API.get("accounttree");
 
-      const fetchedData = (await response.data) || {};
-      const dataArray = Object.values(fetchedData);
+      const fetchedData = response.data?.data || response.data || [];
+      const dataArray = Array.isArray(fetchedData) ? fetchedData : Object.values(fetchedData);
       setAccountsData(dataArray);
-      const fatherAccounts = dataArray;
-      setMainAccounts(fatherAccounts);
+      setMainAccounts(dataArray);
 
-      const types = dataArray
+      const flat = flattenTree(dataArray);
+      const types = flat
         .map((account) => account.cash_flow_type)
         .filter(Boolean);
       setAccountTypes([...new Set(types)]);
@@ -189,118 +188,78 @@ function Chartofaccounts() {
   };
   const renderTreeTable = (nodes, level = 0) => {
     if (!Array.isArray(nodes)) return null;
-    return nodes.map((node) => (
-      <React.Fragment key={node.id}>
-        <tr
-          onDoubleClick={() => handleRowClick(node)}
-          onMouseEnter={() => setHoveredRow(node.id)}
-          onMouseLeave={() => setHoveredRow(null)}
-          className="hoverd-account"
-        >
-          <td
-            style={{
-              paddingRight: `${node.level * 30}px`,
-              paddingLeft: `${level * 30}px`,
-              textAlign: "start",
-              direction: "rtl",
-              fontWeight:
-                node.level === 0
-                  ? "bold"
-                  : node.level === 1
-                    ? "bold"
-                    : node.level === 2
-                      ? "bold"
-                      : "normal",
-              fontSize:
-                node.level === 0 ? "22px" : node.level === 1 ? "20px" : "18px",
-            }}
-            className="accnumpad"
+    return nodes.map((node) => {
+      const hasChildren = node.children && node.children.length > 0;
+
+      return (
+        <React.Fragment key={node.id}>
+          <tr
+            onDoubleClick={() => handleRowClick(node)}
+            onMouseEnter={() => setHoveredRow(node.id)}
+            onMouseLeave={() => setHoveredRow(null)}
+            className={`account-tree-row level-${node.level ?? level} ${
+              node.is_payable ? "is-leaf" : "is-parent"
+            } ${hoveredRow === node.id ? "is-hovered" : ""}`}
           >
-            {node.code}
-          </td>
-          <td
-            style={{
-              fontWeight:
-                node.level === 0
-                  ? "bold"
-                  : node.level === 1
-                    ? "bold"
-                    : node.level === 2
-                      ? "bold"
-                      : "normal",
-              fontSize:
-                node.level === 0 ? "20px" : node.level === 1 ? "18px" : "16px",
-              textAlign: "center",
-            }}
-          >
-            {node.name}
-          </td>
-          <td
-            style={{
-              direction: "rtl",
-              fontWeight:
-                node.level === 0
-                  ? "bold"
-                  : node.level === 1
-                    ? "bold"
-                    : node.level === 2
-                      ? "bold"
-                      : "normal",
-              fontSize:
-                node.level === 0 ? "22px" : node.level === 1 ? "20px" : "18px",
-              textAlign: "center",
-            }}
-          >
-            {node.is_payable ? "نعم" : "لا"}
-          </td>
-          <td
-            style={{
-              direction: "rtl",
-              fontWeight:
-                node.level === 0
-                  ? "bold"
-                  : node.level === 1
-                    ? "bold"
-                    : node.level === 2
-                      ? "bold"
-                      : "normal",
-              fontSize:
-                node.level === 0 ? "22px" : node.level === 1 ? "20px" : "18px",
-              textAlign: "center",
-            }}
-          >
-            {node.final_balance}
-          </td>
-          <td
-            style={{
-              direction: "rtl",
-              textAlign: "center",
-              fontWeight:
-                node.level === 0
-                  ? "bold"
-                  : node.level === 1
-                    ? "bold"
-                    : node.level === 2
-                      ? "bold"
-                      : "normal",
-              fontSize:
-                node.level === 0 ? "22px" : node.level === 1 ? "20px" : "18px",
-            }}
-          >
-            {node.cash_flow_type == 0
-              ? ""
-              : node.cash_flow_type == 1
-                ? "تشغيليه"
-                : node.cash_flow_type == 2
-                  ? "اسثمارية"
-                  : "تمويلية"}
-          </td>
-        </tr>
-        {node.children &&
-          node.children.length > 0 &&
-          renderTreeTable(node.children, level + 1)}
-      </React.Fragment>
-    ));
+            <td className="acc-code-cell">
+              <span className={`code-pill level-pill-${node.level ?? level}`}>
+                {node.code}
+              </span>
+            </td>
+
+            <td
+              className="acc-name-cell"
+              style={{
+                paddingRight: `${(node.level ?? level) * 24 + 18}px`,
+              }}
+            >
+              <div className="acc-name-wrapper">
+                <span
+                  className={`acc-name-text ${!node.is_payable ? "fw-bold text-dark" : ""}`}
+                  title={node.name}
+                >
+                  {node.name}
+                </span>
+              </div>
+            </td>
+
+            <td className="acc-type-cell">
+              {node.is_payable ? (
+                <span className="badge-payable badge-leaf">فرعي (يقبل حركات)</span>
+              ) : (
+                <span className="badge-payable badge-parent">رئيسي (تجميعي)</span>
+              )}
+            </td>
+
+            <td className="acc-balance-cell">
+              <span
+                className={`balance-value ${
+                  Number(node.final_balance ?? node.opening_balance ?? 0) < 0
+                    ? "negative"
+                    : ""
+                }`}
+              >
+                {formatMoney(node.final_balance ?? node.opening_balance ?? 0)}
+              </span>
+            </td>
+
+            <td className="acc-cashflow-cell">
+              {node.cash_flow_type == 1 ? (
+                <span className="badge-cashflow operating">تشغيلية</span>
+              ) : node.cash_flow_type == 2 ? (
+                <span className="badge-cashflow investing">استثمارية</span>
+              ) : node.cash_flow_type == 3 ? (
+                <span className="badge-cashflow financing">تمويلية</span>
+              ) : (
+                <span className="badge-cashflow none">-</span>
+              )}
+            </td>
+          </tr>
+
+          {hasChildren && renderTreeTable(node.children, level + 1)}
+        </React.Fragment>
+      );
+    });
   };
 
   useEffect(() => {
@@ -311,198 +270,225 @@ function Chartofaccounts() {
     setSearchTerm(e.target.value);
   };
   ////////////////////////////////////////////////////
-  const [fatherAccount, setFatherAccount] = useState("");
+  const [level1, setLevel1] = useState("");
+  const [level2, setLevel2] = useState("");
+  const [level3, setLevel3] = useState("");
+  const [level4, setLevel4] = useState("");
+
+  const [level2Options, setLevel2Options] = useState([]);
+  const [level3Options, setLevel3Options] = useState([]);
+  const [level4Options, setLevel4Options] = useState([]);
+
   const [accountName, setAccountName] = useState("");
-  const [formData, setFormData] = useState({
-    accountNumber: "",
-    accountType: "",
-    mainAccount: "",
-    subAccount: "",
-    subSubAccount: "",
-    openingBalance: "",
-    description: "",
-    calculateDepreciation: "",
-    hasUsefulLife: "",
-    usefulLife: "",
-    cashFlow: "",
-  });
-  const [subAccounts, setSubAccounts] = useState([]);
-  const [subSubAccounts, setSubSubAccounts] = useState([]);
-  const [accountid, setAccountid] = useState("");
-  const [balance, setBalance] = useState("");
-  const [cashflowtype, setcashflowtype] = useState("");
+  const [generatedCode, setGeneratedCode] = useState("");
+  const [balance, setBalance] = useState("0");
+  const [cashflowtype, setcashflowtype] = useState("0");
+  const [isPayable, setIsPayable] = useState("1");
   const [description, setDescription] = useState("");
-  const [subAccountssub, setSubAccountssub] = useState([]);
-  const [sub2Account, setSub2Account] = useState("");
-  const handleMainAccountChange = (selectedOption) => {
-    const selectedValue = selectedOption ? selectedOption.target.value : "";
-    setFormData({
-      ...formData,
-      mainAccount: selectedValue,
-      subAccount: "",
-      subSubAccount: "",
-    });
 
-    const selectedAccount = accountsData.filter(
-      (account) => account.parent_id === selectedValue,
-    );
-    console.log(selectedAccount);
-    if (selectedAccount) {
-      setSubAccounts(selectedAccount);
-      setFatherAccount(selectedValue);
-    } else {
-      setSubAccounts([]);
-      setSubSubAccounts([]);
-    }
+  const resetModalForm = () => {
+    setLevel1("");
+    setLevel2("");
+    setLevel3("");
+    setLevel4("");
+    setLevel2Options([]);
+    setLevel3Options([]);
+    setLevel4Options([]);
+    setGeneratedCode("");
+    setAccountName("");
+    setBalance("0");
+    setcashflowtype("0");
+    setIsPayable("1");
+    setDescription("");
+    setScrap(0);
+    setDuration(0);
+    setDepreciation(false);
   };
-  const handleSubAccountSubChange = (selectedOption) => {
-    const selectedValue = selectedOption ? selectedOption.target.value : "";
-    setFormData({
-      ...formData,
-      subSubAccount: selectedValue,
-      subAccount: "",
-    });
-    const selectedSubAccount = accountsData.filter(
-      (account) => account.parent_id === selectedValue,
-    );
-    if (selectedValue === "9e5000ce-acfc-4762-8684-4e7f441a5585") {
-      setDepreciation(true);
-    } else {
-      setDepreciation(false);
+
+  const fetchNextCode = async (parentId) => {
+    if (!parentId || parentId === "0") {
+      setGeneratedCode("");
+      return;
     }
-    if (selectedSubAccount) {
-      setSubAccountssub(selectedSubAccount);
-      setAccountid(selectedValue);
-    } else {
-      setSubAccountssub([]);
+    try {
+      const res = await API.get("/accounttree/next-code", { params: { parent_id: parentId } });
+      const info = res.data?.data || res.data;
+      if (info?.suggested_code) {
+        setGeneratedCode(info.suggested_code);
+        if (info.cash_flow_type !== undefined) {
+          setcashflowtype(String(info.cash_flow_type));
+        }
+        setDepreciation(Boolean(info.is_depreciable));
+      }
+    } catch (err) {
+      console.error("Error fetching next code:", err);
     }
   };
 
-  const handleSubAccountChange = (selectedOption) => {
-    const selectedValue = selectedOption ? selectedOption.target.value : "";
-    setFormData({
-      ...formData,
-      subAccount: selectedValue,
-      subSubAccount: "",
-    });
+  const handleLevel1Change = (e) => {
+    const val = e?.target ? e.target.value : (e || "");
+    setLevel1(val);
+    setLevel2("");
+    setLevel3("");
+    setLevel4("");
+    setLevel3Options([]);
+    setLevel4Options([]);
 
-    const selectedSubAccount = accountsData.filter(
-      (account) => account.parent_id === selectedValue,
-    );
-    if (selectedSubAccount) {
-      setSubSubAccounts(selectedSubAccount);
-    } else {
-      setSubSubAccounts([]);
-    }
+    const flat = flattenTree(accountsData);
+    const sub = flat.filter((a) => String(a.parent_id) === String(val));
+    setLevel2Options(sub);
+    fetchNextCode(val);
+  };
+
+  const handleLevel2Change = (e) => {
+    const val = e?.target ? e.target.value : (e || "");
+    setLevel2(val);
+    setLevel3("");
+    setLevel4("");
+    setLevel4Options([]);
+
+    const flat = flattenTree(accountsData);
+    const sub = flat.filter((a) => String(a.parent_id) === String(val));
+    setLevel3Options(sub);
+    fetchNextCode(val && val !== "0" ? val : level1);
+  };
+
+  const handleLevel3Change = (e) => {
+    const val = e?.target ? e.target.value : (e || "");
+    setLevel3(val);
+    setLevel4("");
+
+    const flat = flattenTree(accountsData);
+    const sub = flat.filter((a) => String(a.parent_id) === String(val));
+    setLevel4Options(sub);
+    fetchNextCode(val && val !== "0" ? val : level2 || level1);
+  };
+
+  const handleLevel4Change = (e) => {
+    const val = e?.target ? e.target.value : (e || "");
+    setLevel4(val);
+    fetchNextCode(val && val !== "0" ? val : level3 || level2 || level1);
   };
 
   const handleAddAccount = async (e) => {
     e.preventDefault();
+    if (!accountName.trim()) {
+      alert("يرجى إدخال اسم الحساب");
+      return;
+    }
+    const effectiveParentId = (level4 && level4 !== "0")
+      ? level4
+      : (level3 && level3 !== "0")
+        ? level3
+        : (level2 && level2 !== "0")
+          ? level2
+          : (level1 && level1 !== "0")
+            ? level1
+            : null;
+
+    if (!effectiveParentId) {
+      alert("يرجى اختيار نوع أو تصنيف الحساب الأب");
+      return;
+    }
+
     const fData = new FormData();
+    fData.append("name", accountName);
     fData.append("accountname", accountName);
-    fData.append("accountid", accountid);
-    fData.append("accounttypeid", fatherAccount);
-    fData.append("balance", balance);
-    fData.append("cashflowtype", cashflowtype);
-    fData.append("description", description);
-    fData.append("subaccountid", sub2Account);
-    fData.append("scrap", scrap);
-    fData.append("duration", duration);
+    fData.append("parent_id", effectiveParentId);
+    fData.append("accountid", effectiveParentId);
+    fData.append("code", generatedCode);
+    fData.append("accountNumber", generatedCode);
+    fData.append("opening_balance", balance || 0);
+    fData.append("balance", balance || 0);
+    fData.append("cash_flow_type", cashflowtype || 0);
+    fData.append("cashflowtype", cashflowtype || 0);
+    fData.append("is_payable", isPayable === "1" ? "1" : "0");
+    fData.append("description", description || "");
+    fData.append("scrap_value", scrap || 0);
+    fData.append("scrap", scrap || 0);
+    fData.append("useful_life", duration || 0);
+    fData.append("duration", duration || 0);
+
     try {
-      const response = await API.post("/accounttree/store", fData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.data;
+      await API.post("/accounttree/store", fData);
       getAllAcounts();
+      setShowModal(false);
+      resetModalForm();
     } catch (error) {
       console.error("Error adding account:", error);
     }
-    setShowModal(false);
   };
 
   return (
     <div className="Chartofaccounts-container">
       <Title title="شجرة الحسابات" icon={<FontAwesomeIcon icon={faTree} />} />
-      {/* ========================================================================== */}
-      <div className="buttons-container">
+      {/* شريط تصنيفات الحسابات الرئيسية */}
+      <div className="coa-categories-bar">
         <button
-          onClick={() => handleButtonClick("showAll", showAllAccounts)}
-          className={`btntreesersh ${
-            activeButton === "showAll" ? "active" : ""
-          }`}
+          type="button"
+          onClick={() => handleCategorySelect("all")}
+          className={`coa-cat-btn ${activeCategory === "all" ? "active" : ""}`}
         >
           عرض الجميع
         </button>
-        <button
-          onClick={() => handleButtonClick("origins", toggleOriginsFilter)}
-          className={`btntreesersh ${
-            activeButton === "origins" ? "active" : ""
-          }`}
-        >
-          الأصول
-        </button>
-        <button
-          onClick={() =>
-            handleButtonClick("commitments", toggleCommitmentsFilter)
-          }
-          className={`btntreesersh ${
-            activeButton === "commitments" ? "active" : ""
-          }`}
-        >
-          الإلتزامات
-        </button>
-        <button
-          onClick={() => handleButtonClick("copyright", toggleCopyrightFilter)}
-          className={`btntreesersh ${
-            activeButton === "copyright" ? "active" : ""
-          }`}
-        >
-          الايرادات
-        </button>
-        <button
-          onClick={() => handleButtonClick("revenues", toggleRevenuesFilter)}
-          className={`btntreesersh ${
-            activeButton === "revenues" ? "active" : ""
-          }`}
-        >
-          المصروفات
-        </button>
+        {accountsData.map((root) => (
+          <button
+            key={root.id || root.code}
+            type="button"
+            onClick={() => handleCategorySelect(root.code)}
+            className={`coa-cat-btn ${activeCategory === String(root.code) ? "active" : ""}`}
+          >
+            {root.code} - {root.name}
+          </button>
+        ))}
       </div>
-      {/* ============================================================== */}
-      <div className="search-container"></div>
 
-      <div className="table-tree-container">
-        <div className="form-tree">
-          <div className="addaccount-form mb-3">
+      {/* شريط الإجراءات والبحث */}
+      <div className="coa-toolbar">
+        <div className="coa-search-box">
+          <FontAwesomeIcon icon={faSearch} className="coa-search-icon" />
+          <input
+            type="text"
+            className="coa-search-input"
+            placeholder="بحث برقم الحساب أو الاسم..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          {searchTerm && (
             <button
-              onClick={() => setShowModal(true)}
-              className="addrowInvoice  "
+              type="button"
+              className="coa-clear-search"
+              onClick={() => setSearchTerm("")}
             >
-              <FontAwesomeIcon icon={faPlus} /> اصافة حساب
+              ✕
             </button>
-          </div>
-          <div className="search">
-            <RegisterTextbox
-              type="text"
-              placeholder="البحث"
-              className="search-input"
-              parentStyle={{ width: "70%" }}
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-          </div>
+          )}
         </div>
-        <table className="table-tree">
+
+        <div className="coa-actions-group">
+          <button
+            type="button"
+            onClick={() => {
+              resetModalForm();
+              setShowModal(true);
+            }}
+            className="coa-btn-primary"
+          >
+            <FontAwesomeIcon icon={faPlus} /> إضافة حساب جديد
+          </button>
+        </div>
+      </div>
+
+      {/* جدول شجرة الحسابات */}
+      <div className="coa-table-card">
+        <table className="coa-tree-table">
           <thead>
-            <tr></tr>
-            <tr className="head-Chartofaccounts">
-              <th> رقم الحساب </th>
-              <th> اسم الحساب </th>
-              <th>يمكن الدفع عليه </th>
-              <th>الرصيد </th>
-              <th>نوع التدفق المالي </th>
+            <tr className="coa-table-header">
+              <th style={{ width: "15%" }}>رقم الحساب</th>
+              <th style={{ width: "45%" }}>اسم الحساب</th>
+              <th style={{ width: "14%" }}>طبيعة الحساب</th>
+              <th style={{ width: "13%" }}>الرصيد</th>
+              <th style={{ width: "13%" }}>نوع التدفق المالي</th>
             </tr>
           </thead>
           <tbody>
@@ -510,8 +496,8 @@ function Chartofaccounts() {
               renderTreeTable(filteredAccounts)
             ) : (
               <tr>
-                <td colSpan="5" style={{ textAlign: "center" }}>
-                  لا يوجد بيانات
+                <td colSpan="5" className="coa-no-data">
+                  لا توجد حسابات مطابقة لمعايير البحث
                 </td>
               </tr>
             )}
@@ -522,186 +508,211 @@ function Chartofaccounts() {
       <Modal
         className="add-subacc-modal"
         show={showModal}
-        onHide={() => setShowModal(false)}
+        onHide={() => {
+          resetModalForm();
+          setShowModal(false);
+        }}
         centered
       >
         <Modal.Header>
           <Button
             className="custom-close-button cls-btn"
             variant="link"
-            onClick={() => setShowModal(false)}
+            onClick={() => {
+              resetModalForm();
+              setShowModal(false);
+            }}
           >
             <FontAwesomeIcon icon={faXmark} className="closeModal" />
           </Button>
-          <Modal.Title className="title-sub">اضافة حساب فرعي</Modal.Title>
+          <Modal.Title className="title-sub">اضافة حساب</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form className="form-subaccc">
+            {/* الصف الأول: المستوى 1 (الرئيسي) والمستوى 2 (العام) */}
             <div className="from1-subacc">
               <Form.Group className="sub-inputs">
-                <Form.Label> نوع الحساب </Form.Label>
+                <Form.Label>نوع الحساب (المستوى 1) *</Form.Label>
                 <RegisterSelect
                   className="mm-sub"
+                  value={level1}
                   options={[
-                    { value: "0", label: "اختر نوع الحساب" },
-                    {
-                      value: "027f1e75-ff52-11ef-9b6b-28924a2a68b3",
-                      label: "الأصول",
-                    },
-                    {
-                      value: "027f3315-ff52-11ef-9b6b-28924a2a68b3",
-                      label: "الالتزامات",
-                    },
-                    {
-                      value: "1a9c82c8-ff52-11ef-9b6b-28924a2a68b3",
-                      label: "المصروفات",
-                    },
-                    {
-                      value: "1a9c9010-ff52-11ef-9b6b-28924a2a68b3",
-                      label: "الإيرادات",
-                    },
+                    { value: "", label: "اختر نوع الحساب" },
+                    ...(mainAccounts || []).map((account) => ({
+                      value: account.id,
+                      label: `${account.code ? account.code + ' - ' : ''}${account.name}`,
+                    })),
                   ]}
-                  onChange={(selectedOption) =>
-                    handleMainAccountChange(selectedOption)
-                  }
+                  onChange={handleLevel1Change}
                 />
               </Form.Group>
               <Form.Group className="sub-inputs">
+                <Form.Label>الحساب العام (المستوى 2)</Form.Label>
+                <RegisterSelect
+                  className="mm-sub"
+                  value={level2}
+                  disabled={!level1}
+                  options={[
+                    { value: "", label: level1 ? "اختر الحساب العام (المستوى 2)" : "اختر المستوى الأول أولاً" },
+                    ...(level2Options || []).map((account) => ({
+                      value: account.id,
+                      label: `${account.code ? account.code + ' - ' : ''}${account.name}`,
+                    })),
+                  ]}
+                  onChange={handleLevel2Change}
+                />
+              </Form.Group>
+            </div>
+
+            {/* الصف الثاني: المستوى 3 (الفرعي) والمستوى 4 (التفصيلي) */}
+            <div className="from1-subacc">
+              <Form.Group className="sub-inputs">
+                <Form.Label>الحساب الفرعي (المستوى 3)</Form.Label>
+                <RegisterSelect
+                  className="mm-sub"
+                  value={level3}
+                  disabled={!level2}
+                  options={[
+                    { value: "", label: level2 ? "اختر الحساب الفرعي (المستوى 3 - اختياري)" : "اختر المستوى الثاني أولاً" },
+                    ...(level3Options || []).map((account) => ({
+                      value: account.id,
+                      label: `${account.code ? account.code + ' - ' : ''}${account.name}`,
+                    })),
+                  ]}
+                  onChange={handleLevel3Change}
+                />
+              </Form.Group>
+              <Form.Group className="sub-inputs">
+                <Form.Label>الحساب التفصيلي (المستوى 4)</Form.Label>
+                <RegisterSelect
+                  className="mm-sub"
+                  value={level4}
+                  disabled={!level3}
+                  options={[
+                    { value: "", label: level3 ? "اختر الحساب التفصيلي (المستوى 4 - اختياري)" : "اختر المستوى الثالث أولاً" },
+                    ...(level4Options || []).map((account) => ({
+                      value: account.id,
+                      label: `${account.code ? account.code + ' - ' : ''}${account.name}`,
+                    })),
+                  ]}
+                  onChange={handleLevel4Change}
+                />
+              </Form.Group>
+            </div>
+
+            {/* الصف الثالث: اسم الحساب الجديد */}
+            <div className="from1-subacc">
+              <Form.Group className="sub-inputs" style={{ width: "100%" }}>
                 <Form.Label style={{ textAlign: "right" }}>
-                  {" "}
-                  اسم الحساب{" "}
+                  اسم الحساب الجديد *
                 </Form.Label>
                 <RegisterTextbox
                   className="mm-sub"
                   type="text"
-                  name="accountNumber"
-                  placeholder="اسم الحساب"
+                  name="accountName"
+                  placeholder="مثال: بنك الراجحي جاري"
                   value={accountName}
                   onChange={(e) => setAccountName(e.target.value)}
-                  // placeholder=''
+                  parentStyle={{ width: "100%" }}
                 />
               </Form.Group>
             </div>
-            <div className="main-form">
-              <div className="from1-subacc">
-                <Form.Group className="sub-inputs">
-                  <Form.Label> اسم الحساب الفرعي </Form.Label>
-                  <RegisterSelect
-                    className="mm-sub"
-                    placeholder="اسم الحساب الفرعي"
-                    options={[
-                      { value: "0", label: "اختر اسم الحساب الفرعي" },
-                      ...subSubAccounts.map((account) => ({
-                        value: account.id,
-                        label: account.name,
-                      })),
-                    ]}
-                    onChange={(selectedOption) =>
-                      handleSubAccountSubChange(selectedOption)
-                    }
-                  />
-                </Form.Group>
 
-                <Form.Group className="sub-inputs">
-                  <Form.Label> اختر الحساب الاب</Form.Label>
-                  <RegisterSelect
-                    options={[
-                      { value: "0", label: "اختر الحساب الاب" },
-                      ...subAccounts.map((account) => ({
-                        value: account.id,
-                        label: account.name,
-                      })),
-                    ]}
-                    className="mm-sub"
-                    placeholder="اختر الحساب الاب"
-                    onChange={(selectedOption) =>
-                      handleSubAccountChange(selectedOption)
-                    }
-                  />
-                </Form.Group>
-              </div>
+            {/* الصف الرابع: الرصيد الافتتاحي وتدفق النقدية */}
+            <div className="from1-subacc">
+              <Form.Group className="sub-inputs">
+                <Form.Label>الرصيد الافتتاحي</Form.Label>
+                <RegisterTextbox
+                  className="opening-blancesub mm-sub"
+                  type="number"
+                  name="openingBalance"
+                  placeholder="00"
+                  value={balance}
+                  onChange={(e) => setBalance(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group className="sub-inputs">
+                <Form.Label>حساب التدفق النقدي</Form.Label>
+                <RegisterSelect
+                  className="opening-blancesub mm-sub"
+                  name="cashFlow"
+                  value={cashflowtype}
+                  options={[
+                    { value: "0", label: "غير محدد" },
+                    { value: "1", label: "تشغيلية" },
+                    { value: "2", label: "استثمارية" },
+                    { value: "3", label: "تمويلية" },
+                  ]}
+                  onChange={(e) => setcashflowtype(e.target.value)}
+                />
+              </Form.Group>
+            </div>
+
+            {/* الصف الخامس: نوع الحساب والوصف */}
+            <div className="from1-subacc">
+              <Form.Group className="sub-inputs">
+                <Form.Label>طبيعة الحساب</Form.Label>
+                <RegisterSelect
+                  className="mm-sub"
+                  value={isPayable}
+                  options={[
+                    { value: "1", label: "حساب فرعي (يقبل حركات وقيود)" },
+                    { value: "0", label: "حساب رئيسي (تجميعي فقط)" },
+                  ]}
+                  onChange={(e) => setIsPayable(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group className="sub-inputs">
+                <Form.Label>الوصف / ملاحظات</Form.Label>
+                <RegisterTextbox
+                  className="mm-sub"
+                  type="text"
+                  name="description"
+                  placeholder="الوصف أو الملاحظات"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </Form.Group>
+            </div>
+
+            {/* الصف السادس (إضافي عند اختيار أصول ثابتة): الإهلاك */}
+            {depreciation && (
               <div className="from1-subacc">
                 <Form.Group className="sub-inputs">
-                  <Form.Label> الرصيد </Form.Label>
+                  <Form.Label>قيمة الخردة</Form.Label>
                   <RegisterTextbox
-                    className="opening-blancesub"
+                    className="opening-blancesub mm-sub"
                     type="number"
-                    name="openingBalance"
+                    name="scrapValue"
                     placeholder="00"
-                    onChange={(e) => setBalance(e.target.value)}
-                  />
-                </Form.Group>
-
-                <Form.Group className="sub-inputs">
-                  <Form.Label> اختر الحساب الادنى</Form.Label>
-                  <RegisterSelect
-                    options={[
-                      { value: "0", label: "اختر الحساب الادنى" },
-                      ...subAccountssub.map((account) => ({
-                        value: account.id,
-                        label: account.name,
-                      })),
-                    ]}
-                    className="mm-sub"
-                    onChange={(e) => setSub2Account(e.target.value)}
-                  />
-                </Form.Group>
-              </div>
-
-              <div className="from1-subacc">
-                <Form.Group className="sub-inputs">
-                  <Form.Label> الوصف </Form.Label>
-                  <RegisterTextarea
-                    className="mm-sub"
-                    name="description"
-                    placeholder="الوصف"
-                    stylee={{ width: "100%" }}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group className="sub-inputs">
-                  <Form.Label> حساب التدفق النقدي </Form.Label>
-                  <RegisterSelect
-                    className="opening-blancesub"
-                    type="text"
-                    name="cashFlow"
-                    placeholder="حساب التدفق النقدي"
-                    options={[
-                      { value: "0", label: "اختر حساب التدفق النقدي" },
-                      { value: "1", label: "تشغيلية" },
-                      { value: "2", label: "استثمارية" },
-                      { value: "3", label: "تمويلية" },
-                    ]}
-                    onChange={(e) => setcashflowtype(e.target.value)}
-                  />
-                </Form.Group>
-              </div>
-              {depreciation && (
-                <Form.Group className="sub-inputs2">
-                  <Form.Label> حساب الخردة </Form.Label>
-                  <RegisterTextbox
-                    className="opening-blancesub"
-                    type="number"
-                    name="openingBalance"
-                    placeholder="00"
+                    value={scrap}
                     onChange={(e) => setScrap(e.target.value)}
                   />
-                  <Form.Label>المدة </Form.Label>
+                </Form.Group>
+                <Form.Group className="sub-inputs">
+                  <Form.Label>العمر الإنتاجي (بالسنوات)</Form.Label>
                   <RegisterTextbox
-                    className="opening-blancesub"
+                    className="opening-blancesub mm-sub"
                     type="number"
-                    name="openingBalance"
+                    name="usefulLife"
                     placeholder="00"
+                    value={duration}
                     onChange={(e) => setDuration(e.target.value)}
                   />
                 </Form.Group>
-              )}
-            </div>
+              </div>
+            )}
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            اغلاق
+          <Button
+            variant="secondary"
+            onClick={() => {
+              resetModalForm();
+              setShowModal(false);
+            }}
+          >
+            إغلاق
           </Button>
           <Button variant="primary" onClick={handleAddAccount}>
             حفظ
@@ -709,7 +720,7 @@ function Chartofaccounts() {
         </Modal.Footer>
       </Modal>
 
-      <Modal className="showacc-modal" show={showModalacc}>
+      <Modal className="showacc-modal" show={showModalacc} onHide={handleCloseModal} centered>
         <Modal.Header>
           <Button
             className="custom-close-button cls-btn"
@@ -718,45 +729,69 @@ function Chartofaccounts() {
           >
             <FontAwesomeIcon icon={faXmark} className="closeModal" />
           </Button>
-          <Modal.Title> {"تفاصيل الحساب"} </Modal.Title>
+          <Modal.Title className="title-sub">تفاصيل الحساب</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedNode && (
-            <table className="table-tree trtr">
-              <thead>
-                <tr className="head-Chartofaccounts">
-                  <th>{"النوع"}</th>
-                  <th>{"القيمة"}</th>
-                </tr>
-              </thead>
+            <table className="coa-details-table">
               <tbody>
                 <tr>
-                  <td> {"رقم الحساب"} </td>
-                  <td>{selectedNode?.number}</td>
+                  <td className="details-label">رقم الحساب</td>
+                  <td>
+                    <span className="code-pill">{selectedNode?.code}</span>
+                  </td>
                 </tr>
                 <tr>
-                  <td>{"اسم الحساب"} </td>
-                  <td>{selectedNode?.name}</td>
+                  <td className="details-label">اسم الحساب</td>
+                  <td><strong>{selectedNode?.name}</strong></td>
                 </tr>
                 <tr>
-                  <td>{"يمكن الدفع عليه"} </td>
-                  <td>{selectedNode?.is_payable === "True" ? "Yes" : "No"}</td>
+                  <td className="details-label">المستوى الشجري</td>
+                  <td>المستوى {selectedNode?.level !== undefined ? selectedNode.level : "-"}</td>
                 </tr>
                 <tr>
-                  <td>{"الرصيد"} </td>
-                  <td>{selectedNode?.balance || "N/A"}</td>
+                  <td className="details-label">طبيعة الحساب</td>
+                  <td>
+                    {selectedNode?.is_payable ? (
+                      <span className="badge-payable badge-leaf">فرعي (يقبل حركات وقيود)</span>
+                    ) : (
+                      <span className="badge-payable badge-parent">رئيسي (تجميعي)</span>
+                    )}
+                  </td>
                 </tr>
                 <tr>
-                  <td>{"نوع التدفق المالي"} </td>
-                  <td>{selectedNode?.accountType || "N/A"}</td>
+                  <td className="details-label">الرصيد النهائي</td>
+                  <td>
+                    <strong>
+                      {formatMoney(selectedNode?.final_balance ?? selectedNode?.opening_balance ?? 0)}
+                    </strong>
+                  </td>
                 </tr>
+                <tr>
+                  <td className="details-label">نوع التدفق المالي</td>
+                  <td>
+                    {selectedNode?.cash_flow_type == 1
+                      ? "تشغيلية"
+                      : selectedNode?.cash_flow_type == 2
+                        ? "استثمارية"
+                        : selectedNode?.cash_flow_type == 3
+                          ? "تمويلية"
+                          : "غير محدد"}
+                  </td>
+                </tr>
+                {selectedNode?.description && (
+                  <tr>
+                    <td className="details-label">الوصف / ملاحظات</td>
+                    <td>{selectedNode.description}</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
-            {"اغلاق"}
+            إغلاق
           </Button>
         </Modal.Footer>
       </Modal>

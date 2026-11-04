@@ -3,71 +3,39 @@ import Title from "../../components/title";
 import "./VacationDetails.css";
 import { faList } from "@fortawesome/free-solid-svg-icons";
 import CustomTable from "../../components/CustomTable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import API from "../../api/axiosConfig";
 
 function VacationDetails() {
   const VacationDetailscolumns = [
     { name: "", key: "id", type: "hidden" },
     { name: "نوع الإجازة", key: "type", type: "text" },
-    { name: "عدد أيام الإجازة", key: "duration", type: "number" },
+    { name: "عدد أيام الإجازة", key: "duration", type: "text" },
   ];
 
-  const [vacationDetailsrows, setVacationDetailsRows] = useState([
-    {
-      id: 1,
-      type: "مرضية",
-      duration: "10 أيام",
-    },
-    {
-      id: 2,
-      type: "سنوية",
-      duration: "15 أيام",
-    },
-    {
-      id: 3,
-      type: "أمومة",
-      duration: "30 أيام",
-    },
-    {
-      id: 4,
-      type: "إدارية",
-      duration: "5 أيام",
-    },
-  ]);
+  const [vacationDetailsrows, setVacationDetailsRows] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // const handleDownload = (selectedRows) => {
-  //   const selectedData = rows.filter((row) => selectedRows.includes(row.id));
-  //   if (selectedData.length === 0) {
-  //     alert("Please select at least one row.");
-  //     return;
-  //   }
+  useEffect(() => {
+    const fetchVacations = async () => {
+      try {
+        const res = await API.post("/vacations");
+        const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+        const formatted = list.map((item) => ({
+          id: item.id,
+          type: item.name,
+          duration: `${item.days} يوم`,
+        }));
+        setVacationDetailsRows(formatted);
+      } catch (err) {
+        console.error("Error loading vacations:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   const csvHeader = columns
-  //     .filter((col) => col.key !== "actions")
-  //     .map((col) => col.name)
-  //     .join(",");
-
-  //   const csvRows = selectedData.map((row) =>
-  //     columns
-  //       .filter((col) => col.key !== "actions")
-  //       .map((col) => `"${row[col.key] || ""}"`)
-  //       .join(",")
-  //   );
-
-  //   const csvContent = `${csvHeader}\n${csvRows.join("\n")}`;
-
-  //   const bom = "\uFEFF";
-  //   const finalContent = bom + csvContent;
-
-  //   const blob = new Blob([finalContent], { type: "text/csv;charset=utf-8;" });
-  //   const link = document.createElement("a");
-  //   const url = URL.createObjectURL(blob);
-  //   link.setAttribute("href", url);
-  //   link.setAttribute("download", "selected_rows_report.csv");
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
+    fetchVacations();
+  }, []);
 
   return (
     <>
@@ -80,7 +48,6 @@ function VacationDetails() {
           <CustomTable
             columns={VacationDetailscolumns}
             data={vacationDetailsrows}
-            // onDownload={handleDownload}
             add={true}
           />
         </div>

@@ -1,106 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./organizationalchart.css";
 import Title from "../../components/title";
-import { faChartDiagram, faXmark, faPrint } from "@fortawesome/free-solid-svg-icons";
+import { faChartDiagram, faXmark, faPrint, faCrown, faUser, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Row, Col, Image, Modal, Button } from "react-bootstrap";
+import { Row, Col, Image, Modal, Button, Spinner } from "react-bootstrap";
 import { useReactToPrint } from "react-to-print";
-// import API from "../../api/axiosConfig";
+import { toast } from "react-toastify";
+import API from "../../api/axiosConfig";
 import TestPreLoader from "../TestPreLoader/TestPreLoader";
 import PrintHead from "../../components/PrintHead";
 import PrintFooter from "../../components/PrintFooter";
-
-// بيانات وهمية تجريبية (Static / Dummy Data)
-const mockData = [
-  {
-    uuid: "dept-1",
-    name: "إدارة تكنولوجيا المعلومات (IT)",
-    manager: {
-      uuid: "emp-101",
-      name: "أحمد محمود",
-      photo: "https://i.pravatar.cc/150?img=11",
-      job_number: "IT-001",
-      email: "ahmed.mahmoud@company.com",
-      phone: "01012345678",
-      address: "القاهرة، مصر",
-      date_of_joining: "2020-01-15",
-      qualification: "بكالوريوس حاسبات ومعلومات",
-      marital_status: "married",
-      total_salary: 25000,
-      bank_account_number: "EG12345678901234567890123",
-    },
-    employees: [
-      {
-        uuid: "emp-102",
-        name: "سارة علي",
-        photo: "https://i.pravatar.cc/150?img=5",
-        job_number: "IT-002",
-        email: "sara.ali@company.com",
-        phone: "01123456789",
-        address: "الجيزة، مصر",
-        date_of_joining: "2021-06-01",
-        qualification: "بكالوريوس هندسة حاسبات",
-        marital_status: "single",
-        total_salary: 15000,
-        bank_account_number: "EG98765432109876543210987",
-      },
-      {
-        uuid: "emp-103",
-        name: "عمر خالد",
-        photo: "https://i.pravatar.cc/150?img=12",
-        job_number: "IT-003",
-        email: "omar.khaled@company.com",
-        phone: "01234567890",
-        address: "الإسكندرية، مصر",
-        date_of_joining: "2022-03-10",
-        qualification: "بكالوريوس نظم معلومات",
-        marital_status: "single",
-        total_salary: 12000,
-        bank_account_number: "EG55566677788899900011122",
-      },
-    ],
-  },
-  {
-    uuid: "dept-2",
-    name: "إدارة الموارد البشرية (HR)",
-    manager: {
-      uuid: "emp-201",
-      name: "منى يوسف",
-      photo: "https://i.pravatar.cc/150?img=9",
-      job_number: "HR-001",
-      email: "mona.youssef@company.com",
-      phone: "01098765432",
-      address: "التجمع الخامس، القاهرة",
-      date_of_joining: "2019-11-01",
-      qualification: "بكالوريوس إدارة أعمال",
-      marital_status: "married",
-      total_salary: 22000,
-      bank_account_number: "EG11122233344455566677788",
-    },
-    employees: [
-      {
-        uuid: "emp-202",
-        name: "حسام حسن",
-        photo: "",
-        job_number: "HR-002",
-        email: "hossam.hassan@company.com",
-        phone: "01155443322",
-        address: "المعادي، القاهرة",
-        date_of_joining: "2023-01-15",
-        qualification: "ليسانس حقوق",
-        marital_status: "single",
-        total_salary: 10000,
-        bank_account_number: "EG33344455566677788899900",
-      },
-    ],
-  },
-  {
-    uuid: "dept-3",
-    name: "إدارة التسويق (Marketing)",
-    manager: null,
-    employees: [],
-  },
-];
+import { toLocal } from "../../Utils/toLocal";
 
 /* -------------------------------------------------------------------------- */
 /*                            مودال عرض بيانات البروفايل                         */
@@ -116,21 +26,23 @@ const ProfileModal = ({ show, handleClose, person }) => {
 
   if (!person) return null;
 
-  const defaultAvatar = "https://via.placeholder.com/150";
+  const defaultAvatar = person.gender === "1" 
+    ? "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
+    : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
 
   return (
     <Modal
-      className="dir"
+      className="dir profile-modal-custom"
       show={show}
       onHide={handleClose}
       size="lg"
       centered
       dir="rtl"
     >
-      <Modal.Header className="d-flex justify-content-between align-items-center">
-        <Modal.Title className="fs-5 fw-bold">
-          <FontAwesomeIcon icon={faChartDiagram} className="ms-2 text-primary" />
-          الملف الشخصي: {person.name}
+      <Modal.Header className="d-flex justify-content-between align-items-center" style={{ borderBottom: "1.5px solid rgba(194, 154, 100, 0.25)" }}>
+        <Modal.Title className="fs-5 fw-bold d-flex align-items-center gap-2" style={{ color: "var(--text-color, #493d2c)" }}>
+          <FontAwesomeIcon icon={faChartDiagram} style={{ color: "#c29a64" }} />
+          <span>الملف الوظيفي والشخصي: {person.name}</span>
         </Modal.Title>
         <Button
           className="custom-close-button cls-btn"
@@ -141,12 +53,11 @@ const ProfileModal = ({ show, handleClose, person }) => {
         </Button>
       </Modal.Header>
 
-      <Modal.Body className="dir">
+      <Modal.Body className="dir p-4">
         {/* الجزء المخصص للطباعة والعرض */}
         <div ref={printRef} className="printable-profile-container p-3">
           <PrintHead />
 
-          {/* تم إضافة className="print-profile-body" هنا لضبط المسافة أسفل الهيدر عند الطباعة */}
           <Row className="align-items-center print-profile-body">
             {/* الصورة والبيانات الأساسية العلوية */}
             <Col md={4} className="text-center border-end-md pb-3 pb-md-0">
@@ -158,15 +69,20 @@ const ProfileModal = ({ show, handleClose, person }) => {
                     width: "140px",
                     height: "140px",
                     objectFit: "cover",
-                    border: "3px solid var(--border-color, #00897b)",
-                    boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
+                    border: "3px solid #c29a64",
+                    boxShadow: "0 4px 14px rgba(168, 126, 69, 0.25)",
                   }}
                   alt={person.name}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = defaultAvatar;
+                  }}
                 />
               </div>
-              <h4 className="fw-bold mb-1">{person.name}</h4>
+              <h4 className="fw-bold mb-1" style={{ color: "var(--text-color, #493d2c)" }}>{person.name}</h4>
+              <p className="text-muted small mb-2">{person.job_title || "موظف"}</p>
               {person.job_number && (
-                <span className="badge bg-light text-dark border px-3 py-2 rounded-pill mt-1">
+                <span className="badge px-3 py-2 rounded-pill" style={{ background: "rgba(194, 154, 100, 0.15)", color: "#875f28", fontSize: "12px" }}>
                   الرقم الوظيفي: {person.job_number}
                 </span>
               )}
@@ -175,58 +91,48 @@ const ProfileModal = ({ show, handleClose, person }) => {
             {/* تفاصيل البيانات الشخصية والمالية */}
             <Col md={8} className="text-end ps-md-4">
               <div className="profile-section mb-4">
-                <h5 className="fw-bold text-primary border-bottom pb-2 mb-3">
+                <h5 className="fw-bold border-bottom pb-2 mb-3" style={{ color: "var(--text-color, #493d2c)", borderColor: "rgba(194, 154, 100, 0.25)" }}>
                   المعلومات الأساسية
                 </h5>
                 <Row className="g-2">
                   <Col sm={6}>
                     <p className="mb-2">
-                      <strong className="">البريد الإلكتروني:</strong>{" "}
-                      <br />
+                      <strong className="text-muted small d-block">البريد الإلكتروني:</strong>
                       <span>{person.email || "غير متوفر"}</span>
                     </p>
                   </Col>
                   <Col sm={6}>
                     <p className="mb-2">
-                      <strong className="">رقم الهاتف:</strong>{" "}
-                      <br />
-                      <span>{person.phone || "غير متوفر"}</span>
+                      <strong className="text-muted small d-block">رقم الهاتف:</strong>
+                      <span dir="ltr">{person.phone || "غير متوفر"}</span>
                     </p>
                   </Col>
                   <Col sm={6}>
                     <p className="mb-2">
-                      <strong className="">العنوان:</strong>{" "}
-                      <br />
+                      <strong className="text-muted small d-block">العنوان:</strong>
                       <span>{person.address || "غير متوفر"}</span>
                     </p>
                   </Col>
                   <Col sm={6}>
                     <p className="mb-2">
-                      <strong className="">تاريخ التعيين:</strong>{" "}
-                      <br />
+                      <strong className="text-muted small d-block">تاريخ التعيين:</strong>
                       <span>{person.date_of_joining || "غير متوفر"}</span>
                     </p>
                   </Col>
                   <Col sm={6}>
                     <p className="mb-2">
-                      <strong className="">المؤهل العلمي:</strong>{" "}
-                      <br />
+                      <strong className="text-muted small d-block">المؤهل العلمي:</strong>
                       <span>{person.qualification || "غير متوفر"}</span>
                     </p>
                   </Col>
                   <Col sm={6}>
                     <p className="mb-2">
-                      <strong className="">الحالة الاجتماعية:</strong>{" "}
-                      <br />
+                      <strong className="text-muted small d-block">الحالة الاجتماعية:</strong>
                       <span>
-                        {person.marital_status === "single"
+                        {person.marital_status === "single" || person.marital_status === "0"
                           ? "أعزب / عزباء"
-                          : person.marital_status === "married"
+                          : person.marital_status === "married" || person.marital_status === "1"
                           ? "متزوج / متزوجة"
-                          : person.marital_status === "divorced"
-                          ? "مطلق / مطلقة"
-                          : person.marital_status === "widowed"
-                          ? "أرمل / أرملة"
                           : "غير متوفر"}
                       </span>
                     </p>
@@ -235,26 +141,24 @@ const ProfileModal = ({ show, handleClose, person }) => {
               </div>
 
               <div className="profile-section">
-                <h5 className="fw-bold text-primary border-bottom pb-2 mb-3">
+                <h5 className="fw-bold border-bottom pb-2 mb-3" style={{ color: "var(--text-color, #493d2c)", borderColor: "rgba(194, 154, 100, 0.25)" }}>
                   المعلومات المالية
                 </h5>
                 <Row className="g-2">
                   <Col sm={6}>
                     <p className="mb-2">
-                      <strong className="">إجمالي الراتب:</strong>{" "}
-                      <br />
-                      <span className="fw-semibold text-success">
+                      <strong className="text-muted small d-block">إجمالي الراتب:</strong>
+                      <span className="fw-bold text-success fs-6">
                         {person.total_salary
-                          ? `${Number(person.total_salary).toLocaleString()} ج.م`
+                          ? `${toLocal(person.total_salary)} ر.س`
                           : "غير متوفر"}
                       </span>
                     </p>
                   </Col>
                   <Col sm={6}>
                     <p className="mb-2">
-                      <strong className="">رقم الحساب البنكي:</strong>{" "}
-                      <br />
-                      <span>{person.bank_account_number || "غير متوفر"}</span>
+                      <strong className="text-muted small d-block">رقم الحساب البنكي (IBAN):</strong>
+                      <span className="font-monospace small">{person.bank_account_number || "غير متوفر"}</span>
                     </p>
                   </Col>
                 </Row>
@@ -267,15 +171,22 @@ const ProfileModal = ({ show, handleClose, person }) => {
 
       <Modal.Footer className="d-flex justify-content-between align-items-center">
         <Button
-          variant="outline-primary"
           onClick={handlePrint}
-          className="d-flex align-items-center gap-2 px-4"
+          className="d-flex align-items-center gap-2 px-4 rounded-pill"
+          style={{
+            background: "linear-gradient(135deg, #c29a64 0%, #a87e45 100%)",
+            color: "#fff",
+            border: "none",
+            fontWeight: 700,
+            fontSize: "14px",
+            boxShadow: "0 4px 12px rgba(168, 126, 69, 0.3)",
+          }}
         >
           <FontAwesomeIcon icon={faPrint} />
           طباعة الملف
         </Button>
 
-        <Button variant="secondary" onClick={handleClose} className="px-4">
+        <Button variant="outline-secondary" onClick={handleClose} className="px-4 rounded-pill">
           إغلاق
         </Button>
       </Modal.Footer>
@@ -287,6 +198,10 @@ const ProfileModal = ({ show, handleClose, person }) => {
 /*                            بطاقة عرض الموظف                                */
 /* -------------------------------------------------------------------------- */
 const PersonCard = ({ person, isManager = false, onClick }) => {
+  const defaultAvatar = person.gender === "1" 
+    ? "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
+    : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
+
   return (
     <div
       className={`person-card ${isManager ? "manager" : ""}`}
@@ -295,7 +210,7 @@ const PersonCard = ({ person, isManager = false, onClick }) => {
     >
       {isManager && (
         <div className="role-badge">
-          <i className="fa-solid fa-crown"></i> مدير
+          <FontAwesomeIcon icon={faCrown} /> مدير القسم
         </div>
       )}
       <div className="avatar">
@@ -303,6 +218,10 @@ const PersonCard = ({ person, isManager = false, onClick }) => {
           <img
             src={person.photo}
             alt={person.name}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = defaultAvatar;
+            }}
             style={{
               width: "100%",
               height: "100%",
@@ -311,12 +230,12 @@ const PersonCard = ({ person, isManager = false, onClick }) => {
             }}
           />
         ) : (
-          <i className="fa-solid fa-user"></i>
+          <FontAwesomeIcon icon={faUser} />
         )}
       </div>
       <div className="person-name">{person.name}</div>
       <div className="person-role">
-        {isManager ? "مدير قسم" : "موظف"}
+        {isManager ? "مدير قسم" : (person.job_title || "موظف")}
       </div>
     </div>
   );
@@ -341,11 +260,20 @@ function OrganizationalChart() {
     setSelectedPerson(null);
   };
 
-  const getChart = () => {
-    setTimeout(() => {
-      setData(mockData);
+  // جلب بيانات الهيكل التنظيمي من الـ Backend
+  const getChart = async () => {
+    try {
+      setLoading(true);
+      const res = await API.get("/organizational-chart");
+      const chartData = res.data?.data || res.data || [];
+      setData(Array.isArray(chartData) ? chartData : []);
+    } catch (err) {
+      console.error("Error loading organizational chart:", err);
+      toast.error("فشل في تحميل بيانات الهيكل التنظيمي");
+      setData([]);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   useEffect(() => {
@@ -356,205 +284,112 @@ function OrganizationalChart() {
     <TestPreLoader />
   ) : (
     <>
-    <style>
-      {`
-        /* ==========================================
-   تنسيقات الطباعة المخصصة (Print Styles)
-   ========================================== */
-@media print {
-  /* إخفاء أي عنصر غير مرغوب فيه أثناء الطباعة */
-  body * {
-    visibility: hidden;
-  }
+      <div className="org-chart-container">
+        <div className="d-flex justify-content-between align-items-center w-100 max-w-1200 px-3">
+          <Title
+            title="الهيكل التنظيمي للشركة"
+            icon={<FontAwesomeIcon icon={faChartDiagram} />}
+            style={{ width: "unset" }}
+          />
 
-  /* إظهار الحاوية المخصصة للطباعة فقط */
-  .printable-profile-container,
-  .printable-profile-container * {
-    visibility: visible;
-  }
+          <button
+            type="button"
+            onClick={getChart}
+            className="btn rounded-pill d-flex align-items-center gap-2 px-3 py-2"
+            style={{
+              background: "var(--surface-color, #fff)",
+              border: "1.5px solid rgba(194, 154, 100, 0.4)",
+              color: "var(--text-color, #493d2c)",
+              fontWeight: 600,
+              fontSize: "14px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+            }}
+          >
+            <FontAwesomeIcon icon={faSyncAlt} />
+            <span>تحديث الهيكل</span>
+          </button>
+        </div>
 
-  .printable-profile-container {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    padding: 20px !important;
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    direction: rtl;
-
-    /* ترتيب المحتوى عمودي بدل ما العناصر تتراكب فوق بعض */
-    display: flex !important;
-    flex-direction: column !important;
-  }
-
-  /* منع الهيدر والفوتر من إنهم يبقوا fixed/absolute جوه الطباعة */
-  .printable-profile-container .theader,
-  .printable-profile-container .tfooter {
-    position: static !important;
-    width: 100% !important;
-  }
-
-  .printable-profile-container .theader {
-    margin-bottom: 24px !important;
-    order: -1;
-  }
-
-  .printable-profile-container .tfooter {
-    margin-top: 24px !important;
-    order: 999;
-  }
-
-  /* مسافة أمان أسفل الهيدر قبل بيانات البروفايل */
-  .print-profile-body {
-    margin-top: 20px !important;
-    position: relative !important;
-    z-index: 1;
-  }
-
-  /* تنسيق الهيدر في الطباعة */
-  .print-header {
-    display: flex !important;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #00897b;
-    padding-bottom: 15px;
-    margin-bottom: 25px;
-  }
-
-  /* تنسيق بطاقة البيانات */
-  .print-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
-    background-color: #f9f9f9 !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  /* عناوين الأقسام في الورقة المطبوعة */
-  .print-section-title {
-    font-size: 16px;
-    font-weight: bold;
-    color: #00897b !important;
-    border-bottom: 1px solid #00897b;
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-  }
-
-  /* تنسيق جدول/شبكة التفاصيل */
-  .print-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  .print-item {
-    font-size: 13px;
-    line-height: 1.6;
-  }
-
-  .print-label {
-    font-weight: bold;
-    color: #555;
-  }
-
-  /* فوتر ورقة الطباعة */
-  .print-footer {
-    display: block !important;
-    margin-top: 40px;
-    padding-top: 10px;
-    border-top: 1px solid #ccc;
-    text-align: center;
-    font-size: 11px;
-    color: #777;
-  }
-}
-      `}
-    </style>
-    <div className="org-chart-container">
-      <Title
-        title={"الهيكل التنظيمي للشركة"}
-        icon={<FontAwesomeIcon icon={faChartDiagram} />}
-      />
-
-      <div className="departments-wrapper">
-        {data.map((dept) => (
-          <div key={dept.uuid} className="department-card">
-            {/* اسم القسم */}
-            <div className="department-header">
-              <h2>{dept.name}</h2>
+        <div className="departments-wrapper">
+          {data.length === 0 ? (
+            <div className="text-center py-5 w-100">
+              <FontAwesomeIcon icon={faChartDiagram} style={{ fontSize: "3rem", color: "#c29a64", opacity: 0.4 }} className="mb-3" />
+              <h5 className="fw-bold" style={{ color: "var(--text-color, #493d2c)" }}>لا توجد أقسام مسجلة حالياً</h5>
+              <p className="text-muted small">يرجى إضافة أقسام وتعيين موظفين لتظهر في الهيكل التنظيمي.</p>
             </div>
+          ) : (
+            data.map((dept) => (
+              <div key={dept.uuid || dept.id} className="department-card">
+                {/* اسم القسم */}
+                <div className="department-header">
+                  <h2>{dept.name}</h2>
+                  {dept.description && <p className="text-muted small mt-1 mb-0">{dept.description}</p>}
+                </div>
 
-            {/* مدير القسم */}
-            {dept.manager ? (
-              <div className="manager-section">
-                <div className="card-manager-container">
-                  <PersonCard
-                    person={dept.manager}
-                    isManager={true}
-                    onClick={() => handleShowModal(dept.manager)}
-                  />
-                  {dept.employees && dept.employees.length > 0 && (
-                    <div className="card-manager-pipe"></div>
-                  )}
+                {/* مدير القسم */}
+                {dept.manager ? (
+                  <div className="manager-section">
+                    <div className="card-manager-container">
+                      <PersonCard
+                        person={dept.manager}
+                        isManager={true}
+                        onClick={() => handleShowModal(dept.manager)}
+                      />
+                      {dept.employees && dept.employees.length > 0 && (
+                        <div className="card-manager-pipe"></div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center my-4 py-2 px-3 rounded-pill d-inline-block" style={{ background: "rgba(194, 154, 100, 0.1)", color: "#875f28", margin: "20px auto" }}>
+                    لا يوجد مدير معيّن لهذا القسم
+                  </div>
+                )}
+
+                {/* موظفي القسم */}
+                <div
+                  data-title="الموظفون"
+                  className="employees-grid-container"
+                >
+                  <div className="employees-pipe"></div>
+                  <div className="employees-grid">
+                    {dept.employees && dept.employees.length > 0 ? (
+                      dept.employees.map((employee) => (
+                        <div className="employees-card-container" key={employee.uuid || employee.id}>
+                          <PersonCard
+                            person={employee}
+                            onClick={() => handleShowModal(employee)}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <p
+                        style={{
+                          color: "#8a7e6b",
+                          gridColumn: "1 / -1",
+                          textAlign: "center",
+                          margin: "15px 0",
+                          fontSize: "14px",
+                        }}
+                      >
+                        لا يوجد موظفون إضافيون في هذا القسم
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            ) : (
-              <p
-                style={{
-                  textAlign: "center",
-                  color: "#a7a7d1",
-                  margin: "20px 0",
-                }}
-              >
-                لا يوجد مدير حالياً
-              </p>
-            )}
+            ))
+          )}
+        </div>
 
-            {/* موظفي القسم */}
-            <div
-              data-title={"الموظفين"}
-              className="employees-grid-container"
-            >
-              <div className="employees-pipe"></div>
-              <div className="employees-grid">
-                {dept.employees && dept.employees.length > 0 ? (
-                  dept.employees.map((employee) => (
-                    <div className="employees-card-container" key={employee.uuid}>
-                      <PersonCard
-                        person={employee}
-                        onClick={() => handleShowModal(employee)}
-                      />
-                    </div>
-                  ))
-                ) : (
-                  <p
-                    style={{
-                      color: "#a7a7d1",
-                      gridColumn: "1 / -1",
-                      textAlign: "center",
-                    }}
-                  >
-                    لا يوجد موظفين في هذا القسم
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
+        {selectedPerson && (
+          <ProfileModal
+            show={showModal}
+            handleClose={handleCloseModal}
+            person={selectedPerson}
+          />
+        )}
       </div>
-
-      {selectedPerson && (
-        <ProfileModal
-          show={showModal}
-          handleClose={handleCloseModal}
-          person={selectedPerson}
-        />
-      )}
-    </div>
     </>
   );
 }

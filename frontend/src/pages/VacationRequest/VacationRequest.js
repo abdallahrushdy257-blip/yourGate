@@ -1,21 +1,13 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faHand,
-  faPlus,
   faCalendarCheck,
   faClock,
-  faTable,
-  faFileAlt,
-  faTimes,
+  faPlus,
+  faTrashCan,
+  faCheckToSlot,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Row, Spinner, Modal, Nav, Button } from "react-bootstrap";
-import Title from "../../components/title";
-import RegisterSelect from "../../components/RegisterSelect";
-import RegisterTextbox from "../../components/RegisterTextBox";
-import RegisterRadio from "../../components/Radio";
-import UploadInput from "../../components/UploadInput";
-import CustomButton from "../../components/CustomButton";
+import { Spinner, Modal, Nav, Button } from "react-bootstrap";
 import API from "../../api/axiosConfig";
 import TestPreLoader from "../TestPreLoader/TestPreLoader";
 import TableComponent from "../../components/TableComponent";
@@ -31,22 +23,30 @@ function VacationRequest() {
   const [showModal, setShowModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   // Decision Modal State
   const [showDecisionModal, setShowDecisionModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [decisionStatus, setDecisionStatus] = useState("");
+  const [isSavingDecision, setIsSavingDecision] = useState(false);
+
+  // Delete Modal State
+  const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Active Request Type inside Modal ('vac' or 'per')
+  const [selectedRequestType, setSelectedRequestType] = useState("vac");
 
   // Form State
-  const [selectedRequestType, setSelectedRequestType] = useState("vac");
   const [formData, setFormData] = useState({
     empId: "",
     vacTypeId: "",
     description: "",
-    from: new Date().toISOString().substr(0, 10),
-    to: new Date().toISOString().substr(0, 10),
-    permDate: new Date().toISOString().substr(0, 10),
+    from: new Date().toISOString().substring(0, 10),
+    to: new Date().toISOString().substring(0, 10),
+    permDate: new Date().toISOString().substring(0, 10),
     permFromTime: "08:00",
-    permToTime: "09:00",
+    permToTime: "10:00",
     note: "",
   });
   const [upload, setUpload] = useState(null);
@@ -56,11 +56,11 @@ function VacationRequest() {
       empId: "",
       vacTypeId: "",
       description: "",
-      from: new Date().toISOString().substr(0, 10),
-      to: new Date().toISOString().substr(0, 10),
-      permDate: new Date().toISOString().substr(0, 10),
+      from: new Date().toISOString().substring(0, 10),
+      to: new Date().toISOString().substring(0, 10),
+      permDate: new Date().toISOString().substring(0, 10),
       permFromTime: "08:00",
-      permToTime: "09:00",
+      permToTime: "10:00",
       note: "",
     });
     setUpload(null);
@@ -73,11 +73,11 @@ function VacationRequest() {
         API.post("employees"),
         API.post("vacations"),
       ]);
-      setEmployees(empRes.data);
-      setVacationTypes(vacRes.data);
-      loading && setLoading(false);
+      setEmployees(Array.isArray(empRes.data) ? empRes.data : (empRes.data?.data || []));
+      setVacationTypes(Array.isArray(vacRes.data) ? vacRes.data : (vacRes.data?.data || []));
     } catch (err) {
-      console.error(err);
+      console.error("Error loading dropdown data:", err);
+    } finally {
       setLoading(false);
     }
   };
@@ -86,12 +86,31 @@ function VacationRequest() {
     getInitialData();
   }, []);
 
+  const handleOpenAdd = (type) => {
+    setSelectedRequestType(type);
+    resetForm();
+    setShowModal(true);
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     setIsSubmitting(true);
+    setError({});
+
     const mForm = new FormData();
 
     if (selectedRequestType === "vac") {
+      if (!formData.empId) {
+        setError({ empId: "يرجى اختيار الموظف" });
+        setIsSubmitting(false);
+        return;
+      }
+      if (!formData.vacTypeId) {
+        setError({ vacTypeId: "يرجى اختيار نوع الإجازة" });
+        setIsSubmitting(false);
+        return;
+      }
+
       mForm.append("name", formData.empId);
       mForm.append("type", formData.vacTypeId);
       mForm.append("description", formData.description);
@@ -100,7 +119,7 @@ function VacationRequest() {
       if (upload) mForm.append("upload", upload);
 
       try {
-        await API.post("vacationrequests/store", mForm, {
+        await API.post("/vacationrequests/store", mForm, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         toast.success("تم تقديم طلب الإجازة بنجاح");
@@ -108,9 +127,17 @@ function VacationRequest() {
         resetForm();
         setRefreshKey(Date.now());
       } catch (err) {
+        console.error(err);
         setError(err.response?.data?.errors || {});
+        toast.error(err.response?.data?.message || "حدث خطأ أثناء تقديم طلب الإجازة");
       }
     } else {
+      if (!formData.empId) {
+        setError({ empId: "يرجى اختيار الموظف" });
+        setIsSubmitting(false);
+        return;
+      }
+
       mForm.append("name", formData.empId);
       mForm.append("date", formData.permDate);
       mForm.append("from_time", formData.permFromTime);
@@ -127,14 +154,21 @@ function VacationRequest() {
         resetForm();
         setRefreshKey(Date.now());
       } catch (err) {
+        console.error(err);
         setError(err.response?.data?.errors || {});
+        toast.error(err.response?.data?.message || "حدث خطأ أثناء تقديم طلب الإذن");
       }
     }
     setIsSubmitting(false);
   };
 
   const handleDecisionSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
+    if (!decisionStatus) {
+      toast.warn("يرجى اختيار حالة القرار");
+      return;
+    }
+    setIsSavingDecision(true);
     try {
       const endpoint =
         activeTab === "vacations"
@@ -149,39 +183,112 @@ function VacationRequest() {
       toast.success("تم تحديث حالة الطلب بنجاح");
       setShowDecisionModal(false);
       setSelectedId(null);
+      setDecisionStatus("");
       setRefreshKey(Date.now());
     } catch (err) {
       console.error(err);
-      toast.error("حدث خطأ أثناء تحديث الحالة");
+      toast.error("حدث خطأ أثناء تحديث حالة الطلب");
+    } finally {
+      setIsSavingDecision(false);
     }
   };
 
-  // Table Columns & Options
+  const handleConfirmDelete = async () => {
+    if (!deleteModal.id) return;
+    setIsDeleting(true);
+    try {
+      const endpoint =
+        activeTab === "vacations"
+          ? `/vacationrequests/${deleteModal.id}`
+          : `/leaverequests/${deleteModal.id}`;
+
+      await API.delete(endpoint);
+      toast.success(
+        activeTab === "vacations"
+          ? "تم حذف طلب الإجازة بنجاح"
+          : "تم حذف طلب الإذن بنجاح"
+      );
+      setDeleteModal({ show: false, id: null });
+      setRefreshKey(Date.now());
+    } catch (err) {
+      console.error(err);
+      toast.error("حدث خطأ أثناء حذف الطلب");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Status Badge Formatter
+  const renderStatusBadge = (s) => {
+    if (s === "مقبول" || s === "موافقة" || s === 1 || s === "1") {
+      return '<span style="background: rgba(40, 167, 69, 0.12); color: #28a745; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 13px;">مقبول</span>';
+    }
+    if (s === "مرفوض" || s === "مرفوضة" || s === 2 || s === "2") {
+      return '<span style="background: rgba(220, 53, 69, 0.12); color: #dc3545; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 13px;">مرفوض</span>';
+    }
+    return '<span style="background: rgba(255, 193, 7, 0.18); color: #b8860b; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 13px;">قيد الانتظار</span>';
+  };
+
+  const modifyVacationRow = (row) => {
+    return {
+      ...row,
+      status: renderStatusBadge(row.status),
+    };
+  };
+
+  const modifyPermissionRow = (row) => {
+    const rawType = row.type;
+    const typesMap = {
+      1: "أثناء اليوم",
+      2: "تأخير",
+      3: "انصراف مبكر",
+      4: "مراجعة المستشفى",
+      5: "مرضي",
+      6: "حمل",
+      7: "أخرى",
+    };
+    return {
+      ...row,
+      type: typesMap[rawType] || rawType || "إذن عمل",
+      status: renderStatusBadge(row.status),
+    };
+  };
+
+  // Table Columns
   const vacationColumns = [
-    { name: "إسم الموظف", key: "name" },
-    { name: " النوع", key: "vacationname" },
-    { name: " من", key: "startdate" },
-    { name: " الى", key: "enddate" },
+    { name: "اسم الموظف", key: "name" },
+    { name: "النوع", key: "vacationname" },
+    { name: "من", key: "startdate" },
+    { name: "إلى", key: "enddate" },
     { name: "حالة الإجازة", key: "status" },
-    { name: "", key: "actions" },
+    { name: "الوصف", key: "description" },
+    { name: "الإجراءات", key: "actions" },
   ];
 
   const permissionColumns = [
-    { name: " اسم الموظف", key: "name" },
-    { name: " نوع الاذن", key: "type" },
-    { name: " التاريخ", key: "date" },
-    { name: " عدد الساعات", key: "hours" },
-    { name: " حالة الإجازة", key: "status" },
-    { name: " ملاحظات", key: "note" },
-    { name: "", key: "actions" },
+    { name: "اسم الموظف", key: "name" },
+    { name: "نوع الإذن", key: "type" },
+    { name: "التاريخ", key: "date" },
+    { name: "عدد الساعات", key: "hours" },
+    { name: "حالة الإذن", key: "status" },
+    { name: "ملاحظات", key: "note" },
+    { name: "الإجراءات", key: "actions" },
   ];
 
+  // Dropdown Options
   const vacationOptions = [
     {
       label: "الرد على الإجازة",
       action: (id) => {
         setSelectedId(id);
+        setDecisionStatus("");
         setShowDecisionModal(true);
+      },
+    },
+    {
+      label: "حذف الطلب",
+      action: (id) => {
+        setDeleteModal({ show: true, id });
       },
     },
   ];
@@ -191,119 +298,54 @@ function VacationRequest() {
       label: "الرد على الإذن",
       action: (id) => {
         setSelectedId(id);
+        setDecisionStatus("");
         setShowDecisionModal(true);
+      },
+    },
+    {
+      label: "حذف الطلب",
+      action: (id) => {
+        setDeleteModal({ show: true, id });
       },
     },
   ];
 
-  const modifyVacationRow = (row) => {
-    let newRow = { ...row };
-    newRow.status =
-      row.status === 0 ? "قيد الانتظار" : row.status === 1 ? "قبول" : "رفض";
-    return newRow;
-  };
+  if (loading) {
+    return <TestPreLoader />;
+  }
 
-  const modifyPermissionRow = (row) => {
-    let newRow = { ...row };
-    const transStatus = (s) =>
-      s == "0" ? "قيد الانتظار" : s == "1" ? "موافقة" : "مرفوضة";
-    const transType = (t) => {
-      const types = {
-        1: "أثناء اليوم",
-        2: "تأخير",
-        3: "انصراف مبكر",
-        4: "مراجعة المستشفى",
-        5: "مرضي",
-        6: "حمل",
-        7: "اخرى",
-      };
-      return types[t] || t;
-    };
-    newRow.status = transStatus(row.status);
-    newRow.type = transType(row.type);
-    return newRow;
-  };
-
-  const vacationDummyData = [
-    {
-      id: 1,
-      name: "أحمد السالم",
-      vacationname: "إجازة سنوية",
-      startdate: "2026-07-01",
-      enddate: "2026-07-05",
-      status: "قيد الانتظار",
-    },
-    {
-      id: 2,
-      name: "سارة محمد",
-      vacationname: "إجازة مرضية",
-      startdate: "2026-07-10",
-      enddate: "2026-07-12",
-      status: "موافقة",
-    },
-  ];
-
-  const permissionDummyData = [
-    {
-      id: 1,
-      name: "خالد إبراهيم",
-      type: "أثناء اليوم",
-      date: "2026-07-20",
-      hours: "3",
-      status: "موافقة",
-      note: "مراجعة مهمة عاجلة",
-    },
-    {
-      id: 2,
-      name: "ريم علي",
-      type: "تأخير",
-      date: "2026-07-22",
-      hours: "1",
-      status: "قيد الانتظار",
-      note: "تأخير بسبب الازدحام",
-    },
-  ];
-
-  return loading ? (
-    <TestPreLoader />
-  ) : (
+  return (
     <div className="vacation-management-page">
+      {/* ── Subsystem Tabs ── */}
       <div className="management-tabs mb-4 no-print">
-        <Nav
-          variant="pills"
-          activeKey={activeTab}
-          onSelect={(k) => setActiveTab(k)}
-          className="justify-content-center p-2 rounded-pill"
-        >
+        <Nav className="nav-pills rounded-pill shadow-sm">
           <Nav.Item>
             <div
-              eventKey="vacations"
               onClick={() => setActiveTab("vacations")}
-              className={`${activeTab === "vacations" ? "active" : ""} cursor-pointer px-4 py-2 rounded-pill d-flex align-items-center`}
+              className={`tab-pill ${activeTab === "vacations" ? "active" : ""}`}
             >
-              <FontAwesomeIcon icon={faCalendarCheck} className="me-2" />
+              <FontAwesomeIcon icon={faCalendarCheck} />
               إدارة الإجازات
             </div>
           </Nav.Item>
           <Nav.Item>
             <div
-              eventKey="permissions"
               onClick={() => setActiveTab("permissions")}
-              className={`${activeTab === "permissions" ? "active" : ""} cursor-pointer px-4 py-2 rounded-pill d-flex align-items-center`}
+              className={`tab-pill ${activeTab === "permissions" ? "active" : ""}`}
             >
-              <FontAwesomeIcon icon={faClock} className="me-2" />
+              <FontAwesomeIcon icon={faClock} />
               إدارة الأذونات
             </div>
           </Nav.Item>
         </Nav>
       </div>
 
+      {/* ── Table Container ── */}
       <div className="hrReports-tabel">
         {activeTab === "vacations" ? (
           <TableComponent
             key={`vac-${refreshKey}`}
             apiUrl="/vacationrequests"
-            data={vacationDummyData}
             columns={vacationColumns}
             titleIcon={<FontAwesomeIcon icon={faCalendarCheck} />}
             title="إدارة طلبات الإجازات"
@@ -311,17 +353,13 @@ function VacationRequest() {
             triggerReload={refreshKey}
             transformRowFn={modifyVacationRow}
             addBtn={true}
-            addBtnName="اجازه/اذن"
-            onAddClick={() => {
-              setSelectedRequestType("vac");
-              setShowModal(true);
-            }}
+            addBtnName="إجازة"
+            onAddClick={() => handleOpenAdd("vac")}
           />
         ) : (
           <TableComponent
             key={`perm-${refreshKey}`}
             apiUrl="/leaverequests"
-            data={permissionDummyData}
             columns={permissionColumns}
             titleIcon={<FontAwesomeIcon icon={faClock} />}
             title="إدارة طلبات الأذونات"
@@ -329,102 +367,94 @@ function VacationRequest() {
             triggerReload={refreshKey}
             transformRowFn={modifyPermissionRow}
             addBtn={true}
-            addBtnName="اجازه/اذن"
-            onAddClick={() => {
-              setSelectedRequestType("per");
-              setShowModal(true);
-            }}
+            addBtnName="إذن"
+            onAddClick={() => handleOpenAdd("per")}
           />
         )}
       </div>
 
-      {/* Request Modal */}
+      {/* ── Add Request Modal (Customized by Type: Vacation vs Permission) ── */}
       <Modal
         show={showModal}
-        onHide={() => setShowModal(false)}
-        size="md"
+        onHide={() => !isSubmitting && setShowModal(false)}
+        size="lg"
         centered
-        className="vacation-request-modal"
+        dir="rtl"
+        dialogClassName="vacation-request-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>
-            <FontAwesomeIcon icon={faPlus} className="ms-2 text-primary" />
-            اجازه/اذن
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-4">
-          <div className="request-type-toggle mb-4 text-center">
-            <h5 className="mb-3">نوع الطلب</h5>
-            <div className="d-flex justify-content-center gap-4">
-              <RegisterRadio
-                label="إجازة"
-                value="vac"
-                onChange={() => setSelectedRequestType("vac")}
-                checked={selectedRequestType === "vac"}
+          <div className="vac-modal-title">
+            <span className="vac-modal-title-icon">
+              <FontAwesomeIcon
+                icon={selectedRequestType === "vac" ? faCalendarCheck : faClock}
               />
-              <RegisterRadio
-                label="إذن"
-                value="per"
-                onChange={() => setSelectedRequestType("per")}
-                checked={selectedRequestType === "per"}
-              />
-            </div>
+            </span>
+            <span>
+              {selectedRequestType === "vac"
+                ? "إضافة طلب إجازة"
+                : "إضافة طلب إذن"}
+            </span>
           </div>
+        </Modal.Header>
 
-          <Form onSubmit={handleSubmit} className="space-y-6 ltr">
-            {/* شبكة المدخلات الرئيسية */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* اختيار الموظف - يأخذ عرض كامل السطر دائماً لتنسيق أفضل */}
-              <div className="">
-                <RegisterSelect
-                  id="empId"
-                  label="إسم الموظف"
-                  options={[
-                    { value: "", label: "اختر موظفاً" },
-                    ...employees.map((emp) => ({
-                      value: emp.id,
-                      label: emp.name,
-                    })),
-                  ]}
+        <form onSubmit={handleSubmit}>
+          <Modal.Body>
+            <div className="vac-form-grid">
+              {/* Employee Selection */}
+              <div className="vac-field-group vac-full-width">
+                <label className="vac-field-label">
+                  اسم الموظف <span className="req">*</span>
+                </label>
+                <select
+                  className="vac-select"
                   value={formData.empId}
                   onChange={(e) =>
                     setFormData({ ...formData, empId: e.target.value })
                   }
-                />
+                >
+                  <option value="">اختر الموظف...</option>
+                  {employees.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.name} {emp.jobname ? `(${emp.jobname})` : ""}
+                    </option>
+                  ))}
+                </select>
+                {error.empId && (
+                  <span className="vac-field-error">{error.empId}</span>
+                )}
               </div>
 
-              {/* تفاصيل طلب الإجازة أو الإذن */}
+              {/* ── Vacation Specific Fields ── */}
               {selectedRequestType === "vac" ? (
                 <>
-                  <div className="">
-                    <RegisterSelect
-                      id="vacTypeId"
-                      label="نوع الإجازة"
-                      options={[
-                        { value: "", label: "اختر نوع الإجازة" },
-                        ...vacationTypes.map((vac) => ({
-                          value: vac.id,
-                          label: vac.name,
-                        })),
-                      ]}
+                  <div className="vac-field-group vac-full-width">
+                    <label className="vac-field-label">
+                      نوع الإجازة <span className="req">*</span>
+                    </label>
+                    <select
+                      className="vac-select"
                       value={formData.vacTypeId}
                       onChange={(e) =>
                         setFormData({ ...formData, vacTypeId: e.target.value })
                       }
-                    />
+                    >
+                      <option value="">اختر نوع الإجازة...</option>
+                      {vacationTypes.map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.name} ({v.days} يوم)
+                        </option>
+                      ))}
+                    </select>
+                    {error.vacTypeId && (
+                      <span className="vac-field-error">{error.vacTypeId}</span>
+                    )}
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label
-                      htmlFor="fromDate"
-                      className="text-sm font-medium text-gray-700 text-right"
-                    >
-                      من تاريخ
-                    </label>
+                  <div className="vac-field-group">
+                    <label className="vac-field-label">من تاريخ</label>
                     <input
-                      id="fromDate"
                       type="date"
-                      className=" custom-datepicker"
+                      className="vac-input"
                       value={formData.from}
                       onChange={(e) =>
                         setFormData({ ...formData, from: e.target.value })
@@ -432,17 +462,11 @@ function VacationRequest() {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label
-                      htmlFor="toDate"
-                      className="text-sm font-medium text-gray-700 text-right"
-                    >
-                      إلى تاريخ
-                    </label>
+                  <div className="vac-field-group">
+                    <label className="vac-field-label">إلى تاريخ</label>
                     <input
-                      id="toDate"
                       type="date"
-                      className=" custom-datepicker"
+                      className="vac-input"
                       value={formData.to}
                       onChange={(e) =>
                         setFormData({ ...formData, to: e.target.value })
@@ -450,33 +474,27 @@ function VacationRequest() {
                     />
                   </div>
 
-                  <div className="">
-                    <RegisterTextbox
-                      id="description"
-                      label="وصف الإجازة"
+                  <div className="vac-field-group vac-full-width">
+                    <label className="vac-field-label">وصف الإجازة / الملاحظات</label>
+                    <textarea
+                      rows={3}
+                      className="vac-input"
+                      placeholder="أدخل سبب أو تفاصيل طلب الإجازة..."
                       value={formData.description}
                       onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
+                        setFormData({ ...formData, description: e.target.value })
                       }
                     />
                   </div>
                 </>
               ) : (
+                /* ── Permission Specific Fields ── */
                 <>
-                  <div className=" flex flex-col gap-1.5">
-                    <label
-                      htmlFor="permDate"
-                      className="text-sm font-medium text-gray-700 text-right"
-                    >
-                      التاريخ
-                    </label>
+                  <div className="vac-field-group vac-full-width">
+                    <label className="vac-field-label">تاريخ الإذن</label>
                     <input
-                      id="permDate"
                       type="date"
-                      className=" custom-datepicker"
+                      className="vac-input"
                       value={formData.permDate}
                       onChange={(e) =>
                         setFormData({ ...formData, permDate: e.target.value })
@@ -484,17 +502,11 @@ function VacationRequest() {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label
-                      htmlFor="permFromTime"
-                      className="text-sm font-medium text-gray-700 text-right"
-                    >
-                      وقت من
-                    </label>
+                  <div className="vac-field-group">
+                    <label className="vac-field-label">وقت البداية (من)</label>
                     <input
-                      id="permFromTime"
                       type="time"
-                      className=" custom-datepicker"
+                      className="vac-input"
                       value={formData.permFromTime}
                       onChange={(e) =>
                         setFormData({
@@ -505,28 +517,27 @@ function VacationRequest() {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label
-                      htmlFor="permToTime"
-                      className="text-sm font-medium text-gray-700 text-right"
-                    >
-                      وقت إلى
-                    </label>
+                  <div className="vac-field-group">
+                    <label className="vac-field-label">وقت النهاية (إلى)</label>
                     <input
-                      id="permToTime"
                       type="time"
-                      className=" custom-datepicker"
+                      className="vac-input"
                       value={formData.permToTime}
                       onChange={(e) =>
-                        setFormData({ ...formData, permToTime: e.target.value })
+                        setFormData({
+                          ...formData,
+                          permToTime: e.target.value,
+                        })
                       }
                     />
                   </div>
 
-                  <div className="">
-                    <RegisterTextbox
-                      id="note"
-                      label="ملاحظات"
+                  <div className="vac-field-group vac-full-width">
+                    <label className="vac-field-label">سبب الإذن / الملاحظات</label>
+                    <textarea
+                      rows={3}
+                      className="vac-input"
+                      placeholder="أدخل سبب الإذن أو ملاحظاتك..."
                       value={formData.note}
                       onChange={(e) =>
                         setFormData({ ...formData, note: e.target.value })
@@ -535,83 +546,158 @@ function VacationRequest() {
                   </div>
                 </>
               )}
-            </div>
 
-            {/* قسم رفع المستندات */}
-            <div className="p-4 bg-gray-50/50 rounded-xl border border-dashed border-gray-300 text-right">
-              <p className="text-sm font-semibold mb-3">
-                {selectedRequestType === "vac"
-                  ? "مستند الإجازة"
-                  : "مستند الإذن"}
-              </p>
-              <div className="flex items-center justify-center">
-                <UploadInput
-                  id="request-upload"
-                  label="اختر ملف المستند"
-                  onChange={(e) => setUpload(e.target.files[0])}
-                />
+              {/* Document Upload Zone */}
+              <div className="vac-field-group vac-full-width">
+                <label className="vac-field-label">
+                  {selectedRequestType === "vac"
+                    ? "مستند الإجازة (اختياري)"
+                    : "مستند الإذن (اختياري)"}
+                </label>
+                <div className="vac-upload-zone">
+                  <input
+                    type="file"
+                    className="form-control"
+                    onChange={(e) => setUpload(e.target.files[0])}
+                  />
+                </div>
               </div>
             </div>
+          </Modal.Body>
 
-            {/* أزرار التحكم والتحميل */}
-            <div className="flex justify-center items-center pt-2">
+          <Modal.Footer>
+            <button
+              type="button"
+              className="vac-btn-cancel"
+              onClick={() => setShowModal(false)}
+              disabled={isSubmitting}
+            >
+              إلغاء
+            </button>
+            <button
+              type="submit"
+              className="vac-btn-save"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? (
-                <Spinner animation="border" variant="primary" />
+                <Spinner animation="border" size="sm" />
+              ) : selectedRequestType === "vac" ? (
+                "تقديم طلب الإجازة"
               ) : (
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline-secondary"
-                    onClick={() => setShowModal(false)}
-                    className="btn btn-secondary"
-                  >
-                    إلغاء
-                  </Button>
-                  <CustomButton text="تقديم الطلب" type="submit" className="btn btn-primary mb-0"/>
-                </div>
+                "تقديم طلب الإذن"
               )}
-            </div>
-          </Form>
-        </Modal.Body>
+            </button>
+          </Modal.Footer>
+        </form>
       </Modal>
 
-      {/* Decision Modal */}
+      {/* ── Decision Modal (الرد على الطلب) ── */}
       <Modal
         show={showDecisionModal}
-        onHide={() => setShowDecisionModal(false)}
+        onHide={() => !isSavingDecision && setShowDecisionModal(false)}
         centered
-        size="sm"
+        size="md"
+        dir="rtl"
+        dialogClassName="vacation-request-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>اتخاذ قرار بشأن الطلب</Modal.Title>
+          <div className="vac-modal-title">
+            <span className="vac-modal-title-icon">
+              <FontAwesomeIcon icon={faCheckToSlot} />
+            </span>
+            <span>
+              {activeTab === "vacations"
+                ? "اتخاذ قرار بشأن طلب الإجازة"
+                : "اتخاذ قرار بشأن طلب الإذن"}
+            </span>
+          </div>
         </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleDecisionSubmit}>
-            <div className="form-group mb-4">
-              <label className="mb-2">الحالة الجديدة</label>
+        <form onSubmit={handleDecisionSubmit}>
+          <Modal.Body>
+            <div className="vac-field-group">
+              <label className="vac-field-label">
+                القرار المتخذ <span className="req">*</span>
+              </label>
               <select
-                className="form-control"
+                className="vac-select"
                 value={decisionStatus}
                 onChange={(e) => setDecisionStatus(e.target.value)}
                 required
               >
-                <option value="">اختر قراراً</option>
-                <option value="1">موافقة</option>
-                <option value="2">رفض</option>
+                <option value="">اختر حالة القرار...</option>
+                <option value="مقبول">موافقة وقبول الطلب</option>
+                <option value="مرفوض">رفض الطلب</option>
+                <option value="قيد الانتظار">قيد الانتظار والدراسة</option>
               </select>
             </div>
-            <div className="text-center d-flex gap-2 justify-content-center">
-              <Button type="submit" variant="primary" className="px-4">
-                حفظ القرار
-              </Button>
-              <Button
-                variant="outline-secondary"
-                onClick={() => setShowDecisionModal(false)}
-              >
-                إلغاء
-              </Button>
-            </div>
-          </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <button
+              type="button"
+              className="vac-btn-cancel"
+              onClick={() => setShowDecisionModal(false)}
+              disabled={isSavingDecision}
+            >
+              إلغاء
+            </button>
+            <button
+              type="submit"
+              className="vac-btn-save"
+              disabled={isSavingDecision}
+            >
+              {isSavingDecision ? (
+                <Spinner animation="border" size="sm" />
+              ) : (
+                "حفظ القرار"
+              )}
+            </button>
+          </Modal.Footer>
+        </form>
+      </Modal>
+
+      {/* ── Delete Confirmation Modal ── */}
+      <Modal
+        show={deleteModal.show}
+        onHide={() => !isDeleting && setDeleteModal({ show: false, id: null })}
+        centered
+        size="sm"
+        dir="rtl"
+        dialogClassName="vacation-request-modal"
+      >
+        <Modal.Header closeButton>
+          <div className="vac-modal-title">
+            <span
+              className="vac-modal-title-icon"
+              style={{ background: "rgba(220, 53, 69, 0.15)", color: "#dc3545" }}
+            >
+              <FontAwesomeIcon icon={faTrashCan} />
+            </span>
+            <span>تأكيد الحذف</span>
+          </div>
+        </Modal.Header>
+        <Modal.Body style={{ textAlign: "center", padding: "20px" }}>
+          <p style={{ margin: 0, fontSize: "14.5px", color: "#493d2c" }}>
+            هل أنت متأكد من رغبتك في حذف هذا الطلب نهائياً؟
+          </p>
         </Modal.Body>
+        <Modal.Footer style={{ justifyContent: "center", gap: "10px" }}>
+          <button
+            type="button"
+            className="vac-btn-cancel"
+            onClick={() => setDeleteModal({ show: false, id: null })}
+            disabled={isDeleting}
+          >
+            إلغاء
+          </button>
+          <Button
+            variant="danger"
+            style={{ borderRadius: "10px", padding: "8px 24px", fontWeight: 600 }}
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? <Spinner animation="border" size="sm" /> : "حذف"}
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

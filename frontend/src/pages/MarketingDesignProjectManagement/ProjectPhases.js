@@ -74,6 +74,7 @@ function ProjectPhases() {
         setIsSubmitting(false);
         setRows(data.data);
         setTableReloadKey(Date.now());
+        toast.success("تم تسجيل اكتمال المرحلة بنجاح");
       } else {
         setIsSubmitting(false);
       }
@@ -81,6 +82,7 @@ function ProjectPhases() {
       console.error(error);
       setIsSubmitting(false);
       setError(error.response?.data?.errors || {});
+      toast.error(error.response?.data?.message || "حدث خطأ أثناء تسجيل اكتمال المرحلة");
     }
   };
 
@@ -117,6 +119,7 @@ function ProjectPhases() {
         setIsSubmitting(false);
         setRows(data.data);
         setTableReloadKey(Date.now());
+        toast.success("تم إضافة مرحلة المشروع بنجاح");
       } else {
         setIsSubmitting(false);
       }
@@ -124,6 +127,7 @@ function ProjectPhases() {
       console.error(error);
       setIsSubmitting(false);
       setError(error.response?.data?.errors || {});
+      toast.error(error.response?.data?.message || "حدث خطأ أثناء إضافة المرحلة");
     }
   };
 
@@ -154,9 +158,11 @@ function ProjectPhases() {
             );
             if (response.status === 200) {
               setTableReloadKey(Date.now());
+              toast.success("تم إلغاء المرحلة بنجاح");
             }
           } catch (error) {
             console.log(error);
+            toast.error("حدث خطأ أثناء إلغاء المرحلة");
           }
         };
         cancelProject();
@@ -173,9 +179,11 @@ function ProjectPhases() {
             );
             if (response.status === 200) {
               setTableReloadKey(Date.now());
+              toast.success("تم تفعيل المرحلة بنجاح");
             }
           } catch (error) {
             console.log(error);
+            toast.error("حدث خطأ أثناء تفعيل المرحلة");
           }
         };
         activateProject();

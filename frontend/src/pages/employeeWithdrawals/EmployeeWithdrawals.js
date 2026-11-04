@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useReactToPrint } from "react-to-print";
 import {
@@ -10,116 +10,34 @@ import {
   faTrashAlt,
   faTable,
 } from "@fortawesome/free-solid-svg-icons";
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { Modal, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import TableComponent from "../../components/TableComponent";
-import SelectComponent from "../../components/SelectComponent";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import RegisterSelect from "../../components/RegisterSelect";
 import PrintHead from "../../components/PrintHead";
 import PrintFooter from "../../components/PrintFooter";
-
-// ==========================================
-// 📌 1. Static Dummy Data
-// ==========================================
-const DUMMY_EMPLOYEES = [
-  { value: 1, label: "أحمد محمود" },
-  { value: 2, label: "محمد علي" },
-  { value: 3, label: "سارة حسن" },
-];
-
-const DUMMY_ACCOUNTS = [
-  { value: 101, label: "الخزينة الرئيسية", balance: 50000 },
-  { value: 102, label: "بنك مصر", balance: 120000 },
-  { value: 103, label: "الخزينة الفرعية", balance: 15000 },
-];
-
-const DUMMY_WITHDRAWALS = [
-  {
-    uuid: "w1",
-    id: 1,
-    employee_id: 1,
-    employee: "أحمد محمود",
-    account: "الخزينة الرئيسية",
-    amount: 1500,
-    date: "2026-07-15",
-    time: "10:30",
-    withdrawal_date: "2026-07-15",
-    status: 1,
-    description: "سلفة طارئة",
-  },
-  {
-    uuid: "w2",
-    id: 2,
-    employee_id: 2,
-    employee: "محمد علي",
-    account: "بنك مصر",
-    amount: 3000,
-    date: "2026-07-20",
-    time: "14:15",
-    withdrawal_date: "2026-07-20",
-    status: 0,
-    description: "مسحوبات شخصية",
-  },
-  {
-    uuid: "w3",
-    id: 3,
-    employee_id: 3,
-    employee: "سارة حسن",
-    account: "الخزينة الفرعية",
-    amount: 800,
-    date: "2026-07-22",
-    time: "09:00",
-    withdrawal_date: "2026-07-22",
-    status: 1,
-    description: "بدل سفرية",
-  },
-];
-
-const getStartOfCurrentMonthDate_Safe = () => {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 2)
-    .toISOString()
-    .split("T")[0];
-};
-
-const getEndOfCurrentMonthDate_SuperSafe = () => {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth() + 1, 1)
-    .toISOString()
-    .split("T")[0];
-};
+import API from "../../api/axiosConfig";
 
 const formatNumber = (num) => {
-  if (num === null || num === undefined) return "";
-  const formatted = Number(num).toLocaleString("en-US", {
+  if (num === null || num === undefined || isNaN(Number(num))) return "0";
+  return Number(num).toLocaleString("en-US", {
     maximumFractionDigits: 0,
   });
-  return formatted;
 };
 
 function EmployeeWithdrawals() {
   const receiptRef = useRef();
 
-  // States
-  const [withdrawals, setWithdrawals] = useState([]);
-  const [employees] = useState(DUMMY_EMPLOYEES);
-  const [accounts] = useState(DUMMY_ACCOUNTS);
-  const [loading, setLoading] = useState(false);
+  // Dynamic States
+  const [employees, setEmployees] = useState([]);
+  const [accounts, setAccounts] = useState([]);
+  const [refreshKey, setRefreshKey] = useState(Date.now());
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
-
-  // Filters
-  const [filters, setFilters] = useState({
-    employee: null,
-    fromDate: getStartOfCurrentMonthDate_Safe(),
-    toDate: getEndOfCurrentMonthDate_SuperSafe(),
-    fromTime: "",
-    toTime: "",
-  });
 
   const [confirmModal, setConfirmModal] = useState({
     show: false,
@@ -131,22 +49,41 @@ function EmployeeWithdrawals() {
   const [addModalData, setAddModalData] = useState({
     date: new Date().toISOString().split("T")[0],
     time: new Date().toTimeString().split(" ")[0].substring(0, 5),
-    employeeName: null,
+    employee_id: "",
     receiver_account_id: "",
     value: "",
     description: "",
   });
 
-  // Load Initial Data
+  // Load Dropdowns Data from Real Backend APIs
   useEffect(() => {
-    setLoading(true);
-    const formattedData = DUMMY_WITHDRAWALS.map((item, index) => ({
-      ...item,
-      serialNumber: index + 1,
-      statusText: item.status === 1 ? "معتمد" : "قيد الانتظار",
-    }));
-    setWithdrawals(formattedData);
-    setLoading(false);
+    const fetchDropdowns = async () => {
+      try {
+        const [empRes, accRes] = await Promise.all([
+          API.post("employees"),
+          API.get("/employeewithdrawal/accounts"),
+        ]);
+
+        const empList = Array.isArray(empRes.data)
+          ? empRes.data
+          : empRes.data?.data || [];
+        setEmployees(
+          empList.map((emp) => ({
+            value: emp.id,
+            label: `${emp.name}${emp.jobname ? ` (${emp.jobname})` : ""}`,
+          }))
+        );
+
+        const accList = Array.isArray(accRes.data)
+          ? accRes.data
+          : accRes.data?.data || [];
+        setAccounts(accList);
+      } catch (err) {
+        console.error("Error loading employees or accounts:", err);
+      }
+    };
+
+    fetchDropdowns();
   }, []);
 
   // Modals Actions
@@ -164,7 +101,7 @@ function EmployeeWithdrawals() {
       show: true,
       type: "approve",
       row,
-      payment_account_id: "",
+      payment_account_id: row.account_id || "",
     });
   };
 
@@ -177,17 +114,19 @@ function EmployeeWithdrawals() {
     });
   };
 
-  const openAddModal = () => setShowAddModal(true);
-
-  const closeAddModal = () => {
+  const openAddModal = () => {
     setAddModalData({
       date: new Date().toISOString().split("T")[0],
       time: new Date().toTimeString().split(" ")[0].substring(0, 5),
-      employeeName: null,
-      receiver_account_id: "",
+      employee_id: "",
+      receiver_account_id: accounts.length > 0 ? accounts[0].value : "",
       value: "",
       description: "",
     });
+    setShowAddModal(true);
+  };
+
+  const closeAddModal = () => {
     setShowAddModal(false);
   };
 
@@ -203,14 +142,14 @@ function EmployeeWithdrawals() {
 
   const handlePrint = useReactToPrint({
     contentRef: receiptRef,
-    documentTitle: `سند_صرف_${selectedReceipt?.serialNumber || "سحب"}`,
+    documentTitle: `سند_صرف_${selectedReceipt?.id || "سحب"}`,
   });
 
-  // Submit Handler
-  const handleSubmit = (e) => {
+  // Submit Handler for New Withdrawal
+  const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     if (
-      !addModalData.employeeName ||
+      !addModalData.employee_id ||
       !addModalData.receiver_account_id ||
       !addModalData.value
     ) {
@@ -219,126 +158,88 @@ function EmployeeWithdrawals() {
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      const selectedAccount = accounts.find(
-        (acc) => acc.value === Number(addModalData.receiver_account_id),
-      );
-
-      const newEntry = {
-        uuid: `w-${Date.now()}`,
-        id: withdrawals.length + 1,
-        serialNumber: withdrawals.length + 1,
-        employee_id: addModalData.employeeName.value,
-        employee: addModalData.employeeName.label,
-        account: selectedAccount?.label || "--",
+    try {
+      await API.post("/employeewithdrawal/store", {
+        employee_id: addModalData.employee_id,
+        receiver_account_id: addModalData.receiver_account_id,
         amount: Number(addModalData.value),
         date: addModalData.date,
         time: addModalData.time,
-        withdrawal_date: addModalData.date,
-        status: 1,
-        statusText: "معتمد",
-        description: addModalData.description || "مسحوبات شخصية",
-      };
+        description: addModalData.description || "مسحوبات موظف",
+      });
 
-      setWithdrawals((prev) => [newEntry, ...prev]);
       toast.success("تم حفظ المسحوبات بنجاح");
-      setIsSubmitting(false);
       closeAddModal();
-    }, 400);
+      setRefreshKey(Date.now());
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "حدث خطأ أثناء حفظ المسحوبات");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleConfirmAction = () => {
+  // Submit Handler for Confirmation (Approve or Delete)
+  const handleConfirmAction = async () => {
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
       if (confirmModal.type === "delete") {
-        setWithdrawals((prev) =>
-          prev.filter((item) => item.uuid !== confirmModal.row.uuid),
-        );
-        toast.success("تم الحذف بنجاح");
-      }
-
-      if (confirmModal.type === "approve") {
+        await API.delete(`/employeewithdrawal/${confirmModal.row.id}`);
+        toast.success("تم حذف المسحوبات بنجاح");
+        closeConfirmModal();
+        setRefreshKey(Date.now());
+      } else if (confirmModal.type === "approve") {
         if (!confirmModal.payment_account_id) {
           toast.error("يرجى اختيار حساب الدفع");
           setIsSubmitting(false);
           return;
         }
 
-        const selectedAccount = accounts.find(
-          (acc) => acc.value === Number(confirmModal.payment_account_id),
-        );
+        await API.post("/employeewithdrawal/approve", {
+          id: confirmModal.row.id,
+          payment_account_id: confirmModal.payment_account_id,
+        });
 
-        setWithdrawals((prev) =>
-          prev.map((item) =>
-            item.uuid === confirmModal.row.uuid
-              ? {
-                  ...item,
-                  status: 1,
-                  account: selectedAccount?.label || item.account,
-                  statusText: "معتمد",
-                }
-              : item,
-          ),
-        );
-        toast.success("تم اعتماد المسحوبات بنجاح");
+        toast.success("تم اعتماد وصرف المسحوبات بنجاح");
+        closeConfirmModal();
+        setRefreshKey(Date.now());
       }
-
+    } catch (err) {
+      console.error(err);
+      toast.error(
+        err.response?.data?.message || "حدث خطأ أثناء معالجة الطلب"
+      );
+    } finally {
       setIsSubmitting(false);
-      closeConfirmModal();
-    }, 400);
+    }
   };
 
-  // Filtered List for Table
-  const filteredWithdrawals = useMemo(() => {
-    let result = withdrawals;
+  // Row Transformer (formats status badge & numbers)
+  const modifyRow = (row) => {
+    const isApproved =
+      row.status === 1 ||
+      row.status === "1" ||
+      row.statusText === "معتمد";
 
-    if (filters.employee && filters.employee.value !== "all") {
-      result = result.filter(
-        (item) => item.employee_id === filters.employee.value,
-      );
-    }
+    return {
+      ...row,
+      serialNumber: row.id,
+      amountText: formatNumber(row.amount),
+      statusBadge: isApproved
+        ? '<span style="background: rgba(40, 167, 69, 0.12); color: #28a745; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 13px;">معتمد</span>'
+        : '<span style="background: rgba(255, 193, 7, 0.18); color: #b8860b; padding: 4px 12px; border-radius: 20px; font-weight: 700; font-size: 13px;">قيد الانتظار</span>',
+    };
+  };
 
-    result = result.filter((item) => {
-      const itemDate = item.date;
-      const itemTime = item.time || "00:00";
-      const itemDateTime = `${itemDate}T${itemTime}`;
-
-      let minDateTime = filters.fromDate;
-      if (filters.fromDate && filters.fromTime) {
-        minDateTime = `${filters.fromDate}T${filters.fromTime}`;
-      } else if (filters.fromDate) {
-        minDateTime = `${filters.fromDate}T00:00`;
-      }
-
-      let maxDateTime = filters.toDate;
-      if (filters.toDate && filters.toTime) {
-        maxDateTime = `${filters.toDate}T${filters.toTime}`;
-      } else if (filters.toDate) {
-        maxDateTime = `${filters.toDate}T23:59`;
-      }
-
-      const isAfterFrom = !minDateTime || itemDateTime >= minDateTime;
-      const isBeforeTo = !maxDateTime || itemDateTime <= maxDateTime;
-
-      return isAfterFrom && isBeforeTo;
-    });
-
-    return result.map((item) => ({
-      ...item,
-      amountText: formatNumber(item.amount),
-    }));
-  }, [filters, withdrawals]);
-
-  // Columns Configuration
+  // Columns Configuration (Clean without duplicate 'م')
   const columns = [
-    { name: "م", key: "serialNumber" },
     { name: "اسم الموظف", key: "employee" },
     { name: "حساب الخزينة / البنك", key: "account" },
     { name: "قيمة المبلغ", key: "amountText" },
     { name: "تاريخ الطلب", key: "date" },
     { name: "وقت الطلب", key: "time" },
     { name: "تاريخ الصرف", key: "withdrawal_date" },
-    { name: "الحالة", key: "statusText" },
+    { name: "الحالة", key: "statusBadge" },
     { name: "البيان / الوصف", key: "description" },
     { name: "", key: "actions" },
   ];
@@ -346,12 +247,12 @@ function EmployeeWithdrawals() {
   const dropdownOptions = [
     {
       label: "عرض السند",
-      action: (id, record) => handleShowReceiptModal(record),
+      action: (_id, record) => handleShowReceiptModal(record),
     },
     {
       label: "اعتماد وصرف",
-      action: (id, record) => {
-        if (record.status === 1) {
+      action: (_id, record) => {
+        if (record.status === 1 || record.statusText === "معتمد") {
           toast.info("هذا الطلب معتمد وصُرف بالفعل");
         } else {
           openApproveModal(record);
@@ -360,107 +261,96 @@ function EmployeeWithdrawals() {
     },
     {
       label: "حذف",
-      action: (id, record) => openDeleteModal(record),
+      action: (_id, record) => openDeleteModal(record),
     },
   ];
 
   const selectedAccountObj = accounts.find(
-    (acc) => acc.value === Number(addModalData.receiver_account_id),
+    (acc) => acc.value === Number(addModalData.receiver_account_id)
   );
 
   return (
-    <div className="p-4 rounded shadow-sm">
-      {/* جدول البيانات الرئيسي */}
+    <div className="p-4 rounded shadow-sm" style={{ direction: "rtl" }}>
+      {/* جدول البيانات الرئيسي المتصل بالـ API */}
       <TableComponent
+        key={refreshKey}
         title="تقرير مسحوبات الموظفين"
         titleIcon={<FontAwesomeIcon icon={faTable} />}
-        data={filteredWithdrawals}
+        apiUrl="/employeewithdrawal"
         columns={columns}
         addBtn={true}
         addBtnName="سحب موظف"
         onAddClick={openAddModal}
         dropdownOptions={dropdownOptions}
         searchDate={false}
+        triggerReload={refreshKey}
+        transformRowFn={modifyRow}
       />
 
       {/* ================= مودال إضافة مسحوبات ================= */}
-      <Modal show={showAddModal} onHide={closeAddModal} size="md" centered>
+      <Modal show={showAddModal} onHide={closeAddModal} size="md" centered dir="rtl">
         <Modal.Header closeButton>
-          <Modal.Title>إضافة مسحوبات موظف</Modal.Title>
+          <Modal.Title style={{ fontSize: "1.15rem", fontWeight: 700 }}>
+            إضافة مسحوبات موظف
+          </Modal.Title>
         </Modal.Header>
         <Form onSubmit={handleSubmit}>
           <Modal.Body className="grid grid-cols-2 gap-3">
             {/* حساب الدفع */}
             <div className="relative">
+              <RegisterSelect
+                id="receiver_account_id"
+                label="حساب الخزينة / البنك"
+                required
+                value={addModalData.receiver_account_id}
+                onChange={(e) =>
+                  setAddModalData((prev) => ({
+                    ...prev,
+                    receiver_account_id: e.target.value,
+                  }))
+                }
+                parentStyle={{ width: "100%" }}
+                stylee={{ width: "100%" }}
+                options={[
+                  { value: "", label: "اختر حساب الدفع..." },
+                  ...accounts.map((acc) => ({
+                    value: acc.value,
+                    label: acc.label,
+                  })),
+                ]}
+              />
+              {selectedAccountObj && (
+                <small
+                  className="text-success fw-bold d-block mt-1"
+                  style={{ fontSize: "12px" }}
+                >
+                  الرصيد المتاح: {formatNumber(selectedAccountObj.balance)} ر.س
+                </small>
+              )}
+            </div>
+
+            {/* الموظف */}
             <RegisterSelect
-              id="receiver_account_id"
-              label="حساب الخزينة / البنك"
+              id="employee_id"
+              label="الموظف"
               required
-              value={addModalData.receiver_account_id}
+              value={addModalData.employee_id}
               onChange={(e) =>
                 setAddModalData((prev) => ({
                   ...prev,
-                  receiver_account_id: e.target.value,
+                  employee_id: e.target.value,
                 }))
               }
               parentStyle={{ width: "100%" }}
               stylee={{ width: "100%" }}
               options={[
-                { value: "", label: "اختر حساب الدفع..." },
-                ...accounts.map((acc) => ({
-                  value: acc.value,
-                  label: acc.label,
+                { value: "", label: "اختر الموظف..." },
+                ...employees.map((emp) => ({
+                  value: emp.value,
+                  label: emp.label,
                 })),
               ]}
             />
-            {selectedAccountObj && (
-              <small
-                className="text-success fw-bold absolute -bottom-2 left-0 right-0"
-                style={{ marginTop: "-10px" }}
-              >
-                الرصيد الحالي: {formatNumber(selectedAccountObj.balance)} ج.م
-              </small>
-            )}
-            </div>
-
-            {/* الموظف */}
-            {/* الموظف */}
-<RegisterSelect
-  id="employeeName"
-  label="الموظف"
-  required
-  value={addModalData.employeeName?.value || addModalData.employeeName || ""}
-  onChange={(e) => {
-    // في حال كانت المكون يرجع Event عادي أو Object مباشر
-    const selectedVal = e.target ? e.target.value : e;
-    const selectedEmp = employees.find((emp) => emp.value === Number(selectedVal) || emp.value === selectedVal);
-    
-    setAddModalData((prev) => ({
-      ...prev,
-      employeeName: selectedEmp || selectedVal,
-    }));
-  }}
-  parentStyle={{ width: "100%" }}
-  stylee={{ width: "100%" }}
-  options={[
-    { value: "", label: "اختر الموظف..." },
-    ...employees.map((emp) => ({
-      value: emp.value,
-      label: emp.label,
-    })),
-  ]}
-/>
-            {/* <Form.Group>
-              <Form.Label style={{ color: "var(--text-color)" }}>الموظف <span className="text-danger">*</span></Form.Label>
-              <SelectComponent
-                placeholder="اختر الموظف..."
-                options={employees}
-                value={addModalData.employeeName}
-                onChange={(selectedOption) =>
-                  setAddModalData((prev) => ({ ...prev, employeeName: selectedOption }))
-                }
-              />
-            </Form.Group> */}
 
             {/* المبلغ */}
             <RegisterTextbox
@@ -477,42 +367,62 @@ function EmployeeWithdrawals() {
               stylee={{ width: "100%" }}
             />
 
-            <div className="responParent">
-              <p style={{ width: "100%", textAlign: "right" }} className="mb-1">
-                تاريخ السحب
-              </p>
-              <input
-                style={{ width: "100%" }}
+            {/* تاريخ السحب */}
+            <Form.Group className="responParent" controlId="withdrawal_date" style={{ width: "100%" }}>
+              <Form.Label className="register-label" style={{ direction: "rtl" }}>
+                تاريخ السحب <span style={{ color: "red" }}>*</span>
+              </Form.Label>
+              <Form.Control
                 type="date"
-                className="custom-datepicker mb-3"
+                required
+                className="register-textbox custom-datepicker"
+                style={{
+                  width: "100%",
+                  height: "45px",
+                  padding: "8px 16px",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                }}
                 value={addModalData.date}
                 onChange={(e) =>
-                  setAddModalData({ ...addModalData, date: e.target.value })
+                  setAddModalData((prev) => ({ ...prev, date: e.target.value }))
                 }
               />
-            </div>
+            </Form.Group>
+
             {/* الوصف */}
-            <RegisterTextbox
-              id="description"
-              label="البيان / الوصف"
-              type="text"
-              placeholder="مثال: سلفة طارئة للموظف..."
-              value={addModalData.description}
-              onChange={(e) =>
-                setAddModalData((prev) => ({
-                  ...prev,
-                  description: e.target.value,
-                }))
-              }
-              parentStyle={{ width: "100%" }}
-              stylee={{ width: "100%" }}
-            />
+            <div className="col-span-2">
+              <RegisterTextbox
+                id="description"
+                label="البيان / الوصف"
+                type="text"
+                placeholder="مثال: سلفة طارئة للموظف..."
+                value={addModalData.description}
+                onChange={(e) =>
+                  setAddModalData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                parentStyle={{ width: "100%" }}
+                stylee={{ width: "100%" }}
+              />
+            </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button  className="my-3" variant="secondary" onClick={closeAddModal}>
+            <Button variant="secondary" onClick={closeAddModal} disabled={isSubmitting}>
               إلغاء
             </Button>
-            <Button  className="my-3" variant="primary" type="submit" disabled={isSubmitting}>
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                background: "linear-gradient(135deg, #c29a64 0%, #a87e45 100%)",
+                border: "none",
+                fontWeight: 600,
+              }}
+            >
               {isSubmitting ? "جاري الحفظ..." : "حفظ السحب"}
             </Button>
           </Modal.Footer>
@@ -525,9 +435,10 @@ function EmployeeWithdrawals() {
         onHide={closeConfirmModal}
         size="md"
         centered
+        dir="rtl"
       >
         <Modal.Header closeButton>
-          <Modal.Title>
+          <Modal.Title style={{ fontSize: "1.15rem", fontWeight: 700 }}>
             {confirmModal.type === "delete"
               ? "تأكيد الحذف"
               : "اعتماد وصرف المسحوبات"}
@@ -535,13 +446,13 @@ function EmployeeWithdrawals() {
         </Modal.Header>
         <Modal.Body className="d-flex flex-column gap-3">
           {confirmModal.type === "delete" ? (
-            <p className="text-center text-danger my-3">
+            <p className="text-center text-danger my-3 font-semibold">
               هل أنت متأكد من رغبتك في حذف هذا السحب؟ لا يمكن التراجع عن هذا
               الإجراء.
             </p>
           ) : (
             <>
-              <p>
+              <p style={{ margin: 0 }}>
                 يرجى اختيار حساب الخزينة أو البنك الذي سيتم صرف المبلغ منه
                 لاعتماد طلب السحب:
               </p>
@@ -570,28 +481,31 @@ function EmployeeWithdrawals() {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={closeConfirmModal}>
+          <Button variant="secondary" onClick={closeConfirmModal} disabled={isSubmitting}>
             إلغاء
           </Button>
           <Button
             variant={confirmModal.type === "delete" ? "danger" : "success"}
             onClick={handleConfirmAction}
             disabled={isSubmitting}
+            style={{ fontWeight: 600 }}
           >
             {isSubmitting
               ? "جاري الحفظ..."
               : confirmModal.type === "delete"
-                ? "تأكيد الحذف"
-                : "تأكيد الصرف والاعتماد"}
+              ? "تأكيد الحذف"
+              : "تأكيد الصرف والاعتماد"}
           </Button>
         </Modal.Footer>
       </Modal>
+
       {/* ================= مودال عرض السند والطباعة ================= */}
       <Modal
         show={showReceiptModal}
         onHide={handleCloseReceiptModal}
         size="lg"
         centered
+        dir="rtl"
       >
         <Modal.Header closeButton className="border-b border-gray-100 pb-3">
           <Modal.Title className="text-lg font-bold text-gray-800">
@@ -601,75 +515,77 @@ function EmployeeWithdrawals() {
 
         <Modal.Body className="p-6">
           {selectedReceipt && (
-            /* هذا الجزء هو الذي سيُطبع فقط عبر الـ Ref */
             <div
               ref={receiptRef}
               dir="rtl"
               className="p-8 rounded-xl space-y-6 shadow-sm print:shadow-none print:border-none print:p-0"
+              style={{ background: "#ffffff" }}
             >
               <div className="no-screen print-only">
-                <PrintHead title={"title"} />
+                <PrintHead title={"سند صرف نقدي"} />
               </div>
               {/* هيدر السند */}
-              <div className="flex justify-between items-center pb-6">
+              <div className="flex justify-between items-center pb-6 border-b border-gray-200">
                 <div>
-                  <h2 className="text-2xl font-black mb-1">سند صرف نقدي</h2>
-                  <p className="text-sm font-medium text-amber-700">
-                    مسحوبات موظفين
+                  <h2 className="text-2xl font-black mb-1" style={{ color: "#3a2e1d" }}>
+                    سند صرف نقدي
+                  </h2>
+                  <p className="text-sm font-semibold text-amber-700 m-0">
+                    مسحوبات وسلف موظفين
                   </p>
                 </div>
-                <div className="text-left  px-4 py-2 rounded-lg border border-gray-100">
-                  <span className="block text-xs font-semibold">رقم السند</span>
+                <div className="text-left px-4 py-2 rounded-lg border border-gray-200">
+                  <span className="block text-xs font-semibold text-gray-500">رقم السند</span>
                   <span className="text-lg font-bold">
-                    #{selectedReceipt.serialNumber}
+                    #{selectedReceipt.id}
                   </span>
                 </div>
               </div>
 
               {/* تفاصيل السند */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="p-3  rounded-lg border border-gray-100">
-                  <span className="block text-xs mb-1">تاريخ ووقت الصرف</span>
-                  <span className="font-bold ">
+              <div className="grid grid-cols-2 gap-4 text-sm mt-4">
+                <div className="p-3 rounded-lg border border-gray-100 bg-gray-50">
+                  <span className="block text-xs text-gray-500 mb-1">تاريخ ووقت الصرف</span>
+                  <span className="font-bold">
                     {selectedReceipt.date} — {selectedReceipt.time}
                   </span>
                 </div>
 
-                <div className="p-3 rounded-lg border border-gray-100">
-                  <span className="block text-xs mb-1">يُصرف للموظف</span>
+                <div className="p-3 rounded-lg border border-gray-100 bg-gray-50">
+                  <span className="block text-xs text-gray-500 mb-1">يُصرف للموظف</span>
                   <span className="font-bold">{selectedReceipt.employee}</span>
                 </div>
 
-                <div className="p-3 rounded-lg border border-gray-100">
-                  <span className="block text-xs mb-1">من حساب</span>
-                  <span className="font-bold ">{selectedReceipt.account}</span>
+                <div className="p-3 rounded-lg border border-gray-100 bg-gray-50">
+                  <span className="block text-xs text-gray-500 mb-1">من حساب</span>
+                  <span className="font-bold">{selectedReceipt.account}</span>
                 </div>
 
-                <div className="p-3 rounded-lg border border-amber-200/60">
-                  <span className="block text-xs font-medium mb-1">
+                <div className="p-3 rounded-lg border border-amber-200 bg-amber-50">
+                  <span className="block text-xs font-medium text-amber-800 mb-1">
                     المبلغ المدفوع
                   </span>
-                  <span className="text-xl font-black text-red-500">
+                  <span className="text-xl font-black text-amber-900">
                     {formatNumber(selectedReceipt.amount)}{" "}
-                    <span className="text-xs font-normal">ج.م</span>
+                    <span className="text-xs font-normal">ر.س</span>
                   </span>
                 </div>
 
-                <div className="col-span-2 p-3 rounded-lg border border-gray-100">
-                  <span className="block text-xs mb-1">البيان / الوصف</span>
+                <div className="col-span-2 p-3 rounded-lg border border-gray-100 bg-gray-50">
+                  <span className="block text-xs text-gray-500 mb-1">البيان / الوصف</span>
                   <p className="font-semibold leading-relaxed m-0">
-                    {selectedReceipt.description || "بدون بيان"}
+                    {selectedReceipt.description || "سلفة موظف"}
                   </p>
                 </div>
               </div>
 
               {/* التواقيع */}
               <div className="grid grid-cols-2 gap-8 pt-8 mt-6 border-t border-dashed border-gray-300 text-center text-sm">
-                <div className="space-y-8">
+                <div className="space-y-6">
                   <p className="font-bold">توقيع المستلم (الموظف)</p>
                   <div className="border-b border-gray-300 w-3/4 mx-auto"></div>
                 </div>
-                <div className="space-y-8">
+                <div className="space-y-6">
                   <p className="font-bold">اعتماد الإدارة المالية</p>
                   <div className="border-b border-gray-300 w-3/4 mx-auto"></div>
                 </div>
@@ -691,7 +607,8 @@ function EmployeeWithdrawals() {
           </Button>
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-2 px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-lg shadow-sm transition-colors text-sm"
+            className="inline-flex items-center gap-2 px-5 py-2 text-white font-medium rounded-lg shadow-sm transition-colors text-sm"
+            style={{ background: "linear-gradient(135deg, #c29a64 0%, #a87e45 100%)", border: "none" }}
           >
             <FontAwesomeIcon icon={faPrint} />
             <span>طباعة السند</span>

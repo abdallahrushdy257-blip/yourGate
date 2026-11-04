@@ -30,12 +30,12 @@ function EditInvestigations() {
         const fetchInvestigation = async () => {
             try {
                 const res = await API.get(`/investigations/${id}`);
-                const data = res.data;
+                const data = res.data?.data || res.data;
 
                 setReason(data.reason || "");
-                setInvestigator(data.investigator || "");
+                setInvestigator(data.investigator_id || data.investigator || "");
                 setResult(data.result || "");
-                setDate(data.date || new Date().toISOString().substr(0, 10));
+                setDate(data.date ? data.date.substr(0, 10) : new Date().toISOString().substr(0, 10));
                 setDescription(data.description || "");
                 setEmployeeId(data.employee_id || "");
             } catch (error) {

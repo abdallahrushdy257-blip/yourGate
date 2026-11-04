@@ -21,6 +21,9 @@ const RiskAssessmentReportPage = lazy(() =>
 const ProjectAttachmentsPage = lazy(() =>
   import("../pages").then((m) => ({ default: m.ProjectAttachmentsPage }))
 );
+const ProjectPaymentReportPage = lazy(() =>
+  import("../pages").then((m) => ({ default: m.ProjectPaymentReportPage }))
+);
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>
@@ -30,13 +33,14 @@ const withSuspense = (Component) => (
 
 export const projectRouteConfigs = [
   { path: "/projectStatus", element: withSuspense(ProjectListPage) },
+  { path: "/projectpaymentreport", element: withSuspense(ProjectPaymentReportPage) },
   { path: "/marketingdesignprojectmanagement", element: withSuspense(MarketingDesignProjectManagementPage) },
   { path: "/editprojectstatus/:id", element: withSuspense(EditProjectStatusPage) },
   { path: "/editproject/:id", element: withSuspense(EditProjectStatusPage) },
   { path: "/projectdetailsview/:id", element: withSuspense(ProjectDetailsPage) },
   { path: "/kpi", element: withSuspense(MasterKpiPage) },
   { path: "/projectkpis/:id", element: withSuspense(ProjectKpiFormPage) },
-  { path: "/projectkpiview/:id", element: withSuspense(ProjectKpiViewPage) },
+  { path: "/projectkpiview/:id", element: withSuspense(ProjectKpiFormPage) },
   { path: "/projectdetails/:id", element: withSuspense(ProjectPhasesPage) },
   { path: "/projectmembers/:id", element: withSuspense(ProjectMembersPage) },
   { path: "/projectrisks/:id", element: withSuspense(ProjectRisksPage) },

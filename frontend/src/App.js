@@ -6,7 +6,7 @@ import RightSidebar from "./components/RightSidebar";
 import HomeNavbar from "./components/HomeNavbar";
 
 //import PublicLayout from "./layouts/PublicLayout";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, Navigate, useParams } from "react-router-dom";
 import CharityRegistration from "./pages/CharityRegistration/CharityRegistration";
 import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
@@ -216,6 +216,11 @@ import SectionsReport from "./pages/sections/SectionsReport";
 // import ShowEmployeeCard from "./pages/EmployeeCard/ShowEmployeeCard";
 
 
+
+function ProjectPaymentVouchersRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/projectdetailsview/${id}?tab=financials&filter=payments`} replace />;
+}
 
 function App() {
   const location = useLocation();
@@ -589,8 +594,10 @@ function App() {
                   element={<FeasibilityStudy />}
                 />
                 <Route path="/missions" element={<Missions />} />
-                {/* <Route path="/addmission" element={<AddMissions />} /> */}
+                <Route path="/showMissions/:id" element={<ShowMissions />} />
+                <Route path="/editMissions/:id" element={<EditMissions />} />
                 {AccountingRoutes}
+                {FinanceRoutes}
                 <Route
                   path="/warrantorspayment/:id"
                   element={<WarrantorsPayments />}
@@ -611,7 +618,7 @@ function App() {
                 {/* Edit project routes integrated via ProjectRoutes */}
                 <Route
                   path="/projectpaymentvouchers/:id"
-                  element={<ViewDonationsProject />}
+                  element={<ProjectPaymentVouchersRedirect />}
                 />
                 <Route path="/fstudy/:id" element={<Fstudy />} />
 
