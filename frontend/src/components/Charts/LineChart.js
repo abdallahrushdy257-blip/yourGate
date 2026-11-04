@@ -2,11 +2,14 @@ import * as React from 'react';
 import { LineChart as MuiLineChart } from '@mui/x-charts/LineChart';
 
 function MyLineChart({ xData, yData, width = 500, height = 300 }) {
+  const safeXData = Array.isArray(xData) && xData.length > 0 ? xData : ["-"];
+  const safeYData = Array.isArray(yData) && yData.length > 0 ? yData : [0];
+
   return (
     <MuiLineChart
       xAxis={[
         {
-          data: xData,
+          data: safeXData,
           scaleType: 'band',
           axisLine: { stroke: 'var(--text-color)' },
           tickLabelStyle: {
@@ -35,7 +38,7 @@ function MyLineChart({ xData, yData, width = 500, height = 300 }) {
       ]}
       series={[
         {
-          data: yData,
+          data: safeYData,
           area: true,
           showMark: true,
           color: '#8aaafe',

@@ -1,0 +1,179 @@
+.jobtitle-page-container {
+  width: 90%;
+  margin: 20px auto;
+  direction: rtl;
+}
+
+.jobtitle-container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.jobTitle-form {
+  width: 100%;
+}
+
+/* Modal styling */
+.jobtitle-modal .modal-content {
+  border-radius: 20px;
+  border: 1px solid rgba(194, 154, 100, 0.25);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  background: #ffffff;
+  direction: rtl;
+}
+
+.jobtitle-modal .modal-header {
+  background: linear-gradient(135deg, rgba(194, 154, 100, 0.08) 0%, rgba(194, 154, 100, 0.02) 100%);
+  border-bottom: 1px solid rgba(194, 154, 100, 0.18);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.jobtitle-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #3a2e1d;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.jobtitle-modal-title-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(194, 154, 100, 0.18);
+  color: #a87e45;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.jobtitle-modal .modal-body {
+  padding: 24px;
+  background: #faf8f5;
+}
+
+.jobtitle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.jobtitle-full-width {
+  grid-column: 1 / -1;
+}
+
+.jobtitle-modal .modal-footer {
+  background: #ffffff;
+  border-top: 1px solid rgba(194, 154, 100, 0.14);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.jobtitle-btn-primary {
+  min-width: 130px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  background: linear-gradient(135deg, #c29a64 0%, #b28647 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(194, 154, 100, 0.35);
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.jobtitle-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #b28647 0%, #9e7235 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(194, 154, 100, 0.45);
+}
+
+.jobtitle-btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.jobtitle-btn-cancel {
+  padding: 10px 20px;
+  border: 1px solid #d5cebe;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  background: #ffffff;
+  color: #635745;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.jobtitle-btn-cancel:hover {
+  background: #f4ede2;
+  border-color: #c29a64;
+  color: #3a2e1d;
+}
+
+.jobtitle-btn-danger {
+  min-width: 120px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  background: #dc3545;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.jobtitle-btn-danger:hover {
+  background: #bb2d3b;
+  transform: translateY(-2px);
+}
+
+.jobtitle-field-error {
+  color: #dc3545;
+  font-size: 12.5px;
+  margin-top: 4px;
+  display: block;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .jobtitle-page-container {
+    width: 95%;
+  }
+
+  .jobtitle-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jobtitle-modal .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .jobtitle-btn-primary,
+  .jobtitle-btn-cancel,
+  .jobtitle-btn-danger {
+    width: 100%;
+  }
+}
+

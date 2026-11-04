@@ -15,7 +15,7 @@ import ConfirmModal from "../../components/ConfirmModal";
 import { projectService } from "../../modules/projects";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import "./ProjectKPI.css";
+import "../../modules/projects/pages/KPI/ProjectKPI.css";
 
 function ProjectAttachment({
   show: propShow,

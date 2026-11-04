@@ -19,15 +19,15 @@ root.render(
         <ThemeContextProvider>
           <App />
           <ToastContainer
-        position="bottom-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        pauseOnHover
-        draggable
-        theme="colored"
-      />
+            position="bottom-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+            draggable
+            theme="colored"
+          />
         </ThemeContextProvider>
       </AppProvider>
     </BrowserRouter>

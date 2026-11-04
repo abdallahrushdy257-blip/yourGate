@@ -13,7 +13,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import "./CustomerReport.css";
 import RegisterTextbox from "../../../components/RegisterTextBox";
 import CustomButton from "../../../components/CustomButton";
-import "../AccountingEntry/AccountingEntry.css";
+import "../../../modules/accounting/pages/AccountingEntry/AccountingEntry.css";
 import Tablecomponent from "../../../components/TableComponent";
 import API from "../../../api/axiosConfig";
 

@@ -1,21 +1,21 @@
 // ── Core Accounting ─────────────────────────────────────────────
-export { default as ChartofaccountsPage } from "../../../pages/Accounting/Chartofaccounts/Chartofaccounts";
-export { default as AccountingEntryPage } from "../../../pages/Accounting/AccountingEntry/AccountingEntry";
-export { default as AccountingEntryViewPage } from "../../../pages/Accounting/AccountingEntry/AccountingEntryView";
+export { default as ChartofaccountsPage } from "./Chartofaccounts/Chartofaccounts";
+export { default as AccountingEntryPage } from "./AccountingEntry/AccountingEntry";
+export { default as AccountingEntryViewPage } from "./AccountingEntry/AccountingEntryView";
 export { default as AccountsReportPage } from "../../../pages/Accounting/AccountsReport/AccountsReport";
-export { default as BalanceSheetPage } from "../../../pages/Accounting/Reports/BalanceSheet";
-export { default as IncomeStatementPage } from "../../../pages/Accounting/Reports/IncomeStatement";
+export { default as BalanceSheetPage } from "./Reports/BalanceSheet";
+export { default as IncomeStatementPage } from "./Reports/IncomeStatement";
 
 // ── Statements ──────────────────────────────────────────────────
-export { default as AccountstatementPage } from "../../../pages/Accounting/Accountstatement/Accountstatement";
-export { default as CustomersStatementPage } from "../../../pages/Accounting/Accountstatement/CustomersStatement";
-export { default as SuppliersStatementPage } from "../../../pages/Accounting/Accountstatement/SuppliersStatement";
-export { default as AccountsStatementPage } from "../../../pages/Accounting/Accountstatement/AccountsStatement";
-export { default as AssociationMemberStatementPage } from "../../../pages/Accounting/Accountstatement/AssociationMemberStatement";
-export { default as DonorStatementPage } from "../../../pages/Accounting/Accountstatement/DonorStatement";
-export { default as HumanCaseStatementPage } from "../../../pages/Accounting/Accountstatement/HumanCaseStatement";
-export { default as ManagementMemberStatementPage } from "../../../pages/Accounting/Accountstatement/ManagementMemberStatement";
-export { default as WarrantorsStatementPage } from "../../../pages/Accounting/Accountstatement/WarrantorsStatement";
+export { default as AccountstatementPage } from "./Accountstatement/Accountstatement";
+export { default as CustomersStatementPage } from "./Accountstatement/CustomersStatement";
+export { default as SuppliersStatementPage } from "./Accountstatement/SuppliersStatement";
+export { default as AccountsStatementPage } from "./Accountstatement/AccountsStatement";
+export { default as AssociationMemberStatementPage } from "./Accountstatement/AssociationMemberStatement";
+export { default as DonorStatementPage } from "./Accountstatement/DonorStatement";
+export { default as HumanCaseStatementPage } from "./Accountstatement/HumanCaseStatement";
+export { default as ManagementMemberStatementPage } from "./Accountstatement/ManagementMemberStatement";
+export { default as WarrantorsStatementPage } from "./Accountstatement/WarrantorsStatement";
 
 // ── Clients, Items & Suppliers ──────────────────────────────────
 export { default as AddClientPage } from "../../../pages/Accounting/AddClient/AddClient";
@@ -47,3 +47,9 @@ export { default as TransferInvoiceBetweenStoresPage } from "../../../pages/Acco
 export { default as UnitsReportPage } from "../../../pages/Accounting/UnitsReport/Unitsreport";
 export { default as WarehousereportPage } from "../../../pages/Accounting/WarehouseReport/Warehousereport";
 export { default as ItemReportPage } from "../../../pages/Accounting/ItemReport/ItemReport";
+
+// ── Vouchers & General Payment ──────────────────────────────────
+export { default as GeneralReceiptVoucherCashPage } from "./GeneralPayment/GeneralReceiptVoucherCash";
+export { default as GeneralReceiptVoucherPage } from "./GeneralPayment/GeneralReceiptVoucher";
+export { default as GeneralPaymentVoucherCashPage } from "./GeneralPayment/GeneralPaymentVoucherCash";
+export { default as GeneralPaymentVoucherPage } from "./GeneralPayment/GeneralPaymentVoucher";

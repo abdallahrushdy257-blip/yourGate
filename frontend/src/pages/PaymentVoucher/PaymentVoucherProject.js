@@ -11,7 +11,7 @@ import JsBarcode from "jsbarcode";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../../api/axiosConfig";
 import { toast } from "react-toastify";
-import "../MarketingDesignProjectManagement/ProjectKPI.css";
+import "../../modules/projects/pages/KPI/ProjectKPI.css";
 
 function PaymentVoucherProject({
   show: propShow,

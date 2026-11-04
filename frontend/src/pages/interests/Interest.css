@@ -31,7 +31,7 @@
 }
 
 .interest-modal .modal-header {
-  background: linear-gradient(135deg, #2a1a0e 0%, #1a0f07 100%) !important;
+ background: var(--navbar-color) !important;
   border-bottom: 1.5px solid #d4ab72 !important;
   padding: 16px 20px !important;
   display: flex !important;

@@ -24,6 +24,15 @@ const ProjectAttachmentsPage = lazy(() =>
 const ProjectPaymentReportPage = lazy(() =>
   import("../pages").then((m) => ({ default: m.ProjectPaymentReportPage }))
 );
+const DepartmentsDetailsPage = lazy(() =>
+  import("../pages").then((m) => ({ default: m.DepartmentsDetailsPage }))
+);
+const ProjectChartPage = lazy(() =>
+  import("../pages").then((m) => ({ default: m.ProjectChartPage }))
+);
+const SectionsReportPage = lazy(() =>
+  import("../pages").then((m) => ({ default: m.SectionsReportPage }))
+);
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>
@@ -32,21 +41,35 @@ const withSuspense = (Component) => (
 );
 
 export const projectRouteConfigs = [
+  // تقارير المشاريع وحالاتها
   { path: "/projectStatus", element: withSuspense(ProjectListPage) },
+  { path: "/projectstatus", element: withSuspense(ProjectListPage) },
+  { path: "/sectionsreport", element: withSuspense(SectionsReportPage) },
+  { path: "/SectionsReport", element: withSuspense(SectionsReportPage) },
   { path: "/projectpaymentreport", element: withSuspense(ProjectPaymentReportPage) },
+
+  // إدارة المشاريع والتعديل
   { path: "/marketingdesignprojectmanagement", element: withSuspense(MarketingDesignProjectManagementPage) },
   { path: "/editprojectstatus/:id", element: withSuspense(EditProjectStatusPage) },
   { path: "/editproject/:id", element: withSuspense(EditProjectStatusPage) },
   { path: "/projectdetailsview/:id", element: withSuspense(ProjectDetailsPage) },
+  { path: "/projectdetails/:id", element: withSuspense(ProjectPhasesPage) },
+  { path: "/projectchart/:id", element: withSuspense(ProjectChartPage) },
+
+  // مؤشرات الأداء KPIs
+  { path: "/KPI", element: withSuspense(MasterKpiPage) },
   { path: "/kpi", element: withSuspense(MasterKpiPage) },
   { path: "/projectkpis/:id", element: withSuspense(ProjectKpiFormPage) },
-  { path: "/projectkpiview/:id", element: withSuspense(ProjectKpiFormPage) },
-  { path: "/projectdetails/:id", element: withSuspense(ProjectPhasesPage) },
+  { path: "/projectkpiview/:id", element: withSuspense(ProjectKpiViewPage) },
+
+  // الأعضاء والمخاطر والمرفقات
   { path: "/projectmembers/:id", element: withSuspense(ProjectMembersPage) },
   { path: "/projectrisks/:id", element: withSuspense(ProjectRisksPage) },
+  { path: "/projectrisks", element: withSuspense(ProjectRisksPage) },
   { path: "/riskmitigation/:id", element: withSuspense(RiskMitigationPage) },
   { path: "/riskassessmentreport/:id", element: withSuspense(RiskAssessmentReportPage) },
   { path: "/projectattachments/:id", element: withSuspense(ProjectAttachmentsPage) },
+  { path: "/departmentsdetails", element: withSuspense(DepartmentsDetailsPage) },
 ];
 
 export const ProjectRoutes = (
@@ -56,5 +79,3 @@ export const ProjectRoutes = (
     ))}
   </React.Fragment>
 );
-
-export default ProjectRoutes;

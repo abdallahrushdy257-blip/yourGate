@@ -1,49 +1,62 @@
 import API from "../../../api/axiosConfig";
 
-/**
- * Centralized Human Resources (HR) API Service
- */
 export const hrService = {
-  // ── Employees ─────────────────────────────────────────────────
-  getEmployees: (params) => API.get("/employee", { params }),
-  getEmployee: (id) => API.get(`/employee/${id}`),
-  createEmployee: (data) => API.post("/employee/store", data),
-  updateEmployee: (id, data) => API.post(`/employee/${id}/update`, data),
-  deleteEmployee: (id) => API.get(`/employee/${id}/delete`),
-  getEmployeeCard: (id) => API.get(`/employee/card/${id}`),
+  // Employees
+  getEmployees: () => API.get("/employees"),
+  getEmployeesPost: () => API.post("/employees"),
 
-  // ── Payroll & Salaries ────────────────────────────────────────
-  getPayroll: (params) => API.get("/payroll", { params }),
-  createPayroll: (data) => API.post("/payroll/store", data),
-  paySalary: (data) => API.post("/paysalary/store", data),
-  getSalaryCertificate: (id) => API.get(`/salarycertificate/${id}`),
+  // Job Titles
+  getJobTitles: (params) => API.post("/jobtitle", params),
+  getJobTitle: (id) => API.get(`/jobtitle/${id}`),
+  createJobTitle: (data) => API.post("/jobtitle/store", data),
+  updateJobTitle: (data) => API.post("/jobtitle/update", data),
 
-  // ── Attendance & Departure ───────────────────────────────────
-  getAttendance: (params) => API.get("/attendance", { params }),
-  recordAttendance: (data) => API.post("/attendance/store", data),
-  getAttendanceReport: (params) => API.get("/attendancereport", { params }),
+  // Employee Papers
+  createEmployeePaper: (data) => API.post("/employeepapers/store", data),
+  getEmployeePaper: (id) => API.get(`/employeepapers/${id}`),
+  updateEmployeePaper: (data) => API.post("/employeepapers/update", data),
+  uploadEmployeePaper: (data) =>
+    API.post("/employeeuploads/store", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
 
-  // ── Vacations & Leaves ────────────────────────────────────────
-  getVacationRequests: (params) => API.get("/vacationrequest", { params }),
-  createVacationRequest: (data) => API.post("/vacationrequest/store", data),
-  getVacationDetails: (id) => API.get(`/vacationdetails/${id}`),
-  getLeaveTypes: () => API.get("/leavetype"),
+  // Discounts & Allowances
+  getDonationAccounts: () => API.get("transactions/components/donations"),
+  createDiscountOrAward: (data) => API.post("/deduction/store", data),
+  createSalaryAction: (data) => API.post("/salaryactions/store", data),
 
-  // ── Performance & Evaluation ──────────────────────────────────
-  getJobPerformance: (params) => API.get("/jobperformance", { params }),
-  createJobPerformance: (data) => API.post("/jobperformance/store", data),
-  getPerformanceEvaluation: (id) => API.get(`/jobperformance/${id}`),
-  getKpiEvaluation: (id) => API.get(`/kpievaluation/${id}`),
+  // Investigations
+  createInvestigation: (data) =>
+    API.post("/investigations/store", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  getInvestigation: (id) => API.get(`/investigations/${id}`),
+  updateInvestigation: (id, data) =>
+    API.post(`/investigations/update/${id}`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
 
-  // ── Advances & Withdrawals ────────────────────────────────────
-  getEmployeeAdvances: (params) => API.get("/employeeadvance", { params }),
-  createEmployeeAdvance: (data) => API.post("/employeeadvance/store", data),
-  getEmployeeWithdrawals: (params) => API.get("/employeewithdrawal", { params }),
-  createEmployeeWithdrawal: (data) => API.post("/employeewithdrawal/store", data),
+  // Vacations & Leaves
+  createVacation: (data) => API.post("/vacations/store", data),
+  getVacation: (id) => API.get(`/vacations/${id}`),
+  updateVacation: (data) => API.post("/vacations/update", data),
+  createLeavePermission: (data) => API.post("/leavepermissions/store", data),
 
-  // ── Job Titles & Departments ──────────────────────────────────
-  getJobTitles: () => API.get("/jobtitle"),
-  getDepartments: () => API.get("/department"),
+  // Attendances
+  createAttendance: (data) => API.post("/attendances/store", data),
+
+  // Missions
+  getMissionEmployees: () => API.get("missions/eams"),
+  createMission: (data) =>
+    API.post("/missions/store", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  getMission: (id) => API.get(`/missions/${id}`),
+  updateMission: (data) =>
+    API.post("/missions/update", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+  deleteMission: (id) => API.get(`/missions/${id}/delete`),
 };
 
 export default hrService;

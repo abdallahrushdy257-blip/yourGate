@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../components/title";
-import "./jobTitle.css";
+import "../../modules/hr/pages/JobTitle/jobTitle.css";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import RegisterTextbox from "../../components/RegisterTextBox";
 import { Form, Spinner } from "react-bootstrap";
@@ -13,6 +13,7 @@ import API from "../../api/axiosConfig";
 function AddOrganization() {
   const navigate = useNavigate();
   const [error, setError] = useState([]);
+  const [description, setDescription] = useState([]);
   const [message, setMessage] = useState([]);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");

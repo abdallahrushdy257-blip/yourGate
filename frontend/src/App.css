@@ -439,7 +439,7 @@ input[type="number"] {
   font-size: 15px !important;
   font-weight: 700 !important;
   font-family: "cairo" !important;
-  width: 75%;
+  /* width: 75%; */
 }
 
 .MuiInputAdornment-root {

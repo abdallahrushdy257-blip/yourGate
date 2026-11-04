@@ -43,10 +43,10 @@ import {
 import { toast } from "react-toastify";
 import "./ProjectDetailsView.css";
 import RiskMitigation from "./RiskMitigation";
-import ProjectKPI from "./ProjectKPI";
+import ProjectKPI from "../../modules/projects/pages/KPI/ProjectKPI";
 import ProjectAttachment from "./ProjectAttachment";
 import PaymentVoucherProject from "../PaymentVoucher/PaymentVoucherProject";
-import EditProjectStatus from "./EditProjectStatus";
+import EditProjectStatus from "../../modules/projects/pages/ProjectStatus/EditProjectStatus";
 import ConfirmModal from "../../components/ConfirmModal";
 import { projectService } from "../../modules/projects";
 

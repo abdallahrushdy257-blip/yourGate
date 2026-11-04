@@ -1,0 +1,1 @@
+import{a1 as t}from"./vendor-ui-CUh85MhK.js";import"./index-RGglJHmn.js";import"./vendor-docs-D5513Sxe.js";import"./vendor-charts-DyLL0GK1.js";function o(){return t.jsx(t.Fragment,{children:t.jsx("div",{className:"attendancedeparturereport"})})}export{o as default};
