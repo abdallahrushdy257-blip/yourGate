@@ -2,7 +2,7 @@ import { Link, useNavigate, useParams } from "react-router";
 //import "./ShowEmployee.css";
 import API from "../../api/axiosConfig";
 import { useEffect, useState } from "react";
-import TestPreloader from "../../pages/TestPreLoader/TestPreLoader";
+import TestPreloader from "../../modules/common/pages/TestPreLoader/TestPreLoader";
 import AdminLayout from "../../layouts/AdminLayouts";
 
 function OrganizationShow() {

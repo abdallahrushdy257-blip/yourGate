@@ -1,55 +1,55 @@
 import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
-import GuestRoute from "../../../context/GuestRoute";
+import TestPreLoader from "../pages/TestPreLoader/TestPreLoader";
+import GuestRoute from "../../../app/providers/GuestRoute";
 
 // Authentication & Registration
-const Login = lazy(() => import("../../../pages/Login/Login"));
-const Verify = lazy(() => import("../../../pages/Verify/Verify"));
+const Login = lazy(() => import("../pages/Login/Login"));
+const Verify = lazy(() => import("../pages/Verify/Verify"));
 const CharityRegistration = lazy(() =>
-  import("../../../pages/CharityRegistration/CharityRegistration")
+  import("../pages/CharityRegistration/CharityRegistration")
 );
 const ForgotPassword = lazy(() =>
-  import("../../../pages/ForgotPassword/ForgotPassword")
+  import("../pages/ForgotPassword/ForgotPassword")
 );
 const SetnewPassword = lazy(() =>
-  import("../../../pages/ForgotPassword/SetnewPassword")
+  import("../pages/ForgotPassword/SetnewPassword")
 );
 
 // Main Landing
-const MainLanding = lazy(() => import("../../../landings/MainLanding"));
+const MainLanding = lazy(() => import("../landings/MainLanding"));
 const CreateMangeLanding = lazy(() =>
-  import("../../../landings/CreateMangeLanding")
+  import("../landings/CreateMangeLanding")
 );
 const DesignMarketingLanding = lazy(() =>
-  import("../../../landings/DesignMarketingLanding")
+  import("../landings/DesignMarketingLanding")
 );
-const HRLanding = lazy(() => import("../../../landings/HRLanding"));
+const HRLanding = lazy(() => import("../landings/HRLanding"));
 const LandingStore = lazy(() =>
-  import("../../../pages/LandingStore/LandingStore")
+  import("../pages/LandingStore")
 );
-const LoansLanding = lazy(() => import("../../../landings/LoansLanding"));
+const LoansLanding = lazy(() => import("../landings/LoansLanding"));
 const DataManagementLanding = lazy(() =>
-  import("../../../landings/DataManagementLanding")
+  import("../landings/DataManagementLanding")
 );
 const ArchivesLanding = lazy(() =>
-  import("../../../landings/ArchivesLanding")
+  import("../landings/ArchivesLanding")
 );
-const WebsiteLanding = lazy(() => import("../../../landings/WebsiteLanding"));
+const WebsiteLanding = lazy(() => import("../landings/WebsiteLanding"));
 const EndowmentsLanding = lazy(() =>
-  import("../../../landings/EndowmentsLanding")
+  import("../landings/EndowmentsLanding")
 );
-const TasksLanding = lazy(() => import("../../../landings/TasksLanding"));
+const TasksLanding = lazy(() => import("../landings/TasksLanding"));
 const AccountingLanding = lazy(() =>
-  import("../../../landings/AccountingLanding")
+  import("../landings/AccountingLanding")
 );
 
 // Terms & Privacy
 const Terms = lazy(() =>
-  import("../../../pages/TermsandCondition/Terms")
+  import("../pages/Terms")
 );
 const Privacy = lazy(() =>
-  import("../../../pages/TermsandCondition/Privacy")
+  import("../pages/Privacy")
 );
 
 // External Beneficiary Registration Form

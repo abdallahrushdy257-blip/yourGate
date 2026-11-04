@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import HRreports from "../HRreports/HRreports";
 import { Container, Button, Spinner, Form } from "react-bootstrap";
 import Title from "../../../../components/title";
-import { toLocal } from "../../../../Utils/toLocal";
+import { toLocal } from "../../../../shared/Utils/toLocal";
 
 // ==========================================
 // 📌 بيانات ثباتية مؤقتة (Static Dummy Data)

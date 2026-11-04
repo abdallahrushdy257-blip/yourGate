@@ -9,7 +9,7 @@ import {
 import API from "../../../../api/axiosConfig";
 import SurveyForm from "./SurveyForm";
 import { TableSkeleton } from "../../../../components/Skeleton";
-import { getCurrentPeriod } from "../../../../Utils/getCurrentPeriod";
+import { getCurrentPeriod } from "../../../../shared/Utils/getCurrentPeriod";
 import "./Surveys.css";
 
 const NPS_BADGE = {

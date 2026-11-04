@@ -2,12 +2,12 @@ import { Nav, Navbar } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "react";
-import { ThemeContext } from "../context/theme-context";
+import { ThemeContext } from "../app/providers/theme-context";
 import { Link } from "react-router";
 import "./LandingNav.css"
 
-import logoLight from "../logo-light.svg";
-import logoDark from "../logo-dark.svg";
+import logoLight from "../assets/logo-light.svg";
+import logoDark from "../assets/logo-dark.svg";
 
 function LandingNav() {
   const { theme, setTheme } = useContext(ThemeContext);

@@ -47,7 +47,7 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { QRCodeSVG } from "qrcode.react";
 import API, { BASE_URL } from "../../../../api/axiosConfig";
-import { toLocal } from "../../../../Utils/toLocal";
+import { toLocal } from "../../../../shared/Utils/toLocal";
 import {
   CaseReceiptVoucherModal,
   CasePaymentVoucherModal,

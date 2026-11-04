@@ -16,7 +16,7 @@ import { useParams } from "react-router";
 import CustomButton from "../../../../components/CustomButton";
 import { useNavigate } from "react-router";
 import API from "../../../../api/axiosConfig";
-import TestPreloader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreloader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import "react-datepicker/dist/react-datepicker.css";
 import TableComponent from "../../../../components/TableComponent";
 import { toast } from "react-toastify";

@@ -1,9 +1,9 @@
-
+﻿
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../components/title";
 import { faFileInvoice, faPlus } from "@fortawesome/free-solid-svg-icons";
 import RegisterTextbox from "../../../components/RegisterTextBox";
-import "../../../pages/ReceiptVoucher/ReceiptVoucher.css";
+import "../../../modules/finance/pages/ReceiptVoucher/ReceiptVoucher.css";
 import { Form , Spinner } from "react-bootstrap";
 import CustomButton from "../../../components/CustomButton";
 import RegisterSelect from "../../../components/RegisterSelect";
@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
 import JsBarcode from "jsbarcode";
 import { useNavigate , useParams } from "react-router";
 import API from "../../../api/axiosConfig";
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
 
 //import { set } from "react-datepicker/dist/date_utils";
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import "../../../pages/CreateLoan/createLoan.css"
+import "./createLoan.css";
 import Title from '../../../components/title';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -9,8 +9,8 @@ import './endowments.css'
 import API from '../../../api/axiosConfig';
 import { useNavigate, useParams } from 'react-router';
 import { Spinner, Form } from 'react-bootstrap';
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
-import ProjectData from "../../../pages/Feasibility/Allitems/ProjectData";
+import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
+import ProjectData from "./Allitems/ProjectData";
 import Swot from './Allitems/Swot';
 import TechnicalSide from './Allitems/TechnicalSide';
 import OrganizationChart from './Allitems/OrganizationChart';

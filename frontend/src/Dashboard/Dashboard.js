@@ -13,10 +13,10 @@ import CustomButton from "../components/CustomButton";
 import SimpleMyBarChart from "../components/Charts/SimpleBarChart";
 import API from "../api/axiosConfig";
 import { useEffect } from "react";
-import TestPreloader from "../pages/TestPreLoader/TestPreLoader";
+import TestPreloader from "../modules/common/pages/TestPreLoader/TestPreLoader";
 import { useNavigate } from "react-router-dom";
 import BscDashboard from "../components/Bsc/BscDashboard";
-import { AppContext } from "../context/AuthContext";
+import { AppContext } from "../app/providers/AuthContext";
 
 function Dashboard() {
   const [showModal, setShowModal] = useState(false);

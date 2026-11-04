@@ -14,7 +14,7 @@ import UploadInput from "../../../components/UploadInput";
 import API from "../../../api/axiosConfig";
 import dayjs from "dayjs";
 import "dayjs/locale/ar";
-import "../../../pages/CreateLoan/createLoan.css";
+import "./createLoan.css";
 
 const arabicMonths = [
   "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",

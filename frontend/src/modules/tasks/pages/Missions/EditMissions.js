@@ -1,6 +1,6 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+﻿import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../../components/title";
-import "../../../../pages/AddNewClient/addnewclient.css";
+import "../../../../modules/partners/pages/AddNewClient/addnewclient.css";
 import { faListCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Form } from "react-bootstrap";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import "./missions.css";
 import { error } from "highcharts";
 import API from "../../../../api/axiosConfig";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import { useNavigate , useParams } from "react-router";
 
 function EditMissions() {

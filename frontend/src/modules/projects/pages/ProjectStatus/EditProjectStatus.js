@@ -12,7 +12,7 @@ import UploadInput from "../../../../components/UploadInput";
 import API from "../../../../api/axiosConfig";
 import "react-datepicker/dist/react-datepicker.css";
 import RegisterSelect from "../../../../components/RegisterSelect";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 
 function EditProjectStatus() {
   const [rows, setRows] = useState({});

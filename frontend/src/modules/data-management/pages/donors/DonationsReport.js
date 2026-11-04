@@ -5,7 +5,7 @@ import { faPrint } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router";
 import API from "../../../../api/axiosConfig";
 import TableComponent from "../../../../components/TableComponent";
-import { toLocal } from "../../../../Utils/toLocal";
+import { toLocal } from "../../../../shared/Utils/toLocal";
 
 function DonationsReport(props) {
     const columns = [

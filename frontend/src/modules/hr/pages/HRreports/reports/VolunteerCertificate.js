@@ -3,7 +3,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import API from "../../../../../api/axiosConfig";
 import { useParams } from "react-router";
-import TestPreLoader from "../../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../../common/pages/TestPreLoader/TestPreLoader";
 import "./VolunteerCertificate.css";
 
 const VolunteerCertificate = () => {

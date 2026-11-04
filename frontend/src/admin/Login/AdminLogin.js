@@ -1,10 +1,10 @@
 import { Container, Form, Button, Spinner } from "react-bootstrap";
-import Logo from "../../logo-dark.svg";
+import Logo from "../../assets/logo-dark.svg";
 import { Link, useNavigate } from "react-router-dom";
 import "./login.css";
 import { useState, useContext } from "react";
 import API from "../../api/axiosConfig";
-import { AppContext } from "../../context/AuthContext";
+import { AppContext } from "../../app/providers/AuthContext";
 
 function AdminLogin(props) {
   const [password, setPassword] = useState("");

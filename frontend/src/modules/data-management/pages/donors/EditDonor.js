@@ -10,7 +10,7 @@ import API from '../../../../api/axiosConfig';
 import { useState , useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Spinner } from 'react-bootstrap';
-import TestPreLoader from '../../../../pages/TestPreLoader/TestPreLoader';
+import TestPreLoader from '../../../common/pages/TestPreLoader/TestPreLoader';
 
 function EditDonor () {
 

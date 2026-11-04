@@ -30,9 +30,9 @@ import {
 import { Modal, Button, Spinner, Form } from "react-bootstrap";
 import { QRCodeSVG } from "qrcode.react";
 import API from "../../../../api/axiosConfig";
-import { toLocal } from "../../../../Utils/toLocal";
-import caseimage from "../../../../case.png";
-import logoLight from "../../../../logo-light.svg";
+import { toLocal } from "../../../../shared/Utils/toLocal";
+import caseimage from "../../../../assets/case.png";
+import logoLight from "../../../../assets/logo-light.svg";
 import "./CaseDate.css";
 
 const CaseData = () => {

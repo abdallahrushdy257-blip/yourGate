@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Title from '../../../components/title'
-import "../../../pages/PaymentData/paymentData.css"
+import "./paymentData.css";
 import { faBagShopping } from '@fortawesome/free-solid-svg-icons'
 import CustomTable from '../../../components/CustomTable'
 import TableComponent from '../../../components/TableComponent'

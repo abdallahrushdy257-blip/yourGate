@@ -1,21 +1,21 @@
-import React, { Suspense, lazy } from "react";
+﻿import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
 
 const ProjectListPage = lazy(() => import("../pages/ProjectStatus/ProjectStatus"));
-const ProjectDetailsPage = lazy(() => import("../../../pages/MarketingDesignProjectManagement/ProjectDetailsView"));
+const ProjectDetailsPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectDetailsView"));
 const EditProjectStatusPage = lazy(() => import("../pages/ProjectStatus/EditProjectStatus"));
-const MarketingDesignProjectManagementPage = lazy(() => import("../../../pages/MarketingDesignProjectManagement/MarketingDesignProjectManagement"));
+const MarketingDesignProjectManagementPage = lazy(() => import("../pages/MarketingDesignProjectManagement/MarketingDesignProjectManagement"));
 const MasterKpiPage = lazy(() => import("../pages/KPI/KPI"));
 const ProjectKpiViewPage = lazy(() => import("../pages/KPI/ProjectKpiView"));
 const ProjectKpiFormPage = lazy(() => import("../pages/KPI/ProjectKPI"));
-const ProjectPhasesPage = lazy(() => import("../../../pages/MarketingDesignProjectManagement/ProjectPhases"));
-const ProjectMembersPage = lazy(() => import("../../../pages/MarketingDesignProjectManagement/ProjectMember"));
-const ProjectRisksPage = lazy(() => import("../../../pages/MarketingDesignProjectManagement/ProjectRisk"));
-const RiskMitigationPage = lazy(() => import("../../../pages/MarketingDesignProjectManagement/RiskMitigation"));
-const RiskAssessmentReportPage = lazy(() => import("../../../pages/MarketingDesignProjectManagement/RiskAssessmentReport"));
-const ProjectAttachmentsPage = lazy(() => import("../../../pages/MarketingDesignProjectManagement/ProjectAttachment"));
-const DepartmentsDetailsPage = lazy(() => import("../../../pages/DepartmentsDetails/DepartmentsDetails"));
+const ProjectPhasesPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectPhases"));
+const ProjectMembersPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectMember"));
+const ProjectRisksPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectRisk"));
+const RiskMitigationPage = lazy(() => import("../pages/MarketingDesignProjectManagement/RiskMitigation"));
+const RiskAssessmentReportPage = lazy(() => import("../pages/MarketingDesignProjectManagement/RiskAssessmentReport"));
+const ProjectAttachmentsPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectAttachment"));
+const DepartmentsDetailsPage = lazy(() => import("../pages/DepartmentsDetails/DepartmentsDetails"));
 const ProjectChartPage = lazy(() => import("../../cases/pages/CaseDetailsChart/ProjectChart"));
 const SectionsReportPage = lazy(() => import("../../hr/pages/sections/SectionsReport"));
 

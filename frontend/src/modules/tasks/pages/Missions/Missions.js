@@ -11,7 +11,7 @@ import RegisterSelect from "../../../../components/RegisterSelect";
 import CustomButton from "../../../../components/CustomButton";
 import UploadInput from "../../../../components/UploadInput";
 import { faListCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import { useEffect } from 'react';
 import NewButton from "../../../../components/NewButton";
 

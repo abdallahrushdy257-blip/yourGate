@@ -11,7 +11,7 @@ import RegisterTextarea from "../../../../components/RegisterTextarea";
 import { useNavigate , useParams } from "react-router";
 import CustomButton from "../../../../components/CustomButton";
 import API from "../../../../api/axiosConfig";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 function Editcasedetails() {
   const [isAssetsSelected, setIsAssetsSelected] = useState(false);
   const [totalCost, setTotalCost] = useState(0);

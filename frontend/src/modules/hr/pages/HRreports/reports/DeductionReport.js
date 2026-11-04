@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {  faTable } from "@fortawesome/free-solid-svg-icons";
 import HRreports from "../HRreports";
 import API from "../../../../../api/axiosConfig";
-import TestPreLoader from "../../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../../common/pages/TestPreLoader/TestPreLoader";
 import DiscountsModal from "../../Discounts/Discounts";
 
 function DeductionReport() {

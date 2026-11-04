@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Row, Col, Image, Modal, Button } from "react-bootstrap";
 import { useReactToPrint } from "react-to-print";
 // import API from "../../../../api/axiosConfig";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import PrintHead from "../../../../components/PrintHead";
 import PrintFooter from "../../../../components/PrintFooter";
 

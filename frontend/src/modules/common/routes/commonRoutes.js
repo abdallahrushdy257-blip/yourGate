@@ -10,12 +10,12 @@ const NotificationItem = lazy(() => import("../pages/Notification"));
 const TestPrint = lazy(() => import("../pages/TestPrint"));
 const LandingStore = lazy(() => import("../pages/LandingStore"));
 const CarouselComponent = lazy(() => import("../pages/CarouselCom"));
-const ReviewData = lazy(() => import ("../../../pages/ReviewData/ReviewData"));
-const CompletingData = lazy(() => import ("../../../pages/CompletingData/CompletingData"));
-const TestPreLoader = lazy(() => import ("../../../pages/TestPreLoader/TestPreLoader"));
+const ReviewData = lazy(() => import("../pages/ReviewData/ReviewData"));
+const CompletingData = lazy(() => import("../pages/CompletingData/CompletingData"));
+const TestPreLoader = lazy(() => import("../pages/TestPreLoader/TestPreLoader"));
 
 
-const DataReview = lazy(() => import("../../../pages/DataReview/DataReview"));
+const DataReview = lazy(() => import("../pages/DataReview/DataReview"));
 const BankData = lazy(() => import("../../data-management/pages/beneficiaries/BankData"));
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>

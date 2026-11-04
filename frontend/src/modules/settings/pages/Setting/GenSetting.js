@@ -11,7 +11,6 @@ import {
   faBuilding,
   faFileAlt,
   faPrint,
-  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 

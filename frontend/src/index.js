@@ -1,13 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
+import "./app/index.css";
+import App from "./app/App.js";
 import reportWebVitals from "./reportWebVitals";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "../node_modules/bootstrap/dist/js/bootstrap.min.js";
 import { BrowserRouter } from "react-router-dom";
-import AppProvider from "./context/AuthContext.js";
-import ThemeContextProvider from "./context/theme-context";
+import AppProvider from "./app/providers/AuthContext.js";
+import ThemeContextProvider from "./app/providers/theme-context";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
