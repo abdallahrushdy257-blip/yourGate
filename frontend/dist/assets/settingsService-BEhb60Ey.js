@@ -1,5 +1,0 @@
-<<<<<<<< HEAD:frontend/dist/assets/settingsService-BiqUdr3G.js
-import{A as s}from"./index-NfjUeeYa.js";const i={getRepresentativeInfo:()=>s.get("/orgusers/representative"),getPrintSettings:()=>s.get("/print"),savePrintSettings:e=>s.post("/print/store",{settings:e}),getRole:e=>s.get(`/permissions/${e}`),createRole:e=>s.post("/permissions/store",e),updateRole:e=>s.post("/permissions/update",e),deleteRole:e=>s.get(`/permissions/${e}/delete`),saveRolePermissions:(e,t)=>s.post(`/permissions/${e}/roles`,{roles:t})};export{i as s};
-========
-import{A as s}from"./index-Ce5E23VJ.js";const i={getRepresentativeInfo:()=>s.get("/orgusers/representative"),getPrintSettings:()=>s.get("/print"),savePrintSettings:e=>s.post("/print/store",{settings:e}),getRole:e=>s.get(`/permissions/${e}`),createRole:e=>s.post("/permissions/store",e),updateRole:e=>s.post("/permissions/update",e),deleteRole:e=>s.get(`/permissions/${e}/delete`),saveRolePermissions:(e,t)=>s.post(`/permissions/${e}/roles`,{roles:t})};export{i as s};
->>>>>>>> origin/main:frontend/dist/assets/settingsService-BEhb60Ey.js

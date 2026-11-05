@@ -43,12 +43,12 @@ import {
 import { toast } from "react-toastify";
 import "./ProjectDetailsView.css";
 import RiskMitigation from "./RiskMitigation";
-import ProjectKPI from "../../modules/projects/pages/KPI/ProjectKPI";
+import ProjectKPI from "../KPI/ProjectKPI";
 import ProjectAttachment from "./ProjectAttachment";
-import PaymentVoucherProject from "../PaymentVoucher/PaymentVoucherProject";
-import EditProjectStatus from "../../modules/projects/pages/ProjectStatus/EditProjectStatus";
-import ConfirmModal from "../../components/ConfirmModal";
-import { projectService } from "../../modules/projects";
+import PaymentVoucherProject from "../../../finance/pages/PaymentVoucher/PaymentVoucherProject";
+import EditProjectStatus from "../ProjectStatus/EditProjectStatus";
+import ConfirmModal from "../../../../components/ConfirmModal";
+import { projectService } from "../../../../modules/projects";
 
 export default function ProjectDetailsView() {
   const { id } = useParams();

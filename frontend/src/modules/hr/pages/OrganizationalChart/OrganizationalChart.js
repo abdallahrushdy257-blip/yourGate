@@ -10,7 +10,7 @@ import API from "../../../../api/axiosConfig";
 import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import PrintHead from "../../../../components/PrintHead";
 import PrintFooter from "../../../../components/PrintFooter";
-import { toLocal } from "../../../../Utils/toLocal";
+import { toLocal } from "../../../../shared/Utils/toLocal";
 
 /* -------------------------------------------------------------------------- */
 /*                            مودال عرض بيانات البروفايل                         */

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-﻿
-=======
 import React, { useEffect, useRef, useState } from "react";
->>>>>>> origin/main
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../../components/title";
 import { faFileInvoice, faMoneyBillWave, faCheckCircle, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";

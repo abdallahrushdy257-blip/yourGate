@@ -1,10 +1,5 @@
-<<<<<<< HEAD:frontend/src/modules/projects/pages/MarketingDesignProjectManagement/ProjectAttachment.js
-﻿import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
-=======
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect, useCallback } from "react";
->>>>>>> origin/main:frontend/src/pages/MarketingDesignProjectManagement/ProjectAttachment.js
 import {
   faPlus,
   faXmark,
