@@ -3,29 +3,29 @@ import { Route } from "react-router-dom";
 import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 
 // ── شجرة الحسابات والقيود والتقارير المالية ───────────────────
-const ChartofaccountsPage = lazy(() => import("../../../pages/Accounting/Chartofaccounts/Chartofaccounts"));
-const AccountingEntryPage = lazy(() => import("../../../pages/Accounting/AccountingEntry/AccountingEntry"));
-const AccountingEntryViewPage = lazy(() => import("../../../pages/Accounting/AccountingEntry/AccountingEntryView"));
+const ChartofaccountsPage = lazy(() => import("../pages/Chartofaccounts/Chartofaccounts"));
+const AccountingEntryPage = lazy(() => import("../pages/AccountingEntry/AccountingEntry"));
+const AccountingEntryViewPage = lazy(() => import("../pages/AccountingEntry/AccountingEntryView"));
 const AccountsReportPage = lazy(() => import("../../../pages/Accounting/AccountsReport/AccountsReport"));
-const BalanceSheetPage = lazy(() => import("../../../pages/Accounting/Reports/BalanceSheet"));
-const IncomeStatementPage = lazy(() => import("../../../pages/Accounting/Reports/IncomeStatement"));
+const BalanceSheetPage = lazy(() => import("../pages/Reports/BalanceSheet"));
+const IncomeStatementPage = lazy(() => import("../pages/Reports/IncomeStatement"));
 
 // ── كشوفات الحسابات ───────────────────────────────────────────
-const AccountstatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/Accountstatement"));
-const CustomersStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/CustomersStatement"));
-const SuppliersStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/SuppliersStatement"));
-const AccountsStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/AccountsStatement"));
-const AssociationMemberStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/AssociationMemberStatement"));
-const DonorStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/DonorStatement"));
-const HumanCaseStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/HumanCaseStatement"));
-const ManagementMemberStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/ManagementMemberStatement"));
-const WarrantorsStatementPage = lazy(() => import("../../../pages/Accounting/Accountstatement/WarrantorsStatement"));
+const AccountstatementPage = lazy(() => import("../pages/Accountstatement/Accountstatement"));
+const CustomersStatementPage = lazy(() => import("../pages/Accountstatement/CustomersStatement"));
+const SuppliersStatementPage = lazy(() => import("../pages/Accountstatement/SuppliersStatement"));
+const AccountsStatementPage = lazy(() => import("../pages/Accountstatement/AccountsStatement"));
+const AssociationMemberStatementPage = lazy(() => import("../pages/Accountstatement/AssociationMemberStatement"));
+const DonorStatementPage = lazy(() => import("../pages/Accountstatement/DonorStatement"));
+const HumanCaseStatementPage = lazy(() => import("../pages/Accountstatement/HumanCaseStatement"));
+const ManagementMemberStatementPage = lazy(() => import("../pages/Accountstatement/ManagementMemberStatement"));
+const WarrantorsStatementPage = lazy(() => import("../pages/Accountstatement/WarrantorsStatement"));
 
 // ── السندات والأموال ───────────────────────────────────────────
-const GeneralReceiptVoucherCashPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralReceiptVoucherCash"));
-const GeneralReceiptVoucherPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralReceiptVoucher"));
-const GeneralPaymentVoucherCashPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralPaymentVoucherCash"));
-const GeneralPaymentVoucherPage = lazy(() => import("../../../pages/Accounting/GeneralPayment/GeneralPaymentVoucher"));
+const GeneralReceiptVoucherCashPage = lazy(() => import("../pages/GeneralPayment/GeneralReceiptVoucherCash"));
+const GeneralReceiptVoucherPage = lazy(() => import("../pages/GeneralPayment/GeneralReceiptVoucher"));
+const GeneralPaymentVoucherCashPage = lazy(() => import("../pages/GeneralPayment/GeneralPaymentVoucherCash"));
+const GeneralPaymentVoucherPage = lazy(() => import("../pages/GeneralPayment/GeneralPaymentVoucher"));
 const Moneyreceiptreports = lazy(() => import("../../../pages/MoneyReports/Moneyreceiptreports"));
 const Moneytransferreports = lazy(() => import("../../../pages/MoneyReports/Moneytransferreports"));
 

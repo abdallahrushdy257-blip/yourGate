@@ -11,7 +11,7 @@ import { Modal, Button } from "react-bootstrap";
 
 import RegisterTextbox from "../../../components/RegisterTextBox";
 import CustomButton from "../../../components/CustomButton";
-import "../AccountingEntry/AccountingEntry.css";
+import "../../../modules/accounting/pages/AccountingEntry/AccountingEntry.css";
 import "../CustomerReport/CustomerReport.css";
 import Tablecomponent from "../../../components/TableComponent";
 import API from "../../../api/axiosConfig";

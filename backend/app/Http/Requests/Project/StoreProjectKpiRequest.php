@@ -36,7 +36,7 @@ class StoreProjectKpiRequest extends BaseApiRequest
             'project_id'       => ['required', 'integer', 'exists:projects,id'],
             'kpis'             => ['required', 'array'],
             'kpis.*.kpi_id'    => ['nullable'],
-            'kpis.*.actual'    => ['nullable', 'numeric'],
+            'kpis.*.actual'    => ['nullable', 'numeric', 'min:0', 'max:100'],
             'kpis.*.target'    => ['nullable', 'numeric'],
             'kpis.*.quiz'      => ['nullable', 'string'],
         ];

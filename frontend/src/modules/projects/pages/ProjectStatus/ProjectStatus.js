@@ -16,18 +16,43 @@ import NewButton from "../../../../components/NewButton";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import RegisterTextarea from "../../../../components/RegisterTextarea";
+import ProjectKPI from "../KPI/ProjectKPI";
+import ProjectAttachment from "../../../../pages/MarketingDesignProjectManagement/ProjectAttachment";
+import PaymentVoucherProject from "../../../../pages/PaymentVoucher/PaymentVoucherProject";
+import EditProjectStatus from "./EditProjectStatus";
+import ConfirmModal from "../../../../components/ConfirmModal";
+import { toast } from "react-toastify";
 
 import { toLocal } from "../../../../Utils/toLocal";
-import { toast } from "react-toastify";
-import PaymentVoucherProject from "../../../../pages/PaymentVoucher/PaymentVoucherProject";
 
 function ProjectStatus() {
   const navigate = useNavigate();
   const [tableReloadKey, setTableReloadKey] = useState(Date.now());
 
+  // ── Status Confirm Modal State ──────────────────────────
+  const [confirmAction, setConfirmAction] = useState({
+    show: false,
+    type: null,
+    projectId: null,
+    projectName: "",
+  });
+  const [isStatusSubmitting, setIsStatusSubmitting] = useState(false);
+
   // ── Payment Voucher Modal State ─────────────────────────
-  const [showVoucherModal, setShowVoucherModal] = useState(false);
-  const [voucherProjectId, setVoucherProjectId] = useState(null);
+  const [showPaymentVoucherModal, setShowPaymentVoucherModal] = useState(false);
+  const [selectedPaymentVoucherProjectId, setSelectedPaymentVoucherProjectId] = useState(null);
+
+  // ── KPI Modal State ─────────────────────────────────────
+  const [showKpiModal, setShowKpiModal] = useState(false);
+  const [selectedKpiProjectId, setSelectedKpiProjectId] = useState(null);
+
+  // ── Edit Project Modal State ────────────────────────────
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedEditProjectId, setSelectedEditProjectId] = useState(null);
+
+  // ── Attachment Modal State ──────────────────────────────
+  const [showAttachmentModal, setShowAttachmentModal] = useState(false);
+  const [selectedAttachmentProjectId, setSelectedAttachmentProjectId] = useState(null);
 
   // ── Progress Modal State ────────────────────────────────
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -71,8 +96,8 @@ function ProjectStatus() {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
-    if (!name) {
-      return toast.error("اسم المشروع مطلوب");
+    if(!name){
+      return toast.error("اسم المشروع مطلوب")
     }
     setIsSubmit(true);
     const mForm = new FormData();
@@ -102,6 +127,46 @@ function ProjectStatus() {
     }
   };
 
+  const handleOpenStatusConfirm = (actionType, projectId, record) => {
+    setConfirmAction({
+      show: true,
+      type: actionType,
+      projectId: projectId,
+      projectName: record?.name || record?.title || `#${projectId}`,
+    });
+  };
+
+  const handleConfirmStatusChange = async () => {
+    if (!confirmAction.projectId || !confirmAction.type) return;
+    setIsStatusSubmitting(true);
+    try {
+      const endpoint =
+        confirmAction.type === "cancel"
+          ? `/projects/${confirmAction.projectId}/cancel`
+          : `/projects/${confirmAction.projectId}/activate`;
+      const res = await API.get(endpoint);
+      if (res.status === 200) {
+        toast.success(
+          confirmAction.type === "cancel"
+            ? "تم إلغاء المشروع بنجاح"
+            : "تم تفعيل المشروع بنجاح"
+        );
+        setTableReloadKey(Date.now());
+        setConfirmAction({
+          show: false,
+          type: null,
+          projectId: null,
+          projectName: "",
+        });
+      }
+    } catch (err) {
+      console.error("Status toggle error:", err);
+      toast.error("حدث خطأ أثناء تغيير حالة المشروع");
+    } finally {
+      setIsStatusSubmitting(false);
+    }
+  };
+
   // ── Table Config ─────────────────────────────────────────
   const columns = [
     { name: "إسم المشروع", key: "name" },
@@ -117,15 +182,27 @@ function ProjectStatus() {
     { label: "التفاصيل", route: "/projectdetailsview/:id" },
     { label: "مراحل المشروع ", route: "/projectdetails/:id" },
     { label: "اعضاء المشروع", route: "/projectmembers/:id" },
-    { label: " مؤشرات الاداء", route: "/projectkpiview/:id" },
-    { label: "المرفقات", route: "/projectattachments/:id" },
+    {
+      label: "مؤشرات الاداء",
+      action: (id) => {
+        setSelectedKpiProjectId(id);
+        setShowKpiModal(true);
+      },
+    },
+    {
+      label: "المرفقات",
+      action: (id) => {
+        setSelectedAttachmentProjectId(id);
+        setShowAttachmentModal(true);
+      },
+    },
     { label: "المخاطر", route: "/projectrisks/:id" },
     { label: "تقرير المخاطر", route: "/riskassessmentreport/:id" },
     {
       label: "سند صرف",
       action: (id) => {
-        setVoucherProjectId(id);
-        setShowVoucherModal(true);
+        setSelectedPaymentVoucherProjectId(id);
+        setShowPaymentVoucherModal(true);
       },
     },
     {
@@ -134,7 +211,7 @@ function ProjectStatus() {
         if (record.status === 3 || record.status === 2) {
           showError("لا يمكن عرض سندات مشروع ملغي أو مكتمل");
         } else {
-          navigate(`/projectpaymentvouchers/${id}`);
+          navigate(`/projectdetailsview/${id}?tab=financials&filter=payments`);
         }
       },
     },
@@ -172,43 +249,20 @@ function ProjectStatus() {
         if (record.status === 3 || record.status === 2) {
           showError("لا يمكن تعديل مشروع ملغي أو مكتمل");
         } else {
-          navigate(`/editproject/${id}`);
+          setSelectedEditProjectId(id);
+          setShowEditModal(true);
         }
       },
     },
     {
       label: "الغاء",
       visibleIf: (record) => record.status !== 3 && record.status !== 2,
-      action: (id) => {
-        const cancelProject = async () => {
-          try {
-            const response = await API.get(`/projects/${id}/cancel`);
-            if (response.status === 200) {
-              setTableReloadKey(Date.now());
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        };
-        cancelProject();
-      },
+      action: (id, record) => handleOpenStatusConfirm("cancel", id, record),
     },
     {
       label: "تفعيل",
       visibleIf: (record) => record.status === 3,
-      action: (id) => {
-        const activateProject = async () => {
-          try {
-            const response = await API.get(`/projects/${id}/activate`);
-            if (response.status === 200) {
-              setTableReloadKey(Date.now());
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        };
-        activateProject();
-      },
+      action: (id, record) => handleOpenStatusConfirm("activate", id, record),
     },
   ];
 
@@ -232,16 +286,10 @@ function ProjectStatus() {
     if (marketingVal === 1 || row.marketingmethodstring === "المانحون") {
       marketingBadge =
         '<span style="background: rgba(217, 119, 6, 0.12); color: #d97706; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">المانحون</span>';
-    } else if (
-      marketingVal === 2 ||
-      row.marketingmethodstring === "المنصات الحكومية"
-    ) {
+    } else if (marketingVal === 2 || row.marketingmethodstring === "المنصات الحكومية") {
       marketingBadge =
         '<span style="background: rgba(124, 58, 237, 0.12); color: #7c3aed; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">المنصات الحكومية</span>';
-    } else if (
-      marketingVal === 3 ||
-      row.marketingmethodstring === "متاجر الجمعيات"
-    ) {
+    } else if (marketingVal === 3 || row.marketingmethodstring === "متاجر الجمعيات") {
       marketingBadge =
         '<span style="background: rgba(79, 70, 229, 0.12); color: #4f46e5; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; display: inline-block;">متاجر الجمعيات</span>';
     }
@@ -439,17 +487,76 @@ function ProjectStatus() {
         </Modal.Body>
       </Modal>
 
-      {/* ── Payment Voucher Modal ── */}
-      <PaymentVoucherProject
-        show={showVoucherModal}
-        projectId={voucherProjectId}
+      {/* ── Project KPI Modal ───────────────────────────────────── */}
+      <ProjectKPI
+        show={showKpiModal}
         onHide={() => {
-          setShowVoucherModal(false);
-          setVoucherProjectId(null);
+          setShowKpiModal(false);
+          setSelectedKpiProjectId(null);
         }}
-        onSuccess={() => {
-          setTableReloadKey(Date.now());
+        projectId={selectedKpiProjectId}
+        onSuccess={() => setTableReloadKey(Date.now())}
+      />
+
+      {/* ── Project Attachment Modal ────────────────────────────── */}
+      <ProjectAttachment
+        show={showAttachmentModal}
+        onHide={() => {
+          setShowAttachmentModal(false);
+          setSelectedAttachmentProjectId(null);
         }}
+        projectId={selectedAttachmentProjectId}
+        onSuccess={() => setTableReloadKey(Date.now())}
+      />
+
+      {/* ── Payment Voucher Modal ──────────────────────────────── */}
+      <PaymentVoucherProject
+        show={showPaymentVoucherModal}
+        onHide={() => {
+          setShowPaymentVoucherModal(false);
+          setSelectedPaymentVoucherProjectId(null);
+        }}
+        projectId={selectedPaymentVoucherProjectId}
+        onSuccess={() => setTableReloadKey(Date.now())}
+      />
+
+      {/* ── Edit Project Modal ──────────────────────────────────── */}
+      <EditProjectStatus
+        show={showEditModal}
+        onHide={() => {
+          setShowEditModal(false);
+          setSelectedEditProjectId(null);
+        }}
+        projectId={selectedEditProjectId}
+        onSuccess={() => setTableReloadKey(Date.now())}
+      />
+
+      {/* ── Confirm Status Change Modal ─────────────────────────── */}
+      <ConfirmModal
+        show={confirmAction.show}
+        onHide={() =>
+          setConfirmAction({
+            show: false,
+            type: null,
+            projectId: null,
+            projectName: "",
+          })
+        }
+        onConfirm={handleConfirmStatusChange}
+        title={
+          confirmAction.type === "cancel"
+            ? "تأكيد إلغاء المشروع"
+            : "تأكيد تفعيل المشروع"
+        }
+        message={
+          confirmAction.type === "cancel"
+            ? `هل أنت متأكد من إلغاء المشروع (${confirmAction.projectName})؟`
+            : `هل أنت متأكد من تفعيل المشروع (${confirmAction.projectName})؟`
+        }
+        confirmText="نعم"
+        cancelText="لا"
+        variant={confirmAction.type === "cancel" ? "danger" : "primary"}
+        isSubmitting={isStatusSubmitting}
       />
     </>
   );

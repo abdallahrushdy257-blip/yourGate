@@ -612,4 +612,11 @@ input[type="number"] {
   background: #2e7d32;
 }
 
-/* Modal styles removed from here - managed in index.css */
+/* Global Modal & Backdrop Stacking Fix */
+.modal-backdrop {
+  z-index: 1050 !important;
+}
+
+.modal {
+  z-index: 1060 !important;
+}

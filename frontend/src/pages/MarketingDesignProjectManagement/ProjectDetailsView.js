@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import API from "../../api/axiosConfig";
 import { toLocal } from "../../Utils/toLocal";
 import TestPreLoader from "../TestPreLoader/TestPreLoader";
@@ -38,19 +38,26 @@ import {
   faPercent,
   faEye,
   faFileContract,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import "./ProjectDetailsView.css";
 import RiskMitigation from "./RiskMitigation";
+import ProjectKPI from "../../modules/projects/pages/KPI/ProjectKPI";
+import ProjectAttachment from "./ProjectAttachment";
 import PaymentVoucherProject from "../PaymentVoucher/PaymentVoucherProject";
+import EditProjectStatus from "../../modules/projects/pages/ProjectStatus/EditProjectStatus";
+import ConfirmModal from "../../components/ConfirmModal";
+import { projectService } from "../../modules/projects";
 
 export default function ProjectDetailsView() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(true);
   const [project, setProject] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "overview");
 
   // Progress Modal
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -60,23 +67,117 @@ export default function ProjectDetailsView() {
   const [showMitigationModal, setShowMitigationModal] = useState(false);
   const [selectedRiskId, setSelectedRiskId] = useState(null);
 
+  // KPI Modal
+  const [showKpiModal, setShowKpiModal] = useState(false);
+
+  // Edit Project Modal
+  const [showEditModal, setShowEditModal] = useState(false);
+
   // Payment Voucher Modal
-  const [showPaymentVoucherModal, setShowPaymentVoucherModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
+  // Attachment Modal
+  const [showAttachmentModal, setShowAttachmentModal] = useState(false);
+  const [showDeleteAttachmentModal, setShowDeleteAttachmentModal] = useState(false);
+  const [attachmentToDelete, setAttachmentToDelete] = useState(null);
+  const [isDeletingAttachment, setIsDeletingAttachment] = useState(false);
+
+  // Status Change Confirm Modal
+  const [showStatusConfirmModal, setShowStatusConfirmModal] = useState(false);
+  const [statusActionType, setStatusActionType] = useState(null);
+  const [isStatusSubmitting, setIsStatusSubmitting] = useState(false);
 
   const handleOpenMitigation = (riskId) => {
     setSelectedRiskId(riskId);
     setShowMitigationModal(true);
   };
 
+  const handleDeleteAttachment = async () => {
+    if (!attachmentToDelete) return;
+    setIsDeletingAttachment(true);
+    try {
+      await projectService.deleteProjectAttachment(attachmentToDelete);
+      toast.success("تم حذف المرفق بنجاح");
+      setShowDeleteAttachmentModal(false);
+      setAttachmentToDelete(null);
+      fetchProjectDetails();
+    } catch (err) {
+      toast.error("فشل في حذف المرفق");
+    } finally {
+      setIsDeletingAttachment(false);
+    }
+  };
+
   // Financial Filter
-  const [financialFilter, setFinancialFilter] = useState("all"); // all, receipts, payments
+  const [financialFilter, setFinancialFilter] = useState(searchParams.get("filter") || "all"); // all, receipts, payments
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam) setActiveTab(tabParam);
+    const filterParam = searchParams.get("filter");
+    if (filterParam) setFinancialFilter(filterParam);
+  }, [searchParams]);
 
   const fetchProjectDetails = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     try {
       const res = await API.get(`/projects/${id}`);
-      const data = res.data?.data || res.data || null;
+      let data = res.data?.data || res.data || null;
+
+      if (data) {
+        // Ensure kpis are loaded
+        if (!data.kpis || data.kpis.length === 0) {
+          try {
+            const kpiRes = await API.get(`/projectkpi/${id}`);
+            const kpiList = kpiRes.data?.data || kpiRes.data || [];
+            if (Array.isArray(kpiList) && kpiList.length > 0) {
+              data.kpis = kpiList;
+            } else {
+              const masterRes = await API.get(`/kpi/quizs`);
+              const masterList = Array.isArray(masterRes.data)
+                ? masterRes.data
+                : masterRes.data?.data || [];
+              data.kpis = masterList.map((m) => ({
+                id: m.id,
+                quiz: m.quiz || m.title,
+                target: m.target || 100,
+                actual: 0,
+                status: "خطر",
+              }));
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+
+        // Ensure uploads are loaded
+        if (!data.uploads || data.uploads.length === 0) {
+          try {
+            const uploadRes = await API.get(`/projectupload/${id}`);
+            const uploadList = uploadRes.data?.data || uploadRes.data || [];
+            if (Array.isArray(uploadList) && uploadList.length > 0) {
+              data.uploads = uploadList;
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+
+        // Ensure risks are loaded
+        if (!data.risks || data.risks.length === 0) {
+          try {
+            const riskRes = await API.get(`/projectrisk/${id}`);
+            const riskList = riskRes.data?.data || riskRes.data || [];
+            if (Array.isArray(riskList) && riskList.length > 0) {
+              data.risks = riskList;
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+      }
+
       setProject(data);
     } catch (err) {
       console.error("Error fetching project details:", err);
@@ -91,22 +192,35 @@ export default function ProjectDetailsView() {
   }, [fetchProjectDetails]);
 
   // Project Status Toggle (Cancel / Activate)
-  const handleToggleStatus = async (action) => {
+  const handleOpenStatusConfirm = (actionType) => {
+    setStatusActionType(actionType);
+    setShowStatusConfirmModal(true);
+  };
+
+  const handleConfirmStatusToggle = async () => {
+    if (!statusActionType) return;
+    setIsStatusSubmitting(true);
     try {
       const endpoint =
-        action === "cancel"
+        statusActionType === "cancel"
           ? `/projects/${id}/cancel`
           : `/projects/${id}/activate`;
       const res = await API.get(endpoint);
       if (res.status === 200) {
         toast.success(
-          action === "cancel" ? "تم إلغاء المشروع" : "تم تفعيل المشروع بنجاح",
+          statusActionType === "cancel"
+            ? "تم إلغاء المشروع بنجاح"
+            : "تم تفعيل المشروع بنجاح"
         );
+        setShowStatusConfirmModal(false);
+        setStatusActionType(null);
         fetchProjectDetails();
       }
     } catch (err) {
       console.error(err);
       toast.error("حدث خطأ أثناء تغيير حالة المشروع");
+    } finally {
+      setIsStatusSubmitting(false);
     }
   };
 
@@ -144,19 +258,13 @@ export default function ProjectDetailsView() {
   const collected = parseFloat(project.amount || 0);
   const paid = parseFloat(project.paid_amount || project.total_paid || 0);
   const availableBalance = parseFloat(
-    project.net_balance !== undefined ? project.net_balance : collected - paid,
+    project.net_balance !== undefined ? project.net_balance : (collected - paid)
   );
   const remaining = parseFloat(
-    project.remaining !== undefined
-      ? project.remaining
-      : Math.max(0, total - collected),
+    project.remaining !== undefined ? project.remaining : Math.max(0, total - collected)
   );
   const pct = Math.round(
-    project.percentage !== undefined
-      ? project.percentage
-      : total > 0
-        ? (collected / total) * 100
-        : 0,
+    project.percentage !== undefined ? project.percentage : (total > 0 ? (collected / total) * 100 : 0)
   );
 
   const phases = project.phases || [];
@@ -167,33 +275,19 @@ export default function ProjectDetailsView() {
   const transactions = project.transactions || [];
 
   const filteredTransactions = transactions.filter((t) => {
-    if (financialFilter === "receipts")
-      return parseInt(t.transaction_type) === 1;
-    if (financialFilter === "payments")
-      return parseInt(t.transaction_type) === 2;
+    if (financialFilter === "receipts") return parseInt(t.transaction_type) === 1;
+    if (financialFilter === "payments") return parseInt(t.transaction_type) === 2;
     return true;
   });
 
   const getStatusBadge = (status) => {
     switch (parseInt(status)) {
       case 2:
-        return (
-          <Badge bg="success" className="px-3 py-2 fs-6">
-            مكتمل
-          </Badge>
-        );
+        return <Badge bg="success" className="px-3 py-2 fs-6">مكتمل</Badge>;
       case 3:
-        return (
-          <Badge bg="danger" className="px-3 py-2 fs-6">
-            ملغي
-          </Badge>
-        );
+        return <Badge bg="danger" className="px-3 py-2 fs-6">ملغي</Badge>;
       default:
-        return (
-          <Badge bg="warning" text="dark" className="px-3 py-2 fs-6">
-            قيد التنفيذ
-          </Badge>
-        );
+        return <Badge bg="warning" text="dark" className="px-3 py-2 fs-6">قيد التنفيذ</Badge>;
     }
   };
 
@@ -202,11 +296,7 @@ export default function ProjectDetailsView() {
       case "1":
         return <Badge bg="info">منخفض</Badge>;
       case "3":
-        return (
-          <Badge bg="warning" text="dark">
-            مرتفع
-          </Badge>
-        );
+        return <Badge bg="warning" text="dark">مرتفع</Badge>;
       case "4":
         return <Badge bg="danger">عاجل</Badge>;
       default:
@@ -235,8 +325,8 @@ export default function ProjectDetailsView() {
               {getStatusBadge(project.status)}
             </h2>
             <div className="project-header-subtitle">
-              تاريخ الإطلاق: {project.startdate || project.dateoflaunch || "-"}{" "}
-              &nbsp;|&nbsp; الموعد النهائي: {project.deadline || "-"}
+              تاريخ الإطلاق: {project.startdate || project.dateoflaunch || "-"} &nbsp;|&nbsp;
+              الموعد النهائي: {project.deadline || "-"}
             </div>
           </div>
         </div>
@@ -246,7 +336,7 @@ export default function ProjectDetailsView() {
           <Button
             variant="outline-danger"
             className="project-action-btn"
-            onClick={() => setShowPaymentVoucherModal(true)}
+            onClick={() => setShowPaymentModal(true)}
           >
             <FontAwesomeIcon icon={faMoneyBillWave} />
             سند صرف
@@ -281,132 +371,65 @@ export default function ProjectDetailsView() {
               إجراءات المشروع
             </Dropdown.Toggle>
 
-            <Dropdown.Menu
-              align="end"
-              style={{
-                minWidth: "220px",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
-              }}
-            >
-              <Dropdown.Header className="fw-bold text-muted">
-                إدارة المشروع
-              </Dropdown.Header>
-              <Dropdown.Item
-                onClick={() => navigate(`/projectdetails/${project.id}`)}
-              >
-                <FontAwesomeIcon
-                  icon={faLayerGroup}
-                  className="ms-2 text-primary"
-                />
+            <Dropdown.Menu align="end" style={{ minWidth: "220px", boxShadow: "0 10px 30px rgba(0,0,0,0.12)" }}>
+              <Dropdown.Header className="fw-bold text-muted">إدارة المشروع</Dropdown.Header>
+              <Dropdown.Item onClick={() => navigate(`/projectdetails/${project.id}`)}>
+                <FontAwesomeIcon icon={faLayerGroup} className="ms-2 text-primary" />
                 مراحل المشروع
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => navigate(`/projectmembers/${project.id}`)}
-              >
+              <Dropdown.Item onClick={() => navigate(`/projectmembers/${project.id}`)}>
                 <FontAwesomeIcon icon={faUsers} className="ms-2 text-info" />
                 أعضاء المشروع
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => navigate(`/projectkpiview/${project.id}`)}
-              >
-                <FontAwesomeIcon
-                  icon={faChartLine}
-                  className="ms-2 text-success"
-                />
+              <Dropdown.Item onClick={() => setActiveTab("kpis")}>
+                <FontAwesomeIcon icon={faChartLine} className="ms-2 text-success" />
                 مؤشرات الأداء
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => navigate(`/projectattachments/${project.id}`)}
-              >
-                <FontAwesomeIcon
-                  icon={faPaperclip}
-                  className="ms-2 text-secondary"
-                />
+              <Dropdown.Item onClick={() => setActiveTab("attachments")}>
+                <FontAwesomeIcon icon={faPaperclip} className="ms-2 text-secondary" />
                 المرفقات والوثائق
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => navigate(`/projectrisks/${project.id}`)}
-              >
-                <FontAwesomeIcon
-                  icon={faTriangleExclamation}
-                  className="ms-2 text-warning"
-                />
+              <Dropdown.Item onClick={() => setActiveTab("risks")}>
+                <FontAwesomeIcon icon={faTriangleExclamation} className="ms-2 text-warning" />
                 سجل المخاطر
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => navigate(`/riskassessmentreport/${project.id}`)}
-              >
-                <FontAwesomeIcon
-                  icon={faShieldHalved}
-                  className="ms-2 text-danger"
-                />
+              <Dropdown.Item onClick={() => navigate(`/riskassessmentreport/${project.id}`)}>
+                <FontAwesomeIcon icon={faShieldHalved} className="ms-2 text-danger" />
                 تقرير تقييم المخاطر
               </Dropdown.Item>
 
               <Dropdown.Divider />
-              <Dropdown.Header className="fw-bold text-muted">
-                المالية والسندات
-              </Dropdown.Header>
-              <Dropdown.Item
-                onClick={() => setShowPaymentVoucherModal(true)}
-              >
-                <FontAwesomeIcon
-                  icon={faMoneyBillWave}
-                  className="ms-2 text-danger"
-                />
+              <Dropdown.Header className="fw-bold text-muted">المالية والسندات</Dropdown.Header>
+              <Dropdown.Item onClick={() => setShowPaymentModal(true)}>
+                <FontAwesomeIcon icon={faMoneyBillWave} className="ms-2 text-danger" />
                 إنشاء سند صرف
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => navigate(`/receiptvoucherproject/${project.id}`)}
-              >
-                <FontAwesomeIcon
-                  icon={faReceipt}
-                  className="ms-2 text-success"
-                />
+              <Dropdown.Item onClick={() => navigate(`/receiptvoucherproject/${project.id}`)}>
+                <FontAwesomeIcon icon={faReceipt} className="ms-2 text-success" />
                 إنشاء سند قبض / تبرع
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() =>
-                  navigate(`/projectpaymentvouchers/${project.id}`)
-                }
-              >
-                <FontAwesomeIcon
-                  icon={faFileContract}
-                  className="ms-2 text-primary"
-                />
+              <Dropdown.Item onClick={() => { setActiveTab("financials"); setFinancialFilter("payments"); }}>
+                <FontAwesomeIcon icon={faFileContract} className="ms-2 text-primary" />
                 عرض سندات الدفع
               </Dropdown.Item>
 
               <Dropdown.Divider />
-              <Dropdown.Header className="fw-bold text-muted">
-                العمليات والتحكم
-              </Dropdown.Header>
+              <Dropdown.Header className="fw-bold text-muted">العمليات والتحكم</Dropdown.Header>
               <Dropdown.Item onClick={handleOpenProgressModal}>
                 <FontAwesomeIcon icon={faPercent} className="ms-2 text-info" />
                 نسبة الإنجاز
               </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => navigate(`/editproject/${project.id}`)}
-              >
-                <FontAwesomeIcon
-                  icon={faPenToSquare}
-                  className="ms-2 text-warning"
-                />
+              <Dropdown.Item onClick={() => setShowEditModal(true)}>
+                <FontAwesomeIcon icon={faPenToSquare} className="ms-2 text-warning" />
                 تعديل المشروع
               </Dropdown.Item>
               {project.status === 3 ? (
-                <Dropdown.Item
-                  onClick={() => handleToggleStatus("activate")}
-                  className="text-success"
-                >
+                <Dropdown.Item onClick={() => handleOpenStatusConfirm("activate")} className="text-success">
                   <FontAwesomeIcon icon={faRotateRight} className="ms-2" />
                   تفعيل المشروع
                 </Dropdown.Item>
               ) : (
-                <Dropdown.Item
-                  onClick={() => handleToggleStatus("cancel")}
-                  className="text-danger"
-                >
+                <Dropdown.Item onClick={() => handleOpenStatusConfirm("cancel")} className="text-danger">
                   <FontAwesomeIcon icon={faBan} className="ms-2" />
                   إلغاء المشروع
                 </Dropdown.Item>
@@ -421,9 +444,7 @@ export default function ProjectDetailsView() {
         <div className="project-view-kpi-card kpi-gold">
           <div>
             <div className="project-kpi-label">ميزانية المشروع المستهدفة</div>
-            <div className="project-kpi-value text-dark">
-              {toLocal(total)} ر.س
-            </div>
+            <div className="project-kpi-value text-dark">{toLocal(total)} ر.س</div>
           </div>
           <div className="project-view-kpi-icon">
             <FontAwesomeIcon icon={faCoins} />
@@ -433,9 +454,7 @@ export default function ProjectDetailsView() {
         <div className="project-view-kpi-card kpi-green">
           <div>
             <div className="project-kpi-label">إجمالي التبرعات المحصلة</div>
-            <div className="project-kpi-value text-success">
-              {toLocal(collected)} ر.س
-            </div>
+            <div className="project-kpi-value text-success">{toLocal(collected)} ر.س</div>
           </div>
           <div className="project-view-kpi-icon">
             <FontAwesomeIcon icon={faReceipt} />
@@ -445,9 +464,7 @@ export default function ProjectDetailsView() {
         <div className="project-view-kpi-card kpi-danger">
           <div>
             <div className="project-kpi-label">إجمالي المصروفات المنفذة</div>
-            <div className="project-kpi-value text-danger">
-              {toLocal(paid)} ر.س
-            </div>
+            <div className="project-kpi-value text-danger">{toLocal(paid)} ر.س</div>
           </div>
           <div className="project-view-kpi-icon">
             <FontAwesomeIcon icon={faMoneyBillWave} />
@@ -457,9 +474,7 @@ export default function ProjectDetailsView() {
         <div className="project-view-kpi-card kpi-blue">
           <div>
             <div className="project-kpi-label">الرصيد المتاح للصرف</div>
-            <div className="project-kpi-value text-primary">
-              {toLocal(availableBalance)} ر.س
-            </div>
+            <div className="project-kpi-value text-primary">{toLocal(availableBalance)} ر.س</div>
           </div>
           <div className="project-view-kpi-icon">
             <FontAwesomeIcon icon={faHandHoldingHeart} />
@@ -469,9 +484,7 @@ export default function ProjectDetailsView() {
         <div className="project-view-kpi-card kpi-purple">
           <div>
             <div className="project-kpi-label">المتبقي لاكتمال الميزانية</div>
-            <div className="project-kpi-value text-warning">
-              {toLocal(remaining)} ر.س
-            </div>
+            <div className="project-kpi-value text-warning">{toLocal(remaining)} ر.س</div>
           </div>
           <div className="project-view-kpi-icon">
             <FontAwesomeIcon icon={faTriangleExclamation} />
@@ -551,23 +564,16 @@ export default function ProjectDetailsView() {
                 <div className="project-overview-grid">
                   <div className="project-info-card">
                     <h4>
-                      <FontAwesomeIcon
-                        icon={faFolderOpen}
-                        className="text-warning ms-2"
-                      />
+                      <FontAwesomeIcon icon={faFolderOpen} className="text-warning ms-2" />
                       معلومات المشروع
                     </h4>
                     <div className="project-info-row">
                       <span className="label">اسم المشروع:</span>
-                      <span className="val fw-bold">
-                        {project.name || project.title}
-                      </span>
+                      <span className="val fw-bold">{project.name || project.title}</span>
                     </div>
                     <div className="project-info-row">
                       <span className="label">تاريخ الإطلاق:</span>
-                      <span className="val">
-                        {project.startdate || project.dateoflaunch || "-"}
-                      </span>
+                      <span className="val">{project.startdate || project.dateoflaunch || "-"}</span>
                     </div>
                     <div className="project-info-row">
                       <span className="label">الموعد النهائي:</span>
@@ -585,18 +591,13 @@ export default function ProjectDetailsView() {
                     </div>
                     <div className="project-info-row">
                       <span className="label">الحالة الحالية:</span>
-                      <span className="val">
-                        {getStatusBadge(project.status)}
-                      </span>
+                      <span className="val">{getStatusBadge(project.status)}</span>
                     </div>
                   </div>
 
                   <div className="project-info-card">
                     <h4>
-                      <FontAwesomeIcon
-                        icon={faChartLine}
-                        className="text-success ms-2"
-                      />
+                      <FontAwesomeIcon icon={faChartLine} className="text-success ms-2" />
                       مؤشرات الإنجاز والتنفيذ
                     </h4>
                     <div className="project-info-row">
@@ -606,33 +607,24 @@ export default function ProjectDetailsView() {
                     <div className="project-info-row">
                       <span className="label">عدد المراحل المكتملة:</span>
                       <span className="val badge bg-success">
-                        {phases.filter((p) => p.status === 2).length} من{" "}
-                        {phases.length}
+                        {phases.filter((p) => p.status === 2).length} من {phases.length}
                       </span>
                     </div>
                     <div className="project-info-row">
                       <span className="label">عدد أعضاء الفريق:</span>
-                      <span className="val badge bg-secondary">
-                        {assignments.length}
-                      </span>
+                      <span className="val badge bg-secondary">{assignments.length}</span>
                     </div>
                     <div className="project-info-row">
                       <span className="label">مؤشرات الأداء المسجلة:</span>
-                      <span className="val badge bg-secondary">
-                        {kpis.length}
-                      </span>
+                      <span className="val badge bg-secondary">{kpis.length}</span>
                     </div>
                     <div className="project-info-row">
                       <span className="label">المخاطر المرصودة:</span>
-                      <span className="val badge bg-secondary">
-                        {risks.length}
-                      </span>
+                      <span className="val badge bg-secondary">{risks.length}</span>
                     </div>
                     <div className="project-info-row">
                       <span className="label">عدد الحركات المالية:</span>
-                      <span className="val badge bg-secondary">
-                        {transactions.length}
-                      </span>
+                      <span className="val badge bg-secondary">{transactions.length}</span>
                     </div>
                   </div>
                 </div>
@@ -643,6 +635,65 @@ export default function ProjectDetailsView() {
                     <p className="text-muted m-0" style={{ lineHeight: "1.8" }}>
                       {project.description}
                     </p>
+                  </div>
+                )}
+
+                {/* KPI Preview Card in Overview */}
+                {kpis.length > 0 && (
+                  <div className="project-info-card mt-3">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <h4 className="m-0">
+                        <FontAwesomeIcon icon={faChartLine} className="text-warning ms-2" />
+                        مؤشرات الأداء الرئيسية (KPIs)
+                      </h4>
+                      <Button
+                        variant="outline-success"
+                        size="sm"
+                        onClick={() => setShowKpiModal(true)}
+                      >
+                        <FontAwesomeIcon icon={faPenToSquare} className="ms-1" />
+                        تحديث القيم
+                      </Button>
+                    </div>
+                    <div className="row g-3">
+                      {kpis.map((k, idx) => (
+                        <div className="col-12 col-md-6" key={k.id || idx}>
+                          <div className="p-3 rounded border bg-light">
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                              <span className="fw-bold small">{k.quiz}</span>
+                              <Badge
+                                bg={
+                                  k.status === "ممتاز"
+                                    ? "success"
+                                    : k.status === "تحذير"
+                                    ? "warning"
+                                    : "danger"
+                                }
+                                text={k.status === "تحذير" ? "dark" : "white"}
+                              >
+                                {k.status || "قيد القياس"}
+                              </Badge>
+                            </div>
+                            <div className="d-flex justify-content-between small text-muted mb-1">
+                              <span>المحقق: {k.actual}%</span>
+                              <span>المستهدف: {k.target}%</span>
+                            </div>
+                            <ProgressBar
+                              now={k.actual}
+                              max={k.target || 100}
+                              variant={
+                                k.status === "ممتاز"
+                                  ? "success"
+                                  : k.status === "تحذير"
+                                  ? "warning"
+                                  : "danger"
+                              }
+                              style={{ height: "8px", borderRadius: "4px" }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </Tab.Pane>
@@ -656,10 +707,7 @@ export default function ProjectDetailsView() {
                     size="sm"
                     onClick={() => navigate(`/projectdetails/${project.id}`)}
                   >
-                    <FontAwesomeIcon
-                      icon={faExternalLinkAlt}
-                      className="ms-1"
-                    />
+                    <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" />
                     إدارة وإضافة المراحل
                   </Button>
                 </div>
@@ -724,10 +772,7 @@ export default function ProjectDetailsView() {
                     size="sm"
                     onClick={() => navigate(`/projectmembers/${project.id}`)}
                   >
-                    <FontAwesomeIcon
-                      icon={faExternalLinkAlt}
-                      className="ms-1"
-                    />
+                    <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" />
                     إدارة المسؤولين
                   </Button>
                 </div>
@@ -762,13 +807,9 @@ export default function ProjectDetailsView() {
                         {assignments.map((m, idx) => (
                           <tr key={m.id || idx}>
                             <td>{idx + 1}</td>
-                            <td className="fw-bold">
-                              {m.user_name || m.name || `مسؤول #${m.user_id}`}
-                            </td>
+                            <td className="fw-bold">{m.user_name || m.name || `مسؤول #${m.user_id}`}</td>
                             <td>
-                              <Badge
-                                bg={m.type === "volunteer" ? "info" : "primary"}
-                              >
+                              <Badge bg={m.type === "volunteer" ? "info" : "primary"}>
                                 {m.type === "volunteer" ? "متطوع" : "موظف"}
                               </Badge>
                             </td>
@@ -791,7 +832,7 @@ export default function ProjectDetailsView() {
                     <Button
                       variant="outline-success"
                       size="sm"
-                      onClick={() => navigate(`/projectkpis/${project.id}`)}
+                      onClick={() => setShowKpiModal(true)}
                     >
                       <FontAwesomeIcon icon={faPenToSquare} className="ms-1" />
                       تحديث القيم
@@ -801,10 +842,7 @@ export default function ProjectDetailsView() {
                       size="sm"
                       onClick={() => navigate(`/projectkpiview/${project.id}`)}
                     >
-                      <FontAwesomeIcon
-                        icon={faExternalLinkAlt}
-                        className="ms-1"
-                      />
+                      <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" />
                       عرض المؤشرات
                     </Button>
                   </div>
@@ -817,7 +855,7 @@ export default function ProjectDetailsView() {
                       variant="primary"
                       size="sm"
                       className="mt-2"
-                      onClick={() => navigate(`/projectkpis/${project.id}`)}
+                      onClick={() => setShowKpiModal(true)}
                     >
                       <FontAwesomeIcon icon={faPlus} className="ms-1" />
                       تسجيل مؤشرات الأداء
@@ -832,7 +870,9 @@ export default function ProjectDetailsView() {
                           <th>المؤشر المطلوب قياسه</th>
                           <th>المستهدف</th>
                           <th>المنجز الفعلي</th>
+                          <th style={{ minWidth: "160px" }}>نسبة الإنجاز</th>
                           <th>الحالة</th>
+                          <th>الإجراء</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -843,18 +883,43 @@ export default function ProjectDetailsView() {
                             <td>{k.target}%</td>
                             <td className="fw-bold">{k.actual}%</td>
                             <td>
+                              <ProgressBar
+                                now={k.actual}
+                                max={k.target || 100}
+                                variant={
+                                  k.status === "ممتاز"
+                                    ? "success"
+                                    : k.status === "تحذير"
+                                    ? "warning"
+                                    : "danger"
+                                }
+                                style={{ height: "8px", borderRadius: "4px" }}
+                              />
+                            </td>
+                            <td>
                               <Badge
                                 bg={
                                   k.status === "ممتاز"
                                     ? "success"
                                     : k.status === "تحذير"
-                                      ? "warning"
-                                      : "danger"
+                                    ? "warning"
+                                    : "danger"
                                 }
                                 text={k.status === "تحذير" ? "dark" : "white"}
                               >
                                 {k.status || "قيد القياس"}
                               </Badge>
+                            </td>
+                            <td>
+                              <Button
+                                variant="outline-success"
+                                size="sm"
+                                onClick={() => setShowKpiModal(true)}
+                                style={{ fontSize: "12px", padding: "3px 10px" }}
+                              >
+                                <FontAwesomeIcon icon={faPenToSquare} className="ms-1" />
+                                تعديل
+                              </Button>
                             </td>
                           </tr>
                         ))}
@@ -872,9 +937,7 @@ export default function ProjectDetailsView() {
                     <Button
                       variant="outline-danger"
                       size="sm"
-                      onClick={() =>
-                        navigate(`/riskassessmentreport/${project.id}`)
-                      }
+                      onClick={() => navigate(`/riskassessmentreport/${project.id}`)}
                     >
                       <FontAwesomeIcon icon={faShieldHalved} className="ms-1" />
                       تقرير المخاطر الكامل
@@ -884,10 +947,7 @@ export default function ProjectDetailsView() {
                       size="sm"
                       onClick={() => navigate(`/projectrisks/${project.id}`)}
                     >
-                      <FontAwesomeIcon
-                        icon={faExternalLinkAlt}
-                        className="ms-1"
-                      />
+                      <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" />
                       إدارة وإضافة المخاطر
                     </Button>
                   </div>
@@ -930,49 +990,25 @@ export default function ProjectDetailsView() {
                             <td>{r.phase_name || "المشروع ككل"}</td>
                             <td className="fw-bold">{r.description}</td>
                             <td>
-                              <Badge
-                                bg={
-                                  r.impactlevel === 3
-                                    ? "danger"
-                                    : r.impactlevel === 1
-                                      ? "success"
-                                      : "warning"
-                                }
-                              >
+                              <Badge bg={r.impactlevel === 3 ? "danger" : r.impactlevel === 1 ? "success" : "warning"}>
                                 {r.impact_level_string || "متوسط"}
                               </Badge>
                             </td>
                             <td>
-                              <Badge
-                                bg={
-                                  r.probability === 3
-                                    ? "danger"
-                                    : r.probability === 1
-                                      ? "success"
-                                      : "warning"
-                                }
-                              >
+                              <Badge bg={r.probability === 3 ? "danger" : r.probability === 1 ? "success" : "warning"}>
                                 {r.probability_string || "متوسط"}
                               </Badge>
                             </td>
                             <td>
-                              <Badge
-                                bg={r.status === "مغلق" ? "success" : "info"}
-                              >
+                              <Badge bg={r.status === "مغلق" ? "success" : "info"}>
                                 {r.status_string || r.status || "مفتوح"}
                               </Badge>
                             </td>
                             <td style={{ maxWidth: "220px", fontSize: "13px" }}>
-                              {r.mitigation_description &&
-                              r.mitigation_description !==
-                                "لم يتم تسجيل خطة تخفيف بعد" ? (
-                                <span className="fw-semibold text-dark">
-                                  {r.mitigation_description}
-                                </span>
+                              {r.mitigation_description && r.mitigation_description !== "لم يتم تسجيل خطة تخفيف بعد" ? (
+                                <span className="fw-semibold text-dark">{r.mitigation_description}</span>
                               ) : (
-                                <span className="text-muted fst-italic">
-                                  لا توجد خطة بعد
-                                </span>
+                                <span className="text-muted fst-italic">لا توجد خطة بعد</span>
                               )}
                             </td>
                             <td>
@@ -981,16 +1017,12 @@ export default function ProjectDetailsView() {
                                   r.mitigation_impact === "مرتفع"
                                     ? "danger"
                                     : r.mitigation_impact === "منخفض"
-                                      ? "success"
-                                      : r.mitigation_impact === "متوسط"
-                                        ? "warning"
-                                        : "secondary"
+                                    ? "success"
+                                    : r.mitigation_impact === "متوسط"
+                                    ? "warning"
+                                    : "secondary"
                                 }
-                                text={
-                                  r.mitigation_impact === "متوسط"
-                                    ? "dark"
-                                    : "white"
-                                }
+                                text={r.mitigation_impact === "متوسط" ? "dark" : "white"}
                               >
                                 {r.mitigation_impact || "لم يحدد"}
                               </Badge>
@@ -1001,16 +1033,12 @@ export default function ProjectDetailsView() {
                                   r.mitigation_probability === "مرتفع"
                                     ? "danger"
                                     : r.mitigation_probability === "منخفض"
-                                      ? "success"
-                                      : r.mitigation_probability === "متوسط"
-                                        ? "warning"
-                                        : "secondary"
+                                    ? "success"
+                                    : r.mitigation_probability === "متوسط"
+                                    ? "warning"
+                                    : "secondary"
                                 }
-                                text={
-                                  r.mitigation_probability === "متوسط"
-                                    ? "dark"
-                                    : "white"
-                                }
+                                text={r.mitigation_probability === "متوسط" ? "dark" : "white"}
                               >
                                 {r.mitigation_probability || "لم يحدد"}
                               </Badge>
@@ -1020,11 +1048,7 @@ export default function ProjectDetailsView() {
                                 variant="outline-success"
                                 size="sm"
                                 onClick={() => handleOpenMitigation(r.id)}
-                                style={{
-                                  fontSize: "12px",
-                                  padding: "3px 10px",
-                                  whiteSpace: "nowrap",
-                                }}
+                                style={{ fontSize: "12px", padding: "3px 10px", whiteSpace: "nowrap" }}
                               >
                                 خطة التخفيف
                               </Button>
@@ -1041,9 +1065,7 @@ export default function ProjectDetailsView() {
               <Tab.Pane eventKey="financials">
                 <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                   <div className="d-flex align-items-center gap-2">
-                    <h5 className="m-0 fw-bold">
-                      الحركات المالية وسندات المشروع
-                    </h5>
+                    <h5 className="m-0 fw-bold">الحركات المالية وسندات المشروع</h5>
                     <div className="btn-group btn-group-sm me-2">
                       <button
                         type="button"
@@ -1057,26 +1079,14 @@ export default function ProjectDetailsView() {
                         className={`btn ${financialFilter === "receipts" ? "btn-success" : "btn-outline-success"}`}
                         onClick={() => setFinancialFilter("receipts")}
                       >
-                        سندات القبض (
-                        {
-                          transactions.filter(
-                            (t) => parseInt(t.transaction_type) === 1,
-                          ).length
-                        }
-                        )
+                        سندات القبض ({transactions.filter((t) => parseInt(t.transaction_type) === 1).length})
                       </button>
                       <button
                         type="button"
                         className={`btn ${financialFilter === "payments" ? "btn-danger" : "btn-outline-danger"}`}
                         onClick={() => setFinancialFilter("payments")}
                       >
-                        سندات الصرف (
-                        {
-                          transactions.filter(
-                            (t) => parseInt(t.transaction_type) === 2,
-                          ).length
-                        }
-                        )
+                        سندات الصرف ({transactions.filter((t) => parseInt(t.transaction_type) === 2).length})
                       </button>
                     </div>
                   </div>
@@ -1085,9 +1095,7 @@ export default function ProjectDetailsView() {
                     <Button
                       variant="outline-success"
                       size="sm"
-                      onClick={() =>
-                        navigate(`/receiptvoucherproject/${project.id}`)
-                      }
+                      onClick={() => navigate(`/receiptvoucherproject/${project.id}`)}
                     >
                       <FontAwesomeIcon icon={faPlus} className="ms-1" />
                       سند قبض جديد
@@ -1095,20 +1103,10 @@ export default function ProjectDetailsView() {
                     <Button
                       variant="outline-danger"
                       size="sm"
-                      onClick={() => setShowPaymentVoucherModal(true)}
+                      onClick={() => setShowPaymentModal(true)}
                     >
                       <FontAwesomeIcon icon={faPlus} className="ms-1" />
                       سند صرف جديد
-                    </Button>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      onClick={() =>
-                        navigate(`/projectpaymentvouchers/${project.id}`)
-                      }
-                    >
-                      <FontAwesomeIcon icon={faReceipt} className="ms-1" />
-                      عرض السندات
                     </Button>
                   </div>
                 </div>
@@ -1121,9 +1119,7 @@ export default function ProjectDetailsView() {
                       <Button
                         variant="success"
                         size="sm"
-                        onClick={() =>
-                          navigate(`/receiptvoucherproject/${project.id}`)
-                        }
+                        onClick={() => navigate(`/receiptvoucherproject/${project.id}`)}
                       >
                         <FontAwesomeIcon icon={faPlus} className="ms-1" />
                         إنشاء سند قبض / تبرع
@@ -1131,7 +1127,7 @@ export default function ProjectDetailsView() {
                       <Button
                         variant="danger"
                         size="sm"
-                        onClick={() => setShowPaymentVoucherModal(true)}
+                        onClick={() => navigate(`/paymentvoucherproject/${project.id}`)}
                       >
                         <FontAwesomeIcon icon={faPlus} className="ms-1" />
                         إنشاء سند صرف
@@ -1159,25 +1155,17 @@ export default function ProjectDetailsView() {
                           return (
                             <tr key={t.id || idx}>
                               <td>{idx + 1}</td>
-                              <td className="fw-bold">
-                                {t.invoice_number || `#${t.id}`}
-                              </td>
+                              <td className="fw-bold">{t.invoice_number || `#${t.id}`}</td>
                               <td>
                                 <Badge bg={isPayment ? "danger" : "success"}>
-                                  {t.transaction_type_string ||
-                                    (isPayment ? "سند صرف" : "سند قبض")}
+                                  {t.transaction_type_string || (isPayment ? "سند صرف" : "سند قبض")}
                                 </Badge>
                               </td>
-                              <td
-                                className={`fw-bold ${isPayment ? "text-danger" : "text-success"}`}
-                              >
-                                {isPayment ? "-" : "+"}
-                                {toLocal(t.amount)} ر.س
+                              <td className={`fw-bold ${isPayment ? "text-danger" : "text-success"}`}>
+                                {isPayment ? "-" : "+"}{toLocal(t.amount)} ر.س
                               </td>
                               <td>{t.account || "-"}</td>
-                              <td>
-                                {t.donor_name || t.beneficiary_name || "-"}
-                              </td>
+                              <td>{t.donor_name || t.beneficiary_name || "-"}</td>
                               <td>{t.date || "-"}</td>
                               <td>{t.notes || "-"}</td>
                             </tr>
@@ -1192,22 +1180,25 @@ export default function ProjectDetailsView() {
               {/* 7. ATTACHMENTS TAB */}
               <Tab.Pane eventKey="attachments">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h5 className="m-0 fw-bold">
-                    المرفقات والوثائق الرسمية للمشروع
-                  </h5>
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={() =>
-                      navigate(`/projectattachments/${project.id}`)
-                    }
-                  >
-                    <FontAwesomeIcon
-                      icon={faExternalLinkAlt}
-                      className="ms-1"
-                    />
-                    إدارة ورفع المرفقات
-                  </Button>
+                  <h5 className="m-0 fw-bold">المرفقات والوثائق الرسمية للمشروع</h5>
+                  <div className="d-flex gap-2">
+                    <Button
+                      variant="outline-success"
+                      size="sm"
+                      onClick={() => setShowAttachmentModal(true)}
+                    >
+                      <FontAwesomeIcon icon={faPlus} className="ms-1" />
+                      إضافة مرفقات
+                    </Button>
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={() => navigate(`/projectattachments/${project.id}`)}
+                    >
+                      <FontAwesomeIcon icon={faExternalLinkAlt} className="ms-1" />
+                      إدارة المرفقات
+                    </Button>
+                  </div>
                 </div>
                 {uploads.length === 0 ? (
                   <div className="empty-tab-state">
@@ -1217,12 +1208,10 @@ export default function ProjectDetailsView() {
                       variant="primary"
                       size="sm"
                       className="mt-2"
-                      onClick={() =>
-                        navigate(`/projectattachments/${project.id}`)
-                      }
+                      onClick={() => setShowAttachmentModal(true)}
                     >
                       <FontAwesomeIcon icon={faPlus} className="ms-1" />
-                      رفع أول مرفق
+                      رفع المرفقات
                     </Button>
                   </div>
                 ) : (
@@ -1234,15 +1223,14 @@ export default function ProjectDetailsView() {
                           <th>وصف الملف</th>
                           <th>رابط الملف</th>
                           <th>تاريخ الرفع</th>
+                          <th>الإجراءات</th>
                         </tr>
                       </thead>
                       <tbody>
                         {uploads.map((u, idx) => (
                           <tr key={u.id || idx}>
                             <td>{idx + 1}</td>
-                            <td className="fw-bold">
-                              {u.description || "ملف مرفق"}
-                            </td>
+                            <td className="fw-bold">{u.description || "ملف مرفق"}</td>
                             <td>
                               <a
                                 href={u.upload}
@@ -1250,14 +1238,25 @@ export default function ProjectDetailsView() {
                                 rel="noreferrer"
                                 className="btn btn-sm btn-outline-primary"
                               >
-                                <FontAwesomeIcon
-                                  icon={faEye}
-                                  className="ms-1"
-                                />
+                                <FontAwesomeIcon icon={faEye} className="ms-1" />
                                 عرض الملف
                               </a>
                             </td>
                             <td>{u.created_at || "-"}</td>
+                            <td>
+                              <Button
+                                variant="outline-danger"
+                                size="sm"
+                                onClick={() => {
+                                  setAttachmentToDelete(u.id);
+                                  setShowDeleteAttachmentModal(true);
+                                }}
+                                title="حذف المرفق"
+                                style={{ padding: "4px 10px" }}
+                              >
+                                <FontAwesomeIcon icon={faTrash} />
+                              </Button>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
@@ -1271,52 +1270,27 @@ export default function ProjectDetailsView() {
       </div>
 
       {/* ── Progress Modal ─────────────────────────────────────── */}
-      <Modal
-        show={showProgressModal}
-        onHide={() => setShowProgressModal(false)}
-        centered
-        dir="rtl"
-      >
+      <Modal show={showProgressModal} onHide={() => setShowProgressModal(false)} centered dir="rtl">
         <Modal.Header closeButton>
           <Modal.Title className="fw-bold fs-5">نسبة إنجاز المشروع</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-center py-4">
           <div className="mb-3">
-            <span
-              style={{
-                fontSize: "36px",
-                fontWeight: "800",
-                color: "var(--primary-color, #c29a64)",
-              }}
-            >
+            <span style={{ fontSize: "36px", fontWeight: "800", color: "var(--primary-color, #c29a64)" }}>
               {progressPct}%
             </span>
           </div>
           <ProgressBar
             now={progressPct}
-            variant={
-              progressPct >= 100
-                ? "success"
-                : progressPct > 50
-                  ? "info"
-                  : "warning"
-            }
-            style={{
-              height: "16px",
-              borderRadius: "10px",
-              marginBottom: "20px",
-            }}
+            variant={progressPct >= 100 ? "success" : progressPct > 50 ? "info" : "warning"}
+            style={{ height: "16px", borderRadius: "10px", marginBottom: "20px" }}
           />
           <div className="text-muted" style={{ fontSize: "14px" }}>
-            تم تحصيل {toLocal(collected)} ر.س من إجمالي ميزانية {toLocal(total)}{" "}
-            ر.س
+            تم تحصيل {toLocal(collected)} ر.س من إجمالي ميزانية {toLocal(total)} ر.س
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={() => setShowProgressModal(false)}
-          >
+          <Button variant="secondary" onClick={() => setShowProgressModal(false)}>
             إغلاق
           </Button>
         </Modal.Footer>
@@ -1330,12 +1304,70 @@ export default function ProjectDetailsView() {
         onSuccess={fetchProjectDetails}
       />
 
-      {/* ── Payment Voucher Modal ────────────────────────────────── */}
-      <PaymentVoucherProject
-        show={showPaymentVoucherModal}
-        projectId={project?.id || id}
-        onHide={() => setShowPaymentVoucherModal(false)}
+      {/* ── Project KPI Modal ───────────────────────────────────── */}
+      <ProjectKPI
+        show={showKpiModal}
+        onHide={() => setShowKpiModal(false)}
+        projectId={project.id}
         onSuccess={fetchProjectDetails}
+      />
+
+      {/* ── Project Attachment Modal ────────────────────────────── */}
+      <ProjectAttachment
+        show={showAttachmentModal}
+        onHide={() => setShowAttachmentModal(false)}
+        projectId={project.id}
+        onSuccess={fetchProjectDetails}
+      />
+
+      {/* ── Payment Voucher Modal ──────────────────────────────── */}
+      <PaymentVoucherProject
+        show={showPaymentModal}
+        onHide={() => setShowPaymentModal(false)}
+        projectId={project.id}
+        onSuccess={fetchProjectDetails}
+      />
+
+      {/* ── Edit Project Modal ──────────────────────────────────── */}
+      <EditProjectStatus
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        projectId={project.id}
+        onSuccess={fetchProjectDetails}
+      />
+
+      {/* ── Confirm Delete Attachment Modal ────────────────────── */}
+      <ConfirmModal
+        show={showDeleteAttachmentModal}
+        onHide={() => setShowDeleteAttachmentModal(false)}
+        onConfirm={handleDeleteAttachment}
+        isSubmitting={isDeletingAttachment}
+        title="تأكيد حذف المرفق"
+        message="هل أنت متأكد من حذف هذا المرفق نهائياً من المشروع؟"
+      />
+
+      {/* ── Confirm Status Change Modal ─────────────────────────── */}
+      <ConfirmModal
+        show={showStatusConfirmModal}
+        onHide={() => {
+          setShowStatusConfirmModal(false);
+          setStatusActionType(null);
+        }}
+        onConfirm={handleConfirmStatusToggle}
+        title={
+          statusActionType === "cancel"
+            ? "تأكيد إلغاء المشروع"
+            : "تأكيد تفعيل المشروع"
+        }
+        message={
+          statusActionType === "cancel"
+            ? `هل أنت متأكد من إلغاء المشروع (${project.name || project.title})؟`
+            : `هل أنت متأكد من تفعيل المشروع (${project.name || project.title})؟`
+        }
+        confirmText="نعم"
+        cancelText="لا"
+        variant={statusActionType === "cancel" ? "danger" : "primary"}
+        isSubmitting={isStatusSubmitting}
       />
     </div>
   );

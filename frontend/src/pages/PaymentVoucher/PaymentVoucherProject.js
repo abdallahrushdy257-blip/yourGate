@@ -1,131 +1,183 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Modal, Button, Spinner, Form, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFileInvoice,
+  faMoneyBillWave,
+  faCheck,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
+import { Modal, Button, Spinner, Form, Row, Col } from "react-bootstrap";
 import JsBarcode from "jsbarcode";
-import { useNavigate, useParams } from "react-router";
-import { toast } from "react-toastify";
+import { useNavigate, useParams } from "react-router-dom";
 import API from "../../api/axiosConfig";
-import RegisterTextbox from "../../components/RegisterTextBox";
-import RegisterSelect from "../../components/RegisterSelect";
-import RegisterTextarea from "../../components/RegisterTextarea";
+import { toast } from "react-toastify";
+import "../../modules/projects/pages/KPI/ProjectKPI.css";
 
-function PaymentVoucherProject(props) {
-  // Support both Modal usage (props.show) and URL route usage (/paymentvoucherproject/:id)
-  const { id: routeId } = useParams();
+function PaymentVoucherProject({
+  show: propShow,
+  onHide: propOnHide,
+  projectId: propProjectId,
+  onSuccess: propOnSuccess,
+}) {
+  const barcodeRef = useRef(null);
   const navigate = useNavigate();
+  const { id: paramId } = useParams();
+  const initialId = propProjectId || paramId || "";
 
-  const isModalControlled = props.show !== undefined;
-  const [internalShow, setInternalShow] = useState(true);
-  const show = isModalControlled ? props.show : internalShow;
+  const [activeProjectId, setActiveProjectId] = useState(initialId);
+  const [allProjects, setAllProjects] = useState([]);
+  const [show, setShow] = useState(propShow !== undefined ? propShow : true);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const projectId = props.projectId || routeId;
+  const [date, setDate] = useState(new Date().toISOString().substr(0, 10));
+  const [amount, setAmount] = useState("");
+  const [cridet, setCridet] = useState("");
+  const [selHumancases, setSelHumancases] = useState("0");
+  const [type, setType] = useState("2");
+  const [description, setDescription] = useState("");
+
+  const [humancases, setHumancases] = useState([]);
+  const [account, setAccount] = useState([]);
+  const [projectData, setProjectData] = useState({});
+  const [error, setError] = useState({});
+
+  useEffect(() => {
+    if (propShow !== undefined) {
+      setShow(propShow);
+    }
+  }, [propShow]);
+
+  useEffect(() => {
+    const currentId = propProjectId || paramId || "";
+    setActiveProjectId(currentId);
+  }, [propProjectId, paramId]);
 
   const handleClose = () => {
-    if (isModalControlled) {
-      if (props.onHide) props.onHide();
+    setShow(false);
+    if (propOnHide) {
+      propOnHide();
     } else {
-      setInternalShow(false);
-      navigate(-1);
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate("/projectStatus");
+      }
     }
   };
 
-  const barcodeRef = useRef(null);
-
-  const [loading, setLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [project, setProject] = useState(null);
-  const [humancases, setHumancases] = useState([]);
-  const [account, setAccount] = useState([]);
-
-  // Form states
-  const [date, setDate] = useState(() => new Date().toISOString().substring(0, 10));
-  const [amount, setAmount] = useState("");
-  const [cridet, setCridet] = useState("");
-  const [selHumancases, setSelHumancases] = useState("");
-  const [type, setType] = useState("1");
-  const [description, setDescription] = useState("");
-  const [error, setError] = useState({});
-
-  // Generate barcode
+  // 1. Fetch initial dependencies (accounts, and projects if needed)
   useEffect(() => {
-    if (show && barcodeRef.current) {
-      try {
-        const barcodeNum = `442002`;
-        JsBarcode(barcodeRef.current, barcodeNum, {
-          format: "CODE128",
-          displayValue: false,
-          fontSize: 14,
-          height: 36,
-          margin: 0,
-        });
-      } catch (err) {
-        console.error("Barcode render error:", err);
-      }
-    }
-  }, [show, loading]);
+    if (!show) return;
 
-  // Load project, phases, accounts
-  useEffect(() => {
-    if (!show || !projectId) return;
-
-    let isMounted = true;
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
       setLoading(true);
-      setError({});
-
       try {
-        const [phasesRes, accountsRes, projectRes] = await Promise.allSettled([
-          API.get(`/projectphase/${projectId}/all`),
-          API.get("/transactions/components/donations"),
-          API.get(`/projects/${projectId}`),
+        const requests = [API.get("/transactions/components/donations")];
+        if (!initialId) {
+          requests.push(API.get("/projects"));
+        }
+
+        const results = await Promise.allSettled(requests);
+
+        if (results[0].status === "fulfilled") {
+          const accData = results[0].value.data?.data || results[0].value.data || [];
+          const list = Array.isArray(accData) ? accData : [];
+          setAccount(list);
+          if (list.length > 0 && !cridet) {
+            setCridet(list[0].id);
+          }
+        }
+
+        if (results[1] && results[1].status === "fulfilled") {
+          const projData = results[1].value.data?.data || results[1].value.data || [];
+          const list = Array.isArray(projData) ? projData : [];
+          setAllProjects(list);
+          if (list.length > 0 && !activeProjectId) {
+            setActiveProjectId(String(list[0].id));
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching initial voucher dependencies:", err);
+      } finally {
+        if (!activeProjectId && initialId) {
+          // If we had an initialId, wait for its specific fetch
+        } else {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchInitialData();
+  }, [show, initialId]);
+
+  // 2. Fetch specific project details & phases whenever activeProjectId changes
+  useEffect(() => {
+    if (!activeProjectId || !show) {
+      if (!initialId) setLoading(false);
+      return;
+    }
+
+    const fetchProjectDetails = async () => {
+      setLoading(true);
+      try {
+        const [phasesRes, projRes] = await Promise.allSettled([
+          API.get(`/projectphase/${activeProjectId}/all`),
+          API.get(`/projects/${activeProjectId}`),
         ]);
 
-        if (!isMounted) return;
-
-        if (phasesRes.status === "fulfilled" && phasesRes.value?.data) {
+        if (phasesRes.status === "fulfilled") {
           const list = Array.isArray(phasesRes.value.data)
             ? phasesRes.value.data
             : phasesRes.value.data?.data || [];
           setHumancases(Array.isArray(list) ? list : []);
         }
 
-        if (accountsRes.status === "fulfilled" && accountsRes.value?.data) {
-          const list = Array.isArray(accountsRes.value.data)
-            ? accountsRes.value.data
-            : accountsRes.value.data?.data || [];
-          setAccount(Array.isArray(list) ? list : []);
-        }
-
-        if (projectRes.status === "fulfilled" && projectRes.value?.data) {
-          const p = projectRes.value.data?.data || projectRes.value.data || {};
-          setProject(p);
+        if (projRes.status === "fulfilled") {
+          const p = projRes.value.data?.data || projRes.value.data || {};
+          setProjectData(p);
         }
       } catch (err) {
-        console.error("Error loading project voucher data:", err);
+        console.error("Error fetching project phases/details:", err);
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchData();
+    fetchProjectDetails();
+  }, [activeProjectId, show]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [show, projectId]);
+  useEffect(() => {
+    if (barcodeRef.current && !loading && show) {
+      try {
+        JsBarcode(barcodeRef.current, `PV-${activeProjectId || "000"}-${Date.now().toString().slice(-4)}`, {
+          format: "CODE128",
+          displayValue: false,
+          height: 35,
+          width: 1.5,
+          margin: 0,
+        });
+      } catch (e) {
+        // barcode format fallback
+      }
+    }
+  }, [loading, show, activeProjectId]);
 
   const handleSubmit = async (e) => {
-    if (e && e.preventDefault) e.preventDefault();
+    if (e) e.preventDefault();
 
-    const localErrors = {};
-    if (!date) localErrors.date = "تاريخ السند مطلوب";
-    if (!amount || parseFloat(amount) <= 0) localErrors.amount = "المبلغ مطلوب ويجب أن يكون أكبر من صفر";
-    if (!cridet) localErrors.cridet = "يرجى اختيار الحساب المدفوع عليه";
-    if (!type) localErrors.type = "يرجى اختيار نوع التحويل";
+    if (!activeProjectId) {
+      toast.warning("يرجى اختيار المشروع أولاً");
+      return;
+    }
 
-    if (Object.keys(localErrors).length > 0) {
-      setError(localErrors);
+    if (!amount || Number(amount) <= 0) {
+      toast.warning("يرجى إدخال مبلغ صحيح لسند الصرف");
+      return;
+    }
+
+    if (!cridet) {
+      toast.warning("يرجى اختيار الحساب المدفوع عليه");
       return;
     }
 
@@ -134,38 +186,34 @@ function PaymentVoucherProject(props) {
 
     try {
       const payload = {
-        amount: parseFloat(amount),
+        amount: Number(amount),
         selhuman: selHumancases || "0",
-        type: type,
+        type: type || "2",
         date: date,
-        project_id: projectId,
+        project_id: activeProjectId,
         account: cridet,
-        balanceid: project && project.accounts_id ? project.accounts_id : 0,
-        description: description || "",
+        description: description,
+        notes: description,
+        balanceid: projectData && projectData.accounts_id ? projectData.accounts_id : 0,
       };
 
       const res = await API.post("/shoptransaction/storepayprojects", payload);
 
       if (res.status === 200 || res.status === 201) {
         toast.success("تم إصدار سند الصرف بنجاح");
-        if (props.onSuccess) {
-          props.onSuccess();
-        }
+        if (propOnSuccess) propOnSuccess();
         handleClose();
       } else {
-        if (res.data?.errors) {
-          setError(res.data.errors);
-        } else if (res.data?.message) {
-          toast.error(res.data.message);
-        }
+        setError(res.data?.errors || {});
+        toast.error("فشل في إصدار سند الصرف");
       }
     } catch (err) {
-      console.error("Error submitting voucher:", err);
-      if (err.response?.data?.errors) {
-        setError(err.response.data.errors);
-      } else {
-        toast.error(err.response?.data?.message || "فشلت عملية إنشاء سند الصرف");
-      }
+      console.error("Payment voucher error:", err);
+      const errorData = err.response?.data?.errors || {};
+      setError(errorData);
+      toast.error(
+        err.response?.data?.message || "حدث خطأ أثناء إصدار سند الصرف"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -173,179 +221,205 @@ function PaymentVoucherProject(props) {
 
   return (
     <Modal
-      size="md"
       show={show}
       onHide={handleClose}
-      className="modal-table archModal donor-modal"
-      dialogClassName="fit-content-modal"
+      size="lg"
       centered
+      dir="rtl"
+      className="project-kpi-modal"
+      backdrop="static"
     >
-      <Modal.Header>
-        <Modal.Title className="w-100 text-center">سند صرف</Modal.Title>
-        <Button
-          className="custom-close-button cls-btn"
-          variant="link"
+      <Modal.Header className="d-flex justify-content-between align-items-center">
+        <Modal.Title className="d-flex align-items-center gap-2">
+          <FontAwesomeIcon icon={faMoneyBillWave} className="text-warning" />
+          <span className="fw-bold">
+            {projectData.name
+              ? `سند صرف للمشروع (${projectData.name})`
+              : activeProjectId
+              ? `سند صرف للمشروع #${activeProjectId}`
+              : "إصدار سند صرف لمشروع"}
+          </span>
+        </Modal.Title>
+        <button
+          type="button"
+          className="btn-close m-0"
+          aria-label="Close"
           onClick={handleClose}
-        >
-          <FontAwesomeIcon icon={faXmark} className="closeModal" />
-        </Button>
+        ></button>
       </Modal.Header>
 
-      <Modal.Body className="p-4" style={{ direction: "rtl" }}>
+      <Modal.Body className="p-4">
         {loading ? (
           <div className="text-center py-5">
             <Spinner animation="border" variant="primary" />
-            <div className="mt-2 text-muted" style={{ fontSize: "13px" }}>
-              جاري تحميل البيانات...
-            </div>
+            <div className="mt-2 text-muted small">جاري تحميل بيانات السند...</div>
           </div>
         ) : (
-          <Form
-            onSubmit={handleSubmit}
-            className="global-form-container border-0 shadow-none p-0 bg-transparent"
-          >
-            {/* Date & Amount */}
-            <Row className="mb-3">
-              <Col md={6}>
-                <div className="mb-3">
-                  <p className="mb-2" style={{ textAlign: "right", fontSize: "13px", fontWeight: "700" }}>
-                    تاريخ السند
-                  </p>
-                  <input
+          <Form id="payment-voucher-project-form" onSubmit={handleSubmit}>
+            <Row className="g-3">
+              {/* Project selector if opened globally */}
+              {!initialId && (
+                <Col xs={12}>
+                  <Form.Group>
+                    <Form.Label className="small fw-bold text-muted mb-1">
+                      المشروع المستهدف *
+                    </Form.Label>
+                    <Form.Select
+                      value={activeProjectId}
+                      onChange={(e) => setActiveProjectId(e.target.value)}
+                      style={{ height: "42px", borderRadius: "8px", fontWeight: "600" }}
+                      required
+                    >
+                      <option value="">-- اختر المشروع المستهدف --</option>
+                      {allProjects.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} (الميزانية: {p.total || p.budget || 0} ر.س)
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+              )}
+
+              {/* Date */}
+              <Col xs={12} md={6}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted mb-1">تاريخ السند *</Form.Label>
+                  <Form.Control
                     type="date"
-                    id="date"
-                    className="custom-datepicker w-100"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
+                    style={{ height: "42px", borderRadius: "8px" }}
+                    required
                   />
-                  {error && error.date && (
-                    <small className="text-danger d-block mt-1">
-                      {Array.isArray(error.date) ? error.date[0] : error.date}
-                    </small>
-                  )}
-                </div>
+                  {error.date && <div className="text-danger small mt-1">{error.date[0]}</div>}
+                </Form.Group>
               </Col>
-              <Col md={6}>
-                <RegisterTextbox
-                  id="amount"
-                  label="المبلغ"
-                  type="number"
-                  min="1"
-                  step="0.01"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  error={error && (Array.isArray(error.amount) ? error.amount[0] : error.amount)}
-                  placeholder="0.00"
-                />
+
+              {/* Amount */}
+              <Col xs={12} md={6}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted mb-1">المبلغ (ر.س) *</Form.Label>
+                  <Form.Control
+                    type="number"
+                    min="0.01"
+                    step="any"
+                    placeholder="0.00"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    style={{ height: "42px", borderRadius: "8px" }}
+                    required
+                  />
+                  {error.amount && <div className="text-danger small mt-1">{error.amount[0]}</div>}
+                </Form.Group>
+              </Col>
+
+              {/* Account */}
+              <Col xs={12} md={6}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted mb-1">الحساب المدفوع عليه *</Form.Label>
+                  <Form.Select
+                    value={cridet}
+                    onChange={(e) => setCridet(e.target.value)}
+                    style={{ height: "42px", borderRadius: "8px" }}
+                    required
+                  >
+                    <option value="">إختر الحساب...</option>
+                    {(Array.isArray(account) ? account : []).map((acc) => (
+                      <option key={acc.id} value={acc.id}>
+                        {acc.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  {error.account && <div className="text-danger small mt-1">{error.account[0]}</div>}
+                </Form.Group>
+              </Col>
+
+              {/* Project Phase */}
+              <Col xs={12} md={6}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted mb-1">مرحلة المشروع</Form.Label>
+                  <Form.Select
+                    value={selHumancases}
+                    onChange={(e) => setSelHumancases(e.target.value)}
+                    style={{ height: "42px", borderRadius: "8px" }}
+                  >
+                    <option value="0">لا توجد مرحلة محددة (المشروع ككل)</option>
+                    {(Array.isArray(humancases) ? humancases : []).map((h) => (
+                      <option key={h.id} value={h.id}>
+                        {h.name}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              {/* Transfer Type */}
+              <Col xs={12} md={6}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted mb-1">نوع التحويل / الدفع</Form.Label>
+                  <Form.Select
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    style={{ height: "42px", borderRadius: "8px" }}
+                  >
+                    <option value="1">الشبكة</option>
+                    <option value="2">تحويل بنكي</option>
+                    <option value="3">إيداع</option>
+                    <option value="4">شيك</option>
+                    <option value="5">نقدي</option>
+                    <option value="6">KNET</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              {/* Description */}
+              <Col xs={12} md={6}>
+                <Form.Group>
+                  <Form.Label className="small fw-bold text-muted mb-1">الوصف والبيان</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="أدخل بيان أو سبب الصرف..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    style={{ height: "42px", borderRadius: "8px" }}
+                  />
+                </Form.Group>
               </Col>
             </Row>
 
-            {/* Account & Phase */}
-            <Row className="mb-3">
-              <Col md={6}>
-                <RegisterSelect
-                  id="acc"
-                  label="الحساب المدفوع عليه"
-                  options={[
-                    { value: "", label: "إختر الحساب" },
-                    ...(Array.isArray(account) ? account : []).map((acc) => ({
-                      value: acc.id,
-                      label: acc.name,
-                    })),
-                  ]}
-                  value={cridet}
-                  onChange={(e) => setCridet(e.target.value)}
-                  error={error && (Array.isArray(error.cridet) ? error.cridet[0] : error.cridet)}
-                />
-              </Col>
-              <Col md={6}>
-                <RegisterSelect
-                  id="benf"
-                  label="المرحلة"
-                  options={[
-                    { value: "", label: "إختر المرحلة" },
-                    { value: "0", label: "لا يوجد مرحلة" },
-                    ...(Array.isArray(humancases) ? humancases : []).map((humancase) => ({
-                      value: humancase.id,
-                      label: humancase.name,
-                    })),
-                  ]}
-                  value={selHumancases}
-                  onChange={(e) => setSelHumancases(e.target.value)}
-                />
-              </Col>
-            </Row>
-
-            {/* Transfer Type & Description */}
-            <Row className="mb-3">
-              <Col md={6}>
-                <RegisterSelect
-                  id="location"
-                  label="نوع التحويل"
-                  options={[
-                    { value: "", label: "إختر النوع" },
-                    { value: "1", label: "الشبكة" },
-                    { value: "2", label: "تحويل" },
-                    { value: "3", label: "إيداع" },
-                    { value: "4", label: "شيك" },
-                    { value: "5", label: "نقدي" },
-                    { value: "6", label: "KNET" },
-                  ]}
-                  value={type}
-                  onChange={(e) => setType(e.target.value)}
-                  error={error && (Array.isArray(error.type) ? error.type[0] : error.type)}
-                />
-              </Col>
-              <Col md={6}>
-                <RegisterTextbox
-                  id="description"
-                  label="الوصف"
-                  type="text"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="الوصف أو سبب الصرف..."
-                />
-              </Col>
-            </Row>
-
-            {/* Barcode section identical to original voucher */}
-            <div
-              className="d-flex justify-content-center align-items-center my-3 py-2"
-              style={{ direction: "ltr" }}
-            >
-              <svg ref={barcodeRef}></svg>
-            </div>
-
-            {/* Action Buttons styled exactly like other project modals */}
-            <div className="d-flex justify-content-center gap-2 mt-4 mb-2">
-              {isSubmitting ? (
-                <Button variant="primary" disabled className="px-5 py-2 fw-bold" style={{ minWidth: "120px" }}>
-                  <Spinner animation="border" size="sm" />
-                </Button>
-              ) : (
-                <Button
-                  variant="primary"
-                  type="submit"
-                  className="px-5 py-2 fw-bold"
-                  style={{ minWidth: "120px" }}
-                >
-                  إدفع الآن
-                </Button>
-              )}
-              <Button
-                variant="secondary"
-                type="button"
-                className="px-4 py-2"
-                onClick={handleClose}
-                disabled={isSubmitting}
-                style={{ minWidth: "100px" }}
-              >
-                إلغاء
-              </Button>
+            {/* Barcode visual preview */}
+            <div className="d-flex justify-content-center align-items-center mt-3 pt-3 border-top">
+              <svg ref={barcodeRef} style={{ maxWidth: "200px" }}></svg>
             </div>
           </Form>
         )}
       </Modal.Body>
+
+      <Modal.Footer className="d-flex justify-content-between align-items-center">
+        <Button variant="secondary" onClick={handleClose} disabled={isSubmitting}>
+          إلغاء
+        </Button>
+        <Button
+          type="submit"
+          form="payment-voucher-project-form"
+          className="btn-kpi-save"
+          disabled={isSubmitting || loading}
+          style={{ minWidth: "140px" }}
+        >
+          {isSubmitting ? (
+            <>
+              <Spinner animation="border" size="sm" className="ms-2" />
+              جاري التنفيذ...
+            </>
+          ) : (
+            <>
+              <FontAwesomeIcon icon={faCheck} className="ms-1" />
+              إصدار السند الآن
+            </>
+          )}
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 }

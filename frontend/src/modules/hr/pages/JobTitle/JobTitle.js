@@ -1,210 +1,153 @@
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../../components/title";
 import "./jobTitle.css";
-import { faUsers, faPlusCircle, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUsers,
+  faBriefcase,
+  faPenToSquare,
+  faTrash,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import { Form, Modal, Spinner } from "react-bootstrap";
-import RegisterSelect from "../../../../components/RegisterSelect";
-import { useEffect, useState } from "react";
+import API from "../../../../api/axiosConfig";
 import TableComponent from "../../../../components/TableComponent";
 import { toast } from "react-toastify";
-import { hrService } from "../../services/hrService";
 
 function Jobtitle() {
-  // ── Add Modal State ──
+  // ── Modal states ──
   const [showModal, setShowModal] = useState(false);
-  const [error, setError] = useState({});
+  const [editingId, setEditingId] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ show: false, item: null });
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // ── Form fields ──
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
-  const [mangerjobtitle, setMangerjobtitle] = useState("");
   const [note, setNote] = useState("");
+  const [error, setError] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ── Edit Modal State ──
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editId, setEditId] = useState(null);
-  const [editName, setEditName] = useState("");
-  const [editDescription, setEditDescription] = useState("");
-  const [editDays, setEditDays] = useState(0);
-  const [editHours, setEditHours] = useState(0);
-  const [editMangerjobtitle, setEditMangerjobtitle] = useState("");
-  const [editNote, setEditNote] = useState("");
-  const [editError, setEditError] = useState({});
-  const [isEditSubmitting, setIsEditSubmitting] = useState(false);
-  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
-
-  const [jobtitleOptions, setJobtitleOptions] = useState([]);
+  // ── Table reload trigger ──
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const getJobtitleOptions = async () => {
-    try {
-      const res = await hrService.getJobTitles();
-      if (res.status === 200) setJobtitleOptions(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    getJobtitleOptions();
-  }, []);
-
-  const handleClose = () => {
-    setShowModal(false);
+  // Open modal for Create
+  const handleOpenAdd = () => {
+    setEditingId(null);
     setName("");
     setDescription("");
     setDays(0);
     setHours(0);
-    setMangerjobtitle("");
+    setNote("");
+    setError({});
+    setShowModal(true);
+  };
+
+  // Open modal for Edit
+  const handleOpenEdit = (record) => {
+    setEditingId(record.id);
+    setName(record.title || record.name || "");
+    setDescription(record.description || "");
+    setDays(record.workdayspermonth ?? record.days ?? 0);
+    setHours(record.workhoursperday ?? record.hours ?? 0);
+    setNote(record.note || "");
+    setError({});
+    setShowModal(true);
+  };
+
+  // Close form modal
+  const handleClose = () => {
+    setShowModal(false);
+    setEditingId(null);
+    setName("");
+    setDescription("");
+    setDays(0);
+    setHours(0);
     setNote("");
     setError({});
   };
 
-  const handleCloseEdit = () => {
-    setShowEditModal(false);
-    setEditId(null);
-    setEditName("");
-    setEditDescription("");
-    setEditDays(0);
-    setEditHours(0);
-    setEditMangerjobtitle("");
-    setEditNote("");
-    setEditError({});
-  };
-
-  const handleOpenEdit = async (id, record) => {
-    setEditId(id);
-    setShowEditModal(true);
-    setIsLoadingDetails(true);
-    setEditError({});
-
-    // Pre-populate with table record if available
-    if (record) {
-      setEditName(record.title || record.name || "");
-      setEditDescription(record.description || "");
-      setEditDays(record.workdayspermonth || record.days || 0);
-      setEditHours(record.workhoursperday || record.hours || 0);
-      setEditMangerjobtitle(record.parent_id !== undefined ? String(record.parent_id) : (record.parent?.id ? String(record.parent.id) : ""));
-      setEditNote(record.note || "");
-    }
-
-    try {
-      const res = await hrService.getJobTitle(id);
-      if (res.status === 200 && res.data) {
-        setEditName(res.data.title || "");
-        setEditDescription(res.data.description || "");
-        setEditDays(res.data.workdayspermonth || 0);
-        setEditHours(res.data.workhoursperday || 0);
-        setEditMangerjobtitle(res.data.parent_id !== null && res.data.parent_id !== undefined ? String(res.data.parent_id) : "");
-        setEditNote(res.data.note || "");
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoadingDetails(false);
-    }
-  };
-
+  // Submit form (Add or Edit)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) {
-      toast.error("يرجى إدخال اسم المسمى الوظيفي");
-      setError({ name: "يرجى إدخال اسم المسمى الوظيفي" });
+      setError({ name: "اسم المسمى الوظيفي مطلوب" });
       return;
     }
 
     setIsSubmitting(true);
     const mFormData = new FormData();
-    mFormData.append("name", name);
-    mFormData.append("description", description);
-    mFormData.append("days", days);
-    mFormData.append("hours", hours);
-    mFormData.append("mangerjobtitle", mangerjobtitle);
-    mFormData.append("note", note);
+    mFormData.append("name", name.trim());
+    mFormData.append("description", description || "");
+    mFormData.append("days", days || 0);
+    mFormData.append("hours", hours || 0);
+    mFormData.append("note", note || "");
 
     try {
-      const res = await hrService.createJobTitle(mFormData);
-      if (res.status === 200) {
+      if (editingId) {
+        mFormData.append("id", editingId);
+        await API.post("/jobtitle/update", mFormData);
+        toast.success("تم تحديث المسمى الوظيفي بنجاح");
+      } else {
+        await API.post("/jobtitle/store", mFormData);
         toast.success("تم إضافة المسمى الوظيفي بنجاح");
-        handleClose();
-        setRefreshKey((k) => k + 1);
-        getJobtitleOptions();
       }
+      handleClose();
+      setRefreshKey((k) => k + 1);
     } catch (err) {
-      setError(err?.response?.data?.errors || {});
-      toast.error(err?.response?.data?.message || "حدث خطأ ما");
+      console.error("Save job title error:", err);
+      const validationErrors = err?.response?.data?.errors || {};
+      setError(validationErrors);
+      toast.error(err?.response?.data?.message || "حدث خطأ أثناء حفظ البيانات");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    if (!editName.trim()) {
-      toast.error("يرجى إدخال اسم المسمى الوظيفي");
-      setEditError({ name: "يرجى إدخال اسم المسمى الوظيفي" });
-      return;
-    }
-
-    setIsEditSubmitting(true);
-    const mFormData = new FormData();
-    mFormData.append("id", editId);
-    mFormData.append("name", editName);
-    mFormData.append("description", editDescription);
-    mFormData.append("days", editDays);
-    mFormData.append("hours", editHours);
-    mFormData.append("mangerjobtitle", editMangerjobtitle);
-    mFormData.append("note", editNote);
-
+  // Confirm delete handler
+  const handleConfirmDelete = async () => {
+    if (!deleteModal.item) return;
+    setIsDeleting(true);
     try {
-      const res = await hrService.updateJobTitle(mFormData);
-      if (res.status === 200) {
-        toast.success("تم تعديل المسمى الوظيفي بنجاح");
-        handleCloseEdit();
-        setRefreshKey((k) => k + 1);
-        getJobtitleOptions();
-      } else {
-        setEditError(res.data?.errors || {});
-      }
+      await API.delete(`/jobtitle/${deleteModal.item.id}`);
+      toast.success("تم حذف المسمى الوظيفي بنجاح");
+      setDeleteModal({ show: false, item: null });
+      setRefreshKey((k) => k + 1);
     } catch (err) {
-      setEditError(err?.response?.data?.errors || {});
-      toast.error(err?.response?.data?.message || "حدث خطأ أثناء تعديل البيانات");
+      console.error("Delete job title error:", err);
+      toast.error(err?.response?.data?.message || "حدث خطأ أثناء حذف المسمى");
     } finally {
-      setIsEditSubmitting(false);
+      setIsDeleting(false);
     }
   };
 
-  function prime(num) {
-    let isPrime = num % 2 === 0
-    if(isPrime){
-      return "not a prime"
-    }else{
-      return "prime"
-    }
-    
-  }
-
-  console.log(prime(5))
-  console.log(prime(6))
-  console.log(prime(3))
-
+  // Table columns
   const columns = [
-    { name: "المسمي الوظيفي", key: "title" },
+    { name: "المسمى الوظيفي", key: "title" },
     { name: "الوصف", key: "description" },
     { name: "المهام الوظيفية", key: "note" },
-    { name: "المدير المباشر", key: "parent" },
-    { name: "عدد ايام العمل", key: "workdayspermonth" },
-    { name: "عدد ساعات العمل", key: "workhoursperday" },
-    { name: "", key: "actions" },
+    { name: "أيام العمل / شهر", key: "workdayspermonth" },
+    { name: "ساعات العمل / يوم", key: "workhoursperday" },
+    { name: "الإجراءات", key: "actions" },
   ];
 
-  const transformRowFn = (row) => {
-    const newRow = { ...row };
-    newRow.parent = newRow.parent ? newRow.parent.title : "لا يوجد";
-    return newRow;
-  };
+  // Transform row for TableComponent rendering
+  const transformRowFn = (row) => ({ ...row });
+
+  // Dropdown options for each table row
+  const dropdownOptions = [
+    {
+      label: "تعديل",
+      action: (_id, record) => handleOpenEdit(record),
+    },
+    {
+      label: "حذف",
+      action: (_id, record) => setDeleteModal({ show: true, item: record }),
+    },
+  ];
 
   return (
     <>
@@ -220,18 +163,15 @@ function Jobtitle() {
           apiUrl="/jobtitle"
           columns={columns}
           addBtn={true}
-          onAddClick={() => setShowModal(true)}
+          addBtnName="مسمى وظيفي"
+          onAddClick={handleOpenAdd}
           transformRowFn={transformRowFn}
-          dropdownOptions={[
-            {
-              label: "تعديل",
-              action: (id, record) => handleOpenEdit(id, record),
-            },
-          ]}
+          dropdownOptions={dropdownOptions}
+          triggerReload={refreshKey}
         />
       </div>
 
-      {/* ── مودال إضافة مسمى وظيفي ── */}
+      {/* ── Add / Edit Modal ── */}
       <Modal
         show={showModal}
         onHide={handleClose}
@@ -241,15 +181,18 @@ function Jobtitle() {
         dialogClassName="jobtitle-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>
-            <FontAwesomeIcon icon={faPlusCircle} style={{ color: "var(--primary-color, #b89358)" }} />
-            إضافة مسمى وظيفي
-          </Modal.Title>
+          <div className="jobtitle-modal-title">
+            <span className="jobtitle-modal-title-icon">
+              <FontAwesomeIcon icon={editingId ? faPenToSquare : faBriefcase} />
+            </span>
+            <span>{editingId ? "تعديل مسمى وظيفي" : "إضافة مسمى وظيفي"}</span>
+          </div>
         </Modal.Header>
 
         <Modal.Body>
-          <Form id="jobtitle-add-modal-form" onSubmit={handleSubmit}>
-            <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+          <Form id="jobtitle-modal-form" onSubmit={handleSubmit}>
+            <div className="jobtitle-grid">
+              {/* Job Title Name */}
               <div>
                 <RegisterTextbox
                   parentStyle={{ width: "100%" }}
@@ -259,12 +202,18 @@ function Jobtitle() {
                   stylee={{ width: "100%" }}
                   name="name"
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
+                  required={true}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (error?.name) setError((prev) => ({ ...prev, name: null }));
+                  }}
                 />
-                {error?.name && <span className="error">{error.name}</span>}
+                {error?.name && (
+                  <span className="jobtitle-field-error">{error.name}</span>
+                )}
               </div>
 
+              {/* Description */}
               <div>
                 <RegisterTextbox
                   parentStyle={{ width: "100%" }}
@@ -277,46 +226,27 @@ function Jobtitle() {
                   onChange={(e) => setDescription(e.target.value)}
                 />
                 {error?.description && (
-                  <span className="error">{error.description}</span>
+                  <span className="jobtitle-field-error">{error.description}</span>
                 )}
               </div>
 
-              <div>
-                <RegisterSelect
-                  id="mangerjobtitle"
-                  label="الرئيس المباشر"
-                  stylee={{ width: "100%" }}
-                  parentStyle={{ width: "100%" }}
-                  options={[
-                    { value: "", label: "اختر المدير المباشر" },
-                    { value: "0", label: "لا يوجد" },
-                    ...jobtitleOptions.map((row) => ({
-                      value: row.id,
-                      label: row.title,
-                    })),
-                  ]}
-                  name="mangerjobtitle"
-                  value={mangerjobtitle}
-                  onChange={(e) => setMangerjobtitle(e.target.value)}
-                />
-                {error?.mangerjobtitle && (
-                  <span className="error">{error.mangerjobtitle}</span>
-                )}
-              </div>
-
+              {/* Work days */}
               <div>
                 <RegisterTextbox
                   parentStyle={{ width: "100%" }}
                   id="days"
-                  label="عدد أيام الدوام في الأسبوع"
+                  label="عدد أيام الدوام في الشهر"
                   type="number"
                   stylee={{ width: "100%" }}
                   value={days}
                   onChange={(e) => setDays(e.target.value)}
                 />
-                {error?.days && <span className="error">{error.days}</span>}
+                {error?.days && (
+                  <span className="jobtitle-field-error">{error.days}</span>
+                )}
               </div>
 
+              {/* Work hours */}
               <div>
                 <RegisterTextbox
                   parentStyle={{ width: "100%" }}
@@ -327,21 +257,26 @@ function Jobtitle() {
                   value={hours}
                   onChange={(e) => setHours(e.target.value)}
                 />
-                {error?.hours && <span className="error">{error.hours}</span>}
+                {error?.hours && (
+                  <span className="jobtitle-field-error">{error.hours}</span>
+                )}
               </div>
 
-              <div>
+              {/* Job Notes / Responsibilities */}
+              <div className="jobtitle-full-width">
                 <RegisterTextbox
                   parentStyle={{ width: "100%" }}
                   id="note"
-                  label="ملاحظات أخرى (المهام الوظيفية)"
+                  label="المهام الوظيفية / ملاحظات"
                   type="text"
                   stylee={{ width: "100%" }}
                   name="note"
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                 />
-                {error?.note && <span className="error">{error.note}</span>}
+                {error?.note && (
+                  <span className="jobtitle-field-error">{error.note}</span>
+                )}
               </div>
             </div>
           </Form>
@@ -358,170 +293,65 @@ function Jobtitle() {
           </button>
           <button
             type="submit"
-            form="jobtitle-add-modal-form"
-            className="jobtitle-submit"
+            form="jobtitle-modal-form"
+            className="jobtitle-btn-primary"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
-              <>
-                <Spinner animation="border" size="sm" />
-                <span>جاري الحفظ...</span>
-              </>
+              <Spinner size="sm" animation="border" />
+            ) : editingId ? (
+              "حفظ التعديلات"
             ) : (
-              "حفظ"
+              "حفظ المسمى"
             )}
           </button>
         </Modal.Footer>
       </Modal>
 
-      {/* ── مودال تعديل مسمى وظيفي ── */}
+      {/* ── Delete Confirmation Modal ── */}
       <Modal
-        show={showEditModal}
-        onHide={handleCloseEdit}
+        show={deleteModal.show}
+        onHide={() => !isDeleting && setDeleteModal({ show: false, item: null })}
         centered
-        size="lg"
         dir="rtl"
         dialogClassName="jobtitle-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>
-            <FontAwesomeIcon icon={faPenToSquare} style={{ color: "var(--primary-color, #b89358)" }} />
-            تعديل المسمى الوظيفي
-          </Modal.Title>
+          <div className="jobtitle-modal-title" style={{ color: "#dc3545" }}>
+            <span
+              className="jobtitle-modal-title-icon"
+              style={{ background: "rgba(220, 53, 69, 0.12)", color: "#dc3545" }}
+            >
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+            </span>
+            <span>تأكيد الحذف</span>
+          </div>
         </Modal.Header>
-
         <Modal.Body>
-          {isLoadingDetails ? (
-            <div className="d-flex justify-content-center align-items-center py-5">
-              <Spinner animation="border" variant="warning" />
-              <span className="ms-2 me-2">جاري تحميل البيانات...</span>
-            </div>
-          ) : (
-            <Form id="jobtitle-edit-modal-form" onSubmit={handleUpdate}>
-              <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
-                <div>
-                  <RegisterTextbox
-                    parentStyle={{ width: "100%" }}
-                    id="edit-name"
-                    label="اسم المسمى الوظيفي"
-                    type="text"
-                    stylee={{ width: "100%" }}
-                    name="name"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    required
-                  />
-                  {editError?.name && <span className="error">{editError.name}</span>}
-                </div>
-
-                <div>
-                  <RegisterTextbox
-                    parentStyle={{ width: "100%" }}
-                    id="edit-jobDesc"
-                    label="وصف المسمى الوظيفي"
-                    type="text"
-                    stylee={{ width: "100%" }}
-                    name="description"
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                  />
-                  {editError?.description && (
-                    <span className="error">{editError.description}</span>
-                  )}
-                </div>
-
-                <div>
-                  <RegisterSelect
-                    id="edit-mangerjobtitle"
-                    label="الرئيس المباشر"
-                    stylee={{ width: "100%" }}
-                    parentStyle={{ width: "100%" }}
-                    options={[
-                      { value: "", label: "اختر المدير المباشر" },
-                      { value: "0", label: "لا يوجد" },
-                      ...jobtitleOptions
-                        .filter((row) => String(row.id) !== String(editId))
-                        .map((row) => ({
-                          value: row.id,
-                          label: row.title,
-                        })),
-                    ]}
-                    name="mangerjobtitle"
-                    value={editMangerjobtitle}
-                    onChange={(e) => setEditMangerjobtitle(e.target.value)}
-                  />
-                  {editError?.mangerjobtitle && (
-                    <span className="error">{editError.mangerjobtitle}</span>
-                  )}
-                </div>
-
-                <div>
-                  <RegisterTextbox
-                    parentStyle={{ width: "100%" }}
-                    id="edit-days"
-                    label="عدد أيام الدوام في الأسبوع"
-                    type="number"
-                    stylee={{ width: "100%" }}
-                    value={editDays}
-                    onChange={(e) => setEditDays(e.target.value)}
-                  />
-                  {editError?.days && <span className="error">{editError.days}</span>}
-                </div>
-
-                <div>
-                  <RegisterTextbox
-                    parentStyle={{ width: "100%" }}
-                    id="edit-hours"
-                    label="عدد ساعات العمل اليومية"
-                    type="number"
-                    stylee={{ width: "100%" }}
-                    value={editHours}
-                    onChange={(e) => setEditHours(e.target.value)}
-                  />
-                  {editError?.hours && <span className="error">{editError.hours}</span>}
-                </div>
-
-                <div>
-                  <RegisterTextbox
-                    parentStyle={{ width: "100%" }}
-                    id="edit-note"
-                    label="ملاحظات أخرى (المهام الوظيفية)"
-                    type="text"
-                    stylee={{ width: "100%" }}
-                    name="note"
-                    value={editNote}
-                    onChange={(e) => setEditNote(e.target.value)}
-                  />
-                  {editError?.note && <span className="error">{editError.note}</span>}
-                </div>
-              </div>
-            </Form>
-          )}
+          <p style={{ margin: 0, fontSize: "15px", color: "#3a2e1d" }}>
+            هل أنت متأكد من حذف المسمى الوظيفي{" "}
+            <strong>"{deleteModal.item?.title || deleteModal.item?.name}"</strong>؟
+          </p>
+          <p style={{ margin: "8px 0 0", fontSize: "13px", color: "#8a7a66" }}>
+            لا يمكن التراجع عن هذا الإجراء بعد تنفيذه.
+          </p>
         </Modal.Body>
-
         <Modal.Footer>
           <button
             type="button"
             className="jobtitle-btn-cancel"
-            onClick={handleCloseEdit}
-            disabled={isEditSubmitting}
+            onClick={() => setDeleteModal({ show: false, item: null })}
+            disabled={isDeleting}
           >
             إلغاء
           </button>
           <button
-            type="submit"
-            form="jobtitle-edit-modal-form"
-            className="jobtitle-submit"
-            disabled={isEditSubmitting || isLoadingDetails}
+            type="button"
+            className="jobtitle-btn-danger"
+            onClick={handleConfirmDelete}
+            disabled={isDeleting}
           >
-            {isEditSubmitting ? (
-              <>
-                <Spinner animation="border" size="sm" />
-                <span>جاري الحفظ...</span>
-              </>
-            ) : (
-              "حفظ التعديلات"
-            )}
+            {isDeleting ? <Spinner size="sm" animation="border" /> : "حذف نهائي"}
           </button>
         </Modal.Footer>
       </Modal>
@@ -530,5 +360,3 @@ function Jobtitle() {
 }
 
 export default Jobtitle;
-
-

@@ -11,7 +11,7 @@ export { default as PaymentVoucherProjectPage } from "../../../pages/PaymentVouc
 export { default as EndowmentsVoucherPage } from "../../../pages/PaymentVoucher/EndowmentsVoucher";
 export { default as PaymentVoucherLoanPage } from "../../../pages/PaymentVoucher/PaymentVoucherLoan";
 
-export { default as GeneralReceiptVoucherPage } from "../../../pages/Accounting/GeneralPayment/GeneralReceiptVoucher";
-export { default as GeneralReceiptVoucherCashPage } from "../../../pages/Accounting/GeneralPayment/GeneralReceiptVoucherCash";
-export { default as GeneralPaymentVoucherPage } from "../../../pages/Accounting/GeneralPayment/GeneralPaymentVoucher";
-export { default as GeneralPaymentVoucherCashPage } from "../../../pages/Accounting/GeneralPayment/GeneralPaymentVoucherCash";
+export { default as GeneralReceiptVoucherPage } from "../../accounting/pages/GeneralPayment/GeneralReceiptVoucher";
+export { default as GeneralReceiptVoucherCashPage } from "../../accounting/pages/GeneralPayment/GeneralReceiptVoucherCash";
+export { default as GeneralPaymentVoucherPage } from "../../accounting/pages/GeneralPayment/GeneralPaymentVoucher";
+export { default as GeneralPaymentVoucherCashPage } from "../../accounting/pages/GeneralPayment/GeneralPaymentVoucherCash";

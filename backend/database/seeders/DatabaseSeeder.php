@@ -231,5 +231,8 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
+
+        // 11. Seed Default Chart of Accounts for Main Store
+        app(\App\Services\Accounting\ChartOfAccountTemplateService::class)->seedForStore($store->id);
     }
 }

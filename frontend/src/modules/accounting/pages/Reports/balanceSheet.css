@@ -1,0 +1,111 @@
+.balance-sheet-wrapper {
+  direction: rtl !important;
+  font-family: inherit;
+  padding: 20px 15px 50px 15px;
+}
+
+.balance-sheet-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  border: 1px solid #ede5d8 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+.official-report-header {
+  border-bottom: 2px dashed #e6ded3;
+}
+
+.luxury-date-input {
+  border-radius: 8px !important;
+  padding: 6px 12px !important;
+  border-color: #ddd4c7 !important;
+  font-size: 0.88rem;
+}
+
+.luxury-date-input:focus {
+  border-color: #bfa67a !important;
+  box-shadow: 0 0 0 3px rgba(191, 166, 122, 0.15) !important;
+}
+
+.balance-summary-overview .card {
+  border: 1px solid #eee6db !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.balance-summary-overview .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+.section {
+  border: 1px solid #ece4d8 !important;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.section-titleRepo {
+  border-bottom: 1px solid #f0e9df;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.section-titleRepo:hover {
+  background-color: #fdfaf6 !important;
+}
+
+.section-contentRepo {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.repoSub {
+  font-size: 1.05rem;
+  letter-spacing: -0.2px;
+}
+
+.report-item {
+  font-size: 0.93rem;
+  transition: background-color 0.15s ease;
+}
+
+.report-item:hover {
+  background-color: #fcf9f5;
+}
+
+.total-section {
+  border-radius: 12px;
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+  .print-controls,
+  .sidebar,
+  header {
+    display: none !important;
+  }
+  .balance-sheet-wrapper {
+    padding: 0 !important;
+  }
+  .balance-sheet-container {
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .section {
+    border: 1px solid #ccc !important;
+    break-inside: avoid;
+  }
+}

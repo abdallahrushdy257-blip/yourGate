@@ -6,7 +6,7 @@ import RightSidebar from "./components/RightSidebar";
 import HomeNavbar from "./components/HomeNavbar";
 
 //import PublicLayout from "./layouts/PublicLayout";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, Navigate, useParams } from "react-router-dom";
 // import CharityRegistration from "./pages/CharityRegistration/CharityRegistration";
 // import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
@@ -41,8 +41,8 @@ import TestPrint from "./pages/TestPrint/TestPrint";
 import LandingStore from "./pages/LandingStore/LandingStore";
 import TestNewTable from "./pages/TestNewTable/TestNewTable";
 // import EditProjectStatus from "./modules/projects/pages/ProjectStatus/EditProjectStatus";
-import OrganizationalChart from "./pages/OrganizationalChart/OrganizationalChart";
-import Users from "./pages/Users/Users";
+// import OrganizationalChart from "./modules/hr/pages/OrganizationalChart/OrganizationalChart";
+// import Users from "./pages/Users/Users";
 import Terms from "./pages/TermsandCondition/Terms";
 import Privacy from "./pages/TermsandCondition/Privacy";
 import NotificationItem from "./pages/notification/Notification";
@@ -78,7 +78,9 @@ import { EndowmentRoutes } from "./modules/endowments";
 
 import { ArchiveRoutes } from "./modules/archives";
 import { TaskRoutes } from "./modules/tasks";
-import UserProfile from "./pages/Users/UserProfile";
+import { RoleRoutes } from "./modules/roles";
+import { UserRoutes } from "./modules/users";
+// import UserProfile from "./pages/Users/UserProfile";
 import CommonRoutes from "./modules/common/routes/commonRoutes";
 import { PublicRoutes } from "./modules/common";
 import { AdminRoutes } from "./admin/routes/adminRoutes";
@@ -86,6 +88,10 @@ import PaymentDetails from "./modules/data-management/pages/beneficiaries/Paymen
 // import EmployeeCardPhoto from "./pages/EmployeeCard/EmployeeCardPhoto";
 // import ShowEmployeeCard from "./pages/EmployeeCard/ShowEmployeeCard";
 
+function ProjectPaymentVouchersRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/projectdetailsview/${id}?tab=financials&filter=payments`} replace />;
+}
 function App() {
   const location = useLocation();
   const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -303,15 +309,18 @@ function App() {
                   path="/donationDetails/:id"
                   element={<DonationDetails />}
                 />
-                <Route path="/testNewTable" element={<TestNewTable />} />                                      {/*                                                 
-                {/* <Route path="/addmission" element={<AddMissions />} /> */}
+<Route path="/testNewTable" element={<TestNewTable />} />
                 {AccountingRoutes}
-                {/* Edit project routes integrated via ProjectRoutes */}
-                {/* <Route
+                <Route
+                  path="/projectpaymentvouchers/:id"
+                  element={<ProjectPaymentVouchersRedirect />}
+                />
                   path="organizationalChart"
                   element={<OrganizationalChart />}
                 /> */}
                 {SettingsRoutes}
+                {RoleRoutes}
+                {UserRoutes}
                 {MarketingRoutes}
                 {PartnerRoutes}
                 {LoanRoutes}
