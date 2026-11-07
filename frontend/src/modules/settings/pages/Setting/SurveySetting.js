@@ -12,7 +12,7 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
-import API from "../../api/axiosConfig";
+import API from "../../../../api/axiosConfig";
 
 const STORAGE_KEY = "beneficiary_survey_questions";
 

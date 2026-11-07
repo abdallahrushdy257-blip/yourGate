@@ -31,3 +31,6 @@ export const SettingsRoutes = (
     ))}
   </>
 );
+
+export default SettingsRoutes;
+

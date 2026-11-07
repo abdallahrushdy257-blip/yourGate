@@ -79,3 +79,6 @@ export const ProjectRoutes = (
     ))}
   </React.Fragment>
 );
+
+export default ProjectRoutes;
+
