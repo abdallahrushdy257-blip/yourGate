@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../components/title";
@@ -27,6 +27,37 @@ function MarketingDesignProjectManagement() {
   const [marketingmethod, setMarketingmethod] = useState(0);
   const [isSubmit, setIsSubmit] = useState(false);
   const [accounttree, setAccounttre] = useState('');
+  const [treeAccounts, setTreeAccounts] = useState([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(false);
+
+  useEffect(() => {
+    const fetchTreeAccounts = async () => {
+      setLoadingAccounts(true);
+      try {
+        let res = await API.get("/accounttree/entry").catch(() => null);
+        let list = Array.isArray(res?.data) ? res.data : (res?.data?.data || []);
+        if (!list || list.length === 0) {
+          res = await API.get("/accounttree").catch(() => null);
+          const raw = Array.isArray(res?.data) ? res.data : (res?.data?.data || Object.values(res?.data || {}));
+          const flattenLeaves = (nodes) => {
+            let accs = [];
+            for (const n of (Array.isArray(nodes) ? nodes : Object.values(nodes || {}))) {
+              if (n.is_payable || (!n.children || n.children.length === 0)) accs.push(n);
+              if (n.children) accs = accs.concat(flattenLeaves(n.children));
+            }
+            return accs;
+          };
+          list = flattenLeaves(raw);
+        }
+        setTreeAccounts(list || []);
+      } catch (err) {
+        console.error("Error loading account tree:", err);
+      } finally {
+        setLoadingAccounts(false);
+      }
+    };
+    fetchTreeAccounts();
+  }, []);
 
   const navigate = useNavigate();
 
@@ -168,9 +199,11 @@ function MarketingDesignProjectManagement() {
                   marginBottom: "20px",
                 }}
                 options={[
-                  { value: "0", label: "إختر الحساب" },
-                  { value: '9e5000ef-9e80-4388-b368-0b6f3e6710f6', label: 'تبرعات وهبات مقيدة – نقدية' },
-                  { value: "9e5000f3-4d41-4579-8d16-123c5dcaacca", label: "تبرعات وهبات غير مقيدة – نقدية " },
+                  { value: "", label: loadingAccounts ? "جاري تحميل الحسابات..." : "إختر الحساب من شجرة الحسابات" },
+                  ...treeAccounts.map((acc) => ({
+                    value: String(acc.id || acc.code),
+                    label: acc.code ? `${acc.code} - ${acc.name}` : acc.name,
+                  })),
                 ]}
                 value={accounttree}
                 onChange={(e) => setAccounttre(e.target.value)}

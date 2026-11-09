@@ -26,7 +26,7 @@ function PrintHead(props) {
                 marginBottom: "18px",
               }}
             >
-              تقرير المانحين
+              {props.title || "تقرير"}
             </h2>
           </div>
           <div className="d-flex justify-content-end gap-2">

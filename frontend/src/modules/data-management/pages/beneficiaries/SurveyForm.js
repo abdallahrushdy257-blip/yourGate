@@ -3,7 +3,7 @@ import { Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faSave, faUser, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import API from "../../../../api/axiosConfig";
-import { getStoredSurveyQuestions } from "../../../../pages/Setting/SurveySetting";
+import { getStoredSurveyQuestions } from "../../../settings/pages/Setting/SurveySetting";
 import "./Surveys.css";
 
 const SurveyForm = ({ period, humancaseId = null, onSuccess }) => {

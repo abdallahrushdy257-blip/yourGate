@@ -579,7 +579,7 @@
 .donor-modal .modal-content {
   border-radius: 20px !important;
   border: 1.5px solid var(--border-color, #ebdcc8) !important;
-  background: var(--background-color, #f5ede0) !important;
+  background: var(--surface-color) !important;
   color: var(--text-color, #382f22) !important;
   box-shadow: 0 25px 65px rgba(0, 0, 0, 0.22) !important;
   direction: rtl !important;
@@ -587,7 +587,7 @@
 }
 
 .dark-mode .donor-modal .modal-content {
-  background: var(--background-color, #1a0f07) !important;
+  background: var(--surface-color) !important;
   border-color: var(--border-color, #4a2e14) !important;
   color: var(--text-color, #f0d9b5) !important;
   box-shadow: 0 25px 65px rgba(0, 0, 0, 0.5) !important;
