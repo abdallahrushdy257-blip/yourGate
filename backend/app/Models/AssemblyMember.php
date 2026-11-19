@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\BelongsToStore;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AssemblyMember extends Model
 {
@@ -78,6 +79,49 @@ class AssemblyMember extends Model
             '7' => 'عضو لجنة',
             default => (string) ($this->subscription_type ?? ''),
         };
+    }
+
+    public function committeeMembers(): HasMany
+    {
+        return $this->hasMany(CommitteeMember::class, 'assembly_member_id');
+    }
+
+    public function minuteSheetAttendees(): HasMany
+    {
+        return $this->hasMany(MinuteSheetAttendee::class, 'assembly_member_id');
+    }
+
+    /**
+     * Check if the member has any financial or administrative transactions.
+     */
+    public function hasTransactions(): bool
+    {
+        // 1. Paid subscription fees
+        if ((float) ($this->subscription_fees ?? 0) > 0) {
+            return true;
+        }
+
+        // 2. Journal entries (receipts or payments)
+        if (JournalEntry::whereIn('reference_type', ['assembly_receipt', 'assembly_payment'])->where('reference_id', $this->id)->exists()) {
+            return true;
+        }
+
+        // 3. Vouchers referencing this member
+        if (Voucher::where('description', 'like', "%{$this->name}%")->exists()) {
+            return true;
+        }
+
+        // 4. Committees membership
+        if ($this->committeeMembers()->exists()) {
+            return true;
+        }
+
+        // 5. Minutes of meetings attendance
+        if ($this->minuteSheetAttendees()->exists()) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getUploadUrlAttribute(): ?string

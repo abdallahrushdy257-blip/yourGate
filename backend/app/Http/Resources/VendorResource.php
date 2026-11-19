@@ -26,6 +26,7 @@ class VendorResource extends JsonResource
             'identification_description' => $this->identification_description ?? '',
             'type'                       => (string) ($this->type ?? ''),
             'type_string'                => $this->type_string,
+            'opening_balance'            => (float) ($this->opening_balance ?? 0),
             'created_at'                 => $this->created_at?->format('Y-m-d H:i:s'),
         ];
     }

@@ -168,6 +168,66 @@ class VendorTest extends TestCase
         ]);
     }
 
+    public function test_user_cannot_delete_vendor_with_transactions(): void
+    {
+        // 1. Vendor with non-zero opening balance
+        $vendorWithBalance = Vendor::create([
+            'store_id'        => $this->store->id,
+            'name'            => 'مورد لديه رصيد افتتاحي',
+            'phone'           => '0501112233',
+            'opening_balance' => 1500.00,
+        ]);
+
+        $response1 = $this->actingAs($this->user)
+            ->getJson("/api/humancasevendor/{$vendorWithBalance->id}/delete");
+
+        $response1->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertJsonFragment(['message' => 'لا يمكن حذف المورد لوجود حركات مالية مسجلة عليه.']);
+
+        $this->assertNotSoftDeleted('vendors', [
+            'id' => $vendorWithBalance->id,
+        ]);
+
+        // Also test DELETE HTTP method
+        $deleteResponse = $this->actingAs($this->user)
+            ->deleteJson("/api/humancasevendor/{$vendorWithBalance->id}");
+
+        $deleteResponse->assertStatus(422)
+            ->assertJsonPath('success', false);
+
+        $this->assertNotSoftDeleted('vendors', [
+            'id' => $vendorWithBalance->id,
+        ]);
+
+        // 2. Vendor with journal entry
+        $vendorWithEntry = Vendor::create([
+            'store_id' => $this->store->id,
+            'name'     => 'مورد لديه قيد',
+            'phone'    => '0504445566',
+        ]);
+
+        \App\Models\JournalEntry::create([
+            'store_id'       => $this->store->id,
+            'entry_number'   => 'JV-VND-001',
+            'date'           => now()->toDateString(),
+            'status'         => 'posted',
+            'reference_type' => 'vendor',
+            'reference_id'   => $vendorWithEntry->id,
+        ]);
+
+        $response2 = $this->actingAs($this->user)
+            ->getJson("/api/humancasevendor/{$vendorWithEntry->id}/delete");
+
+        $response2->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertJsonFragment(['message' => 'لا يمكن حذف المورد لوجود حركات مالية مسجلة عليه.']);
+
+        $this->assertNotSoftDeleted('vendors', [
+            'id' => $vendorWithEntry->id,
+        ]);
+    }
+
     public function test_user_can_get_component_dropdown_vendors(): void
     {
         Vendor::create([

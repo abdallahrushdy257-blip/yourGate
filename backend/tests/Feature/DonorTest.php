@@ -180,6 +180,89 @@ class DonorTest extends TestCase
         ]);
     }
 
+    public function test_user_cannot_delete_donor_with_transactions(): void
+    {
+        $donor = Donor::create([
+            'store_id' => $this->store->id,
+            'name'     => 'مانح لديه حركات',
+            'phone'    => '0501112233',
+        ]);
+
+        $shop = \App\Models\Shop::create([
+            'store_id' => $this->store->id,
+            'title'    => 'متجر التبرعات',
+            'status'   => 1,
+            'total'    => 1000,
+        ]);
+
+        \App\Models\ShopTransaction::create([
+            'store_id'         => $this->store->id,
+            'shop_id'          => $shop->id,
+            'donor_id'         => $donor->id,
+            'invoice_number'   => 'INV-DONOR-100',
+            'transaction_type' => 1,
+            'amount'           => 500,
+            'date'             => now()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($this->user)
+            ->getJson("/api/donor/{$donor->id}/delete");
+
+        $response->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertJsonFragment(['message' => 'لا يمكن حذف المانح لوجود حركات وتبرعات مسجلة عليه.']);
+
+        $this->assertNotSoftDeleted('donors', [
+            'id' => $donor->id,
+        ]);
+
+        // Also test DELETE HTTP method
+        $deleteResponse = $this->actingAs($this->user)
+            ->deleteJson("/api/donor/{$donor->id}");
+
+        $deleteResponse->assertStatus(422)
+            ->assertJsonPath('success', false);
+
+        $this->assertNotSoftDeleted('donors', [
+            'id' => $donor->id,
+        ]);
+
+        // Also test donor with project transactions
+        $donor2 = Donor::create([
+            'store_id' => $this->store->id,
+            'name'     => 'مانح مشاريع',
+            'phone'    => '0509998877',
+        ]);
+
+        $project = \App\Models\Project::create([
+            'store_id' => $this->store->id,
+            'name'     => 'مشروع كفالة',
+            'total'    => 10000,
+            'amount'   => 5000,
+        ]);
+
+        \App\Models\ProjectTransaction::create([
+            'store_id'         => $this->store->id,
+            'project_id'       => $project->id,
+            'donor_id'         => $donor2->id,
+            'invoice_number'   => 'INV-PRJ-200',
+            'transaction_type' => 1,
+            'amount'           => 1000,
+            'date'             => now()->toDateString(),
+        ]);
+
+        $response2 = $this->actingAs($this->user)
+            ->deleteJson("/api/donor/{$donor2->id}");
+
+        $response2->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertJsonFragment(['message' => 'لا يمكن حذف المانح لوجود حركات وتبرعات مسجلة عليه.']);
+
+        $this->assertNotSoftDeleted('donors', [
+            'id' => $donor2->id,
+        ]);
+    }
+
     public function test_user_can_get_all_donor_interests_dropdown(): void
     {
         $response = $this->actingAs($this->user)

@@ -24,6 +24,7 @@ class UpdateVendorRequest extends BaseApiRequest
             'identification_number'      => ['nullable', 'string', 'max:100'],
             'identification_description' => ['nullable', 'string', 'max:255'],
             'type'                       => ['nullable', 'string', 'max:50'],
+            'opening_balance'            => ['nullable', 'numeric'],
         ];
     }
 

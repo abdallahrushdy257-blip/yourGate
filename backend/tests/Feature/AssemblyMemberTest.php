@@ -169,6 +169,59 @@ class AssemblyMemberTest extends TestCase
         ]);
     }
 
+    public function test_user_cannot_delete_member_with_transactions(): void
+    {
+        // 1. Member with subscription fees
+        $memberWithFees = AssemblyMember::create([
+            'store_id'          => $this->store->id,
+            'name'              => 'عضو لديه اشتراك',
+            'status'            => 2,
+            'subscription_fees' => 500,
+        ]);
+
+        $response1 = $this->actingAs($this->user)
+            ->withHeader('X-Store-ID', (string) $this->store->id)
+            ->deleteJson("/api/assemblymembers/{$memberWithFees->id}");
+
+        $response1->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertJsonFragment(['message' => 'لا يمكن حذف العضو لوجود تعاملات أو حركات مسجلة عليه (اشتراكات، لجان، أو محاضر اجتماعات).']);
+
+        $this->assertDatabaseHas('assembly_members', [
+            'id' => $memberWithFees->id,
+        ]);
+
+        // 2. Member with committee membership
+        $memberWithCommittee = AssemblyMember::create([
+            'store_id' => $this->store->id,
+            'name'     => 'عضو لجنة',
+            'status'   => 1,
+        ]);
+
+        $committee = \App\Models\Committee::create([
+            'store_id' => $this->store->id,
+            'name'     => 'لجنة التدقيق',
+        ]);
+
+        \App\Models\CommitteeMember::create([
+            'committee_id'       => $committee->id,
+            'assembly_member_id' => $memberWithCommittee->id,
+            'name'               => $memberWithCommittee->name,
+            'role'               => 'عضو',
+        ]);
+
+        $response2 = $this->actingAs($this->user)
+            ->withHeader('X-Store-ID', (string) $this->store->id)
+            ->deleteJson("/api/assemblymembers/{$memberWithCommittee->id}");
+
+        $response2->assertStatus(422)
+            ->assertJsonPath('success', false);
+
+        $this->assertDatabaseHas('assembly_members', [
+            'id' => $memberWithCommittee->id,
+        ]);
+    }
+
     public function test_user_can_get_stats_and_dropdown(): void
     {
         AssemblyMember::create([

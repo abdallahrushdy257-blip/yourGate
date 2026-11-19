@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\VendorException;
 use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -77,6 +78,7 @@ class VendorService
                 'identification_number'      => $data['identification_number'] ?? null,
                 'identification_description' => $data['identification_description'] ?? null,
                 'type'                       => $data['type'] ?? null,
+                'opening_balance'            => $data['opening_balance'] ?? 0,
             ]);
         });
     }
@@ -89,7 +91,7 @@ class VendorService
         return DB::transaction(function () use ($id, $data) {
             $vendor = Vendor::findOrFail($id);
 
-            $vendor->update([
+            $updateData = [
                 'name'                       => $data['name'],
                 'email'                      => $data['email'] ?? null,
                 'phone'                      => $data['phone'] ?? null,
@@ -99,7 +101,13 @@ class VendorService
                 'identification_number'      => $data['identification_number'] ?? null,
                 'identification_description' => $data['identification_description'] ?? null,
                 'type'                       => $data['type'] ?? null,
-            ]);
+            ];
+
+            if (array_key_exists('opening_balance', $data)) {
+                $updateData['opening_balance'] = $data['opening_balance'];
+            }
+
+            $vendor->update($updateData);
 
             return $vendor;
         });
@@ -112,6 +120,10 @@ class VendorService
     {
         return DB::transaction(function () use ($id) {
             $vendor = Vendor::findOrFail($id);
+
+            if ($vendor->hasTransactions()) {
+                throw VendorException::hasTransactions();
+            }
 
             return (bool) $vendor->delete();
         });

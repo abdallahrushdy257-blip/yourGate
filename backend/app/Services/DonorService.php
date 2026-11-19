@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\DonorException;
 use App\Models\Donor;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -119,6 +120,10 @@ class DonorService
     {
         return DB::transaction(function () use ($id) {
             $donor = Donor::findOrFail($id);
+
+            if ($donor->hasTransactions()) {
+                throw DonorException::hasTransactions();
+            }
 
             return (bool) $donor->delete();
         });

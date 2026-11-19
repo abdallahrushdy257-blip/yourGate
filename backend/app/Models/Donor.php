@@ -6,6 +6,7 @@ use App\Traits\BelongsToStore;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Donor extends Model
@@ -34,6 +35,32 @@ class Donor extends Model
     public function interest(): BelongsTo
     {
         return $this->belongsTo(Interest::class);
+    }
+
+    /**
+     * Relationship with Shop transactions (donations / receipts).
+     */
+    public function shopTransactions(): HasMany
+    {
+        return $this->hasMany(ShopTransaction::class);
+    }
+
+    /**
+     * Relationship with Project transactions.
+     */
+    public function projectTransactions(): HasMany
+    {
+        return $this->hasMany(ProjectTransaction::class);
+    }
+
+    /**
+     * Check if the donor has any financial movements or transactions.
+     */
+    public function hasTransactions(): bool
+    {
+        return $this->shopTransactions()->exists()
+            || $this->projectTransactions()->exists()
+            || JournalEntry::where('reference_type', 'donor_receipt')->where('reference_id', $this->id)->exists();
     }
 
     /**

@@ -91,10 +91,21 @@ class AdTest extends TestCase
 
     public function test_user_can_get_donation_accounts(): void
     {
+        \App\Models\ChartOfAccount::create([
+            'store_id'     => $this->store->id,
+            'code'         => '11101002',
+            'name'         => 'مصرف الراجحي الرئيسي',
+            'account_type' => \App\Models\ChartOfAccount::TYPE_ASSET,
+            'nature'       => \App\Models\ChartOfAccount::NATURE_DEBIT,
+            'is_payable'   => true,
+            'is_active'    => true,
+            'level'        => 5,
+        ]);
+
         $response = $this->actingAs($this->user, 'sanctum')->getJson('/api/transactions/components/donations');
 
         $response->assertOk()
             ->assertJsonPath('success', true)
-            ->assertJsonCount(5, 'data');
+            ->assertJsonFragment(['name' => '11101002 - مصرف الراجحي الرئيسي']);
     }
 }

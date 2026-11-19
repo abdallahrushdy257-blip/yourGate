@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\AssemblyMemberException;
 use App\Models\AssemblyMember;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
@@ -110,6 +111,11 @@ class AssemblyMemberService
     {
         return DB::transaction(function () use ($id) {
             $member = $this->find($id);
+
+            if ($member->hasTransactions()) {
+                throw AssemblyMemberException::hasTransactions();
+            }
+
             return (bool) $member->delete();
         });
     }

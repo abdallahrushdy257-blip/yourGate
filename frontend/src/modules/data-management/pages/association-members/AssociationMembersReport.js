@@ -402,9 +402,18 @@ function AssociationMembersReport() {
       setShowDeleteModal(false);
       setDeletingMember(null);
       setTableReloadKey(Date.now());
+      toast.success("تم حذف العضو بنجاح");
     } catch (err) {
       console.error("Error deleting member:", err);
-      alert("حدث خطأ أثناء محاولة حذف العضو");
+      const errorMsg =
+        err.response?.data?.message ||
+        (err.response?.data?.errors
+          ? Object.values(err.response.data.errors).flat().join(" ")
+          : null) ||
+        "حدث خطأ أثناء محاولة حذف العضو";
+      toast.error(errorMsg);
+      setShowDeleteModal(false);
+      setDeletingMember(null);
     } finally {
       setIsDeleting(false);
     }

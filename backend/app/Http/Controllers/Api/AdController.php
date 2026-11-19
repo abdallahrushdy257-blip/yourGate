@@ -61,21 +61,51 @@ class AdController extends Controller
     }
 
     /**
-     * Return donation accounts list for vouchers.
+     * Return donation and payment accounts list for vouchers from Chart of Accounts tree (Cash & Banks).
      */
     public function donationAccounts(): JsonResponse
     {
-        $accounts = [
-            ['id' => 1, 'name' => 'الحساب البنكي الرئيسي (الراجحي)', 'value' => '1', 'label' => 'الحساب البنكي الرئيسي (الراجحي)'],
-            ['id' => 2, 'name' => 'حساب التبرعات والزكاة (الإنماء)', 'value' => '2', 'label' => 'حساب التبرعات والزكاة (الإنماء)'],
-            ['id' => 3, 'name' => 'الصندوق النقدي العام بالجمعية', 'value' => '3', 'label' => 'الصندوق النقدي العام بالجمعية'],
-            ['id' => 4, 'name' => 'حساب بطاقات مدى والشبكة', 'value' => '4', 'label' => 'حساب بطاقات مدى والشبكة'],
-            ['id' => 5, 'name' => 'حساب سداد للمدفوعات الرقمية', 'value' => '5', 'label' => 'حساب سداد للمدفوعات الرقمية'],
-        ];
+        $accounts = app(\App\Services\Accounting\GeneralVoucherService::class)->getCashAndBankAccounts();
+
+        $formatted = $accounts->map(function ($acc) {
+            return [
+                'id'           => $acc->id,
+                'name'         => "{$acc->code} - {$acc->name}",
+                'account_name' => $acc->name,
+                'code'         => $acc->code,
+                'value'        => $acc->id,
+                'label'        => "{$acc->code} - {$acc->name}",
+            ];
+        })->values()->toArray();
+
+        if (empty($formatted)) {
+            $defaultAccount = \App\Models\ChartOfAccount::firstOrCreate(
+                ['code' => '11101001'],
+                [
+                    'name'            => 'النقدية بالصندوق والبنوك',
+                    'name_en'         => 'Cash and Banks',
+                    'level'           => 5,
+                    'account_type'    => \App\Models\ChartOfAccount::TYPE_ASSET,
+                    'nature'          => \App\Models\ChartOfAccount::NATURE_DEBIT,
+                    'is_payable'      => true,
+                    'is_active'       => true,
+                    'is_system'       => true,
+                    'opening_balance' => 0,
+                ]
+            );
+            $formatted = [[
+                'id'           => $defaultAccount->id,
+                'name'         => "{$defaultAccount->code} - {$defaultAccount->name}",
+                'account_name' => $defaultAccount->name,
+                'code'         => $defaultAccount->code,
+                'value'        => $defaultAccount->id,
+                'label'        => "{$defaultAccount->code} - {$defaultAccount->name}",
+            ]];
+        }
 
         return response()->json([
             'success' => true,
-            'data'    => $accounts,
+            'data'    => $formatted,
         ], Response::HTTP_OK);
     }
 }

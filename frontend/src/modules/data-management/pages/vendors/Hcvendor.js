@@ -9,6 +9,7 @@ import { Button, Modal, Spinner, Row, Col } from "react-bootstrap";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import ConfirmModal from "../../../../components/ConfirmModal";
+import { toast } from "react-toastify";
 
 function Hcvendor(props) {
   const columns = [
@@ -177,14 +178,23 @@ function Hcvendor(props) {
     setIsDeleting(true);
     try {
       const res = await API.get(`/humancasevendor/${itemToDelete}/delete`);
-      if (res.status === 200) {
+      if (res.status === 200 || res.status === 204) {
+        toast.success("تم حذف المورد بنجاح");
         setTableReloadKey(Date.now());
         setShowConfirm(false);
       }
     } catch (error) {
       console.error("There was an error!", error);
+      const errorMsg =
+        error.response?.data?.message ||
+        (error.response?.data?.errors
+          ? Object.values(error.response.data.errors).flat().join(" ")
+          : null) ||
+        "حدث خطأ أثناء الحذف";
+      toast.error(errorMsg);
     } finally {
       setIsDeleting(false);
+      setShowConfirm(false);
       setItemToDelete(null);
     }
   };

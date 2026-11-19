@@ -55,9 +55,16 @@ function ShowDonors(props) {
       }
     } catch (err) {
       console.error("Error deleting donor:", err);
-      toast.error("حدث خطأ أثناء الحذف");
+      const errorMsg =
+        err.response?.data?.message ||
+        (err.response?.data?.errors
+          ? Object.values(err.response.data.errors).flat().join(" ")
+          : null) ||
+        "حدث خطأ أثناء الحذف";
+      toast.error(errorMsg);
     } finally {
       setIsDeleting(false);
+      setShowConfirm(false);
       setItemToDelete(null);
     }
   };

@@ -47,13 +47,17 @@ class GeneralVoucherService
      */
     public function getCashAndBankAccounts(): Collection
     {
-        // Look for leaf accounts under Cash & Bank (code 111 or starting with 111 or 11)
+        // Look for leaf accounts under Cash & Bank (code 111, 110, or name matching cash/bank)
         $cashAccounts = ChartOfAccount::query()
             ->where('is_payable', true)
             ->where(function ($q) {
                 $q->where('code', 'like', '111%')
-                  ->orWhere('code', 'like', '11%')
-                  ->orWhere('code', 'like', '1%');
+                  ->orWhere('code', 'like', '110%')
+                  ->orWhere('name', 'like', '%بنك%')
+                  ->orWhere('name', 'like', '%مصرف%')
+                  ->orWhere('name', 'like', '%صندوق%')
+                  ->orWhere('name', 'like', '%خزينة%')
+                  ->orWhere('name', 'like', '%نقدية%');
             })
             ->orderBy('code')
             ->get();
@@ -61,6 +65,7 @@ class GeneralVoucherService
         if ($cashAccounts->isEmpty()) {
             $cashAccounts = ChartOfAccount::query()
                 ->where('is_payable', true)
+                ->where('account_type', ChartOfAccount::TYPE_ASSET)
                 ->orderBy('code')
                 ->get();
         }

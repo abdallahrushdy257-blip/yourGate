@@ -1046,7 +1046,8 @@ export function CasePaymentVoucherModal({
 }) {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().substr(0, 10));
-  const [account, setAccount] = useState("الحساب البنكي الرئيسي");
+  const [account, setAccount] = useState("");
+  const [bankAccounts, setBankAccounts] = useState([]);
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState({});
@@ -1056,11 +1057,20 @@ export function CasePaymentVoucherModal({
     if (show) {
       setAmount("");
       setDate(new Date().toISOString().substr(0, 10));
-      setAccount("الحساب البنكي الرئيسي");
       setNotes("");
       setError({});
       setSuccess(false);
       setIsSubmitting(false);
+
+      API.get("/transactions/components/donations")
+        .then((res) => {
+          const list = Array.isArray(res.data) ? res.data : res.data?.data || [];
+          setBankAccounts(list);
+          if (list.length > 0) {
+            setAccount(list[0].id || list[0].name);
+          }
+        })
+        .catch(console.error);
     }
   }, [show]);
 
@@ -1186,12 +1196,17 @@ export function CasePaymentVoucherModal({
               <Col md={12}>
                 <RegisterSelect
                   id="pay-account"
-                  label="الحساب المسحوب منه"
-                  options={[
-                    { value: "الحساب البنكي الرئيسي", label: "الحساب البنكي الرئيسي (الراجحي)" },
-                    { value: "حساب التبرعات والزكاة", label: "حساب التبرعات والزكاة" },
-                    { value: "الصندوق النقدي", label: "الصندوق النقدي بالجمعية" },
-                  ]}
+                  label="الحساب المسحوب منه (النقدية والبنوك)"
+                  options={
+                    bankAccounts.length > 0
+                      ? bankAccounts.map((acc) => ({
+                          value: acc.id,
+                          label: acc.name,
+                        }))
+                      : [
+                          { value: "", label: "جارٍ تحميل حسابات البنوك والنقدية..." },
+                        ]
+                  }
                   value={account}
                   onChange={(e) => setAccount(e.target.value)}
                   disabled={isCompleted}
@@ -1244,7 +1259,8 @@ export function CaseReceiptVoucherModal({
 }) {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(new Date().toISOString().substr(0, 10));
-  const [account, setAccount] = useState("تحويل بنكي");
+  const [account, setAccount] = useState("");
+  const [bankAccounts, setBankAccounts] = useState([]);
   const [selectedDonor, setSelectedDonor] = useState("");
   const [donors, setDonors] = useState([]);
   const [notes, setNotes] = useState("");
@@ -1256,12 +1272,22 @@ export function CaseReceiptVoucherModal({
     if (show) {
       setAmount("");
       setDate(new Date().toISOString().substr(0, 10));
-      setAccount("تحويل بنكي");
       setSelectedDonor("");
       setNotes("");
       setError({});
       setSuccess(false);
       setIsSubmitting(false);
+
+      // Fetch cash and bank accounts from chart of accounts
+      API.get("/transactions/components/donations")
+        .then((res) => {
+          const list = Array.isArray(res.data) ? res.data : res.data?.data || [];
+          setBankAccounts(list);
+          if (list.length > 0) {
+            setAccount(list[0].id || list[0].name);
+          }
+        })
+        .catch(console.error);
 
       // Fetch donors list
       API.get("/donor/all")
@@ -1408,13 +1434,17 @@ export function CaseReceiptVoucherModal({
               <Col md={12}>
                 <RegisterSelect
                   id="rec-method"
-                  label="طريقة وسيلة الدفع / التحصيل"
-                  options={[
-                    { value: "تحويل بنكي", label: "تحويل بنكي مباشر" },
-                    { value: "نقدي", label: "نقدي (كاش)" },
-                    { value: "شبكة مدى / بطاقة ائتمان", label: "شبكة مدى / بطاقة ائتمان" },
-                    { value: "سداد الإلكتروني", label: "نظام سداد الإلكتروني" },
-                  ]}
+                  label="حساب القبض والإيداع (النقدية والبنوك)"
+                  options={
+                    bankAccounts.length > 0
+                      ? bankAccounts.map((acc) => ({
+                          value: acc.id,
+                          label: acc.name,
+                        }))
+                      : [
+                          { value: "", label: "جارٍ تحميل حسابات البنوك والنقدية..." },
+                        ]
+                  }
                   value={account}
                   onChange={(e) => setAccount(e.target.value)}
                   disabled={isCompleted}

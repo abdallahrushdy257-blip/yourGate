@@ -1,4 +1,4 @@
-﻿import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../../components/title";
 import { faFileInvoice, faPlus } from "@fortawesome/free-solid-svg-icons";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
@@ -106,8 +106,8 @@ function DonerReceiptVoucher(props) {
   const getAccount = async () => {
     try {
       const res = await API.get("/transactions/components/donations");
-      const data = await res;
-      setAccount(data.data.data);
+      const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+      setAccount(list);
       setLoading(false);
     } catch (error) {
       console.error(error);
