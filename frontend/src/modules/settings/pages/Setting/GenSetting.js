@@ -1,4 +1,4 @@
-﻿import "./setting.css";
+import "./setting.css";
 import { useState, useEffect } from "react";
 import { settingsService } from "../../../../modules/settings";
 import { Form, Spinner } from "react-bootstrap";
