@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import "./ShowEmployee.css";
 import API from "../../../../api/axiosConfig";
-import TestPreloader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreloader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
@@ -142,13 +142,13 @@ function ShowEmployee() {
                 {workTypes[employee.worktype] || "دوام كامل"}
               </span>
               {employee.phone && (
-                <span className="text-muted small d-inline-flex align-items-center gap-1">
+                <span className=" small d-inline-flex align-items-center gap-1">
                   <FontAwesomeIcon icon={faPhone} />
                   <span dir="ltr">{employee.phone}</span>
                 </span>
               )}
               {employee.email && (
-                <span className="text-muted small d-inline-flex align-items-center gap-1">
+                <span className=" small d-inline-flex align-items-center gap-1">
                   <FontAwesomeIcon icon={faEnvelope} />
                   <span>{employee.email}</span>
                 </span>
@@ -518,7 +518,7 @@ function ShowEmployee() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-5 text-muted">
+            <div className="text-center py-5 ">
               <FontAwesomeIcon icon={faFileAlt} style={{ fontSize: "40px", opacity: 0.3 }} />
               <p className="mt-3">لا توجد مستندات مرفقة لهذا الموظف</p>
             </div>

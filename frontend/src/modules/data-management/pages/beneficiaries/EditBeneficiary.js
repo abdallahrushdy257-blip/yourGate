@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import "../../../../pages/CreateLoan/createLoan.css";
+﻿import React, { useState } from "react";
+import "../../../../modules/loans/pages/createLoan.css";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import Title from "../../../../components/title";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,7 +11,7 @@ import API from "../../../../api/axiosConfig";
 import { useNavigate } from "react-router";
 import { Spinner } from "react-bootstrap";
 import { useEffect } from "react";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 
 function EditBeneficiary() {
   const { id } = useParams();

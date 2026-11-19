@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
 
 const Endowments = lazy(() => import("../pages/Endowments"));
 const EditEndowments = lazy(() => import("../pages/EditEndowments"));
@@ -10,7 +10,7 @@ const PaymentHistory = lazy(() => import("../pages/PaymentHistory"));
 const ShowpaymentHistory = lazy(() => import("../pages/ShowpaymentHistory"));
 const EndowmentSammary = lazy(() => import("../pages/EndowmentSammary"));
 const ViewEndowments = lazy(() => import("../pages/ViewEndowments"));
-const ReceiptVoucherEndowments = lazy(() => import("../../../pages/ReceiptVoucher/ReceiptVoucherEndowments"));
+const ReceiptVoucherEndowments = lazy(() => import("../../finance/pages/ReceiptVoucher/ReceiptVoucherEndowments"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>

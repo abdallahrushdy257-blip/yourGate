@@ -9,7 +9,7 @@ import { faEllipsis, faList, faTable } from "@fortawesome/free-solid-svg-icons";
 // import { Dropdown } from "react-bootstrap";
 import HRreports from "../HRreports";
 import API from "../../../../../api/axiosConfig";
-import TestPreLoader from "../../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../../common/pages/TestPreLoader/TestPreLoader";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import TableComponent from "../../../../../components/TableComponent";

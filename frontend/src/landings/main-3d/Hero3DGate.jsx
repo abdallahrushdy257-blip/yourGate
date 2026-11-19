@@ -1,132 +1,201 @@
-import React, { useEffect, useRef, useState, useContext } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
   faArrowRight,
-  faVolumeHigh,
-  faVolumeXmark,
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
-import { ThemeContext } from "../../context/theme-context";
+import { ThemeContext } from "../../app/providers/theme-context";
 
 /**
  * Hero3DGate Component
- * - Pinned + Scrubbed Gate Opening with WebGL Canvas
+ * - Pinned + Scrubbed Gate Opening with high-FPS Canvas 2D
  * - Realistic 3D Double Gate leaves rotating open as user scrolls
- * - Light leaks out through seams, flooding screen on full open
- * - Floating golden dust particles with mouse parallax
- * - Respects prefers-reduced-motion & low-power fallback
- * - Theme-reactive colors reading CSS variables
+ * - Pauses rAF & background video automatically when off-screen or tab hidden
+ * - Updates scroll progress via direct DOM refs (zero React re-renders per scroll frame)
+ * - Respects prefers-reduced-motion & Save-Data preferences
  */
 export default function Hero3DGate({
   t,
   dir,
   isRTL,
   reducedMotion,
+  isMobile,
   onExploreClick,
 }) {
   const canvasRef = useRef(null);
   const videoRef = useRef(null);
   const heroWrapperRef = useRef(null);
+  const contentOverlayRef = useRef(null);
+  const progressBarRef = useRef(null);
+  const ratioTextRef = useRef(null);
   const { theme } = useContext(ThemeContext);
 
-  const [soundEnabled, setSoundEnabled] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const shouldShowVideo =
+    !reducedMotion &&
+    !(typeof navigator !== "undefined" && navigator.connection?.saveData);
 
-  
+  // Defer video playback slightly and pause when hero leaves viewport
+  useEffect(() => {
+    const video = videoRef.current;
+    const wrapper = heroWrapperRef.current;
+    if (!video || !wrapper || !shouldShowVideo) return;
+
+    let isVisible = true;
+    const tryPlay = () => {
+      if (isVisible && !document.hidden) {
+        video.play().catch(() => {});
+      }
+    };
+
+    const startTimer = setTimeout(() => {
+      video.load();
+      tryPlay();
+    }, 150);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible && !document.hidden) {
+          tryPlay();
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(wrapper);
+
+    return () => {
+      clearTimeout(startTimer);
+      observer.disconnect();
+      video.pause();
+    };
+  }, [shouldShowVideo]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || reducedMotion) return;
-    const ctx = canvas.getContext("2d");
+    const wrapper = heroWrapperRef.current;
+    if (!canvas || !wrapper || reducedMotion) return;
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    let animId;
-    let width = (canvas.width = canvas.parentElement.offsetWidth || window.innerWidth);
-    let height = (canvas.height = canvas.parentElement.offsetHeight || window.innerHeight);
+    let animId = null;
+    let isInView = true;
+    let isTabVisible = !document.hidden;
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let wrapperHeight = wrapper.offsetHeight || window.innerHeight;
 
-    const onResize = () => {
+    const updateSize = () => {
       if (!canvas.parentElement) return;
-      width = canvas.width = canvas.parentElement.offsetWidth || window.innerWidth;
-      height = canvas.height = canvas.parentElement.offsetHeight || window.innerHeight;
+      width = canvas.parentElement.offsetWidth || window.innerWidth;
+      height = canvas.parentElement.offsetHeight || window.innerHeight;
+      wrapperHeight = wrapper.offsetHeight || height;
+      dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
-    window.addEventListener("resize", onResize);
+    updateSize();
 
-    // Mouse coordinates with spring interpolation
+    let resizeTimer = null;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updateSize, 120);
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+
+    // Mouse coordinates with spring interpolation (desktop only)
     const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
     const onMouseMove = (e) => {
-      mouse.targetX = (e.clientX / width - 0.5) * 2; // -1 to 1
+      if (isMobile || !width || !height) return;
+      mouse.targetX = (e.clientX / width - 0.5) * 2;
       mouse.targetY = (e.clientY / height - 0.5) * 2;
     };
-    window.addEventListener("mousemove", onMouseMove);
-
-    // 3D Gold Dust Particles
-    const PARTICLE_COUNT = Math.min(Math.floor((width * height) / 9000), 140);
-    const particles = [];
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push({
-        x: (Math.random() - 0.5) * 1200,
-        y: (Math.random() - 0.5) * 900,
-        z: Math.random() * 800 + 40,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: (Math.random() - 0.5) * 0.35,
-        vz: Math.random() * 0.9 + 0.3,
-        size: Math.random() * 2.6 + 1.2,
-        alpha: Math.random() * 0.6 + 0.3,
-      });
+    if (!isMobile) {
+      window.addEventListener("mousemove", onMouseMove, { passive: true });
     }
 
-    let time = 0;
+    // 3D Gold Dust Particles (scaled to device capability)
+    const maxParticles = isMobile ? 55 : 110;
+    const PARTICLE_COUNT = Math.min(
+      Math.floor((width * height) / 11000),
+      maxParticles
+    );
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+      x: (Math.random() - 0.5) * 1200,
+      y: (Math.random() - 0.5) * 900,
+      z: Math.random() * 800 + 40,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+      vz: Math.random() * 0.9 + 0.3,
+      size: Math.random() * 2.4 + 1.2,
+      alpha: Math.random() * 0.6 + 0.3,
+    }));
+
     let currentOpenRatio = 0;
     let targetOpenRatio = 0;
+    let lastDisplayedPct = -1;
 
-    // Track scroll within hero section
+    const applyScrollDomUpdates = (ratio) => {
+      if (contentOverlayRef.current) {
+        const opacity = Math.max(0.2, 1 - ratio * 0.9);
+        const ty = ratio * 40;
+        contentOverlayRef.current.style.opacity = opacity.toFixed(3);
+        contentOverlayRef.current.style.transform = `translate3d(0, ${ty.toFixed(1)}px, 0)`;
+      }
+      if (progressBarRef.current) {
+        progressBarRef.current.style.transform = `scaleX(${ratio.toFixed(4)})`;
+      }
+      const pct = Math.round(ratio * 100);
+      if (pct !== lastDisplayedPct && ratioTextRef.current) {
+        lastDisplayedPct = pct;
+        ratioTextRef.current.textContent = `${pct}%`;
+      }
+    };
+
     const onScroll = () => {
-      const wrapper = heroWrapperRef.current;
-      if (!wrapper) return;
+      if (!isInView) return;
       const rect = wrapper.getBoundingClientRect();
-      const scrolled = -rect.top;
-      const totalDist = wrapper.offsetHeight * 0.8;
+      const totalDist = wrapperHeight * 0.8;
       if (totalDist <= 0) return;
-
-      const ratio = Math.max(0, Math.min(1, scrolled / totalDist));
+      const ratio = Math.max(0, Math.min(1, -rect.top / totalDist));
       targetOpenRatio = ratio;
-      setScrollProgress(ratio);
+      applyScrollDomUpdates(ratio);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
 
-    // Main 60fps Render Loop
+    const isDark =
+      theme === "dark" || document.body.classList.contains("dark-mode");
+    const primaryColor = isDark
+      ? "rgba(200, 146, 74, "
+      : "rgba(185, 130, 50, ";
+    const lightFloodColor = isDark
+      ? "rgba(240, 195, 120, "
+      : "rgba(255, 235, 190, ";
+
+    // Main Render Loop (runs ONLY when visible and tab active)
     const render = () => {
-      time += 0.016;
+      if (!isInView || !isTabVisible) {
+        animId = null;
+        return;
+      }
 
-      // Smooth mouse easing
       mouse.x += (mouse.targetX - mouse.x) * 0.05;
       mouse.y += (mouse.targetY - mouse.y) * 0.05;
-
-      // Gate opening easing
-      const prevRatio = currentOpenRatio;
       currentOpenRatio += (targetOpenRatio - currentOpenRatio) * 0.1;
 
-
       ctx.clearRect(0, 0, width, height);
-
-      // Read current dynamic CSS theme variable
-      const isDark = theme === "dark" || document.body.classList.contains("dark-mode");
-      const primaryColor = isDark ? "rgba(200, 146, 74, " : "rgba(185, 130, 50, ";
-      const lightFloodColor = isDark ? "rgba(240, 195, 120, " : "rgba(255, 235, 190, ";
 
       const cx = width * 0.5 + mouse.x * 35;
       const cy = height * 0.5 + mouse.y * 25;
 
       // ── 1. Warm Radiance Leaking Through Gate Seams ──
-      const beamGlow = ctx.createRadialGradient(
-        cx,
-        cy,
-        20,
-        cx,
-        cy,
-        280 + currentOpenRatio * 450
-      );
+      const beamRadius = 280 + currentOpenRatio * 450;
+      const beamGlow = ctx.createRadialGradient(cx, cy, 20, cx, cy, beamRadius);
       const beamAlpha = 0.22 + currentOpenRatio * 0.75;
       beamGlow.addColorStop(0, `${lightFloodColor}${beamAlpha})`);
       beamGlow.addColorStop(0.35, `${primaryColor}${beamAlpha * 0.55})`);
@@ -134,26 +203,29 @@ export default function Hero3DGate({
       beamGlow.addColorStop(1, `${primaryColor}0)`);
       ctx.fillStyle = beamGlow;
       ctx.beginPath();
-      ctx.arc(cx, cy, 280 + currentOpenRatio * 450, 0, Math.PI * 2);
+      ctx.arc(cx, cy, beamRadius, 0, Math.PI * 2);
       ctx.fill();
 
       // ── 2. 3D Architectural Double Gate Leaves ──
       const gateWidth = Math.min(260, width * 0.28);
       const gateHeight = gateWidth * 1.65;
-      const openAngle = currentOpenRatio * 1.55; // 0 to ~90 degrees in radians
+      const openAngle = currentOpenRatio * 1.55;
+      const perspectiveScale = Math.max(0.08, Math.cos(openAngle));
 
-      // Outer Arch Portal Frame (Fixed)
+      // Outer Arch Portal Frame (layered glow stroke instead of costly shadowBlur)
       ctx.save();
-      ctx.strokeStyle = `${primaryColor}0.85)`;
-      ctx.lineWidth = 3.5;
-      ctx.shadowColor = "#e8b068";
-      ctx.shadowBlur = 18;
-
       ctx.beginPath();
       ctx.arc(cx, cy - gateHeight * 0.35, gateWidth, Math.PI, 0, false);
       ctx.lineTo(cx + gateWidth, cy + gateHeight * 0.5);
       ctx.lineTo(cx - gateWidth, cy + gateHeight * 0.5);
       ctx.lineTo(cx - gateWidth, cy - gateHeight * 0.35);
+
+      ctx.strokeStyle = `${lightFloodColor}0.22)`;
+      ctx.lineWidth = 9;
+      ctx.stroke();
+
+      ctx.strokeStyle = `${primaryColor}0.85)`;
+      ctx.lineWidth = 3.5;
       ctx.stroke();
 
       // Base pedestal line
@@ -164,79 +236,59 @@ export default function Hero3DGate({
       ctx.stroke();
       ctx.restore();
 
-      // Left Gate Leaf (Rotates Open outward to the left)
-      ctx.save();
-      ctx.translate(cx - gateWidth, cy);
-      ctx.rotate(-openAngle * 0.9);
-      const leftPerspectiveScale = Math.cos(openAngle); // Shrinks horizontally in perspective
-      ctx.scale(Math.max(0.08, leftPerspectiveScale), 1);
-
-      // Gate Leaf Surface
-      const leftGrad = ctx.createLinearGradient(0, -gateHeight * 0.5, gateWidth, gateHeight * 0.5);
-      leftGrad.addColorStop(0, `${primaryColor}0.38)`);
-      leftGrad.addColorStop(0.5, `${primaryColor}0.18)`);
-      leftGrad.addColorStop(1, `${primaryColor}0.48)`);
-
-      ctx.fillStyle = leftGrad;
-      ctx.strokeStyle = `${primaryColor}0.95)`;
-      ctx.lineWidth = 2.4;
-      ctx.shadowColor = "#f0c378";
-      ctx.shadowBlur = 12;
-
-      ctx.beginPath();
-      ctx.rect(0, -gateHeight * 0.45, gateWidth, gateHeight * 0.95);
-      ctx.fill();
-      ctx.stroke();
-
-      // Ornate Gate Ironwork Grid
-      for (let bar = 1; bar < 4; bar++) {
-        ctx.beginPath();
-        ctx.moveTo((gateWidth / 4) * bar, -gateHeight * 0.45);
-        ctx.lineTo((gateWidth / 4) * bar, gateHeight * 0.5);
-        ctx.strokeStyle = `${primaryColor}0.5)`;
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // Right Gate Leaf (Rotates Open outward to the right)
-      ctx.save();
-      ctx.translate(cx + gateWidth, cy);
-      ctx.rotate(openAngle * 0.9);
-      const rightPerspectiveScale = Math.cos(openAngle);
-      ctx.scale(Math.max(0.08, rightPerspectiveScale), 1);
-
-      const rightGrad = ctx.createLinearGradient(0, -gateHeight * 0.5, -gateWidth, gateHeight * 0.5);
-      rightGrad.addColorStop(0, `${primaryColor}0.38)`);
-      rightGrad.addColorStop(0.5, `${primaryColor}0.18)`);
-      rightGrad.addColorStop(1, `${primaryColor}0.48)`);
-
-      ctx.fillStyle = rightGrad;
-      ctx.strokeStyle = `${primaryColor}0.95)`;
-      ctx.lineWidth = 2.4;
-      ctx.shadowColor = "#f0c378";
-      ctx.shadowBlur = 12;
-
-      ctx.beginPath();
-      ctx.rect(-gateWidth, -gateHeight * 0.45, gateWidth, gateHeight * 0.95);
-      ctx.fill();
-      ctx.stroke();
-
-      for (let bar = 1; bar < 4; bar++) {
-        ctx.beginPath();
-        ctx.moveTo((-gateWidth / 4) * bar, -gateHeight * 0.45);
-        ctx.lineTo((-gateWidth / 4) * bar, gateHeight * 0.5);
-        ctx.strokeStyle = `${primaryColor}0.5)`;
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-      }
-      ctx.restore();
-
-      // ── 3. Light Flood Tunnel (Dollies into camera when gate opens) ──
-      if (currentOpenRatio > 0.05) {
+      // Helper to render left/right gate leaf without duplicated logic
+      const drawGateLeaf = (sideSign) => {
         ctx.save();
+        ctx.translate(cx + sideSign * gateWidth, cy);
+        ctx.rotate(sideSign * openAngle * 0.9);
+        ctx.scale(perspectiveScale, 1);
+
+        const x0 = sideSign === -1 ? 0 : -gateWidth;
+        const grad = ctx.createLinearGradient(
+          0,
+          -gateHeight * 0.5,
+          -sideSign * gateWidth,
+          gateHeight * 0.5
+        );
+        grad.addColorStop(0, `${primaryColor}0.38)`);
+        grad.addColorStop(0.5, `${primaryColor}0.18)`);
+        grad.addColorStop(1, `${primaryColor}0.48)`);
+
+        ctx.fillStyle = grad;
+        ctx.strokeStyle = `${primaryColor}0.95)`;
+        ctx.lineWidth = 2.4;
+
+        ctx.beginPath();
+        ctx.rect(x0, -gateHeight * 0.45, gateWidth, gateHeight * 0.95);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        for (let bar = 1; bar < 4; bar++) {
+          const bx = -sideSign * (gateWidth / 4) * bar;
+          ctx.moveTo(bx, -gateHeight * 0.45);
+          ctx.lineTo(bx, gateHeight * 0.5);
+        }
+        ctx.strokeStyle = `${primaryColor}0.5)`;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.restore();
+      };
+
+      drawGateLeaf(-1);
+      drawGateLeaf(1);
+
+      // ── 3. Light Flood Tunnel ──
+      if (currentOpenRatio > 0.05) {
         const flashAlpha = Math.min(0.92, Math.pow(currentOpenRatio, 1.8) * 0.92);
-        const flashGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, width * 0.7);
+        const flashGrad = ctx.createRadialGradient(
+          cx,
+          cy,
+          10,
+          cx,
+          cy,
+          width * 0.7
+        );
         flashGrad.addColorStop(0, `${lightFloodColor}${flashAlpha})`);
         flashGrad.addColorStop(0.5, `${lightFloodColor}${flashAlpha * 0.4})`);
         flashGrad.addColorStop(1, "rgba(255, 255, 255, 0)");
@@ -244,14 +296,13 @@ export default function Hero3DGate({
         ctx.beginPath();
         ctx.arc(cx, cy, width * 0.7, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
       }
 
       // ── 4. Floating 3D Gold Dust Particles ──
       const fov = 420;
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        p.z -= p.vz + currentOpenRatio * 4; // Fly faster toward camera when open
+        p.z -= p.vz + currentOpenRatio * 4;
         p.x += p.vx;
         p.y += p.vy;
 
@@ -275,17 +326,49 @@ export default function Hero3DGate({
       animId = requestAnimationFrame(render);
     };
 
-    render();
+    const startLoopIfActive = () => {
+      if (isInView && isTabVisible && animId === null) {
+        animId = requestAnimationFrame(render);
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isInView = entry.isIntersecting;
+        if (isInView) {
+          startLoopIfActive();
+        } else if (animId !== null) {
+          cancelAnimationFrame(animId);
+          animId = null;
+        }
+      },
+      { threshold: 0.01 }
+    );
+    observer.observe(wrapper);
+
+    const onVisibilityChange = () => {
+      isTabVisible = !document.hidden;
+      if (isTabVisible) {
+        startLoopIfActive();
+      } else if (animId !== null) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    startLoopIfActive();
 
     return () => {
-      cancelAnimationFrame(animId);
+      if (animId !== null) cancelAnimationFrame(animId);
+      clearTimeout(resizeTimer);
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("resize", onResize);
-      window.removeEventListener("mousemove", onMouseMove);
+      if (!isMobile) window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("scroll", onScroll);
     };
-  }, [theme, reducedMotion, soundEnabled]);
-
-  const gateOpenPercent = Math.round(scrollProgress * 100);
+  }, [theme, reducedMotion, isMobile]);
 
   return (
     <div
@@ -297,31 +380,27 @@ export default function Hero3DGate({
       <div className="heroStickyViewport">
         {/* Ambient Video Layer */}
         <div className="heroVideoBgContainer">
-          <video
-            ref={videoRef}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-            className="heroBgVideo"
-          >
-            <source src="/people_cont.mp4" type="video/mp4" />
-          </video>
+          {shouldShowVideo && (
+            <video
+              ref={videoRef}
+              loop
+              muted
+              playsInline
+              preload="none"
+              className="heroBgVideo"
+              aria-hidden="true"
+            >
+              <source src="/people_cont.mp4" type="video/mp4" />
+            </video>
+          )}
           <div className="heroVideoOverlay"></div>
         </div>
 
         {/* 3D Gate & Light Flood Canvas */}
-        <canvas ref={canvasRef} className="heroGateCanvas" />
+        <canvas ref={canvasRef} className="heroGateCanvas" aria-hidden="true" />
 
         {/* Overlaid UI Content */}
-        <div
-          className="heroContentOverlay"
-          style={{
-            opacity: Math.max(0.2, 1 - scrollProgress * 0.9),
-            transform: `translateY(${scrollProgress * 40}px)`,
-          }}
-        >
+        <div ref={contentOverlayRef} className="heroContentOverlay">
           <div className="heroBadge">
             <span className="heroBadgeDot"></span>
             <span>{t.hero.badge}</span>
@@ -347,21 +426,23 @@ export default function Hero3DGate({
               <span>{t.hero.ctaSecondary}</span>
             </a>
           </div>
-
         </div>
 
         {/* Floating Scroll Indicator & Gate Status Bar */}
         <div className="gateStatusBar" dir={dir}>
           <div className="gateProgressTrack">
             <div
+              ref={progressBarRef}
               className="gateProgressBar"
-              style={{ width: `${gateOpenPercent}%` }}
+              style={{ transform: "scaleX(0)" }}
             ></div>
           </div>
           <div className="gateStatusInfo">
             <FontAwesomeIcon icon={faChevronDown} className="pulseArrow" />
             <span>{t.hero.scrollHint}</span>
-            <span className="gateRatioText">{gateOpenPercent}%</span>
+            <span ref={ratioTextRef} className="gateRatioText">
+              0%
+            </span>
           </div>
         </div>
       </div>

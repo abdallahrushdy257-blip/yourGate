@@ -1,15 +1,15 @@
-export { default as ReceiptVoucherPage } from "../../../pages/ReceiptVoucher/ReceiptVoucher";
-export { default as ReceiptVoucherProjectPage } from "../../../pages/ReceiptVoucher/ReceiptVoucherProject";
-export { default as ReceiptVoucherViewPage } from "../../../pages/ReceiptVoucher/ReceiptVoucherView";
-export { default as ReceiptVoucherViewProjectPage } from "../../../pages/ReceiptVoucher/ReceiptVoucherViewProject";
-export { default as ReceiptVoucherEndowmentsPage } from "../../../pages/ReceiptVoucher/ReceiptVoucherEndowments";
-export { default as ReceiptVoucherLoanPage } from "../../../pages/ReceiptVoucher/ReceiptVoucherLoan";
+﻿export { default as ReceiptVoucherPage } from "./ReceiptVoucher/ReceiptVoucher";
+export { default as ReceiptVoucherProjectPage } from "./ReceiptVoucher/ReceiptVoucherProject";
+export { default as ReceiptVoucherViewPage } from "./ReceiptVoucher/ReceiptVoucherView";
+export { default as ReceiptVoucherViewProjectPage } from "./ReceiptVoucher/ReceiptVoucherViewProject";
+export { default as ReceiptVoucherEndowmentsPage } from "./ReceiptVoucher/ReceiptVoucherEndowments";
+export { default as ReceiptVoucherLoanPage } from "./ReceiptVoucher/ReceiptVoucherLoan";
 
-export { default as PaymentVoucherPage } from "../../../pages/PaymentVoucher/PaymentVoucher";
-export { default as PaymentVoucherGeneralPage } from "../../../pages/PaymentVoucher/PaymentVoucherGeneral";
-export { default as PaymentVoucherProjectPage } from "../../../pages/PaymentVoucher/PaymentVoucherProject";
-export { default as EndowmentsVoucherPage } from "../../../pages/PaymentVoucher/EndowmentsVoucher";
-export { default as PaymentVoucherLoanPage } from "../../../pages/PaymentVoucher/PaymentVoucherLoan";
+export { default as PaymentVoucherPage } from "./PaymentVoucher/PaymentVoucher";
+export { default as PaymentVoucherGeneralPage } from "./PaymentVoucher/PaymentVoucherGeneral";
+export { default as PaymentVoucherProjectPage } from "./PaymentVoucher/PaymentVoucherProject";
+export { default as EndowmentsVoucherPage } from "./PaymentVoucher/EndowmentsVoucher";
+export { default as PaymentVoucherLoanPage } from "./PaymentVoucher/PaymentVoucherLoan";
 
 export { default as GeneralReceiptVoucherPage } from "../../accounting/pages/GeneralPayment/GeneralReceiptVoucher";
 export { default as GeneralReceiptVoucherCashPage } from "../../accounting/pages/GeneralPayment/GeneralReceiptVoucherCash";

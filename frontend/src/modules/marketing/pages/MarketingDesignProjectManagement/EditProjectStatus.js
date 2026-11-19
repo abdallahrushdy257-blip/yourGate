@@ -10,7 +10,7 @@ import RegisterTextbox from "../../../../components/RegisterTextBox";
 import RegisterTextarea from "../../../../components/RegisterTextarea";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import CustomButton from "../../../../components/CustomButton";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 
 import { marketingService } from "../../services/marketingService";
 import "./MarketingDesignProjectManagement.css";

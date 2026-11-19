@@ -6,7 +6,7 @@ import { saveAs } from "file-saver";
 import { useParams } from "react-router-dom";
 
 import Title from "../../../../components/title";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import { marketingService } from "../../services/marketingService";
 import "./DesignAttachments.css";
 

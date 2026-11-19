@@ -10,7 +10,7 @@ import "./commitmentCompliance.css";
 import { Form, Modal } from "react-bootstrap";
 import CustomButton from "../../../components/CustomButton";
 import API from "../../../api/axiosConfig";
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "./TestPreLoader/TestPreLoader";
 import DonutChart from "../../../components/DonutChart";
 
 var criteriaData = [

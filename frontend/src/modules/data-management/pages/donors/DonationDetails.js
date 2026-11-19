@@ -3,7 +3,7 @@ import TableComponent from "../../../../components/TableComponent";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate , useParams } from "react-router";
-import { toLocal } from "../../../../Utils/toLocal";
+import { toLocal } from "../../../../shared/Utils/toLocal";
 function DonationDetails(props) {
     const columns = [
         { name: "التاريخ", key: "date" },

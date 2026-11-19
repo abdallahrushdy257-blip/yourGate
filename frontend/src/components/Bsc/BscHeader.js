@@ -1,6 +1,6 @@
 // src/components/Bsc/BscHeader.jsx — النسخة المصححة
 
-import { usePeriods } from '../../hooks/useBsc';
+import { usePeriods } from '../../shared/hooks/useBsc';
 
 const BscHeader = ({ orgName, period, onPeriodChange, onRefresh, refreshing }) => {
   const periodsFromApi = usePeriods();

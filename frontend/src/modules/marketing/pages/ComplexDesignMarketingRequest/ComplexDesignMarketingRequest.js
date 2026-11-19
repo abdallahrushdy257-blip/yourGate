@@ -14,7 +14,7 @@ import Title from "../../../../components/title";
 import RegisterTextarea from "../../../../components/RegisterTextarea";
 
 import { marketingService } from "../../services/marketingService";
-import "../../../../pages/CompletingData/CompletingData.css";
+import "../../../../modules/common/pages/CompletingData/CompletingData.css";
 import "./complexdesignmarketingrequest.css";
 import "../SendDesignRequest/SendDesignRequest.css";
 

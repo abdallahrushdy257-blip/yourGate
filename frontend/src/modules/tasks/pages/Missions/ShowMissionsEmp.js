@@ -1,6 +1,6 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+﻿import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../../components/title";
-import "../../../../pages/AddNewClient/addnewclient.css";
+import "../../../../modules/partners/pages/AddNewClient/addnewclient.css";
 import { faListCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Form } from "react-bootstrap";
 import RegisterTextbox from "../../../../components/RegisterTextBox";

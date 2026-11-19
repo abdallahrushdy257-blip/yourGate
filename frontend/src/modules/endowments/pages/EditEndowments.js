@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import "../../../pages/CreateLoan/createLoan.css"
+﻿import React, { useEffect, useState } from 'react';
+import "../../loans/pages/createLoan.css"
 import Title from '../../../components/title';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faPen } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +10,7 @@ import RegisterSelect from '../../../components/RegisterSelect';
 import UploadInput from '../../../components/UploadInput';
 import { useNavigate, useParams } from 'react-router';
 import API from "../../../api/axiosConfig";
-import TestPreLoader from '../../../pages/TestPreLoader/TestPreLoader'
+import TestPreLoader from '../../common/pages/TestPreLoader/TestPreLoader'
 
 
 function EditEndowments() {

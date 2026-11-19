@@ -7,7 +7,7 @@ import CustomButton from "../../../../components/CustomButton";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import { hrService } from "../../services/hrService";
 import "../JobTitle/jobTitle.css";
 

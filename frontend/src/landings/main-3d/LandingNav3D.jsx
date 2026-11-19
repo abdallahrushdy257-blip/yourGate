@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMoon,
@@ -8,22 +8,33 @@ import {
   faBars,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { ThemeContext } from "../../context/theme-context";
+import { ThemeContext } from "../../app/providers/theme-context";
 import { useNavigate } from "react-router-dom";
-import logoLight from "../../logo-light.svg";
-import logoDark from "../../logo-dark.svg";
+import logoLight from "../../assets/logo-light.svg";
+import logoDark from "../../assets/logo-dark.svg";
 
 export default function LandingNav3D({ t, dir, isRTL }) {
   const { theme, setTheme } = useContext(ThemeContext);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isScrolledRef = useRef(false);
   const navigate = useNavigate();
 
   const logoSrc = theme === "light" ? logoLight : logoDark;
 
   useEffect(() => {
+    let rafPending = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      if (rafPending) return;
+      rafPending = true;
+      requestAnimationFrame(() => {
+        rafPending = false;
+        const scrolled = window.scrollY > 40;
+        if (scrolled !== isScrolledRef.current) {
+          isScrolledRef.current = scrolled;
+          setIsScrolled(scrolled);
+        }
+      });
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
@@ -50,6 +61,8 @@ export default function LandingNav3D({ t, dir, isRTL }) {
     }
   };
 
+  const themeLabel = theme === "light" ? t.nav.themeDark : t.nav.themeLight;
+
   return (
     <header
       className={`landingNav3D ${isScrolled ? "navScrolled" : ""}`}
@@ -57,8 +70,17 @@ export default function LandingNav3D({ t, dir, isRTL }) {
     >
       <div className="navContainer">
         {/* Brand Logo */}
-        <div className="navBrand" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          <img src={logoSrc} alt="YourGate" className="navLogoImg" />
+        <div
+          className="navBrand"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          <img
+            src={logoSrc}
+            alt="YourGate"
+            width={42}
+            height={42}
+            className="navLogoImg"
+          />
           <div className="navBrandText">
             <span className="brandName">{t.nav.brand}</span>
             <span className="brandBadge">SaaS</span>
@@ -66,8 +88,11 @@ export default function LandingNav3D({ t, dir, isRTL }) {
         </div>
 
         {/* Center Navigation Links (Desktop) */}
-        <nav className="navLinksDesktop">
-          <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+        <nav className="navLinksDesktop" aria-label={t.nav.brand}>
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
             {t.nav.home}
           </button>
           <button type="button" onClick={() => scrollTo("donationJourney")}>
@@ -94,7 +119,8 @@ export default function LandingNav3D({ t, dir, isRTL }) {
             type="button"
             className="navBtnSecondary themeToggleBtn"
             onClick={handleToggleTheme}
-            title={theme === "light" ? t.nav.themeDark : t.nav.themeLight}
+            title={themeLabel}
+            aria-label={themeLabel}
           >
             <FontAwesomeIcon icon={theme === "light" ? faMoon : faSun} />
           </button>
@@ -124,6 +150,7 @@ export default function LandingNav3D({ t, dir, isRTL }) {
             className="mobileMenuToggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle Navigation"
+            aria-expanded={mobileMenuOpen}
           >
             <FontAwesomeIcon icon={mobileMenuOpen ? faXmark : faBars} />
           </button>

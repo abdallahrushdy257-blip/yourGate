@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
-import TestPreLoader from "../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../modules/common/pages/TestPreLoader/TestPreLoader";
 
 const AdminHome = lazy(() => import("../Home/AdminHome"));
 const Shopdesign = lazy(() => import("../shopandproject/Shopdesign"));

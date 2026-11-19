@@ -1,38 +1,24 @@
 import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
 
-const ProjectListPage = lazy(() => import("../pages").then((m) => ({ default: m.ProjectListPage })));
-const ProjectDetailsPage = lazy(() => import("../pages").then((m) => ({ default: m.ProjectDetailsPage })));
-const EditProjectStatusPage = lazy(() => import("../pages").then((m) => ({ default: m.EditProjectStatusPage })));
-const MarketingDesignProjectManagementPage = lazy(() =>
-  import("../pages").then((m) => ({ default: m.MarketingDesignProjectManagementPage }))
-);
-const MasterKpiPage = lazy(() => import("../pages").then((m) => ({ default: m.MasterKpiPage })));
-const ProjectKpiViewPage = lazy(() => import("../pages").then((m) => ({ default: m.ProjectKpiViewPage })));
-const ProjectKpiFormPage = lazy(() => import("../pages").then((m) => ({ default: m.ProjectKpiFormPage })));
-const ProjectPhasesPage = lazy(() => import("../pages").then((m) => ({ default: m.ProjectPhasesPage })));
-const ProjectMembersPage = lazy(() => import("../pages").then((m) => ({ default: m.ProjectMembersPage })));
-const ProjectRisksPage = lazy(() => import("../pages").then((m) => ({ default: m.ProjectRisksPage })));
-const RiskMitigationPage = lazy(() => import("../pages").then((m) => ({ default: m.RiskMitigationPage })));
-const RiskAssessmentReportPage = lazy(() =>
-  import("../pages").then((m) => ({ default: m.RiskAssessmentReportPage }))
-);
-const ProjectAttachmentsPage = lazy(() =>
-  import("../pages").then((m) => ({ default: m.ProjectAttachmentsPage }))
-);
-const ProjectPaymentReportPage = lazy(() =>
-  import("../pages").then((m) => ({ default: m.ProjectPaymentReportPage }))
-);
-const DepartmentsDetailsPage = lazy(() =>
-  import("../pages").then((m) => ({ default: m.DepartmentsDetailsPage }))
-);
-const ProjectChartPage = lazy(() =>
-  import("../pages").then((m) => ({ default: m.ProjectChartPage }))
-);
-const SectionsReportPage = lazy(() =>
-  import("../pages").then((m) => ({ default: m.SectionsReportPage }))
-);
+const ProjectListPage = lazy(() => import("../pages/ProjectStatus/ProjectStatus"));
+const ProjectDetailsPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectDetailsView"));
+const EditProjectStatusPage = lazy(() => import("../pages/ProjectStatus/EditProjectStatus"));
+const MarketingDesignProjectManagementPage = lazy(() => import("../pages/MarketingDesignProjectManagement/MarketingDesignProjectManagement"));
+const MasterKpiPage = lazy(() => import("../pages/KPI/KPI"));
+const ProjectKpiViewPage = lazy(() => import("../pages/KPI/ProjectKpiView"));
+const ProjectKpiFormPage = lazy(() => import("../pages/KPI/ProjectKPI"));
+const ProjectPhasesPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectPhases"));
+const ProjectMembersPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectMember"));
+const ProjectRisksPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectRisk"));
+const RiskMitigationPage = lazy(() => import("../pages/MarketingDesignProjectManagement/RiskMitigation"));
+const RiskAssessmentReportPage = lazy(() => import("../pages/MarketingDesignProjectManagement/RiskAssessmentReport"));
+const ProjectAttachmentsPage = lazy(() => import("../pages/MarketingDesignProjectManagement/ProjectAttachment"));
+const ProjectPaymentReportPage = lazy(() => import("../pages/ProjectPaymentReport/ProjectPaymentReport"));
+const DepartmentsDetailsPage = lazy(() => import("../pages/DepartmentsDetails/DepartmentsDetails"));
+const ProjectChartPage = lazy(() => import("../../cases/pages/CaseDetailsChart/ProjectChart"));
+const SectionsReportPage = lazy(() => import("../../hr/pages/sections/SectionsReport"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>

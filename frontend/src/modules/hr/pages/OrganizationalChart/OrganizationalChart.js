@@ -6,10 +6,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Row, Col, Image, Modal, Button, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import API from "../../../../api/axiosConfig";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import PrintHead from "../../../../components/PrintHead";
 import PrintFooter from "../../../../components/PrintFooter";
-import { toLocal } from "../../../../Utils/toLocal";
+import { toLocal } from "../../../../shared/Utils/toLocal";
 
 /* -------------------------------------------------------------------------- */
 /*                            مودال عرض بيانات البروفايل                         */

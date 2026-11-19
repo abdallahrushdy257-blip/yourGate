@@ -9,7 +9,7 @@ import {
   faEnvelope,
   faHeadset,
 } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 /**
  * LandingCtaFooter Component
@@ -163,13 +163,13 @@ export default function LandingCtaFooter({ t, dir, isRTL }) {
       <div className="subLandingsGridRow">
         <div className="subLandingsTitle">استكشف البوابات التخصصية:</div>
         <div className="subLandingsChips">
-          <a href="/createMangelanding">بوابة إنشاء وإدارة الحالات</a>
-          <a href="/hrlanding">بوابة الموارد البشرية والرواتب</a>
-          <a href="/loansLanding">بوابة القروض والأقساط</a>
-          <a href="/endowmentsLanding">بوابة الأوقاف والوصايا</a>
-          <a href="/dataManagementLanding">بوابة إدارة البيانات</a>
-          <a href="/archivesLanding">بوابة الأرشيف الرقمي</a>
-          <a href="/websiteLanding">بوابة إنشاء المتجر الإلكتروني</a>
+          <Link to="/createMangelanding">بوابة إنشاء وإدارة الحالات</Link>
+          <Link to="/hrlanding">بوابة الموارد البشرية والرواتب</Link>
+          <Link to="/loansLanding">بوابة القروض والأقساط</Link>
+          <Link to="/endowmentsLanding">بوابة الأوقاف والوصايا</Link>
+          <Link to="/dataManagementLanding">بوابة إدارة البيانات</Link>
+          <Link to="/archivesLanding">بوابة الأرشيف الرقمي</Link>
+          <Link to="/websiteLanding">بوابة إنشاء المتجر الإلكتروني</Link>
         </div>
       </div>
 
@@ -184,8 +184,8 @@ export default function LandingCtaFooter({ t, dir, isRTL }) {
         <div className="footerCol">
           <div className="footerColTitle">{t?.footer?.quickLinks || "روابط سريعة"}</div>
           <div className="footerLinksGroup">
-            <a href="/terms">{t?.footer?.terms || "الشروط والأحكام"}</a>
-            <a href="/privacy">{t?.footer?.privacy || "سياسة الخصوصية"}</a>
+            <Link to="/terms">{t?.footer?.terms || "الشروط والأحكام"}</Link>
+            <Link to="/privacy">{t?.footer?.privacy || "سياسة الخصوصية"}</Link>
           </div>
         </div>
 

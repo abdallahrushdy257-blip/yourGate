@@ -96,7 +96,7 @@ const SideNav = ({ isVisible, toggleSidebar }) => {
             className="side-imageCon"
             onClick={() => setShowUserMenu(!showUserMenu)}
           >
-            <img className="side-image" src="../../logo-dark.svg" alt="user" />
+            <img className="side-image" src="../../assets/logo-dark.svg" alt="user" />
 
             {showUserMenu && (
               <div className="user-dropdown">

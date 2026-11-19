@@ -6,7 +6,7 @@ import { Button, Form, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUpload, faDownload } from "@fortawesome/free-solid-svg-icons";
 import UploadInput from "../../../../components/UploadInput";
-import { AppContext } from "../../../../context/AuthContext";
+import { AppContext } from "../../../../app/providers/AuthContext";
 
 function EnterSetting() {
     const [toggles, setToggles] = useState({
