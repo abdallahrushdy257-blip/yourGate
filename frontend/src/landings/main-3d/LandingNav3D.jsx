@@ -8,10 +8,10 @@ import {
   faBars,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { ThemeContext } from "../../context/theme-context";
+import { ThemeContext } from "../../app/providers/theme-context";
 import { useNavigate } from "react-router-dom";
-import logoLight from "../../logo-light.svg";
-import logoDark from "../../logo-dark.svg";
+import logoLight from "../../assets/logo-light.svg";
+import logoDark from "../../assets/logo-dark.svg";
 
 export default function LandingNav3D({ t, dir, isRTL }) {
   const { theme, setTheme } = useContext(ThemeContext);

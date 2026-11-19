@@ -5,7 +5,7 @@ import {
   faArrowRight,
   faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
-import { ThemeContext } from "../../context/theme-context";
+import { ThemeContext } from "../../app/providers/theme-context";
 
 /**
  * Hero3DGate Component

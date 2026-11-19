@@ -3,25 +3,10 @@ import { Route } from "react-router-dom";
 import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
 
 // ── شجرة الحسابات والقيود والتقارير المالية ───────────────────
-<<<<<<< HEAD
 const ChartofaccountsPage = lazy(() => import("../pages/Chartofaccounts/Chartofaccounts"));
 const AccountingEntryPage = lazy(() => import("../pages/AccountingEntry/AccountingEntry"));
 const AccountingEntryViewPage = lazy(() => import("../pages/AccountingEntry/AccountingEntryView"));
 const AccountsReportPage = lazy(() => import("../pages/AccountsReport/AccountsReport"));
-=======
-const ChartofaccountsPage = lazy(
-  () => import("../pages/Chartofaccounts/Chartofaccounts"),
-);
-const AccountingEntryPage = lazy(
-  () => import("../pages/AccountingEntry/AccountingEntry"),
-);
-const AccountingEntryViewPage = lazy(
-  () => import("../pages/AccountingEntry/AccountingEntryView"),
-);
-const AccountsReportPage = lazy(
-  () => import("../../../pages/Accounting/AccountsReport/AccountsReport"),
-);
->>>>>>> 6dd3331de590899fc05b1df69047e8f83980c401
 const BalanceSheetPage = lazy(() => import("../pages/Reports/BalanceSheet"));
 const IncomeStatementPage = lazy(
   () => import("../pages/Reports/IncomeStatement"),
@@ -57,7 +42,6 @@ const WarrantorsStatementPage = lazy(
 );
 
 // ── السندات والأموال ───────────────────────────────────────────
-<<<<<<< HEAD
 const GeneralReceiptVoucherCashPage = lazy(() => import("../pages/GeneralPayment/GeneralReceiptVoucherCash"));
 const GeneralReceiptVoucherPage = lazy(() => import("../pages/GeneralPayment/GeneralReceiptVoucher"));
 const GeneralPaymentVoucherCashPage = lazy(() => import("../pages/GeneralPayment/GeneralPaymentVoucherCash"));
@@ -91,103 +75,6 @@ const TransferInvoiceBetweenStoresPage = lazy(() => import("../pages/TransferInv
 const UnitsReportPage = lazy(() => import("../pages/UnitsReport/Unitsreport"));
 const WarehousereportPage = lazy(() => import("../pages/WarehouseReport/Warehousereport"));
 const ItemReportPage = lazy(() => import("../pages/ItemReport/ItemReport"));
-=======
-const GeneralReceiptVoucherCashPage = lazy(
-  () => import("../pages/GeneralPayment/GeneralReceiptVoucherCash"),
-);
-const GeneralReceiptVoucherPage = lazy(
-  () => import("../pages/GeneralPayment/GeneralReceiptVoucher"),
-);
-const GeneralPaymentVoucherCashPage = lazy(
-  () => import("../pages/GeneralPayment/GeneralPaymentVoucherCash"),
-);
-const GeneralPaymentVoucherPage = lazy(
-  () => import("../pages/GeneralPayment/GeneralPaymentVoucher"),
-);
-const Moneyreceiptreports = lazy(
-  () => import("../../../pages/MoneyReports/Moneyreceiptreports"),
-);
-const Moneytransferreports = lazy(
-  () => import("../../../pages/MoneyReports/Moneytransferreports"),
-);
-
-// ── المشتريات والمبيعات والمخازن ──────────────────────────────
-const AddClientPage = lazy(
-  () => import("../../../pages/Accounting/AddClient/AddClient"),
-);
-const AdditemPage = lazy(
-  () => import("../../../pages/Accounting/Additem/Additem"),
-);
-const AddSupplierPage = lazy(
-  () => import("../../../pages/Accounting/AddSupplier/AddSupplier"),
-);
-const ItemsPage = lazy(() => import("../../../pages/Accounting/Items/Items"));
-const ItemDetailsPage = lazy(
-  () => import("../../../pages/Accounting/Items/ItemDetails"),
-);
-const ItemsinStockPage = lazy(
-  () => import("../../../pages/Accounting/Items/ItemsinStock"),
-);
-const PriceListPage = lazy(
-  () => import("../../../pages/Accounting/PriceList/PricelList/PriceList"),
-);
-const UpdatePricesPage = lazy(
-  () => import("../../../pages/Accounting/PriceList/UpdatePrices/UpdatePrices"),
-);
-const NewPurchaseInvoicePage = lazy(
-  () => import("../../../pages/Accounting/SalesInvoice/NewPurchaseInvoice"),
-);
-const NewPurchaseRefundInvoicePage = lazy(
-  () =>
-    import("../../../pages/Accounting/SalesInvoice/NewPurchaseRefundInvoice"),
-);
-const NewSalesInvoicePage = lazy(
-  () => import("../../../pages/Accounting/SalesInvoice/NewSalesInvoice"),
-);
-const NewSalesRefundInvoicePage = lazy(
-  () => import("../../../pages/Accounting/SalesInvoice/NewSalesRefundInvoice"),
-);
-const PrintPurchasePage = lazy(
-  () => import("../../../pages/Accounting/SalesInvoice/PrintPurchase"),
-);
-const CustomerReportPage = lazy(
-  () => import("../../../pages/Accounting/CustomerReport/CustomerReport"),
-);
-const PurchasesReportPage = lazy(
-  () => import("../../../pages/Accounting/PurchasesReport/PurchasesReport"),
-);
-const PurecommandPage = lazy(
-  () => import("../../../pages/Accounting/Purecommand/Purecommand"),
-);
-const SalesReportPage = lazy(
-  () => import("../../../pages/Accounting/SalesReport/SalesReport"),
-);
-const SettlementreportPage = lazy(
-  () => import("../../../pages/Accounting/Settlementreport/Settlementreport"),
-);
-const DepreciationreportPage = lazy(
-  () => import("../../../pages/Accounting/Settlementreport/Depreciation"),
-);
-const StoreinventoryPage = lazy(
-  () => import("../../../pages/Accounting/Storeinventory/Storeinventory"),
-);
-const SupplieRreportsPage = lazy(
-  () => import("../../../pages/Accounting/Supplierreports/SupplieRreports"),
-);
-const TransferInvoiceBetweenStoresPage = lazy(
-  () =>
-    import("../../../pages/Accounting/TransferInvoiceBetweenStores/TransferInvoiceBetweenStores"),
-);
-const UnitsReportPage = lazy(
-  () => import("../../../pages/Accounting/UnitsReport/Unitsreport"),
-);
-const WarehousereportPage = lazy(
-  () => import("../../../pages/Accounting/WarehouseReport/Warehousereport"),
-);
-const ItemReportPage = lazy(
-  () => import("../../../pages/Accounting/ItemReport/ItemReport"),
-);
->>>>>>> 6dd3331de590899fc05b1df69047e8f83980c401
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>

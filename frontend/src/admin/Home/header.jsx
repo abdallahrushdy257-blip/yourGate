@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import CountValue from "./count-value";
-import { ThemeContext } from "../../context/theme-context";
+import { ThemeContext } from "../../app/providers/theme-context";
 
 function Header({ counter }) {
   const { theme } = useContext(ThemeContext);

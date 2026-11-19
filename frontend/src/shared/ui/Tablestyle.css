@@ -538,6 +538,9 @@ table.printTabel tfoot td {
     border: 1px solid #000 !important;
     font-size: 12px !important;
   }
+  .table-scroll{
+    border: none !important;
+  }
 
   table.printTabel th,
   table.printTabel td {

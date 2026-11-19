@@ -10,7 +10,7 @@ const PaymentHistory = lazy(() => import("../pages/PaymentHistory"));
 const ShowpaymentHistory = lazy(() => import("../pages/ShowpaymentHistory"));
 const EndowmentSammary = lazy(() => import("../pages/EndowmentSammary"));
 const ViewEndowments = lazy(() => import("../pages/ViewEndowments"));
-const ReceiptVoucherEndowments = lazy(() => import("../../../pages/ReceiptVoucher/ReceiptVoucherEndowments"));
+const ReceiptVoucherEndowments = lazy(() => import("../../finance/pages/ReceiptVoucher/ReceiptVoucherEndowments"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>

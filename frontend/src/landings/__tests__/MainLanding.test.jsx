@@ -15,7 +15,7 @@ jest.mock(
   { virtual: true }
 );
 
-import ThemeContextProvider from "../../context/theme-context";
+import ThemeContextProvider from "../../app/providers/theme-context";
 import MainLanding from "../MainLanding";
 import DonationJourney3D from "../main-3d/DonationJourney3D";
 import ModulesCarousel3D from "../main-3d/ModulesCarousel3D";

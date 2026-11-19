@@ -1,17 +1,17 @@
 import React, { useCallback, useRef, Suspense, lazy } from "react";
 
-import "./main-3d/mainLanding3D.css";
-import { landingTranslations } from "./main-3d/translations";
-import { useReducedMotion, useIsMobile } from "./main-3d/hooks";
+import "../../../landings/main-3d/mainLanding3D.css";
+import { landingTranslations } from "../../../landings/main-3d/translations";
+import { useReducedMotion, useIsMobile } from "../../../landings/main-3d/hooks";
 
-import LandingNav3D from "./main-3d/LandingNav3D";
-import Hero3DGate from "./main-3d/Hero3DGate";
+import LandingNav3D from "../../../landings/main-3d/LandingNav3D";
+import Hero3DGate from "../../../landings/main-3d/Hero3DGate";
 
-const DonationJourney3D = lazy(() => import("./main-3d/DonationJourney3D"));
-const ModulesCarousel3D = lazy(() => import("./main-3d/ModulesCarousel3D"));
-const GovernanceStrip = lazy(() => import("./main-3d/GovernanceStrip"));
-const LiveImpactShowcase = lazy(() => import("./main-3d/LiveImpactShowcase"));
-const LandingCtaFooter = lazy(() => import("./main-3d/LandingCtaFooter"));
+const DonationJourney3D = lazy(() => import("../../../landings/main-3d/DonationJourney3D"));
+const ModulesCarousel3D = lazy(() => import("../../../landings/main-3d/ModulesCarousel3D"));
+const GovernanceStrip = lazy(() => import("../../../landings/main-3d/GovernanceStrip"));
+const LiveImpactShowcase = lazy(() => import("../../../landings/main-3d/LiveImpactShowcase"));
+const LandingCtaFooter = lazy(() => import("../../../landings/main-3d/LandingCtaFooter"));
 
 const SectionFallback = () => (
   <div style={{ minHeight: "420px" }} aria-hidden="true" />

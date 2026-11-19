@@ -11,14 +11,11 @@ import {
   faBuilding,
   faFileAlt,
   faPrint,
-<<<<<<< HEAD
-=======
   faPoll,
   faPlus,
   faTrashAlt,
   faSave,
   faInfoCircle,
->>>>>>> 6dd3331de590899fc05b1df69047e8f83980c401
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import {

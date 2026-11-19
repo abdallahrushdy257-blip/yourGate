@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import Title from "./title";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -48,8 +48,8 @@ function TableComponent({
   const [totalRecords, setTotalRecords] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [debouncedSearchText, setDebouncedSearchText] = useState("");
-  const [searchFrom, setSearchFrom] = useState(null);
-  const [searchTo, setSearchTo] = useState(null);
+  const [searchFrom, setSearchFrom] = useState(() => dayjs().startOf("month"));
+  const [searchTo, setSearchTo] = useState(() => dayjs().endOf("month"));
   const [perPage, setPerPage] = useState(10);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -82,7 +82,7 @@ function TableComponent({
 
   const fetchData = useCallback(
     async (targetPage = 1, isReset = false) => {
-      if (!apiUrl || localData) return;
+      if (!apiUrl) return;
       if (!isReset && isFetchingRef.current) return;
 
       if (abortControllerRef.current) {
@@ -105,8 +105,6 @@ function TableComponent({
             perpage: perPage,
             page: targetPage,
             search: debouncedSearchText,
-            searchfrom: searchFrom ? dayjs(searchFrom).format("YYYY-MM-DD") : "",
-            searchto: searchTo ? dayjs(searchTo).format("YYYY-MM-DD") : "",
             id: id ?? "",
             refreshData: refreshData,
           },
@@ -159,7 +157,7 @@ function TableComponent({
         isFetchingRef.current = false;
       }
     },
-    [apiUrl, localData, perPage, debouncedSearchText, searchFrom, searchTo, id, refreshData],
+    [apiUrl, localData, perPage, debouncedSearchText, id, refreshData],
   );
 
   useEffect(() => {
@@ -170,20 +168,22 @@ function TableComponent({
     };
   }, []);
 
-  // 1. Handle localData if provided
+  // 1. Handle localData if provided when no apiUrl is set
   useEffect(() => {
-    if (localData) {
+    if (!apiUrl && localData) {
       setData(localData);
       setTotalRecords(localData.length);
+      setHasMore(false);
+      setLoading(false);
     }
-  }, [localData]);
+  }, [apiUrl, localData]);
 
-  // 2. Fetch on initial mount or when search filters change (resets to page 1)
+  // 2. Fetch on initial mount or when search text / id changes (resets to page 1)
   useEffect(() => {
-    if (localData) return;
+    if (!apiUrl) return;
     setPage(1);
     fetchData(1, true);
-  }, [apiUrl, debouncedSearchText, searchFrom, searchTo, id, refreshData, fetchData, localData]);
+  }, [apiUrl, debouncedSearchText, id, refreshData, fetchData, localData]);
 
   // 3. Fetch when page increases (Load More) without resetting
   useEffect(() => {
@@ -202,7 +202,38 @@ function TableComponent({
     }
   }, [triggerReload, fetchData]);
 
-  const totalPages = Math.ceil(totalRecords / perPage);
+  const displayData = useMemo(() => {
+    if (searchDate === false || (!searchFrom && !searchTo)) {
+      return data;
+    }
+    const from = searchFrom ? dayjs(searchFrom).startOf("day") : null;
+    const to = searchTo ? dayjs(searchTo).endOf("day") : null;
+
+    return data.filter((record) => {
+      const dateVal =
+        record.created_at ||
+        record.date ||
+        record.recorddate ||
+        record.startdate ||
+        record.transaction_date ||
+        record.updated_at;
+      if (!dateVal) return true;
+      const d = dayjs(dateVal);
+      if (!d.isValid()) return true;
+      if (from && d.isBefore(from)) return false;
+      if (to && d.isAfter(to)) return false;
+      return true;
+    });
+  }, [data, searchDate, searchFrom, searchTo]);
+
+  const calculatedTotalAmount = useMemo(() => {
+    return displayData.reduce(
+      (acc, record) => acc + (parseFloat(record.amount) || 0),
+      0,
+    );
+  }, [displayData]);
+
+  const totalPages = Math.ceil((searchDate === false ? totalRecords : displayData.length) / perPage);
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
@@ -214,7 +245,7 @@ function TableComponent({
   const handleExportExcel = () => {
     import("xlsx").then((xlsx) => {
       const ws = xlsx.utils.json_to_sheet(
-        data.map((record, index) => {
+        displayData.map((record, index) => {
           const row = {};
           row["#"] = index + 1;
           columns.forEach((col) => {
@@ -550,7 +581,7 @@ function TableComponent({
                   rows={perPage > 8 ? 8 : perPage || 6}
                   columns={columns.length + 1}
                 />
-              ) : data.length === 0 ? (
+              ) : displayData.length === 0 ? (
                 <tr>
                   <td
                     colSpan={columns.length + 1}
@@ -586,7 +617,7 @@ function TableComponent({
                   </td>
                 </tr>
               ) : (
-                data.map((record, rowIndex) => {
+                displayData.map((record, rowIndex) => {
                   const transformedRecord = transformRowFn
                     ? transformRowFn(record)
                     : record;
@@ -653,7 +684,7 @@ function TableComponent({
               )}
             </tbody>
             <tfoot>
-              {totalAmount > 0 && columns.some((c) => c.key === "amount") && (
+              {calculatedTotalAmount > 0 && columns.some((c) => c.key === "amount") && (
                 <tr className=" selected-row">
                   <td
                     colSpan={columns.findIndex((c) => c.key === "amount") + 1}
@@ -672,7 +703,7 @@ function TableComponent({
                     }
                     style={{ fontWeight: "bold", textAlign: "center" }}
                   >
-                    {totalAmount.toLocaleString()} ريال
+                    {calculatedTotalAmount.toLocaleString()} ريال
                   </td>
                 </tr>
               )}

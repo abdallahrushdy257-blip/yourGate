@@ -1,8 +1,4 @@
-<<<<<<< HEAD:frontend/src/modules/projects/pages/MarketingDesignProjectManagement/MarketingDesignProjectManagement.js
-﻿import { useState } from "react";
-=======
 import { useState, useEffect } from "react";
->>>>>>> 6dd3331de590899fc05b1df69047e8f83980c401:frontend/src/pages/MarketingDesignProjectManagement/MarketingDesignProjectManagement.js
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../../components/title";
