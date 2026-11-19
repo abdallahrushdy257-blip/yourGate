@@ -22,9 +22,9 @@ const KpiReport = () => {
 
   const modifyRow = (row) => {
     let newRow = { ...row };
-    newRow.employee = row.employee ? row.employee.name : "";
-    newRow.average_grade = row.average_grade ? row.average_grade.toFixed(2) : "0.00";
-    newRow.reason = row.reason == 1 ? "تقييم دوري" : row.reason == 2 ? "فترة تجربة" : row.reason == 3 ? " ترقية" : row.reason == 4 ? " علاوة" : row.reason == 5 ? (row.description || "أخرى") : "غير محدد";
+    newRow.employee = row.employee ? (typeof row.employee === "object" ? row.employee.name : row.employee) : "";
+    newRow.average_grade = row.average_grade ? Number(row.average_grade).toFixed(2) : "0.00";
+    newRow.reason = row.reason == 1 ? "تقييم دوري" : row.reason == 2 ? "فترة تجربة" : row.reason == 3 ? " ترقية" : row.reason == 4 ? " علاوة" : row.reason == 5 ? (row.description || "أخرى") : (row.reason || "غير محدد");
     return newRow;
   }
 

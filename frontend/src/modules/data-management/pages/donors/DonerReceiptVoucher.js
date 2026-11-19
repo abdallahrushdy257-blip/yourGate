@@ -49,9 +49,8 @@ function DonerReceiptVoucher(props) {
   //   }
   // }, [loading]);
   useEffect(() => {
-    // const qrValue = `Voucher ID: ${id} | Amount: ${amount} | Date: ${date}`;
-  const qrValue = `${window.location.origin}/voucher/${id}`;
-    if (barcodeRef.current && loading === false) {
+    const qrValue = `${window.location.origin}/voucher/${id}`;
+    if (barcodeRef.current && loading === false && window.QRCode?.toCanvas) {
       window.QRCode.toCanvas(
         barcodeRef.current,
         qrValue,
@@ -108,25 +107,28 @@ function DonerReceiptVoucher(props) {
     try {
       const res = await API.get("/transactions/components/donations");
       const data = await res;
-      setAccount(data.data);
+      const list = Array.isArray(data.data) ? data.data : (data.data?.data || []);
+      setAccount(list);
       setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
 
-  
+
     const getDonor = async () => {
         try {
             const res = await API.get("/donor/" + id);
             const data = await res;
             if (data.status === 200) {
-                setDonor(data.data);
+                setDonor(data.data?.data || data.data);
                 setLoading(false);
             }
         } catch (error) {
             console.error(error);
+            setLoading(false);
         }
     };
     useEffect(() => {

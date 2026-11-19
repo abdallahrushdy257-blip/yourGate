@@ -3,7 +3,7 @@ import { showError } from "../components/Toast";
 
 // export const BASE_URL = "https://associations.morefortech.com/api";
 // export const BASE_URL = "https://b6c4-197-36-151-217.ngrok-free.app/api";
-export const BASE_URL = "http://192.168.1.8:8080/api";
+export const BASE_URL = "http://192.168.1.6:8000/api";
 
 const API = axios.create({
   baseURL: BASE_URL,
@@ -26,7 +26,30 @@ API.interceptors.request.use(
 
 // Response Interceptor
 API.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (
+      response?.data &&
+      !Array.isArray(response.data) &&
+      typeof response.data === "object" &&
+      Array.isArray(response.data.data) &&
+      !response.data.stats &&
+      !response.data.meta &&
+      response.data.current_page === undefined
+    ) {
+      const original = response.data;
+      const arr = [...original.data];
+      Object.keys(original).forEach((key) => {
+        Object.defineProperty(arr, key, {
+          value: key === "data" ? arr : original[key],
+          enumerable: false,
+          configurable: true,
+          writable: true,
+        });
+      });
+      response.data = arr;
+    }
+    return response;
+  },
   (error) => {
     if (axios.isCancel && axios.isCancel(error)) {
       return Promise.reject(error);

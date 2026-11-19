@@ -181,7 +181,6 @@ function Volunteers() {
         <TableComponent
           key={refreshKey}
           apiUrl="/volunteers"
-          data={dummyData}
           columns={columns}
           titleIcon={<FontAwesomeIcon icon={faTable} />}
           title="إدارة المتطوعين"

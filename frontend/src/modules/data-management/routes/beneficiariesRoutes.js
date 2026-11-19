@@ -1,5 +1,6 @@
-import React, { lazy } from "react";
+import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
+import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 
 // Beneficiaries main pages
 const Beneficiary = lazy(() => import("../pages/beneficiaries/Beneficiary"));
@@ -9,6 +10,8 @@ const AddBeneficiary = lazy(() => import("../pages/beneficiaries/AddBeneficiary"
 const AddBeneficiaryAll = lazy(() => import("../pages/beneficiaries/AddBeneficiaryAll"));
 const EditBeneficiary = lazy(() => import("../pages/beneficiaries/EditBeneficiary"));
 const PaymentReport = lazy(() => import("../pages/beneficiaries/PaymentReport"));
+const PaymentDetails = lazy(() => import("../pages/beneficiaries/PaymentDetails"));
+const PaymentData = lazy(() => import("../pages/beneficiaries/PaymentData"));
 const CreateBeneficiaryLink = lazy(() => import("../pages/beneficiaries/CreateBeneficiaryLink"));
 
 // Surveys
@@ -30,51 +33,62 @@ const EditHealthData = lazy(() => import("../pages/beneficiaries/EdithealthData"
 const ShowDependData = lazy(() => import("../pages/beneficiaries/ShowDependData"));
 const EditDependData = lazy(() => import("../pages/beneficiaries/EditDependData"));
 
+const withSuspense = (Component) => (
+  <Suspense fallback={<TestPreLoader />}>
+    <Component />
+  </Suspense>
+);
+
 export const beneficiariesRoutes = [
   // المستفيدون والمستبعدون
-  { path: "/beneficiary", element: <Beneficiary /> },
-  { path: "/beneficiaryx", element: <BeneficiaryX /> },
-  { path: "/beneficiary/view/:id", element: <ViewBeneficiary /> },
-  { path: "/addbeneficiary", element: <AddBeneficiary /> },
-  { path: "/addbeneficiaryall", element: <AddBeneficiaryAll /> },
-  { path: "/editbeneficiary/:id", element: <EditBeneficiary /> },
+  { path: "/beneficiary", element: withSuspense(Beneficiary) },
+  { path: "/beneficiaryx", element: withSuspense(BeneficiaryX) },
+  { path: "/beneficiary/view/:id", element: withSuspense(ViewBeneficiary) },
+  { path: "/addbeneficiary", element: withSuspense(AddBeneficiary) },
+  { path: "/addbeneficiaryall", element: withSuspense(AddBeneficiaryAll) },
+  { path: "/editbeneficiary/:id", element: withSuspense(EditBeneficiary) },
 
   // تقرير مدفوعات المستفيدون
-  { path: "/paymentReport", element: <PaymentReport /> },
-  { path: "/paymentreport", element: <PaymentReport /> },
+  { path: "/paymentReport", element: withSuspense(PaymentReport) },
+  { path: "/paymentreport", element: withSuspense(PaymentReport) },
+  { path: "/paymentDetails/:id", element: withSuspense(PaymentDetails) },
+  { path: "/paymentdetails/:id", element: withSuspense(PaymentDetails) },
+  { path: "/paymentdata/:id", element: withSuspense(PaymentData) },
 
   // إضافة رابط خارجي
-  { path: "/createbeneficiarylink", element: <CreateBeneficiaryLink /> },
+  { path: "/createbeneficiarylink", element: withSuspense(CreateBeneficiaryLink) },
 
   // استبيان رضا المستفيدين
-  { path: "/employeesurvey", element: <SurveyList /> },
-  { path: "/surveyform", element: <SurveyForm /> },
-  { path: "/employeesurvey/:id", element: <SurveyForm /> },
+  { path: "/employeesurvey", element: withSuspense(SurveyList) },
+  { path: "/surveyform", element: withSuspense(SurveyForm) },
+  { path: "/employeesurvey/:id", element: withSuspense(SurveyForm) },
 
   // بيانات التبويبات والتفاصيل
-  { path: "/mainbeneficiarydata", element: <MainBeneficiaryData /> },
-  { path: "/additionainformation", element: <AdditionaInformation /> },
-  { path: "/membershipdata", element: <MembershipData /> },
-  { path: "/bankdata", element: <BankData /> },
-  { path: "/bankdata/:id", element: <BankData /> },
-  { path: "/callingdata", element: <CallingData /> },
-  { path: "/qualificationposition", element: <QualificationPosition /> },
-  { path: "/qualificationposition/:id", element: <QualificationPosition /> },
-  { path: "/housingdata/:id", element: <HousingData /> },
-  { path: "/healthdata/:id", element: <HealthData /> },
-  { path: "/dependentsdata/:id", element: <DependentsData /> },
-  { path: "/showhealthdata/:id", element: <ShowHealthData /> },
-  { path: "/edithealthdata/:id", element: <EditHealthData /> },
-  { path: "/showdependdata/:id", element: <ShowDependData /> },
-  { path: "/editdependdata/:id", element: <EditDependData /> },
+  { path: "/mainbeneficiarydata", element: withSuspense(MainBeneficiaryData) },
+  { path: "/additionainformation", element: withSuspense(AdditionaInformation) },
+  { path: "/membershipdata", element: withSuspense(MembershipData) },
+  { path: "/bankdata", element: withSuspense(BankData) },
+  { path: "/bankdata/:id", element: withSuspense(BankData) },
+  { path: "/callingdata", element: withSuspense(CallingData) },
+  { path: "/qualificationposition", element: withSuspense(QualificationPosition) },
+  { path: "/qualificationposition/:id", element: withSuspense(QualificationPosition) },
+  { path: "/housingdata/:id", element: withSuspense(HousingData) },
+  { path: "/healthdata/:id", element: withSuspense(HealthData) },
+  { path: "/dependentsdata/:id", element: withSuspense(DependentsData) },
+  { path: "/showhealthdata/:id", element: withSuspense(ShowHealthData) },
+  { path: "/edithealthdata/:id", element: withSuspense(EditHealthData) },
+  { path: "/showdependdata/:id", element: withSuspense(ShowDependData) },
+  { path: "/showDependentsData/:id", element: withSuspense(ShowDependData) },
+  { path: "/editdependdata/:id", element: withSuspense(EditDependData) },
+  { path: "/editDependentsData/:id", element: withSuspense(EditDependData) },
 ];
 
-export const BeneficiariesRoutes = () => (
-  <>
-    {beneficiariesRoutes.map((r, i) => (
-      <Route key={i} path={r.path} element={r.element} />
+export const BeneficiariesRoutes = (
+  <React.Fragment>
+    {beneficiariesRoutes.map((r) => (
+      <Route key={r.path} path={r.path} element={r.element} />
     ))}
-  </>
+  </React.Fragment>
 );
 
 export default BeneficiariesRoutes;

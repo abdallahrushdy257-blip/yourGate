@@ -3,13 +3,16 @@ import {
   faDollarSign,
   faGift,
   faUsers,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import "./dashboard.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useContext } from "react";
+import { Modal, Button } from "react-bootstrap";
 import CircularProgressBar from "../components/CircularProgressBar";
 import MyLineChart from "../components/Charts/LineChart";
 import CustomButton from "../components/CustomButton";
+import CustomTable from "../components/CustomTable";
 import SimpleMyBarChart from "../components/Charts/SimpleBarChart";
 import API from "../api/axiosConfig";
 import { useEffect } from "react";
@@ -101,9 +104,11 @@ function Dashboard() {
     { name: "المتبقي ", key: "res" },
   ];
   useEffect(() => {
-    if (data) {
-      const percentage = (data.totaltransaction / data.totalshop) * 100;
+    if (data && Number(data.totalshop) > 0) {
+      const percentage = Math.min(100, Math.round((Number(data.totaltransaction || 0) / Number(data.totalshop)) * 100));
       setProfitPercentage(percentage);
+    } else {
+      setProfitPercentage(0);
     }
   }, [data]);
   return loading ? (
@@ -295,11 +300,11 @@ function Dashboard() {
         }}
       >
         <BscDashboard
-          orgId={user && user.organization && user.organization.id}
+          orgId={user?.organization?.id || user?.store_id || 1}
         />
       </div>
 
-      {/* <Modal
+      <Modal
         className="add-subacc-modal dashModal"
         show={showModal}
         onHide={() => setShowModal(false)}
@@ -320,7 +325,7 @@ function Dashboard() {
         <Modal.Body>
           <CustomTable
             columns={columns}
-            data={[]}
+            data={data?.loans_list || []}
           />
         </Modal.Body>
         <Modal.Footer>
@@ -345,13 +350,13 @@ function Dashboard() {
             <FontAwesomeIcon icon={faXmark} className="closeModal" />
           </Button>
           <Modal.Title className="title-sub">
-            اشتراكات مجلس الإدارة
+            اشتراكات مجلس الإدارة والجمعية العمومية
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <CustomTable
             columns={columns2}
-            data={[]}
+            data={data?.members_list || []}
           />
         </Modal.Body>
         <Modal.Footer>
@@ -376,13 +381,13 @@ function Dashboard() {
             <FontAwesomeIcon icon={faXmark} className="closeModal" />
           </Button>
           <Modal.Title className="title-sub">
-            النقدية المتوفرة
+            النقدية المتوفرة بالحسابات
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <CustomTable
             columns={columns3}
-            data={[]}
+            data={data?.cash_accounts || []}
           />
         </Modal.Body>
         <Modal.Footer>
@@ -407,13 +412,13 @@ function Dashboard() {
             <FontAwesomeIcon icon={faXmark} className="closeModal" />
           </Button>
           <Modal.Title className="title-sub">
-            الحالات
+            الحالات الإنسانية
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <CustomTable
             columns={columns4}
-            data={[]}
+            data={data?.cases_list || []}
           />
         </Modal.Body>
         <Modal.Footer>
@@ -438,13 +443,13 @@ function Dashboard() {
             <FontAwesomeIcon icon={faXmark} className="closeModal" />
           </Button>
           <Modal.Title className="title-sub">
-            المشاريع
+            المشاريع الخيرية
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <CustomTable
             columns={columns5}
-            data={[]}
+            data={data?.projects_list || []}
           />
         </Modal.Body>
         <Modal.Footer>
@@ -452,7 +457,7 @@ function Dashboard() {
             اغلاق
           </Button>
         </Modal.Footer>
-      </Modal> */}
+      </Modal>
     </>
   );
 }
