@@ -91,7 +91,7 @@ function OrganizationChart({ goNextTab }) {
   };
 
   const [loading, setLoading] = useState(false);
-
+  
   const handleOrgSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

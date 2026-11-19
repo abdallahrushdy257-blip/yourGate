@@ -38,6 +38,8 @@ function CustomTable({
   navto,
   goTo
 }) {
+
+  
   const [rows, setRows] = useState(data);
   const [filteredRows, setFilteredRows] = useState(data);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -48,8 +50,12 @@ function CustomTable({
   const [Statefilters, setStateFilters] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const [fromDate, setFromDate] = useState(() =>
+    dayjs().startOf("month").format("YYYY-MM-DD"),
+  );
+  const [toDate, setToDate] = useState(() =>
+    dayjs().endOf("month").format("YYYY-MM-DD"),
+  );
   const hasDateColumn = columns.some((col) => /^date/i.test(col.key));
   const [currentPage, setCurrentPage] = useState(1);
 

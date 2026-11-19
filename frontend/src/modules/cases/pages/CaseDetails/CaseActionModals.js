@@ -101,7 +101,7 @@ export function CaseOverviewModal({
     <Modal
       show={show}
       onHide={onClose}
-      className="modal-table archModal donor-modal case-modal action-popup"
+      className="modal-table case-modal action-popup"
       size="lg"
       centered
     >
@@ -370,7 +370,7 @@ export function CaseInfoCardModal({ show, onClose, caseId }) {
     <Modal
       show={show}
       onHide={onClose}
-      className="modal-table archModal donor-modal case-modal action-popup"
+      className="modal-table case-modal action-popup"
       size="lg"
       centered
     >
@@ -645,7 +645,7 @@ export function CaseDonationsModal({
     <Modal
       show={show}
       onHide={onClose}
-      className="modal-table archModal donor-modal case-modal action-popup"
+      className="modal-table case-modal action-popup"
       size="lg"
       centered
     >
@@ -792,7 +792,7 @@ export function CaseDesignRequestModal({ show, onClose, caseId, caseRecord, onSu
     <Modal
       show={show}
       onHide={onClose}
-      className="modal-table archModal donor-modal case-modal action-popup"
+      className="modal-table case-modal action-popup"
       size="lg"
       centered
     >
@@ -943,7 +943,7 @@ export function CaseMarketingRequestModal({ show, onClose, caseId, caseRecord, o
     <Modal
       show={show}
       onHide={onClose}
-      className="modal-table archModal donor-modal case-modal action-popup"
+      className="modal-table case-modal action-popup"
       size="lg"
       centered
     >
@@ -1105,7 +1105,7 @@ export function CasePaymentVoucherModal({
     <Modal
       show={show}
       onHide={onClose}
-      className="modal-table archModal donor-modal case-modal action-popup"
+      className="modal-table case-modal action-popup"
       size="lg"
       centered
     >
@@ -1166,14 +1166,22 @@ export function CasePaymentVoucherModal({
                 />
               </Col>
               <Col md={6}>
-                <RegisterTextbox
-                  id="pay-date"
-                  label="تاريخ السند *"
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  disabled={isCompleted}
-                />
+                <Form.Group className="responParent" controlId="pay-date">
+                  <Form.Label className="register-label" style={{ direction: "rtl" }}>
+                    تاريخ السند <span style={{ color: "red" }}>*</span>
+                  </Form.Label>
+                  <input
+                    type="date"
+                    id="pay-date"
+                    className="custom-datepicker"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    disabled={isCompleted}
+                  />
+                  {error && error.date && (
+                    <span className="error">{error.date}</span>
+                  )}
+                </Form.Group>
               </Col>
               <Col md={12}>
                 <RegisterSelect
@@ -1312,7 +1320,7 @@ export function CaseReceiptVoucherModal({
     <Modal
       show={show}
       onHide={onClose}
-      className="modal-table archModal donor-modal case-modal action-popup"
+      className="modal-table case-modal action-popup"
       size="lg"
       centered
     >
@@ -1380,14 +1388,22 @@ export function CaseReceiptVoucherModal({
                 />
               </Col>
               <Col md={6}>
-                <RegisterTextbox
-                  id="rec-date"
-                  label="تاريخ القبض *"
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  disabled={isCompleted}
-                />
+                <Form.Group className="responParent" controlId="rec-date">
+                  <Form.Label className="register-label" style={{ direction: "rtl" }}>
+                    تاريخ القبض <span style={{ color: "red" }}>*</span>
+                  </Form.Label>
+                  <input
+                    type="date"
+                    id="rec-date"
+                    className="custom-datepicker"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    disabled={isCompleted}
+                  />
+                  {error && error.date && (
+                    <span className="error">{error.date}</span>
+                  )}
+                </Form.Group>
               </Col>
               <Col md={12}>
                 <RegisterSelect
@@ -1571,7 +1587,7 @@ export function CaseEditModal({
     <Modal
       show={show}
       onHide={onClose}
-      className="modal-table archModal donor-modal case-modal action-popup"
+      className="modal-table case-modal action-popup"
       size="lg"
       centered
     >

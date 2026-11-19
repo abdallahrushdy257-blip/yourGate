@@ -84,6 +84,7 @@ import { UserRoutes } from "./modules/users";
 import CommonRoutes from "./modules/common/routes/commonRoutes";
 import { PublicRoutes } from "./modules/common";
 import { AdminRoutes } from "./admin/routes/adminRoutes";
+import PaymentDetails from "./modules/data-management/pages/beneficiaries/PaymentDetails";
 // import EmployeeCardPhoto from "./pages/EmployeeCard/EmployeeCardPhoto";
 // import ShowEmployeeCard from "./pages/EmployeeCard/ShowEmployeeCard";
 
@@ -236,6 +237,7 @@ function App() {
             {/* <Route path="/casedata/:id" element={<CaseDataPage />} /> */}
             <Route element={<MainApp />}>
               <Route element={<ProtectedRoute />}>
+            <Route path="/paymentDetails/:id" element={<PaymentDetails />} />
                 {CommonRoutes}
                  {/* <Route path="/home" element={<Home />} /> */}
                 {/* <Route path="/review" element={<ReviewData />} /> */}

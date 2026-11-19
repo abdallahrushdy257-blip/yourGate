@@ -56,7 +56,9 @@ function Chartofaccounts() {
     } else {
       const filtered = accountsData.filter((account) => {
         const code = String(account.code || "");
-        return code === String(categoryCode) || code.startsWith(String(categoryCode));
+        return (
+          code === String(categoryCode) || code.startsWith(String(categoryCode))
+        );
       });
       setFilteredData(filtered);
     }
@@ -124,17 +126,22 @@ function Chartofaccounts() {
       let results = [];
       for (const node of nodes) {
         const nameMatches = node.name && node.name.toLowerCase().includes(term);
-        const codeMatches = node.code && String(node.code).toLowerCase().includes(term);
+        const codeMatches =
+          node.code && String(node.code).toLowerCase().includes(term);
         const isMatch = nameMatches || codeMatches;
 
-        const matchingChildren = node.children && node.children.length > 0
-          ? filterNodes(node.children)
-          : [];
+        const matchingChildren =
+          node.children && node.children.length > 0
+            ? filterNodes(node.children)
+            : [];
 
         if (isMatch || matchingChildren.length > 0) {
           results.push({
             ...node,
-            children: matchingChildren.length > 0 ? matchingChildren : (node.children || []),
+            children:
+              matchingChildren.length > 0
+                ? matchingChildren
+                : node.children || [],
           });
         }
       }
@@ -172,7 +179,9 @@ function Chartofaccounts() {
       const response = await API.get("accounttree");
 
       const fetchedData = response.data?.data || response.data || [];
-      const dataArray = Array.isArray(fetchedData) ? fetchedData : Object.values(fetchedData);
+      const dataArray = Array.isArray(fetchedData)
+        ? fetchedData
+        : Object.values(fetchedData);
       setAccountsData(dataArray);
       setMainAccounts(dataArray);
 
@@ -225,9 +234,13 @@ function Chartofaccounts() {
 
             <td className="acc-type-cell">
               {node.is_payable ? (
-                <span className="badge-payable badge-leaf">فرعي (يقبل حركات)</span>
+                <span className="badge-payable badge-leaf">
+                  فرعي (يقبل حركات)
+                </span>
               ) : (
-                <span className="badge-payable badge-parent">رئيسي (تجميعي)</span>
+                <span className="badge-payable badge-parent">
+                  رئيسي (تجميعي)
+                </span>
               )}
             </td>
 
@@ -311,7 +324,9 @@ function Chartofaccounts() {
       return;
     }
     try {
-      const res = await API.get("/accounttree/next-code", { params: { parent_id: parentId } });
+      const res = await API.get("/accounttree/next-code", {
+        params: { parent_id: parentId },
+      });
       const info = res.data?.data || res.data;
       if (info?.suggested_code) {
         setGeneratedCode(info.suggested_code);
@@ -326,7 +341,7 @@ function Chartofaccounts() {
   };
 
   const handleLevel1Change = (e) => {
-    const val = e?.target ? e.target.value : (e || "");
+    const val = e?.target ? e.target.value : e || "";
     setLevel1(val);
     setLevel2("");
     setLevel3("");
@@ -341,7 +356,7 @@ function Chartofaccounts() {
   };
 
   const handleLevel2Change = (e) => {
-    const val = e?.target ? e.target.value : (e || "");
+    const val = e?.target ? e.target.value : e || "";
     setLevel2(val);
     setLevel3("");
     setLevel4("");
@@ -354,7 +369,7 @@ function Chartofaccounts() {
   };
 
   const handleLevel3Change = (e) => {
-    const val = e?.target ? e.target.value : (e || "");
+    const val = e?.target ? e.target.value : e || "";
     setLevel3(val);
     setLevel4("");
 
@@ -365,7 +380,7 @@ function Chartofaccounts() {
   };
 
   const handleLevel4Change = (e) => {
-    const val = e?.target ? e.target.value : (e || "");
+    const val = e?.target ? e.target.value : e || "";
     setLevel4(val);
     fetchNextCode(val && val !== "0" ? val : level3 || level2 || level1);
   };
@@ -376,15 +391,16 @@ function Chartofaccounts() {
       alert("يرجى إدخال اسم الحساب");
       return;
     }
-    const effectiveParentId = (level4 && level4 !== "0")
-      ? level4
-      : (level3 && level3 !== "0")
-        ? level3
-        : (level2 && level2 !== "0")
-          ? level2
-          : (level1 && level1 !== "0")
-            ? level1
-            : null;
+    const effectiveParentId =
+      level4 && level4 !== "0"
+        ? level4
+        : level3 && level3 !== "0"
+          ? level3
+          : level2 && level2 !== "0"
+            ? level2
+            : level1 && level1 !== "0"
+              ? level1
+              : null;
 
     if (!effectiveParentId) {
       alert("يرجى اختيار نوع أو تصنيف الحساب الأب");
@@ -540,7 +556,7 @@ function Chartofaccounts() {
                     { value: "", label: "اختر نوع الحساب" },
                     ...(mainAccounts || []).map((account) => ({
                       value: account.id,
-                      label: `${account.code ? account.code + ' - ' : ''}${account.name}`,
+                      label: `${account.code ? account.code + " - " : ""}${account.name}`,
                     })),
                   ]}
                   onChange={handleLevel1Change}
@@ -553,10 +569,15 @@ function Chartofaccounts() {
                   value={level2}
                   disabled={!level1}
                   options={[
-                    { value: "", label: level1 ? "اختر الحساب العام (المستوى 2)" : "اختر المستوى الأول أولاً" },
+                    {
+                      value: "",
+                      label: level1
+                        ? "اختر الحساب العام (المستوى 2)"
+                        : "اختر المستوى الأول أولاً",
+                    },
                     ...(level2Options || []).map((account) => ({
                       value: account.id,
-                      label: `${account.code ? account.code + ' - ' : ''}${account.name}`,
+                      label: `${account.code ? account.code + " - " : ""}${account.name}`,
                     })),
                   ]}
                   onChange={handleLevel2Change}
@@ -573,10 +594,15 @@ function Chartofaccounts() {
                   value={level3}
                   disabled={!level2}
                   options={[
-                    { value: "", label: level2 ? "اختر الحساب الفرعي (المستوى 3 - اختياري)" : "اختر المستوى الثاني أولاً" },
+                    {
+                      value: "",
+                      label: level2
+                        ? "اختر الحساب الفرعي (المستوى 3 - اختياري)"
+                        : "اختر المستوى الثاني أولاً",
+                    },
                     ...(level3Options || []).map((account) => ({
                       value: account.id,
-                      label: `${account.code ? account.code + ' - ' : ''}${account.name}`,
+                      label: `${account.code ? account.code + " - " : ""}${account.name}`,
                     })),
                   ]}
                   onChange={handleLevel3Change}
@@ -589,10 +615,15 @@ function Chartofaccounts() {
                   value={level4}
                   disabled={!level3}
                   options={[
-                    { value: "", label: level3 ? "اختر الحساب التفصيلي (المستوى 4 - اختياري)" : "اختر المستوى الثالث أولاً" },
+                    {
+                      value: "",
+                      label: level3
+                        ? "اختر الحساب التفصيلي (المستوى 4 - اختياري)"
+                        : "اختر المستوى الثالث أولاً",
+                    },
                     ...(level4Options || []).map((account) => ({
                       value: account.id,
-                      label: `${account.code ? account.code + ' - ' : ''}${account.name}`,
+                      label: `${account.code ? account.code + " - " : ""}${account.name}`,
                     })),
                   ]}
                   onChange={handleLevel4Change}
@@ -720,7 +751,12 @@ function Chartofaccounts() {
         </Modal.Footer>
       </Modal>
 
-      <Modal className="showacc-modal" show={showModalacc} onHide={handleCloseModal} centered>
+      <Modal
+        className="showacc-modal"
+        show={showModalacc}
+        onHide={handleCloseModal}
+        centered
+      >
         <Modal.Header>
           <Button
             className="custom-close-button cls-btn"
@@ -743,19 +779,30 @@ function Chartofaccounts() {
                 </tr>
                 <tr>
                   <td className="details-label">اسم الحساب</td>
-                  <td><strong>{selectedNode?.name}</strong></td>
+                  <td>
+                    <strong>{selectedNode?.name}</strong>
+                  </td>
                 </tr>
                 <tr>
                   <td className="details-label">المستوى الشجري</td>
-                  <td>المستوى {selectedNode?.level !== undefined ? selectedNode.level : "-"}</td>
+                  <td>
+                    المستوى{" "}
+                    {selectedNode?.level !== undefined
+                      ? selectedNode.level
+                      : "-"}
+                  </td>
                 </tr>
                 <tr>
                   <td className="details-label">طبيعة الحساب</td>
                   <td>
                     {selectedNode?.is_payable ? (
-                      <span className="badge-payable badge-leaf">فرعي (يقبل حركات وقيود)</span>
+                      <span className="badge-payable badge-leaf">
+                        فرعي (يقبل حركات وقيود)
+                      </span>
                     ) : (
-                      <span className="badge-payable badge-parent">رئيسي (تجميعي)</span>
+                      <span className="badge-payable badge-parent">
+                        رئيسي (تجميعي)
+                      </span>
                     )}
                   </td>
                 </tr>
@@ -763,7 +810,11 @@ function Chartofaccounts() {
                   <td className="details-label">الرصيد النهائي</td>
                   <td>
                     <strong>
-                      {formatMoney(selectedNode?.final_balance ?? selectedNode?.opening_balance ?? 0)}
+                      {formatMoney(
+                        selectedNode?.final_balance ??
+                          selectedNode?.opening_balance ??
+                          0,
+                      )}
                     </strong>
                   </td>
                 </tr>

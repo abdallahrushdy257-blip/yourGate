@@ -107,8 +107,7 @@ function DonerReceiptVoucher(props) {
     try {
       const res = await API.get("/transactions/components/donations");
       const data = await res;
-      const list = Array.isArray(data.data) ? data.data : (data.data?.data || []);
-      setAccount(list);
+      setAccount(data.data.data);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -204,7 +203,7 @@ function DonerReceiptVoucher(props) {
                 }}
                 options={[
                   { value: "", label: "إختر الحساب" },
-                  ...account.map((item) => ({
+                  ...account?.map((item) => ({
                     value: item.id,
                     label: item.name ,
                   })),

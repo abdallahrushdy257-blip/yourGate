@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../../../../pages/CreateLoan/createLoan.css";
+import "../../../loans/pages/createLoan.css";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import Title from "../../../../components/title";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

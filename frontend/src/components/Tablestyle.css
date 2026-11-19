@@ -535,8 +535,10 @@ table.printTabel tfoot td {
   table.printTabel {
     width: 100% !important;
     border-collapse: collapse !important;
-    border: 1px solid #000 !important;
     font-size: 12px !important;
+  }
+  .table-scroll{
+    border: none !important;
   }
 
   table.printTabel th,

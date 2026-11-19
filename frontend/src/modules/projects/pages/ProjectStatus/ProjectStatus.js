@@ -76,6 +76,53 @@ function ProjectStatus() {
   const [total, setTotal] = useState(0);
   const [marketingmethod, setMarketingmethod] = useState(0);
   const [accounttree, setAccounttre] = useState("");
+  const [treeAccounts, setTreeAccounts] = useState([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(false);
+
+  const flattenTreeAccounts = (nodes) => {
+    let list = [];
+    if (!nodes) return list;
+    const arr = Array.isArray(nodes) ? nodes : Object.values(nodes);
+    for (const node of arr) {
+      if (
+        node.is_payable ||
+        (!node.children ||
+          (Array.isArray(node.children)
+            ? node.children.length === 0
+            : Object.keys(node.children).length === 0))
+      ) {
+        list.push(node);
+      }
+      if (node.children) {
+        list = list.concat(flattenTreeAccounts(node.children));
+      }
+    }
+    return list;
+  };
+
+  const getTreeAccounts = async () => {
+    setLoadingAccounts(true);
+    try {
+      let res = await API.get("/accounttree/entry").catch(() => null);
+      let list = Array.isArray(res?.data) ? res.data : (res?.data?.data || []);
+      if (!list || list.length === 0) {
+        res = await API.get("/accounttree").catch(() => null);
+        const raw = Array.isArray(res?.data)
+          ? res.data
+          : (res?.data?.data || Object.values(res?.data || {}));
+        list = flattenTreeAccounts(raw);
+      }
+      setTreeAccounts(list || []);
+    } catch (err) {
+      console.error("Error loading account tree for projects:", err);
+    } finally {
+      setLoadingAccounts(false);
+    }
+  };
+
+  useEffect(() => {
+    getTreeAccounts();
+  }, []);
 
   const resetAddForm = () => {
     setName("");
@@ -429,15 +476,16 @@ function ProjectStatus() {
                   id="project-account"
                   label="حساب ترحيل الحالة"
                   options={[
-                    { value: "0", label: "إختر الحساب" },
                     {
-                      value: "9e5000ef-9e80-4388-b368-0b6f3e6710f6",
-                      label: "تبرعات وهبات مقيدة – نقدية",
+                      value: "",
+                      label: loadingAccounts
+                        ? "جاري تحميل شجرة الحسابات..."
+                        : "إختر الحساب من شجرة الحسابات",
                     },
-                    {
-                      value: "9e5000f3-4d41-4579-8d16-123c5dcaacca",
-                      label: "تبرعات وهبات غير مقيدة – نقدية ",
-                    },
+                    ...treeAccounts.map((acc) => ({
+                      value: String(acc.id || acc.code),
+                      label: acc.code ? `${acc.code} - ${acc.name}` : acc.name,
+                    })),
                   ]}
                   value={accounttree}
                   onChange={(e) => setAccounttre(e.target.value)}

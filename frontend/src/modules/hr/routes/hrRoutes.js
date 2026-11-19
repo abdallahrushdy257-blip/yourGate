@@ -145,8 +145,6 @@ export const hrRouteConfigs = [
   // ── الخصومات والتحقيقات ───────────────────────────────────────
   { path: "/hrreport/discounts", element: withSuspense(DeductionReport) },
   { path: "/hrreport/investigations", element: withSuspense(InvestigationReport) },
-  { path: "/discounts/:id", element: withSuspense(Discounts) },
-  { path: "/investigations/:id", element: withSuspense(Investigations) },
   { path: "/editinvestigations/:id", element: withSuspense(EditInvestigations) },
 
   // ── المتطوعون ─────────────────────────────────────────────────

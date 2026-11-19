@@ -14,6 +14,7 @@ import CustomButton from "../../../../components/CustomButton";
 import UploadInput from "../../../../components/UploadInput";
 import API from "../../../../api/axiosConfig";
 import RegisterTextarea from "../../../../components/RegisterTextarea";
+import { toast } from "react-toastify";
 
 function AddMinutes() {
   const navigate = useNavigate();
@@ -102,6 +103,17 @@ function AddMinutes() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!date) {
+      return toast.error("تاريخ المحضر مطلوب");
+    }
+    if (!type) {
+      return toast.error("نوع الاجتماع مطلوب");
+    }
+    if (!reason) {
+      return toast.error("غرض الاجتماع مطلوب");
+    }
+
     setSubmitting(true);
 
     const formData = new FormData();
