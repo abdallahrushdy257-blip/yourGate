@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 ﻿import React, { useState, useEffect } from "react";
 import "../../../../modules/loans/pages/createLoan.css";
+=======
+import React, { useState, useEffect } from "react";
+import "../../../loans/pages/createLoan.css";
+>>>>>>> 6dd3331de590899fc05b1df69047e8f83980c401
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import Title from "../../../../components/title";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

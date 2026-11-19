@@ -32,9 +32,16 @@ import { TaskRoutes } from "../modules/tasks";
 import { RoleRoutes } from "../modules/roles";
 import { UserRoutes } from "../modules/users";
 // import UserProfile from "./pages/Users/UserProfile";
+<<<<<<< HEAD:frontend/src/app/App.js
 import CommonRoutes from "../modules/common/routes/commonRoutes";
 import { PublicRoutes } from "../modules/common";
 import { AdminRoutes } from "../admin/routes/adminRoutes";
+=======
+import CommonRoutes from "./modules/common/routes/commonRoutes";
+import { PublicRoutes } from "./modules/common";
+import { AdminRoutes } from "./admin/routes/adminRoutes";
+import PaymentDetails from "./modules/data-management/pages/beneficiaries/PaymentDetails";
+>>>>>>> 6dd3331de590899fc05b1df69047e8f83980c401:frontend/src/App.js
 // import EmployeeCardPhoto from "./pages/EmployeeCard/EmployeeCardPhoto";
 // import ShowEmployeeCard from "./pages/EmployeeCard/ShowEmployeeCard";
 
@@ -187,6 +194,7 @@ function App() {
             {/* <Route path="/casedata/:id" element={<CaseDataPage />} /> */}
             <Route element={<MainApp />}>
               <Route element={<ProtectedRoute />}>
+            <Route path="/paymentDetails/:id" element={<PaymentDetails />} />
                 {CommonRoutes}
                  {/* <Route path="/home" element={<Home />} /> */}
                 {/* <Route path="/review" element={<ReviewData />} /> */}
@@ -252,21 +260,15 @@ function App() {
                 {/* code below up mohamed hany قبل اضافة ال backend */}
                 {/* <Route path="/addBenef" element={<AddBenef />} /> */}
                 {/* {/* <Route path="/addMinutes" element={<AddMinutes />} /> */}
-                {/* <Route path="/paymentsDue" element={<PaymentsDue />} />
-                
-                <Route
-                  path="/donationDetails/:id"
-                  element={<DonationDetails />}
-                />
-<Route path="/testNewTable" element={<TestNewTable />} />
+                {/* <Route path="/paymentsDue" element={<PaymentsDue />} /> */}
+                {/* <Route path="/donationDetails/:id" element={<DonationDetails />} /> */}
+
+                <Route path="/testNewTable" element={<TestNewTable />} />
                 {AccountingRoutes}
                 <Route
                   path="/projectpaymentvouchers/:id"
                   element={<ProjectPaymentVouchersRedirect />}
                 />
-                  path="organizationalChart"
-                  element={<OrganizationalChart />}
-                /> */}
                 {SettingsRoutes}
                 {RoleRoutes}
                 {UserRoutes}

@@ -1,5 +1,6 @@
-import React, { lazy } from "react";
+import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
+import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
 
 // Association Members
 const AssociationMembersReport = lazy(() => import("../pages/association-members/AssociationMembersReport"));
@@ -22,35 +23,41 @@ const AddMinutesReport = lazy(() => import("../pages/association-members/AddMinu
 const AddMinutes = lazy(() => import("../pages/association-members/AddMinutes"));
 const EditAddMinutes = lazy(() => import("../pages/association-members/EditAddMinutes"));
 
+const withSuspense = (Component) => (
+  <Suspense fallback={<TestPreLoader />}>
+    <Component />
+  </Suspense>
+);
+
 export const associationRoutes = [
   // أعضاء الجمعية العمومية
-  { path: "/associationMembersReport", element: <AssociationMembersReport /> },
-  { path: "/associationMembers", element: <AssociationMembers /> },
-  { path: "/showAssociationMembers/:id", element: <ShowAssociationMembers /> },
-  { path: "/associationmemberspayment/:id", element: <AssociationMembersPayment /> },
-  { path: "/associationMembersRecieve/:id", element: <AssociationMembersRecieve /> },
+  { path: "/associationMembersReport", element: withSuspense(AssociationMembersReport) },
+  { path: "/associationMembers", element: withSuspense(AssociationMembers) },
+  { path: "/showAssociationMembers/:id", element: withSuspense(ShowAssociationMembers) },
+  { path: "/associationmemberspayment/:id", element: withSuspense(AssociationMembersPayment) },
+  { path: "/associationMembersRecieve/:id", element: withSuspense(AssociationMembersRecieve) },
 
   // تقرير دفعات الأعضاء
-  { path: "/associationMemberspaymentReport", element: <AssociationMembersPaymentReport /> },
-  { path: "/associationpaymentDetails/:id", element: <AssociationPaymentDetails /> },
+  { path: "/associationMemberspaymentReport", element: withSuspense(AssociationMembersPaymentReport) },
+  { path: "/associationpaymentDetails/:id", element: withSuspense(AssociationPaymentDetails) },
 
   // اللجان
-  { path: "/committee", element: <Committee /> },
-  { path: "/addcommittee", element: <AddCommittee /> },
-  { path: "/committeemembers/:id", element: <CommitteeMembers /> },
+  { path: "/committee", element: withSuspense(Committee) },
+  { path: "/addcommittee", element: withSuspense(AddCommittee) },
+  { path: "/committeemembers/:id", element: withSuspense(CommitteeMembers) },
 
   // محاضر الاجتماعات
-  { path: "/addMinutesReport", element: <AddMinutesReport /> },
-  { path: "/addMinutes", element: <AddMinutes /> },
-  { path: "/editAddMinutes/:id", element: <EditAddMinutes /> },
+  { path: "/addMinutesReport", element: withSuspense(AddMinutesReport) },
+  { path: "/addMinutes", element: withSuspense(AddMinutes) },
+  { path: "/editAddMinutes/:id", element: withSuspense(EditAddMinutes) },
 ];
 
-export const AssociationRoutes = () => (
-  <>
-    {associationRoutes.map((r, i) => (
-      <Route key={i} path={r.path} element={r.element} />
+export const AssociationRoutes = (
+  <React.Fragment>
+    {associationRoutes.map((r) => (
+      <Route key={r.path} path={r.path} element={r.element} />
     ))}
-  </>
+  </React.Fragment>
 );
 
 export default AssociationRoutes;

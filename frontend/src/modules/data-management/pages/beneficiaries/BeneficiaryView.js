@@ -33,6 +33,7 @@ import {
 import API from "../../../../api/axiosConfig";
 import "./BeneficiaryView.css";
 import { DetailsSkeleton } from "../../../../components/Skeleton";
+import BeneficiaryReportModal from "../../../../components/BeneficiaryReportModal";
 
 function BeneficiaryView() {
   const { id } = useParams();
@@ -41,6 +42,7 @@ function BeneficiaryView() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const [activeTab, setActiveTab] = useState("basic");
+  const [showPdfReportModal, setShowPdfReportModal] = useState(false);
 
   // Decision edit state
   const [decision, setDecision] = useState("1");
@@ -626,7 +628,7 @@ function BeneficiaryView() {
           />
         </div>
 
-        <div className="text-center mt-3">
+        <div className="text-center mt-3 no-print">
           <Button
             type="submit"
             disabled={savingDecision}
@@ -662,6 +664,25 @@ function BeneficiaryView() {
         </div>
 
         <div className="d-flex align-items-center gap-2">
+          <Button
+            variant="warning"
+            size="sm"
+            onClick={() => setShowPdfReportModal(true)}
+            style={{
+              backgroundColor: "#c29a64",
+              borderColor: "#c29a64",
+              color: "#fff",
+              borderRadius: "20px",
+              padding: "6px 18px",
+              fontWeight: "700",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <FontAwesomeIcon icon={faFilePdf} />
+            تقرير PDF الشامل
+          </Button>
           <Button
             variant="outline-dark"
             size="sm"
@@ -824,17 +845,78 @@ function BeneficiaryView() {
         {activeTab === "decision" && renderDecision()}
       </div>
 
-      {/* All sections rendered for print only */}
-      <div className="print-only" style={{ display: "none" }}>
-        {renderBasicInfo()}
-        {renderBankInfo()}
-        {renderWorkEducation()}
-        {renderHousing()}
-        {renderHealth()}
-        {renderDependents()}
-        {renderVouchers()}
-        {renderDecision()}
+      {/* Elegant Full Printable Document (Rendered only on print) */}
+      <div className="print-only beneficiary-print-document">
+        <div className="print-doc-header">
+          <div className="print-doc-brand">
+            <h2 className="print-org-name">جمعية بوابة الخير الخيرية</h2>
+            <span className="print-doc-type">ملف دراسة حالة المستفيد الشامل</span>
+          </div>
+          <div className="print-meta-box">
+            <div>تاريخ الطباعة: <strong>{new Date().toLocaleDateString("ar-EG")}</strong></div>
+            <div>رقم الملف: <strong>#{c.id}</strong></div>
+            <div>حالة الاعتماد: <strong>{statusConfig.label}</strong></div>
+          </div>
+        </div>
+
+        {/* Print Summary Card */}
+        <div className="print-beneficiary-summary">
+          <div className="print-summary-item">
+            <span className="print-lbl">اسم المستفيد:</span>
+            <span className="print-val fw-bold">{c.name || "-"}</span>
+          </div>
+          <div className="print-summary-item">
+            <span className="print-lbl">رقم الهوية:</span>
+            <span className="print-val">{c.idnumber || "-"}</span>
+          </div>
+          <div className="print-summary-item">
+            <span className="print-lbl">نوع المستفيد:</span>
+            <span className="print-val">{c.humancasetype === "2" ? "مستفيد دائم" : "مستفيد مؤقت"}</span>
+          </div>
+          <div className="print-summary-item">
+            <span className="print-lbl">رقم الجوال:</span>
+            <span className="print-val" dir="ltr">{c.phonenum || "-"}</span>
+          </div>
+        </div>
+
+        {/* All Sections in Flow for Print */}
+        <div className="print-sections-flow">
+          {renderBasicInfo()}
+          {renderBankInfo()}
+          {renderWorkEducation()}
+          {renderHousing()}
+          {renderHealth()}
+          {renderDependents()}
+          {renderVouchers()}
+          {renderDecision()}
+        </div>
+
+        {/* Print Signatures and Footer */}
+        <div className="print-signatures-block">
+          <div className="sig-column">
+            <span className="sig-title">الباحث الاجتماعي</span>
+            <div className="sig-space"></div>
+            <span className="sig-line">التوقيع: ............................</span>
+          </div>
+          <div className="sig-column">
+            <span className="sig-title">مدير إدارة المستفيدين</span>
+            <div className="sig-space"></div>
+            <span className="sig-line">التوقيع: ............................</span>
+          </div>
+          <div className="sig-column">
+            <span className="sig-title">اعتماد الإدارة / الختم الرسمي</span>
+            <div className="sig-space"></div>
+            <span className="sig-line">التاريخ: ............................</span>
+          </div>
+        </div>
       </div>
+
+      {/* Comprehensive PDF Report Modal */}
+      <BeneficiaryReportModal
+        show={showPdfReportModal}
+        onHide={() => setShowPdfReportModal(false)}
+        beneficiaryData={data}
+      />
     </div>
   );
 }

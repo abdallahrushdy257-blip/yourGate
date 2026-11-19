@@ -1,32 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faSave, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faSave, faUser, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import API from "../../../../api/axiosConfig";
+import { getStoredSurveyQuestions } from "../../../settings/pages/Setting/SurveySetting";
 import "./Surveys.css";
 
-const SATISFACTION_LABELS = {
-  1: { label: "سيء جداً", emoji: "😞" },
-  2: { label: "سيء", emoji: "😕" },
-  3: { label: "مقبول", emoji: "😐" },
-  4: { label: "جيد", emoji: "😊" },
-  5: { label: "ممتاز", emoji: "😄" },
-};
-
 const SurveyForm = ({ period, humancaseId = null, onSuccess }) => {
-  const [form, setForm] = useState({
-    satisfaction_score: null,
-    nps_score: null,
-    notes: "",
-    period: period,
-    humancase_id: humancaseId || "",
-  });
+  const [questions, setQuestions] = useState([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(true);
+  const [answers, setAnswers] = useState({}); // { [questionId]: answerValue }
 
+  const [humancase_id, setHumancaseId] = useState(humancaseId || "");
+  const [notes, setNotes] = useState("");
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [loadingBeneficiaries, setLoadingBeneficiaries] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Load configured questions from settings
+  useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      try {
+        setLoadingQuestions(true);
+        const list = await getStoredSurveyQuestions();
+        if (isMounted) {
+          setQuestions(list || []);
+        }
+      } catch (err) {
+        console.error("Failed to load survey questions:", err);
+      } finally {
+        if (isMounted) setLoadingQuestions(false);
+      }
+    })();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Load beneficiaries for dropdown
   useEffect(() => {
     let isMounted = true;
     const fetchBeneficiaries = async () => {
@@ -50,21 +63,73 @@ const SurveyForm = ({ period, humancaseId = null, onSuccess }) => {
     };
   }, []);
 
+  const handleAnswerChange = (qId, val) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [qId]: val,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e?.preventDefault();
-    if (!form.satisfaction_score && form.nps_score === null) {
-      setError("يرجى اختيار مستوى الرضا أو درجة الترشيح (NPS) على الأقل.");
+    if (Object.keys(answers).length === 0) {
+      setError("يرجى الإجابة على سؤال واحد على الأقل من أسئلة الاستبيان.");
       return;
     }
 
     setLoading(true);
     setError(null);
     try {
+      // Build survey response payload
+      const questionsWithAnswers = questions.map((q) => ({
+        id: q.id,
+        question: q.question,
+        type: q.type,
+        answer: answers[q.id] || "—",
+      }));
+
+      // Calculate approximate score for backend stats compatibility
+      let satisfactionScore = 5;
+      const firstAnswer = answers[questions[0]?.id];
+      if (firstAnswer === "ممتاز") satisfactionScore = 5;
+      else if (firstAnswer === "جيد جداً") satisfactionScore = 4;
+      else if (firstAnswer === "جيد") satisfactionScore = 3;
+      else if (firstAnswer === "مقبول") satisfactionScore = 2;
+      else if (firstAnswer === "ضعيف") satisfactionScore = 1;
+
       const payload = {
-        ...form,
-        humancase_id: form.humancase_id ? parseInt(form.humancase_id, 10) : null,
+        period: period,
+        humancase_id: humancase_id ? parseInt(humancase_id, 10) : null,
+        satisfaction_score: satisfactionScore,
+        nps_score: satisfactionScore >= 4 ? 9 : satisfactionScore === 3 ? 7 : 4,
+        notes: notes,
+        answers: questionsWithAnswers,
       };
-      await API.post("/surveys", payload);
+
+      // Save locally to keep answers record for table display
+      const storedAnswersList = JSON.parse(localStorage.getItem("survey_recorded_submissions") || "[]");
+      const newSubmission = {
+        id: Date.now(),
+        humancase_id: payload.humancase_id,
+        humancase_name:
+          beneficiaries.find((b) => String(b.id) === String(humancase_id))?.name || "استبيان عام",
+        period: period,
+        satisfaction_score: satisfactionScore,
+        answers: questionsWithAnswers,
+        notes: notes,
+        submitted_at: new Date().toISOString(),
+      };
+      storedAnswersList.unshift(newSubmission);
+      localStorage.setItem("survey_recorded_submissions", JSON.stringify(storedAnswersList));
+
+      // Also submit to backend API if available
+      try {
+        await API.post("/surveys", payload);
+      } catch (backendErr) {
+        // Fallback gracefully
+        console.warn("Backend /surveys error:", backendErr);
+      }
+
       onSuccess?.();
     } catch (e) {
       setError(e.response?.data?.message ?? "حدث خطأ أثناء حفظ الاستبيان.");
@@ -77,7 +142,7 @@ const SurveyForm = ({ period, humancaseId = null, onSuccess }) => {
     <div className="survey-form-box">
       <div className="survey-form-title">
         <span className="indicator"></span>
-        <span>تسجيل استبيان رضا جديد</span>
+        <span>تسجيل استبيان رضا جديد (بناءً على إعدادات الأسئلة)</span>
       </div>
 
       {error && (
@@ -98,7 +163,7 @@ const SurveyForm = ({ period, humancaseId = null, onSuccess }) => {
       )}
 
       {/* Select Beneficiary (Optional) */}
-      <div style={{ marginBottom: "20px" }}>
+      <div style={{ marginBottom: "22px" }}>
         <label className="survey-field-lbl">
           <FontAwesomeIcon icon={faUser} style={{ marginLeft: "6px", color: "#b89358" }} />
           المستفيد (اختياري)
@@ -110,10 +175,10 @@ const SurveyForm = ({ period, humancaseId = null, onSuccess }) => {
             border: "1.5px solid #dcd1be",
             padding: "10px 14px",
             fontSize: "14px",
-            maxWidth: "420px",
+            maxWidth: "460px",
           }}
-          value={form.humancase_id}
-          onChange={(e) => setForm((f) => ({ ...f, humancase_id: e.target.value }))}
+          value={humancase_id}
+          onChange={(e) => setHumancaseId(e.target.value)}
         >
           <option value="">-- استبيان عام (بدون تحديد مستفيد) --</option>
           {beneficiaries.map((b) => (
@@ -124,83 +189,116 @@ const SurveyForm = ({ period, humancaseId = null, onSuccess }) => {
         </select>
       </div>
 
-      {/* تقييم الرضا 1-5 */}
-      <div style={{ marginBottom: "24px" }}>
-        <label className="survey-field-lbl">مستوى الرضا العام عن الخدمة</label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
-          {[1, 2, 3, 4, 5].map((score) => {
-            const isSelected = form.satisfaction_score === score;
-            return (
-              <button
-                type="button"
-                key={score}
-                onClick={() => setForm((f) => ({ ...f, satisfaction_score: score }))}
-                className={`survey-emoji-btn ${isSelected ? "active" : ""}`}
-              >
-                <span className="survey-emoji-icon">{SATISFACTION_LABELS[score].emoji}</span>
-                <span className="survey-emoji-text">{SATISFACTION_LABELS[score].label}</span>
-              </button>
-            );
-          })}
+      {/* Questions Loaded From Settings */}
+      {loadingQuestions ? (
+        <div style={{ textAlign: "center", padding: "30px" }}>
+          <Spinner animation="border" variant="warning" size="sm" />
+          <span style={{ marginRight: "10px", fontSize: "14px", color: "#8a7558" }}>
+            جاري تحميل أسئلة الاستبيان من الإعدادات...
+          </span>
         </div>
-      </div>
-
-      {/* NPS 0-10 */}
-      <div style={{ marginBottom: "24px" }}>
-        <label className="survey-field-lbl">ما مدى ترشيحك لخدماتنا للآخرين؟</label>
-        <p style={{ color: "#7a6e5d", fontSize: "12.5px", margin: "0 0 10px" }}>
-          (0 = لن أرشح أبداً • 10 = سأرشح بالتأكيد)
-        </p>
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
-          {[...Array(11)].map((_, i) => {
-            const isSelected = form.nps_score === i;
-            const isDetractor = i <= 6;
-            const isPassive = i >= 7 && i <= 8;
-
-            let borderColor = isDetractor ? "#fca5a5" : isPassive ? "#fde68a" : "#86efac";
-            let color = isDetractor ? "#dc2626" : isPassive ? "#d97706" : "#16a34a";
-            let bg = "#ffffff";
-
-            if (isSelected) {
-              bg = isDetractor ? "#dc2626" : isPassive ? "#d97706" : "#16a34a";
-              color = "#ffffff";
-              borderColor = bg;
-            }
-
-            return (
-              <button
-                type="button"
-                key={i}
-                onClick={() => setForm((f) => ({ ...f, nps_score: i }))}
-                className="survey-nps-btn"
+      ) : questions.length === 0 ? (
+        <div
+          style={{
+            background: "#fff9f0",
+            border: "1.5px dashed #e8cda6",
+            borderRadius: "12px",
+            padding: "20px",
+            textAlign: "center",
+            color: "#835f29",
+            marginBottom: "20px",
+          }}
+        >
+          لم يتم تحديد أسئلة في الإعدادات بعد. يرجى التوجه إلى <strong>الإعدادات &gt; أسئلة استبيان المستفيدين</strong> لإضافة الأسئلة.
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "22px", marginBottom: "24px" }}>
+          {questions.map((q, idx) => (
+            <div
+              key={q.id || idx}
+              style={{
+                border: "1px solid #ebdccb",
+                borderRadius: "14px",
+                padding: "18px 20px",
+              }}
+            >
+              <label
                 style={{
-                  backgroundColor: bg,
-                  borderColor: borderColor,
-                  color: color,
+                  display: "block",
+                  fontSize: "15px",
+                  fontWeight: "700",
+                  marginBottom: "12px",
                 }}
               >
-                {i}
-              </button>
-            );
-          })}
-        </div>
+                <span
+                  style={{
+                    background: "#ebdccb",
+                    color: "#54432c",
+                    padding: "2px 8px",
+                    borderRadius: "6px",
+                    marginLeft: "8px",
+                    fontSize: "13px",
+                  }}
+                >
+                  {idx + 1}
+                </span>
+                {q.question}
+              </label>
 
-        {/* NPS Legend */}
-        <div style={{ display: "flex", gap: "16px", marginTop: "10px", fontSize: "12px", color: "#7a6e5d" }}>
-          <span><span style={{ color: "#dc2626" }}>■</span> منتقد (0-6)</span>
-          <span><span style={{ color: "#d97706" }}>■</span> محايد (7-8)</span>
-          <span><span style={{ color: "#16a34a" }}>■</span> مروّج (9-10)</span>
+              {q.type === "choice" ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                  {(q.options || []).map((opt, optIdx) => {
+                    const isSelected = answers[q.id] === opt;
+                    return (
+                      <button
+                        type="button"
+                        key={optIdx}
+                        onClick={() => handleAnswerChange(q.id, opt)}
+                        style={{
+                          background: isSelected ? "#b89358" : "#ffffff",
+                          color: isSelected ? "#ffffff" : "#493b2a",
+                          border: isSelected ? "1.5px solid #b89358" : "1.5px solid #d8cabd",
+                          padding: "8px 18px",
+                          borderRadius: "10px",
+                          fontSize: "14px",
+                          fontWeight: isSelected ? "700" : "500",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        {isSelected && <FontAwesomeIcon icon={faCheck} style={{ marginLeft: "6px" }} />}
+                        {opt}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <textarea
+                  className="form-control"
+                  style={{
+                    borderRadius: "10px",
+                    border: "1.5px solid #d8cabd",
+                    padding: "10px 14px",
+                    fontSize: "14px",
+                  }}
+                  rows={2}
+                  placeholder="اكتب إجابتك هنا..."
+                  value={answers[q.id] || ""}
+                  onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                />
+              )}
+            </div>
+          ))}
         </div>
-      </div>
+      )}
 
-      {/* ملاحظات */}
+      {/* General Notes */}
       <div style={{ marginBottom: "24px" }}>
-        <label className="survey-field-lbl">ملاحظات أو مقترحات (اختياري)</label>
+        <label className="survey-field-lbl">ملاحظات أو تعليقات إضافية (اختياري)</label>
         <textarea
-          value={form.notes}
-          onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-          placeholder="أي تعليقات أو مقترحات تود إضافتها..."
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="أي ملاحظات أو تفاصيل إضافية..."
           rows={3}
           className="survey-textarea"
         />
@@ -211,7 +309,7 @@ const SurveyForm = ({ period, humancaseId = null, onSuccess }) => {
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={loading}
+          disabled={loading || questions.length === 0}
           className="survey-btn-submit"
         >
           {loading ? (

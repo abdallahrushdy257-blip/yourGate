@@ -32,7 +32,6 @@ export const donorsRoutes = [
   { path: "/viewdonations", element: withSuspense(ViewDonations) },
   { path: "/viewdonations/:id", element: withSuspense(ViewDonations) },
   { path: "/viewdonationsproject/:id", element: withSuspense(ViewDonationsProject) },
-  { path: "/projectpaymentvouchers/:id", element: withSuspense(ViewDonationsProject) },
 ];
 
 export const donorsRouteConfigs = donorsRoutes;

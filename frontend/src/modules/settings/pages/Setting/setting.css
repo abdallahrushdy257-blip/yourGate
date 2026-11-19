@@ -202,3 +202,48 @@ input:checked+.slider:before {
         padding: 15px;
     }
 }
+
+/* ── Modern Setting Navigation Tabs ── */
+.settings-navigation-tabs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    border-radius: 18px;
+    border: 1px solid #e7dcce;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.settings-nav-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 14px;
+    border: 1.5px solid transparent;
+    background: transparent;
+    color: #635340;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.settings-nav-tab:hover {
+    background: #ede3d3;
+    color: #403222;
+}
+
+.settings-nav-tab.active {
+    background: #ffffff;
+    color: #8c672e;
+    border-color: #d8c2a3;
+    box-shadow: 0 4px 14px rgba(140, 103, 46, 0.15);
+}
+
+.settings-nav-icon {
+    font-size: 15px;
+}

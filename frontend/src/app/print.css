@@ -51,32 +51,26 @@
     height: 100px;
     color: #000;
   }
-    .theader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 160px;
-    background: white;
-    z-index: 1000;
+  .theader {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    background: white !important;
     display: flex !important;
-    margin: 0 !important;
-    padding: 10px 20px !important;
-    border-bottom: 1px solid #00000025;
+    margin: 0 0 15px 0 !important;
+    padding: 10px 0 !important;
+    border-bottom: 2px solid #00000025 !important;
   }
 
   .tfooter {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 140px;
-    background: white;
-    z-index: 1000;
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    background: white !important;
     display: flex !important;
-    margin: 0 !important;
-    padding: 10px 20px !important;
-    border-top: 1px solid #00000010;
+    margin: 20px 0 0 0 !important;
+    padding: 10px 0 !important;
+    border-top: 1px solid #00000010 !important;
   }
   .print-headercol {
     margin: auto;
@@ -92,7 +86,10 @@
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    overflow: hidden !important;
+    overflow: visible !important;
+    height: auto !important;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
   .mainTitle {
     /* margin-bottom: 40px;
@@ -166,10 +163,10 @@
     display: none;
   }
   .printContainer {
-  margin: 180px auto 110px auto !important;
-  page-break-inside: avoid;
-  width: 100%;
-}
+    margin: 20px auto !important;
+    page-break-inside: auto !important;
+    width: 100% !important;
+  }
   .page-break {
     page-break-after: always; /* عمل بريك بعد هذا العنصر */
   }

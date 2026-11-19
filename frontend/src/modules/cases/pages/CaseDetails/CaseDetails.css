@@ -207,16 +207,17 @@
 
 /* ── Modal Redesign ─────────────────────────────────────────── */
 .case-modal .modal-content {
-  background: var(--background-color, #faf6f0) !important;
-  border-radius: 18px !important;
-  border: 1.5px solid var(--border-color, #e5d7c3) !important;
-  box-shadow: 0 16px 40px rgba(70, 50, 20, 0.16) !important;
+  background: var(--surface-color) !important;
+  color: var(--text-color) !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16) !important;
   overflow: hidden;
 }
 
 .case-modal .modal-header {
-  background: var(--surface-color, #ffffff) !important;
-  border-bottom: 1.5px solid var(--border-color, #ebdcc8) !important;
+  background: var(--surface-color) !important;
+  border-bottom: 1px solid var(--border-color) !important;
   padding: 16px 24px !important;
   display: flex !important;
   align-items: center !important;
@@ -226,7 +227,7 @@
 .case-modal .modal-title {
   font-size: 17px !important;
   font-weight: 800 !important;
-  color: var(--text-color, #382f22) !important;
+  color: var(--text-color) !important;
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
@@ -285,8 +286,8 @@
 }
 
 .case-modal .modal-footer {
-  background: var(--surface-color, #ffffff) !important;
-  border-top: 1.5px solid var(--border-color, #ebdcc8) !important;
+  background: var(--surface-color) !important;
+  border-top: 1px solid var(--border-color) !important;
   padding: 14px 24px !important;
   display: flex !important;
   align-items: center !important;
@@ -294,27 +295,26 @@
 }
 
 .case-modal .btn-primary {
-  background: linear-gradient(135deg, #b89358 0%, #9e793d 100%) !important;
+  background: var(--buttonbackground-color) !important;
   border: none !important;
   border-radius: 10px !important;
   font-weight: 700 !important;
   font-size: 14px !important;
   padding: 10px 28px !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 14px rgba(184, 147, 88, 0.25) !important;
+  color: var(--buttontext-color) !important;
+  box-shadow: 0 4px 14px rgba(200, 146, 74, 0.25) !important;
   transition: all 0.2s ease !important;
 }
 
 .case-modal .btn-primary:hover {
-  background: linear-gradient(135deg, #c59f63 0%, #8c6a32 100%) !important;
+  background: var(--buttonbackgroundhover-color) !important;
   transform: translateY(-1px) !important;
-  box-shadow: 0 6px 18px rgba(184, 147, 88, 0.35) !important;
 }
 
 .case-modal .btn-secondary {
-  background: rgba(0, 0, 0, 0.05) !important;
-  border: 1.5px solid var(--border-color, #dfcaa6) !important;
-  color: var(--text-color, #5c4e3c) !important;
+  background: transparent !important;
+  border: 1.5px solid var(--border-color) !important;
+  color: var(--text-color) !important;
   border-radius: 10px !important;
   font-weight: 600 !important;
   font-size: 14px !important;
@@ -323,7 +323,7 @@
 }
 
 .case-modal .btn-secondary:hover {
-  background: rgba(0, 0, 0, 0.08) !important;
+  background: var(--hover-bg-color) !important;
   color: var(--text-color) !important;
 }
 
@@ -351,26 +351,27 @@
 
 /* ── Dark Mode ──────────────────────────────────────────────── */
 .dark-mode .case-stat-card {
-  background: var(--surface-color, #1e1b18);
-  border-color: var(--border-color, #382f24);
+  background: var(--surface-color);
+  border-color: var(--border-color);
 }
 
 .dark-mode .case-modal .modal-content {
-  background: var(--background-color, #171513) !important;
-  border-color: var(--border-color, #382f24) !important;
+  background: var(--surface-color) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color) !important;
 }
 
 .dark-mode .case-modal .modal-header,
 .dark-mode .case-modal .modal-footer {
-  background: #1e1b18 !important;
-  border-color: #382f24 !important;
+  background: var(--surface-color) !important;
+  border-color: var(--border-color) !important;
 }
 
 .dark-mode .case-modal .form-control,
 .dark-mode .case-modal .form-select {
-  background: #28241f !important;
-  border-color: #3e3428 !important;
-  color: #e0d6c8 !important;
+  background: var(--input-background) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-color) !important;
 }
 
 /* ── Action Popups & Mini Cards ────────────────────────────── */

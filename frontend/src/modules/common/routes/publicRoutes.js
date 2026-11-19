@@ -4,8 +4,14 @@ import TestPreLoader from "../pages/TestPreLoader/TestPreLoader";
 import GuestRoute from "../../../app/providers/GuestRoute";
 
 // Authentication & Registration
+<<<<<<< HEAD
 const Login = lazy(() => import("../pages/Login/Login"));
 const Verify = lazy(() => import("../pages/Verify/Verify"));
+=======
+const Login = lazy(() => import("../../../pages/Login/Login"));
+const AdminLogin = lazy(() => import("../../../admin/Login/AdminLogin"));
+const Verify = lazy(() => import("../../../pages/Verify/Verify"));
+>>>>>>> 6dd3331de590899fc05b1df69047e8f83980c401
 const CharityRegistration = lazy(() =>
   import("../pages/CharityRegistration/CharityRegistration")
 );
@@ -77,12 +83,14 @@ const withGuest = (Component) => (
 export const publicRouteConfigs = [
   // Authentication & Registration (Guest Only)
   { path: "/login", element: withGuest(Login) },
+  { path: "/ibgates/adminlogin", element: withGuest(AdminLogin) },
   { path: "/:id/verify", element: withGuest(Verify) },
   {
     path: "/charityregistration",
     element: withGuest(CharityRegistration),
   },
   { path: "/forgotpassword", element: withGuest(ForgotPassword) },
+  { path: "/forgot-password", element: withGuest(ForgotPassword) },
   { path: "/setnewpassword", element: withGuest(SetnewPassword) },
 
   // Main Landing & Landing Pages
@@ -104,6 +112,7 @@ export const publicRouteConfigs = [
   },
   { path: "/archivesLanding", element: withSuspense(ArchivesLanding) },
   { path: "/websideLanding", element: withSuspense(WebsiteLanding) },
+  { path: "/websiteLanding", element: withSuspense(WebsiteLanding) },
   {
     path: "/endowmentsLanding",
     element: withSuspense(EndowmentsLanding),
@@ -120,6 +129,7 @@ export const publicRouteConfigs = [
 
   // رابط إضافة مستفيد خارجي (عام)
   { path: "/benefitadddetails/:id", element: withSuspense(BenefitAddDetails) },
+  { path: "/beneficiaryAddDetails/:id", element: withSuspense(BenefitAddDetails) },
   { path: "/benefitadddetails", element: withSuspense(BenefitAddDetails) },
 ];
 

@@ -405,16 +405,33 @@ class HumanCaseService
                 $attachment = $details['health_upload'];
             }
 
-            $healthList[] = [
-                'id'             => count($healthList) + 1,
-                'disease_name'   => $data['disease_name'] ?? $data['name'] ?? '',
-                'disease_type'   => $data['disease_type'] ?? $data['type'] ?? '',
-                'disease_degree' => $data['disease_degree'] ?? $data['degree'] ?? '',
-                'treatment_type' => $data['treatment_type'] ?? $data['trtype'] ?? '',
-                'treatment_cost' => $data['treatment_cost'] ?? $data['trcost'] ?? '',
-                'notes'          => $data['notes'] ?? '',
-                'upload'         => $attachment,
-            ];
+            $items = [];
+            if (! empty($data['illness'])) {
+                $decoded = is_string($data['illness']) ? json_decode($data['illness'], true) : $data['illness'];
+                if (is_array($decoded)) {
+                    $items = $decoded;
+                }
+            }
+            if (empty($items)) {
+                $items = [$data];
+            }
+
+            foreach ($items as $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+                $healthList[] = [
+                    'id'             => count($healthList) + 1,
+                    'humancase_id'   => $case->id,
+                    'disease_name'   => $item['disease_name'] ?? $item['name'] ?? '',
+                    'disease_type'   => $item['disease_type'] ?? $item['type'] ?? '',
+                    'disease_degree' => $item['disease_degree'] ?? $item['degree'] ?? '',
+                    'treatment_type' => $item['treatment_type'] ?? $item['trtype'] ?? '',
+                    'treatment_cost' => $item['treatment_cost'] ?? $item['trcost'] ?? '',
+                    'notes'          => $item['notes'] ?? '',
+                    'upload'         => $attachment,
+                ];
+            }
 
             $details['health'] = $healthList;
             if ($attachment) {
@@ -434,8 +451,96 @@ class HumanCaseService
     public function showHealthData(int $id): array
     {
         $case = HumanCase::findOrFail($id);
+        $list = $case->details['health'] ?? [];
 
-        return $case->details['health'] ?? [];
+        return array_map(function ($item) use ($case) {
+            $item['humancase_id'] = $item['humancase_id'] ?? $case->id;
+            return $item;
+        }, $list);
+    }
+
+    /**
+     * Get single health record for editing.
+     */
+    public function showSingleHealth(int $id): array
+    {
+        foreach (HumanCase::all() as $case) {
+            foreach ($case->details['health'] ?? [] as $item) {
+                if ((int) ($item['id'] ?? 0) === $id) {
+                    $item['humancase_id'] = $case->id;
+                    return $item;
+                }
+            }
+        }
+
+        $case = HumanCase::find($id) ?? HumanCase::first();
+        $first = $case?->details['health'][0] ?? [];
+
+        return array_merge([
+            'id'             => $id,
+            'humancase_id'   => $case?->id ?? $id,
+            'disease_name'   => '',
+            'disease_type'   => '',
+            'disease_degree' => '',
+            'treatment_type' => '',
+            'treatment_cost' => '',
+            'notes'          => '',
+        ], $first, ['humancase_id' => $case?->id ?? $id]);
+    }
+
+    /**
+     * Update single health record.
+     */
+    public function updateSingleHealth(int $id, array $data, mixed $file = null): array
+    {
+        return DB::transaction(function () use ($id, $data, $file) {
+            $targetCase = null;
+            $targetIndex = null;
+
+            foreach (HumanCase::all() as $case) {
+                foreach ($case->details['health'] ?? [] as $idx => $item) {
+                    if ((int) ($item['id'] ?? 0) === $id) {
+                        $targetCase = $case;
+                        $targetIndex = $idx;
+                        break 2;
+                    }
+                }
+            }
+
+            if (! $targetCase) {
+                $targetCase = HumanCase::find($id) ?? HumanCase::firstOrFail();
+                $targetIndex = 0;
+            }
+
+            $details = $targetCase->details ?? [];
+            $healthList = $details['health'] ?? [];
+            $existing = $healthList[$targetIndex] ?? ['id' => $id];
+
+            $attachment = $existing['upload'] ?? null;
+            if ($file instanceof \Illuminate\Http\UploadedFile) {
+                $path = $file->store('humancases/health', 'public');
+                $attachment = asset('storage/' . $path);
+            }
+
+            $updated = array_merge($existing, [
+                'id'             => $existing['id'] ?? $id,
+                'humancase_id'   => $targetCase->id,
+                'disease_name'   => $data['disease_name'] ?? $data['name'] ?? ($existing['disease_name'] ?? ''),
+                'disease_type'   => $data['disease_type'] ?? $data['type'] ?? ($existing['disease_type'] ?? ''),
+                'disease_degree' => $data['disease_degree'] ?? $data['degree'] ?? ($existing['disease_degree'] ?? ''),
+                'treatment_type' => $data['treatment_type'] ?? $data['trtype'] ?? ($existing['treatment_type'] ?? ''),
+                'treatment_cost' => $data['treatment_cost'] ?? $data['trcost'] ?? ($existing['treatment_cost'] ?? ''),
+                'notes'          => $data['notes'] ?? ($existing['notes'] ?? ''),
+                'upload'         => $attachment,
+            ]);
+
+            $healthList[$targetIndex] = $updated;
+            $details['health'] = array_values($healthList);
+            $targetCase->details = $details;
+            $targetCase->save();
+
+            return $updated;
+        });
     }
 
     /**
@@ -448,15 +553,38 @@ class HumanCaseService
             $details = $case->details ?? [];
             $dependents = $details['dependants'] ?? [];
 
-            $dependents[] = [
-                'id'          => count($dependents) + 1,
-                'name'        => $data['name'] ?? '',
-                'dateofbirth' => $data['dateofbirth'] ?? $data['dob'] ?? '',
-                'phone'       => $data['phone'] ?? '',
-                'relation'    => $data['relation'] ?? '',
-                'gender'      => $data['gender'] ?? '',
-                'note'        => $data['note'] ?? '',
-            ];
+            $items = [];
+            if (! empty($data['data'])) {
+                $decoded = is_string($data['data']) ? json_decode($data['data'], true) : $data['data'];
+                if (is_array($decoded)) {
+                    $items = $decoded;
+                }
+            }
+            if (empty($items)) {
+                $items = [$data];
+            }
+
+            foreach ($items as $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+                $dependents[] = [
+                    'id'                => count($dependents) + 1,
+                    'humancase_id'      => $case->id,
+                    'name'              => $item['name'] ?? '',
+                    'dateofbirth'       => $item['dateofbirth'] ?? $item['dob'] ?? '',
+                    'phone'             => $item['phone'] ?? '',
+                    'relation'          => $item['relation'] ?? '',
+                    'gender'            => $item['gender'] ?? '',
+                    'note'              => $item['note'] ?? $item['notes'] ?? '',
+                    'healthstatus'      => $item['healthstatus'] ?? $item['health'] ?? '',
+                    'educationlevel'    => $item['educationlevel'] ?? $item['grade'] ?? '',
+                    'educationfees'     => $item['educationfees'] ?? $item['gradecost'] ?? '',
+                    'nationalid'        => $item['nationalid'] ?? '',
+                    'nationalid_expire' => $item['nationalid_expire'] ?? $item['idexpire'] ?? '',
+                    'nationalid_source' => $item['nationalid_source'] ?? $item['idsource'] ?? '',
+                ];
+            }
 
             $details['dependants'] = $dependents;
             $case->details = $details;
@@ -472,8 +600,101 @@ class HumanCaseService
     public function showDependantsData(int $id): array
     {
         $case = HumanCase::findOrFail($id);
+        $list = $case->details['dependants'] ?? [];
 
-        return $case->details['dependants'] ?? [];
+        return array_map(function ($item) use ($case) {
+            $item['humancase_id'] = $item['humancase_id'] ?? $case->id;
+            return $item;
+        }, $list);
+    }
+
+    /**
+     * Get single dependent record for editing.
+     */
+    public function showSingleDependent(int $id): array
+    {
+        foreach (HumanCase::all() as $case) {
+            foreach ($case->details['dependants'] ?? [] as $item) {
+                if ((int) ($item['id'] ?? 0) === $id) {
+                    $item['humancase_id'] = $case->id;
+                    return $item;
+                }
+            }
+        }
+
+        $case = HumanCase::find($id) ?? HumanCase::first();
+        $first = $case?->details['dependants'][0] ?? [];
+
+        return array_merge([
+            'id'                => $id,
+            'humancase_id'      => $case?->id ?? $id,
+            'name'              => '',
+            'gender'            => '0',
+            'dateofbirth'       => '',
+            'relation'          => '',
+            'healthstatus'      => '',
+            'educationlevel'    => '',
+            'educationfees'     => '',
+            'nationalid'        => '',
+            'nationalid_expire' => '',
+            'nationalid_source' => '',
+            'phone'             => '',
+            'note'              => '',
+        ], $first, ['humancase_id' => $case?->id ?? $id]);
+    }
+
+    /**
+     * Update single dependent record.
+     */
+    public function updateSingleDependent(int $id, array $data): array
+    {
+        return DB::transaction(function () use ($id, $data) {
+            $targetCase = null;
+            $targetIndex = null;
+
+            foreach (HumanCase::all() as $case) {
+                foreach ($case->details['dependants'] ?? [] as $idx => $item) {
+                    if ((int) ($item['id'] ?? 0) === $id) {
+                        $targetCase = $case;
+                        $targetIndex = $idx;
+                        break 2;
+                    }
+                }
+            }
+
+            if (! $targetCase) {
+                $targetCase = HumanCase::find($id) ?? HumanCase::firstOrFail();
+                $targetIndex = 0;
+            }
+
+            $details = $targetCase->details ?? [];
+            $dependents = $details['dependants'] ?? [];
+            $existing = $dependents[$targetIndex] ?? ['id' => $id];
+
+            $updated = array_merge($existing, [
+                'id'                => $existing['id'] ?? $id,
+                'humancase_id'      => $targetCase->id,
+                'name'              => $data['name'] ?? ($existing['name'] ?? ''),
+                'gender'            => $data['gender'] ?? ($existing['gender'] ?? '0'),
+                'relation'          => $data['relation'] ?? ($existing['relation'] ?? ''),
+                'healthstatus'      => $data['healthstatus'] ?? $data['health'] ?? ($existing['healthstatus'] ?? ''),
+                'dateofbirth'       => $data['dateofbirth'] ?? $data['dob'] ?? ($existing['dateofbirth'] ?? ''),
+                'educationlevel'    => $data['educationlevel'] ?? $data['grade'] ?? ($existing['educationlevel'] ?? ''),
+                'educationfees'     => $data['educationfees'] ?? $data['gradecost'] ?? ($existing['educationfees'] ?? ''),
+                'nationalid'        => $data['nationalid'] ?? ($existing['nationalid'] ?? ''),
+                'nationalid_expire' => $data['nationalid_expire'] ?? $data['idexpire'] ?? ($existing['nationalid_expire'] ?? ''),
+                'nationalid_source' => $data['nationalid_source'] ?? $data['idsource'] ?? ($existing['nationalid_source'] ?? ''),
+                'phone'             => $data['phone'] ?? ($existing['phone'] ?? ''),
+                'note'              => $data['note'] ?? $data['notes'] ?? ($existing['note'] ?? ''),
+            ]);
+
+            $dependents[$targetIndex] = $updated;
+            $details['dependants'] = array_values($dependents);
+            $targetCase->details = $details;
+            $targetCase->save();
+
+            return $updated;
+        });
     }
 
     /**
@@ -509,11 +730,14 @@ class HumanCaseService
             $details = $case->details ?? [];
             $vouchers = $details['vouchers'] ?? [];
 
+            $amount = (float) ($data['amount'] ?? 0);
+            $date = $data['date'] ?? now()->toDateString();
+
             $vouchers[] = [
                 'id'             => count($vouchers) + 1,
                 'amount'         => $data['amount'] ?? null,
-                'date'           => $data['date'] ?? null,
-                'payment_method' => $data['payment_method'] ?? null,
+                'date'           => $date,
+                'payment_method' => $data['payment_method'] ?? $data['type'] ?? null,
                 'account'        => $data['account'] ?? null,
                 'description'    => $data['description'] ?? null,
             ];
@@ -521,6 +745,17 @@ class HumanCaseService
             $details['vouchers'] = $vouchers;
             $case->details = $details;
             $case->save();
+
+            if ($amount > 0) {
+                app(\App\Services\Accounting\AccountingSyncService::class)->recordPayment([
+                    'amount'         => $amount,
+                    'date'           => $date,
+                    'account'        => $data['account'] ?? null,
+                    'description'    => $data['description'] ?? "سند صرف للمستفيد ({$case->name})",
+                    'reference_type' => 'beneficiary_voucher',
+                    'reference_id'   => $case->id,
+                ]);
+            }
 
             return $case;
         });

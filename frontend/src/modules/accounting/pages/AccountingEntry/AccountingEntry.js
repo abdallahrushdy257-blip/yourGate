@@ -570,7 +570,7 @@ function AccountingEntry() {
           ></button>
         </Modal.Header>
         <Modal.Body>{renderEntryForm(false)}</Modal.Body>
-        <Modal.Footer className="modal-footer-luxury">
+        <Modal.Footer className="">
           <Button
             variant="primary"
             className="luxury-submit-btn px-4"

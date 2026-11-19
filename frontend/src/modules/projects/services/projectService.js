@@ -5,16 +5,16 @@ import API from "../../../api/axiosConfig";
  */
 export const projectService = {
   // ── Project Core ──────────────────────────────────────────────
-  getProjects: (params) => API.get("/project", { params }),
-  getProject: (id) => API.get(`/project/${id}`),
-  createProject: (data) => API.post("/project/store", data),
-  updateProject: (id, data) => API.post(`/project/${id}/update`, data),
-  updateProjectStatus: (id, data) => API.post(`/project/${id}/update`, data),
-  deleteProject: (id) => API.get(`/project/${id}/delete`),
+  getProjects: (params) => API.get("/projects", { params }),
+  getProject: (id) => API.get(`/projects/${id}`),
+  createProject: (data) => API.post("/projects/store", data),
+  updateProject: (id, data) => API.post(`/projects/update/${id}`, data),
+  updateProjectStatus: (id, data) => API.post(`/projects/update/${id}`, data),
+  deleteProject: (id) => API.get(`/projects/${id}/delete`),
 
   // ── Project Details & Stats ───────────────────────────────────
-  getProjectDetails: (id) => API.get(`/projectdetails/${id}`),
-  saveProjectDetails: (data) => API.post("/projectdetails/store", data),
+  getProjectDetails: (id) => API.get(`/projects/${id}`),
+  saveProjectDetails: (data) => API.post("/projectsdetails/store", data),
 
   // ── KPIs ──────────────────────────────────────────────────────
   getMasterKpis: (params) => API.get("/kpi", { params }),
@@ -30,16 +30,16 @@ export const projectService = {
   // ── Phases ────────────────────────────────────────────────────
   getProjectPhases: (projectId) => API.get(`/projectphase/${projectId}`),
   saveProjectPhases: (data) => API.post("/projectphase/store", data),
-  deleteProjectPhase: (phaseId) => API.get(`/projectphase/${phaseId}/delete`),
+  deleteProjectPhase: (phaseId) => API.get(`/projectphase/${phaseId}/status/cancel`),
 
   // ── Members & Helpers ─────────────────────────────────────────
-  getProjectMembers: (projectId) => API.get(`/projecthelpers/${projectId}`),
-  saveProjectMembers: (data) => API.post("/projecthelpers/store", data),
-  deleteProjectMember: (memberId) => API.get(`/projecthelpers/${memberId}/delete`),
+  getProjectMembers: (projectId) => API.get(`/projectassignment/${projectId}`),
+  saveProjectMembers: (data) => API.post("/projectassignment/store", data),
+  deleteProjectMember: (memberId) => API.get(`/projectassignment/${memberId}/delete`),
 
   // ── Risks & Mitigations ───────────────────────────────────────
   getProjectRisks: (projectId) => API.get(`/projectrisk/${projectId}`),
-  saveProjectRisk: (data) => API.post("/projectrisk/store", data),
+  saveProjectRisk: (data) => API.post("/projectrisk/risk/store", data),
   deleteProjectRisk: (riskId) => API.get(`/projectrisk/${riskId}/delete`),
   getRiskMitigation: (riskId) => API.get(`/projectrisk/mitigation/${riskId}`),
   saveRiskMitigation: (data) => API.post("/projectrisk/mitigation/store", data),

@@ -14,6 +14,7 @@ import { useState, useEffect, useCallback } from "react";
 import API from "../../../../api/axiosConfig";
 import TableComponent from "../../../../components/TableComponent";
 import { Modal, Row, Col, Button, Spinner } from "react-bootstrap";
+import { toast } from "react-toastify";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import RegisterTextarea from "../../../../components/RegisterTextarea";
@@ -155,6 +156,20 @@ function AddMinutesReport() {
   // Submit Add Minute
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
+
+    if (!title) {
+      return toast.error("عنوان المحضر مطلوب");
+    }
+    if (!date) {
+      return toast.error("تاريخ المحضر مطلوب");
+    }
+    if (!type) {
+      return toast.error("نوع الاجتماع مطلوب");
+    }
+    if (!reason) {
+      return toast.error("غرض الاجتماع مطلوب");
+    }
+
     setIsSubmitting(true);
     setError({});
 
@@ -227,6 +242,20 @@ function AddMinutesReport() {
   // Submit Edit Minute
   const handleEditSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
+
+    if (!editTitle) {
+      return toast.error("عنوان المحضر مطلوب");
+    }
+    if (!editDate) {
+      return toast.error("تاريخ المحضر مطلوب");
+    }
+    if (!editType) {
+      return toast.error("نوع الاجتماع مطلوب");
+    }
+    if (!editReason) {
+      return toast.error("غرض الاجتماع مطلوب");
+    }
+
     setIsEditing(true);
     setEditError({});
 
@@ -453,7 +482,7 @@ function AddMinutesReport() {
             <Col md={6}>
               <RegisterSelect
                 id="min-reason"
-                label="غرض الاجتماع"
+                label="غرض الاجتماع *"
                 options={
                   minutesreason[type] || [
                     { value: "", label: "إختر نوع المحضر" },
@@ -630,7 +659,7 @@ function AddMinutesReport() {
             <Col md={6}>
               <RegisterSelect
                 id="edit-min-reason"
-                label="غرض الاجتماع"
+                label="غرض الاجتماع *"
                 options={
                   minutesreason[editType] || [
                     { value: "", label: "إختر نوع المحضر" },

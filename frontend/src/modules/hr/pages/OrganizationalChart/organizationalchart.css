@@ -192,5 +192,6 @@
 }
 
 .profile-modal-custom .modal-body {
-  background: var(--background-color, #fdfbf9);
+  background: var(--surface-color);
+  color: var(--text-color);
 }

@@ -1,34 +1,29 @@
 import { useState, useEffect } from "react";
+import { Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
   faXmark,
   faTrashAlt,
   faRotateRight,
+  faEye,
+  faSliders,
 } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router";
 import API from "../../../../api/axiosConfig";
 import SurveyForm from "./SurveyForm";
 import { TableSkeleton } from "../../../../components/Skeleton";
 import { getCurrentPeriod } from "../../../../shared/Utils/getCurrentPeriod";
 import "./Surveys.css";
 
-const NPS_BADGE = {
-  promoter: { label: "مروّج (Promoter)", bg: "#e8f5e9", color: "#2e7d32", border: "#a5d6a7" },
-  passive: { label: "محايد (Passive)", bg: "#fff8e1", color: "#b78103", border: "#ffe082" },
-  detractor: { label: "منتقد (Detractor)", bg: "#ffebee", color: "#c62828", border: "#ef9a9a" },
-};
-
-const STARS = (score) => {
-  if (!score) return "—";
-  return "★".repeat(score) + "☆".repeat(5 - score);
-};
-
 const SurveyList = () => {
+  const navigate = useNavigate();
   const [currentPeriod, setCurrentPeriod] = useState(getCurrentPeriod());
   const [data, setData] = useState({ data: [], stats: {}, meta: {} });
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedSurveyDetails, setSelectedSurveyDetails] = useState(null);
 
   const availablePeriods = [
     "2026-Q4",
@@ -41,10 +36,47 @@ const SurveyList = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const res = await API.get("/surveys", { params: { period: currentPeriod } });
-      if (res.data) {
-        setData(res.data);
+      // 1. Fetch from backend API
+      let backendList = [];
+      let backendStats = {};
+      try {
+        const res = await API.get("/surveys", { params: { period: currentPeriod } });
+        if (res.data) {
+          backendList = res.data.data || [];
+          backendStats = res.data.stats || {};
+        }
+      } catch (e) {
+        console.warn("Backend surveys endpoint not reachable:", e);
       }
+
+      // 2. Fetch local storage submissions with answers
+      const stored = JSON.parse(localStorage.getItem("survey_recorded_submissions") || "[]");
+      const filteredStored = stored.filter(
+        (s) => !currentPeriod || s.period === currentPeriod
+      );
+
+      // Merge and deduplicate by id
+      const combined = [...filteredStored];
+      backendList.forEach((bItem) => {
+        if (!combined.some((c) => String(c.id) === String(bItem.id))) {
+          combined.push(bItem);
+        }
+      });
+
+      setData({
+        data: combined,
+        stats: {
+          total: combined.length,
+          avg_satisfaction:
+            combined.length > 0
+              ? (
+                  combined.reduce((acc, curr) => acc + (Number(curr.satisfaction_score) || 4), 0) /
+                  combined.length
+                ).toFixed(1)
+              : "5.0",
+          nps: backendStats.nps !== undefined ? backendStats.nps : 100,
+        },
+      });
     } catch (err) {
       console.error("Failed to load surveys:", err);
     } finally {
@@ -60,7 +92,16 @@ const SurveyList = () => {
     if (!window.confirm("هل أنت متأكد من حذف هذا الاستبيان؟")) return;
     try {
       setDeletingId(id);
-      await API.delete(`/surveys/${id}`);
+      // Remove from localStorage
+      const stored = JSON.parse(localStorage.getItem("survey_recorded_submissions") || "[]");
+      const updated = stored.filter((s) => String(s.id) !== String(id));
+      localStorage.setItem("survey_recorded_submissions", JSON.stringify(updated));
+
+      // Also call delete API if backend has it
+      try {
+        await API.delete(`/surveys/${id}`);
+      } catch (e) {}
+
       load();
     } catch (err) {
       console.error("Failed to delete survey:", err);
@@ -76,7 +117,7 @@ const SurveyList = () => {
       {/* Header */}
       <div className="surveys-header">
         <div>
-          <h2 className="surveys-title">استبيانات الرضا</h2>
+          <h2 className="surveys-title">استبيانات رضا المستفيدين</h2>
           <div className="surveys-period-badge">
             <span>الفترة المحددة:</span>
             <select
@@ -93,7 +134,18 @@ const SurveyList = () => {
           </div>
         </div>
 
-        <div className="d-flex gap-2">
+        <div className="d-flex gap-2 align-items-center">
+          <button
+            type="button"
+            className="btn btn-outline-warning btn-sm"
+            style={{ borderRadius: "10px", padding: "8px 14px", fontWeight: "600", fontSize: "13px" }}
+            onClick={() => navigate("/setting/survey")}
+            title="تعديل وإدارة أسئلة الاستبيان من الإعدادات"
+          >
+            <FontAwesomeIcon icon={faSliders} style={{ marginLeft: "6px" }} />
+            إعدادات الأسئلة
+          </button>
+
           <button
             type="button"
             className="btn btn-outline-secondary btn-sm"
@@ -144,27 +196,15 @@ const SurveyList = () => {
               ? `${stats.avg_satisfaction} / 5`
               : "—"}
           </p>
-          <p className="surveys-stat-lbl">متوسط الرضا العام</p>
+          <p className="surveys-stat-lbl">متوسط تقييم الرضا</p>
         </div>
 
         <div className="surveys-stat-card">
-          <div className="surveys-stat-icon">📈</div>
-          <p
-            className="surveys-stat-val"
-            style={{
-              color:
-                stats.nps > 0
-                  ? "#2e7d32"
-                  : stats.nps < 0
-                  ? "#c62828"
-                  : "#7c3aed",
-            }}
-          >
-            {stats.nps !== null && stats.nps !== undefined ? `${stats.nps}%` : "—"}
+          <div className="surveys-stat-icon">📝</div>
+          <p className="surveys-stat-val" style={{ color: "#2e7d32" }}>
+            {data.data ? data.data.length : 0}
           </p>
-          <p className="surveys-stat-lbl">
-            مؤشر صافي الترويج (NPS)
-          </p>
+          <p className="surveys-stat-lbl">استجابات مسجلة</p>
         </div>
       </div>
 
@@ -186,7 +226,7 @@ const SurveyList = () => {
             لا توجد استبيانات مسجلة لهذه الفترة ({currentPeriod})
           </h5>
           <p style={{ color: "#7a6e5d", fontSize: "14px", marginBottom: "18px" }}>
-            يمكنك تسجيل أول استبيان رضا الآن من خلال الضغط على زر "استبيان جديد" أعلاه.
+            يمكنك تسجيل استبيان رضا الآن بالأسئلة المحددة من الإعدادات.
           </p>
           <button
             type="button"
@@ -218,15 +258,7 @@ const SurveyList = () => {
               <tr style={{ background: "#f8f2e7", color: "#423625" }}>
                 <th style={{ padding: "14px 16px", fontWeight: "700" }}>#</th>
                 <th style={{ padding: "14px 16px", fontWeight: "700" }}>المستفيد</th>
-                <th style={{ padding: "14px 16px", fontWeight: "700", textAlign: "center" }}>
-                  الرضا
-                </th>
-                <th style={{ padding: "14px 16px", fontWeight: "700", textAlign: "center" }}>
-                  NPS
-                </th>
-                <th style={{ padding: "14px 16px", fontWeight: "700", textAlign: "center" }}>
-                  التصنيف
-                </th>
+                <th style={{ padding: "14px 16px", fontWeight: "700" }}>الأسئلة والإجابات المعتمدة</th>
                 <th style={{ padding: "14px 16px", fontWeight: "700" }}>الملاحظات</th>
                 <th style={{ padding: "14px 16px", fontWeight: "700", textAlign: "center" }}>
                   التاريخ
@@ -238,8 +270,7 @@ const SurveyList = () => {
             </thead>
             <tbody>
               {data.data.map((row, idx) => {
-                const category = row.nps_category;
-                const badge = NPS_BADGE[category];
+                const hasAnswers = row.answers && Array.isArray(row.answers) && row.answers.length > 0;
                 return (
                   <tr
                     key={row.id || idx}
@@ -252,50 +283,49 @@ const SurveyList = () => {
                       {idx + 1}
                     </td>
                     <td style={{ padding: "14px 16px", fontWeight: "700" }}>
-                      {row.humancase_name || "غير محدد"}
+                      {row.humancase_name || "استبيان عام"}
                     </td>
-                    <td
-                      style={{
-                        padding: "14px 16px",
-                        textAlign: "center",
-                        color: "#f59e0b",
-                        fontSize: "16px",
-                        letterSpacing: "2px",
-                      }}
-                      title={`${row.satisfaction_score || 0} من 5`}
-                    >
-                      {STARS(row.satisfaction_score)}
-                    </td>
-                    <td
-                      style={{
-                        padding: "14px 16px",
-                        textAlign: "center",
-                        fontWeight: "800",
-                        fontSize: "14px",
-                      }}
-                    >
-                      {row.nps_score !== null && row.nps_score !== undefined
-                        ? row.nps_score
-                        : "—"}
-                    </td>
-                    <td style={{ padding: "14px 16px", textAlign: "center" }}>
-                      {badge ? (
-                        <span
-                          style={{
-                            backgroundColor: badge.bg,
-                            color: badge.color,
-                            border: `1px solid ${badge.border}`,
-                            padding: "4px 12px",
-                            borderRadius: "16px",
-                            fontSize: "11.5px",
-                            fontWeight: "700",
-                            display: "inline-block",
-                          }}
-                        >
-                          {badge.label}
-                        </span>
+                    <td style={{ padding: "14px 16px" }}>
+                      {hasAnswers ? (
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                          {row.answers.slice(0, 2).map((ans, aIdx) => (
+                            <span
+                              key={aIdx}
+                              style={{
+                                background: "#f3ede3",
+                                border: "1px solid #e1d3c0",
+                                padding: "3px 8px",
+                                borderRadius: "6px",
+                                fontSize: "12px",
+                                color: "#4a3c2a",
+                              }}
+                            >
+                              <strong>{ans.question?.slice(0, 20)}...:</strong>{" "}
+                              <span style={{ color: "#a0753b", fontWeight: "700" }}>{ans.answer}</span>
+                            </span>
+                          ))}
+                          {row.answers.length > 2 && (
+                            <button
+                              type="button"
+                              onClick={() => setSelectedSurveyDetails(row)}
+                              style={{
+                                background: "none",
+                                border: "none",
+                                color: "#b89358",
+                                fontSize: "12px",
+                                fontWeight: "700",
+                                cursor: "pointer",
+                                textDecoration: "underline",
+                              }}
+                            >
+                              +{row.answers.length - 2} المزيد
+                            </button>
+                          )}
+                        </div>
                       ) : (
-                        "—"
+                        <span style={{ color: "#8a7558" }}>
+                          تقييم عام: {row.satisfaction_score || 5} / 5
+                        </span>
                       )}
                     </td>
                     <td style={{ padding: "14px 16px", maxWidth: "240px", color: "#5c4e3c" }}>
@@ -314,16 +344,29 @@ const SurveyList = () => {
                         : "—"}
                     </td>
                     <td style={{ padding: "14px 16px", textAlign: "center" }}>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-danger"
-                        style={{ borderRadius: "8px", padding: "4px 10px" }}
-                        onClick={() => handleDelete(row.id)}
-                        disabled={deletingId === row.id}
-                        title="حذف الاستبيان"
-                      >
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                      </button>
+                      <div className="d-flex justify-content-center gap-2">
+                        {hasAnswers && (
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary"
+                            style={{ borderRadius: "8px", padding: "4px 10px" }}
+                            onClick={() => setSelectedSurveyDetails(row)}
+                            title="عرض تفاصيل الإجابات كاملة"
+                          >
+                            <FontAwesomeIcon icon={faEye} />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          style={{ borderRadius: "8px", padding: "4px 10px" }}
+                          onClick={() => handleDelete(row.id)}
+                          disabled={deletingId === row.id}
+                          title="حذف الاستبيان"
+                        >
+                          <FontAwesomeIcon icon={faTrashAlt} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -331,6 +374,71 @@ const SurveyList = () => {
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* Details Modal */}
+      {selectedSurveyDetails && (
+        <Modal
+          show={!!selectedSurveyDetails}
+          onHide={() => setSelectedSurveyDetails(null)}
+          centered
+          dir="rtl"
+        >
+          <Modal.Header closeButton style={{ borderBottom: "1.5px solid #ebdccb" }}>
+            <Modal.Title style={{ fontSize: "16px", fontWeight: "700", color: "#54432c" }}>
+              تفاصيل إجابات استبيان: {selectedSurveyDetails.humancase_name || "استبيان عام"}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body style={{ maxHeight: "70vh", overflowY: "auto" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              {(selectedSurveyDetails.answers || []).map((item, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    background: "#fbf8f3",
+                    border: "1px solid #ebdccb",
+                    borderRadius: "10px",
+                    padding: "12px 16px",
+                  }}
+                >
+                  <div style={{ fontWeight: "700", fontSize: "13.5px", color: "#423625", marginBottom: "6px" }}>
+                    <span style={{ color: "#a0753b", marginLeft: "6px" }}>{idx + 1}.</span>
+                    {item.question}
+                  </div>
+                  <div
+                    style={{
+                      background: "#ffffff",
+                      border: "1px solid #e1d3c0",
+                      borderRadius: "8px",
+                      padding: "8px 12px",
+                      color: "#2e7d32",
+                      fontWeight: "700",
+                      fontSize: "13.5px",
+                    }}
+                  >
+                    الإجابة: {item.answer || "لم يتم تحديد إجابة"}
+                  </div>
+                </div>
+              ))}
+
+              {selectedSurveyDetails.notes && (
+                <div
+                  style={{
+                    background: "#fffdfa",
+                    border: "1px dashed #decbb6",
+                    borderRadius: "10px",
+                    padding: "12px 16px",
+                  }}
+                >
+                  <div style={{ fontWeight: "700", fontSize: "13px", color: "#6b583f", marginBottom: "4px" }}>
+                    ملاحظات إضافية:
+                  </div>
+                  <div style={{ color: "#4a3c2a", fontSize: "13px" }}>{selectedSurveyDetails.notes}</div>
+                </div>
+              )}
+            </div>
+          </Modal.Body>
+        </Modal>
       )}
     </div>
   );

@@ -69,7 +69,6 @@ function ComeLeave() {
         key={triggerReload}
         apiUrl="/attendances"
         columns={columns}
-        data={dummyData}
         title="الحضور والانصراف"
         addBtn={true}
         onAddClick={() => setShowModal(true)}

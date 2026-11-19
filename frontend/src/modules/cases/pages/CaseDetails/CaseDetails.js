@@ -448,7 +448,7 @@ function CaseDetails(props) {
       <Modal
         show={showModal}
         onHide={handleClose}
-        className="modal-table archModal donor-modal case-modal"
+        className="case-modal"
         size="lg"
         centered
       >

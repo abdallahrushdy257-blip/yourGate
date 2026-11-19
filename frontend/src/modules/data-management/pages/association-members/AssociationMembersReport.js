@@ -178,10 +178,28 @@ function AssociationMembersReport() {
     const today = new Date().toISOString().split("T")[0];
 
     if (!name.trim()) {
-     return toast.error("اسم العضو مطلوب");
+      return toast.error("اسم العضو مطلوب");
     }
     if (dob && dob > today) {
-     return toast.error("تاريخ الميلاد لا يمكن أن يكون في المستقبل");
+      return toast.error("تاريخ الميلاد لا يمكن أن يكون في المستقبل");
+    }
+    if (!status) {
+      return toast.error("فئة العضو مطلوبة");
+    }
+    if (!membertype) {
+      return toast.error("صفة / نوع العضوية مطلوبة");
+    }
+    if (fees === "" || fees === null || fees === undefined) {
+      return toast.error("قيمة الاشتراك مطلوبة");
+    }
+    if (!startjoin) {
+      return toast.error("تاريخ بداية الاشتراك مطلوب");
+    }
+    if (!endjoin) {
+      return toast.error("تاريخ نهاية الاشتراك مطلوب");
+    }
+    if (startjoin && endjoin && endjoin < startjoin) {
+      return toast.error("تاريخ نهاية الاشتراك لا يمكن أن يكون قبل تاريخ البداية");
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -309,8 +327,25 @@ function AssociationMembersReport() {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     if (!editFormData.name?.trim()) {
-      toast.error("اسم العضو مطلوب");
-      return;
+      return toast.error("اسم العضو مطلوب");
+    }
+    if (!editFormData.status) {
+      return toast.error("فئة العضو مطلوبة");
+    }
+    if (!editFormData.membertype) {
+      return toast.error("صفة / نوع العضوية مطلوبة");
+    }
+    if (editFormData.fees === "" || editFormData.fees === null || editFormData.fees === undefined) {
+      return toast.error("قيمة الاشتراك مطلوبة");
+    }
+    if (!editFormData.startjoin) {
+      return toast.error("تاريخ بداية الاشتراك مطلوب");
+    }
+    if (!editFormData.endjoin) {
+      return toast.error("تاريخ نهاية الاشتراك مطلوب");
+    }
+    if (editFormData.startjoin && editFormData.endjoin && editFormData.endjoin < editFormData.startjoin) {
+      return toast.error("تاريخ نهاية الاشتراك لا يمكن أن يكون قبل تاريخ البداية");
     }
     setIsEditSubmitting(true);
     setEditError({});
@@ -612,11 +647,9 @@ function AssociationMembersReport() {
             <Col md={6}>
               <RegisterSelect
                 id="mem-type"
-                label="صفة / نوع العضوية"
+                label="صفة / نوع العضوية *"
                 options={
-                  memberTypeOptionsByStatus[status] || [
-                    { value: "", label: "إختر نوع العضوية" },
-                  ]
+                  memberTypeOptionsByStatus[status]
                 }
                 value={membertype}
                 onChange={(e) => {
@@ -652,7 +685,7 @@ function AssociationMembersReport() {
             <Col md={6}>
               <RegisterTextbox
                 id="mem-fees"
-                label="قيمة الإشتراك السنوي (ر.س)"
+                label="قيمة الإشتراك السنوي (ر.س) *"
                 type="number"
                 value={fees}
                 onChange={(e) => {
@@ -671,7 +704,7 @@ function AssociationMembersReport() {
                 style={{ display: "flex", flexDirection: "column" }}
               >
                 <label className="register-label">
-                  تاريخ بداية الاشتراك
+                  تاريخ بداية الاشتراك *
                 </label>
                 <input
                   type="date"
@@ -691,7 +724,7 @@ function AssociationMembersReport() {
                 style={{ display: "flex", flexDirection: "column" }}
               >
                 <label className="register-label">
-                  تاريخ انتهاء الاشتراك
+                  تاريخ انتهاء الاشتراك *
                 </label>
                 <input
                   type="date"

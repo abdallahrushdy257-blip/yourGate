@@ -9,6 +9,7 @@ import UploadInput from "../../../../components/UploadInput";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import API from "../../../../api/axiosConfig";
 import "./Investigations.css";
+import hrService from "../../services/hrService";
 
 function InvestigationsModal({
   show,

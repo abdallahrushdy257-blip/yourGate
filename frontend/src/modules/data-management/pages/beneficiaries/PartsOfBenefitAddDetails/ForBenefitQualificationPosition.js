@@ -11,6 +11,7 @@ import {
   faCloudArrowUp,
   faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 import API from "../../../../../api/axiosConfig";
 import "../BenefitAddDetailsUnified.css";
 
@@ -74,6 +75,11 @@ function ForBenefitQualificationPosition({ initialData, onNext, onPrev, onSaved 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (canwork === "1" && !job.trim()) {
+      return toast.error("يرجى إدخال الوظيفة / المهنة الحالية");
+    }
+
     setIsSubmitting(true);
     setError({});
 

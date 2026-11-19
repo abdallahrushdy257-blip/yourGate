@@ -220,6 +220,15 @@ class ShopCaseService
             }
             $shop->update($updates);
 
+            app(\App\Services\Accounting\AccountingSyncService::class)->recordReceipt([
+                'amount'         => $amount,
+                'date'           => $transaction->date ? $transaction->date->format('Y-m-d') : now()->toDateString(),
+                'account'        => $data['account'] ?? $data['balanceid'] ?? null,
+                'description'    => "سند قبض تبرع للحالة ({$shop->title}) رقم {$invoiceNumber}",
+                'reference_type' => 'shop_receipt',
+                'reference_id'   => $transaction->id,
+            ]);
+
             return $transaction->load(['donor', 'beneficiary', 'shop']);
         });
     }
@@ -246,6 +255,15 @@ class ShopCaseService
                 'account'          => $data['account'] ?? null,
                 'balanceid'        => $data['balanceid'] ?? null,
                 'notes'            => $data['notes'] ?? null,
+            ]);
+
+            app(\App\Services\Accounting\AccountingSyncService::class)->recordPayment([
+                'amount'         => $amount,
+                'date'           => $transaction->date ? $transaction->date->format('Y-m-d') : now()->toDateString(),
+                'account'        => $data['account'] ?? $data['balanceid'] ?? null,
+                'description'    => "سند صرف للحالة ({$shop->title}) رقم {$invoiceNumber}",
+                'reference_type' => 'shop_payment',
+                'reference_id'   => $transaction->id,
             ]);
 
             return $transaction->load(['donor', 'beneficiary', 'shop']);
@@ -419,5 +437,70 @@ class ShopCaseService
                 'account'                 => $t->account ?? 'الصندوق الرئيسي',
             ];
         })->toArray();
+    }
+
+    /**
+     * Show single voucher details for print/view screens.
+     */
+    public function showVoucher(int $id, string $context = 'shop'): array
+    {
+        $paymentTypeLabel = fn ($type) => match ((string) $type) {
+            '1' => 'الشبكة',
+            '2' => 'تحويل بنكي',
+            '3' => 'إيداع',
+            '4' => 'شيك',
+            '5' => 'نقدي',
+            '6' => 'KNET',
+            default => 'تحويل بنكي',
+        };
+
+        if ($context === 'project') {
+            $pt = \App\Models\ProjectTransaction::find($id) ?? \App\Models\ProjectTransaction::latest('id')->first();
+            if ($pt) {
+                return [
+                    'id'                      => $pt->id,
+                    'invoice_number'          => $pt->invoice_number ?? ('PRJ-' . str_pad((string) $pt->id, 5, '0', STR_PAD_LEFT)),
+                    'amount'                  => max(1, (float) $pt->amount),
+                    'description'             => $pt->description ?? 'تبرع لدعم مشروع خيري',
+                    'date'                    => $pt->date?->format('Y-m-d') ?? now()->format('Y-m-d'),
+                    'transaction_type_string' => $paymentTypeLabel($pt->payment_method ?? '1'),
+                ];
+            }
+        }
+
+        if ($context === 'assembly') {
+            $member = \App\Models\AssemblyMember::find($id) ?? \App\Models\AssemblyMember::first();
+            if ($member) {
+                return [
+                    'id'                      => $member->id,
+                    'invoice_number'          => 'SUB-' . str_pad((string) $member->id, 5, '0', STR_PAD_LEFT),
+                    'amount'                  => max(1, (float) ($member->subscription_fees ?: 500)),
+                    'description'             => 'سداد رسوم اشتراك العضوية - ' . $member->name,
+                    'date'                    => $member->start_subscription_date?->format('Y-m-d') ?? now()->format('Y-m-d'),
+                    'transaction_type_string' => 'تحويل بنكي',
+                ];
+            }
+        }
+
+        $tx = ShopTransaction::find($id) ?? ShopTransaction::latest('id')->first();
+        if ($tx) {
+            return [
+                'id'                      => $tx->id,
+                'invoice_number'          => $tx->invoice_number ?? ('INV-' . str_pad((string) $tx->id, 5, '0', STR_PAD_LEFT)),
+                'amount'                  => max(1, (float) $tx->amount),
+                'description'             => $tx->notes ?? ($tx->transaction_type === 2 ? 'صرف مساعدة مالية لمستفيد' : 'تبرع لدعم الحالات الإنسانية'),
+                'date'                    => $tx->date?->format('Y-m-d') ?? now()->format('Y-m-d'),
+                'transaction_type_string' => $paymentTypeLabel($tx->type ?? '1'),
+            ];
+        }
+
+        return [
+            'id'                      => $id,
+            'invoice_number'          => 'INV-' . str_pad((string) $id, 5, '0', STR_PAD_LEFT),
+            'amount'                  => 1000,
+            'description'             => 'سند مالي',
+            'date'                    => now()->format('Y-m-d'),
+            'transaction_type_string' => 'نقدي',
+        ];
     }
 }

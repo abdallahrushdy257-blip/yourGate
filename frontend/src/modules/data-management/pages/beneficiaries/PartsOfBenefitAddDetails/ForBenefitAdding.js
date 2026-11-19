@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 import API from "../../../../../api/axiosConfig";
 import "../BenefitAddDetailsUnified.css";
 
@@ -50,11 +51,22 @@ function ForBenefitAdding({ initialData, onNext, onSaved }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) {
+      toast.error("يرجى إدخال اسم المستفيد الكامل");
       setError({ name: "يرجى إدخال اسم المستفيد الكامل" });
       return;
     }
+    if (!idnumber.trim()) {
+      toast.error("يرجى إدخال رقم الهوية الوطنية / الإقامة");
+      setError({ idnumber: "يرجى إدخال رقم الهوية الوطنية / الإقامة" });
+      return;
+    }
+    if (!phonenum.trim()) {
+      toast.error("يرجى إدخال رقم الجوال");
+      setError({ phonenum: "يرجى إدخال رقم الجوال" });
+      return;
+    }
     if (!agree) {
-      alert("يرجى الإقرار بصحة البيانات المدخلة قبل المتابعة");
+      toast.error("يرجى الإقرار بصحة البيانات المدخلة قبل المتابعة");
       return;
     }
 
@@ -155,7 +167,6 @@ function ForBenefitAdding({ initialData, onNext, onSaved }) {
               placeholder="الاسم الرباعي للمستفيد"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
             />
             {error.name && <span className="bad-error">{error.name}</span>}
           </div>
@@ -264,7 +275,6 @@ function ForBenefitAdding({ initialData, onNext, onSaved }) {
               value={phonenum}
               onChange={(e) => setPhonenum(e.target.value)}
               maxLength={15}
-              required
             />
             {error.phonenum && <span className="bad-error">{error.phonenum}</span>}
           </div>

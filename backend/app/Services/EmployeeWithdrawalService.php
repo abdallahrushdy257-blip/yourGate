@@ -152,7 +152,7 @@ class EmployeeWithdrawalService
         $date = !empty($data['date']) ? $data['date'] : now()->format('Y-m-d');
         $time = !empty($data['time']) ? $data['time'] : now()->format('H:i');
 
-        return EmployeeWithdrawal::create([
+        $withdrawal = EmployeeWithdrawal::create([
             'employee_id'     => (int) $employeeId,
             'account_id'      => $accountId ? (int) $accountId : null,
             'account_name'    => $accountName ?? 'الخزينة الرئيسية',
@@ -163,6 +163,20 @@ class EmployeeWithdrawalService
             'status'          => 1, // Automatically approved upon store from this form
             'description'     => $data['description'] ?? 'مسحوبات موظف',
         ]);
+
+        if ($amount > 0) {
+            app(\App\Services\Accounting\AccountingSyncService::class)->recordPayment([
+                'amount'         => $amount,
+                'date'           => $date,
+                'account'        => $accountName ?? $accountId,
+                'expense_code'   => '41101',
+                'description'    => $data['description'] ?? 'صرف مسحوبات موظف',
+                'reference_type' => 'employee_withdrawal',
+                'reference_id'   => $withdrawal->id,
+            ]);
+        }
+
+        return $withdrawal;
     }
 
     /**

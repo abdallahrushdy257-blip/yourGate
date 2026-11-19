@@ -43,6 +43,7 @@ const KPIEvaluationPage = lazy(() => import("../pages/KPIEvaluation/KPIEvaluatio
 // ── المسميات الوظيفية والمستندات ─────────────────────────────
 const Jobtitle = lazy(() => import("../pages/JobTitle/JobTitle"));
 const EditJobTitle = lazy(() => import("../pages/JobTitle/EditJobTitle"));
+const EmployPaper = lazy(() => import("../pages/EmployPaper/EmployPaper"));
 const AddEmpPaper = lazy(() => import("../pages/EmployPaper/AddEmpPaper"));
 const EditEmploypaper = lazy(() => import("../pages/EmployPaper/EditEmploypaper"));
 
@@ -93,6 +94,7 @@ export const hrRouteConfigs = [
   { path: "/showEmployee/:id", element: withSuspense(ShowEmployeePage) },
   { path: "/generalemployeereports/:id", element: withSuspense(GeneralEmployeeReportsPage) },
   { path: "/employeepaper/:id", element: withSuspense(EmployeePaperPage) },
+  { path: "/employpaper", element: withSuspense(EmployPaper) },
   { path: "/showEmployeeCard/:id", element: withSuspense(ShowEmployeeCardPage) },
   { path: "/employeeWithdrawals", element: withSuspense(EmployeeWithdrawalsPage) },
   { path: "/employeeAdvance", element: withSuspense(CreateEmployeeAdvancePage) },
@@ -102,9 +104,12 @@ export const hrRouteConfigs = [
 
   // ── الرواتب والمسيرات ─────────────────────────────────────────
   { path: "/payroll", element: withSuspense(PayrollPage) },
+  { path: "/payroll/:id", element: withSuspense(PayrollVoucherPage) },
   { path: "/payrollvoucher", element: withSuspense(PayrollVoucherPage) },
+  { path: "/payrollvoucher/:id", element: withSuspense(PayrollVoucherPage) },
   { path: "/paysalary", element: withSuspense(PaySalaryPage) },
   { path: "/salarycertificate", element: withSuspense(SalaryCertificatePage) },
+  { path: "/salarycertificate/:id", element: withSuspense(SalaryCertificatePage) },
 
   // ── الحضور والانصراف وقواعد التأخير ───────────────────────────
   { path: "/comeleave", element: withSuspense(ComeLeave) },
@@ -114,56 +119,73 @@ export const hrRouteConfigs = [
 
   // ── الإجازات والأذونات ─────────────────────────────────────────
   { path: "/leavestype", element: withSuspense(LeaveType) },
+  { path: "/editLeave/:id", element: withSuspense(EditLeave) },
   { path: "/editleavestype/:id", element: withSuspense(EditLeave) },
   { path: "/vacationrequest", element: withSuspense(VacationRequestPage) },
+  { path: "/vacationdetails", element: withSuspense(VacationDetailsPage) },
   { path: "/vacationdetails/:id", element: withSuspense(VacationDetailsPage) },
   { path: "/requestpermission", element: withSuspense(RequestPermission) },
 
   // ── التقييمات ومؤشرات الأداء ──────────────────────────────────
   { path: "/JobPerformanceEvaluation", element: withSuspense(JobPerformanceEvaluationPage) },
+  { path: "/showJobPerformanceEvaluation", element: withSuspense(ShowJobPerformanceEvaluationPage) },
   { path: "/showJobPerformanceEvaluation/:id", element: withSuspense(ShowJobPerformanceEvaluationPage) },
+  { path: "/showperformance", element: withSuspense(ShowPerformancePage) },
   { path: "/showperformance/:id", element: withSuspense(ShowPerformancePage) },
   { path: "/kpievaluation", element: withSuspense(KPIEvaluationPage) },
+  { path: "/kpievaluation/:id", element: withSuspense(KPIEvaluationPage) },
 
   // ── المسميات الوظيفية والمستندات ─────────────────────────────
   { path: "/jobtitle", element: withSuspense(Jobtitle) },
   { path: "/editjobtitle/:id", element: withSuspense(EditJobTitle) },
   { path: "/addemppaper", element: withSuspense(AddEmpPaper) },
+  { path: "/addempaper/:id", element: withSuspense(AddEmpPaper) },
   { path: "/editemploypaper/:id", element: withSuspense(EditEmploypaper) },
 
   // ── الخصومات والتحقيقات ───────────────────────────────────────
-  { path: "/hrreport/discounts", element: withSuspense(Discounts) },
-  { path: "/hrreport/investigations", element: withSuspense(Investigations) },
+  { path: "/hrreport/discounts", element: withSuspense(DeductionReport) },
+  { path: "/hrreport/investigations", element: withSuspense(InvestigationReport) },
   { path: "/editinvestigations/:id", element: withSuspense(EditInvestigations) },
-
 
   // ── المتطوعون ─────────────────────────────────────────────────
   { path: "/volunteers", element: withSuspense(Volunteers) },
   { path: "/volunterreport", element: withSuspense(VolunterReport) },
+  { path: "/hrreport/volunteers", element: withSuspense(VolunterReport) },
   { path: "/volunteercertificate", element: withSuspense(VolunteerCertificate) },
+  { path: "/volunteercertificate/:id", element: withSuspense(VolunteerCertificate) },
   { path: "/volunteersvoucher", element: withSuspense(VolunteersVoucher) },
+  { path: "/volunteersvoucher/:id", element: withSuspense(VolunteersVoucher) },
 
   // ── التدريب والمهارات والمعرفة ───────────────────────────────
   { path: "/employeetraining", element: withSuspense(TrainingList) },
+  { path: "/employeetraining/:id", element: withSuspense(TrainingForm) },
   { path: "/trainingform", element: withSuspense(TrainingForm) },
   { path: "/trainingform/:id", element: withSuspense(TrainingForm) },
   { path: "/employeeksa", element: withSuspense(KsaList) },
+  { path: "/ksa/:id", element: withSuspense(KsaForm) },
   { path: "/ksaform", element: withSuspense(KsaForm) },
   { path: "/ksaform/:id", element: withSuspense(KsaForm) },
 
   // ── تقارير الموارد البشرية ─────────────────────────────────────
   { path: "/hrreport", element: withSuspense(HRReportsPage) },
+  { path: "/hrreports", element: withSuspense(HRReportsPage) },
+  { path: "/hrreport/employees", element: withSuspense(EmployeeReportPage) },
   { path: "/hrreport/employeereport", element: withSuspense(EmployeeReportPage) },
+  { path: "/hrreport/salary", element: withSuspense(SalaryReportPage) },
   { path: "/hrreport/salaryreport", element: withSuspense(SalaryReportPage) },
+  { path: "/hrreport/vacations", element: withSuspense(LeaveReportPage) },
   { path: "/hrreport/leavereport", element: withSuspense(LeaveReportPage) },
+  { path: "/hrreport/jobtitles", element: withSuspense(JobtitleReport) },
   { path: "/hrreport/jobtitlereport", element: withSuspense(JobtitleReport) },
   { path: "/hrreport/kpireport", element: withSuspense(KpiReport) },
+  { path: "/hrreport/vacdetails", element: withSuspense(LeaveNameReport) },
   { path: "/hrreport/leavenamereport", element: withSuspense(LeaveNameReport) },
   { path: "/hrreport/deductionreport", element: withSuspense(DeductionReport) },
   { path: "/hrreport/attendencereport", element: withSuspense(AttendenceReport) },
   { path: "/hrreport/investigationreport", element: withSuspense(InvestigationReport) },
   { path: "/hrreport/leavepermissionreport", element: withSuspense(LeavePermissionReport) },
   { path: "/hrreport/emploteeVac", element: withSuspense(EmpVac) },
+  { path: "/showEmpVac", element: withSuspense(ShowEmpVac) },
   { path: "/showempvac/:id", element: withSuspense(ShowEmpVac) },
 ];
 

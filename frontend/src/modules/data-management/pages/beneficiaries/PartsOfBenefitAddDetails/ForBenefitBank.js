@@ -9,6 +9,7 @@ import {
   faCloudArrowUp,
   faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 import API from "../../../../../api/axiosConfig";
 import "../BenefitAddDetailsUnified.css";
 
@@ -41,6 +42,14 @@ function ForBenefitBank({ initialData, onNext, onPrev, onSaved }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!name.trim()) {
+      toast.error("يرجى إدخال اسم البنك");
+      return;
+    }
+    if (!iban.trim()) {
+      toast.error("يرجى إدخال رقم الآيبان (IBAN)");
+      return;
+    }
     setIsSubmitting(true);
     setError({});
 

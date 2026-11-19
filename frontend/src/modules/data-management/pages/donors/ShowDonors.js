@@ -78,6 +78,7 @@ function ShowDonors(props) {
     useState("");
   const [interests, setInterests] = useState([]);
   const [donorInterest, setDonorInterest] = useState("");
+  const [treeAccounts, setTreeAccounts] = useState([]);
 
   const getInterests = async () => {
     try {
@@ -88,8 +89,42 @@ function ShowDonors(props) {
     }
   };
 
+  const flattenTree = (nodes) => {
+    let list = [];
+    if (!Array.isArray(nodes)) return list;
+    nodes.forEach((node) => {
+      list.push(node);
+      if (node.children && Array.isArray(node.children) && node.children.length > 0) {
+        list = list.concat(flattenTree(node.children));
+      }
+    });
+    return list;
+  };
+
+  const getTreeAccounts = async () => {
+    try {
+      let res = await API.get("/accounttree/entry").catch(() => null);
+      if (res && res.data) {
+        const raw = Array.isArray(res.data) ? res.data : Object.values(res.data || {});
+        setTreeAccounts(raw);
+        return;
+      }
+      res = await API.get("/accounttree").catch(() => null);
+      if (res && res.data) {
+        const raw = Array.isArray(res.data) ? res.data : Object.values(res.data || {});
+        const flattened = flattenTree(raw);
+        setTreeAccounts(flattened);
+      }
+    } catch (err) {
+      console.error("Error fetching account tree for donor type:", err);
+    }
+  };
+
   useEffect(() => {
-    if (showModal) getInterests();
+    if (showModal) {
+      getInterests();
+      getTreeAccounts();
+    }
   }, [showModal]);
 
   const resetForm = () => {
@@ -307,11 +342,18 @@ function ShowDonors(props) {
                 id="donor-type"
                 label="صفة المانح"
                 options={[
-                  { value: "", label: "إختر الصفة" },
-                  { value: "1", label: "أفراد" },
-                  { value: "2", label: "مؤسسة أهلية" },
-                  { value: "3", label: "مؤسسة تجارية" },
-                  { value: "4", label: "منصة حكومية" },
+                  { value: "", label: "إختر الصفة من الشجرة" },
+                  ...(treeAccounts.length > 0
+                    ? treeAccounts.map((acc) => ({
+                        value: acc.id,
+                        label: acc.code ? `${acc.code} - ${acc.name}` : acc.name,
+                      }))
+                    : [
+                        { value: "1", label: "أفراد" },
+                        { value: "2", label: "مؤسسة أهلية" },
+                        { value: "3", label: "مؤسسة تجارية" },
+                        { value: "4", label: "منصة حكومية" },
+                      ]),
                 ]}
                 onChange={(e) => setType(e.target.value)}
                 value={type}

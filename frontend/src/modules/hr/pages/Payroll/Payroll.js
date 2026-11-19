@@ -7,6 +7,11 @@ import {
   faPrint,
   faUserTie,
   faCalendarAlt,
+  faCheckCircle,
+  faBuilding,
+  faCreditCard,
+  faStamp,
+  faUserCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { Form, Modal, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -231,134 +236,187 @@ function Payroll() {
         dir="rtl"
         className="payroll-voucher-modal"
       >
-        <Modal.Header closeButton style={{ borderBottom: "1.5px solid rgba(194, 154, 100, 0.25)" }}>
-          <Modal.Title className="d-flex align-items-center gap-2" style={{ color: "var(--text-color, #493d2c)", fontWeight: 700 }}>
-            <FontAwesomeIcon icon={faFileInvoiceDollar} style={{ color: "#c29a64" }} />
-            <span>سند صرف راتب للموظف</span>
+        <Modal.Header closeButton className="voucher-modal-header">
+          <Modal.Title className="d-flex align-items-center gap-2">
+            <div className="voucher-title-icon">
+              <FontAwesomeIcon icon={faFileInvoiceDollar} />
+            </div>
+            <div>
+              <div className="voucher-title-text">سند صرف راتب للموظف</div>
+              <div className="voucher-subtitle-text">كشف الاستحقاقات والاستقطاعات المالية المعتمد</div>
+            </div>
           </Modal.Title>
         </Modal.Header>
 
         <Modal.Body className="p-4" id="printable-payroll-voucher">
           {voucherModal.data && (
-            <div className="voucher-content-card">
-              {/* رأس السند */}
-              <div className="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom">
-                <div>
-                  <h5 className="fw-bold mb-1" style={{ color: "var(--text-color, #493d2c)" }}>
-                    سند صرف راتب (مسير مرتبات)
-                  </h5>
-                  <p className="text-muted mb-0 small">
-                    رقم السند: PAY-{String(voucherModal.data.id).padStart(6, "0")}
-                  </p>
-                </div>
-                <div className="text-start">
-                  <span className="badge px-3 py-2" style={{ background: "rgba(194, 154, 100, 0.15)", color: "#926830", fontSize: "13px" }}>
-                    {monthName} {selectedYear}
-                  </span>
-                </div>
-              </div>
-
-              {/* بيانات الموظف */}
-              <div className="row g-3 p-3 rounded mb-4" style={{ background: "rgba(194, 154, 100, 0.08)", border: "1px solid rgba(194, 154, 100, 0.2)" }}>
-                <div className="col-md-6">
-                  <span className="text-muted small d-block">إسم الموظف:</span>
-                  <span className="fw-bold">{voucherModal.data.employee?.name || voucherModal.data.name}</span>
-                </div>
-                <div className="col-md-6">
-                  <span className="text-muted small d-block">المسمى الوظيفي:</span>
-                  <span>{voucherModal.data.employee?.jobname || "موظف"}</span>
-                </div>
-                {voucherModal.data.employee?.iban && (
-                  <div className="col-md-12">
-                    <span className="text-muted small d-block">الآيبان البنكي (IBAN):</span>
-                    <span className="font-monospace">{voucherModal.data.employee.iban}</span>
+            <div className="voucher-paper">
+              {/* ترويسة السند الرسمية */}
+              <div className="voucher-top-hero">
+                <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="voucher-badge-icon">
+                      <FontAwesomeIcon icon={faBuilding} />
+                    </div>
+                    <div>
+                      <h4 className="voucher-main-heading mb-1">
+                        مسير رواتب واستحقاقات
+                      </h4>
+                      <div className="voucher-doc-id">
+                        رقم الإشعار المالي: <span className="fw-bold">PAY-{String(voucherModal.data.id).padStart(6, "0")}</span>
+                      </div>
+                    </div>
                   </div>
-                )}
+
+                  <div className="voucher-period-badge">
+                    <FontAwesomeIcon icon={faCalendarAlt} className="ms-2" />
+                    <span>مسير شهر: <strong>{monthName} {selectedYear}</strong></span>
+                  </div>
+                </div>
               </div>
 
-              {/* جدول المفردات المالية */}
-              <table className="table table-bordered text-center align-middle mb-4">
-                <thead style={{ background: "rgba(194, 154, 100, 0.15)" }}>
-                  <tr>
-                    <th>البند</th>
-                    <th>الاستحقاقات (+)</th>
-                    <th>الاستقطاعات (-)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="text-start pe-3">الراتب الأساسي</td>
-                    <td className="text-success fw-bold">{toLocal(voucherModal.data.basic || 0)} ر.س</td>
-                    <td>-</td>
-                  </tr>
-                  <tr>
-                    <td className="text-start pe-3">إجمالي البدلات</td>
-                    <td className="text-success">{toLocal(voucherModal.data.allowance || 0)} ر.س</td>
-                    <td>-</td>
-                  </tr>
-                  <tr>
-                    <td className="text-start pe-3">مكافآت وحوافز</td>
-                    <td className="text-success">{toLocal(voucherModal.data.additions || 0)} ر.س</td>
-                    <td>-</td>
-                  </tr>
-                  <tr>
-                    <td className="text-start pe-3">خصومات وجزاءات</td>
-                    <td>-</td>
-                    <td className="text-danger">{toLocal(Number(voucherModal.data.deductions || 0) + Number(voucherModal.data.investigations || 0))} ر.س</td>
-                  </tr>
-                  <tr>
-                    <td className="text-start pe-3">خصم الغياب</td>
-                    <td>-</td>
-                    <td className="text-danger">{toLocal(voucherModal.data.absence || 0)} ر.س</td>
-                  </tr>
-                  <tr>
-                    <td className="text-start pe-3">التأمين الاجتماعي</td>
-                    <td>-</td>
-                    <td className="text-danger">{toLocal(voucherModal.data.socialinsurance || 0)} ر.س</td>
-                  </tr>
-                  <tr style={{ background: "rgba(194, 154, 100, 0.2)", fontSize: "16px" }}>
-                    <td className="text-start pe-3 fw-bold">صافي الراتب المستحق للصرف</td>
-                    <td colSpan="2" className="fw-bold" style={{ color: "#875f28", fontSize: "18px" }}>
-                      {toLocal(voucherModal.data.net || 0)} ر.س
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              {/* بطاقة معلومات الموظف */}
+              <div className="voucher-emp-strip">
+                <div className="row g-3">
+                  <div className="col-md-4 col-sm-6">
+                    <div className="voucher-info-item">
+                      <span className="voucher-info-label">اسم الموظف:</span>
+                      <span className="voucher-info-val fw-bold">
+                        <FontAwesomeIcon icon={faUserTie} className="ms-2 opacity-75" />
+                        {voucherModal.data.employee?.name || voucherModal.data.name}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-6">
+                    <div className="voucher-info-item">
+                      <span className="voucher-info-label">المسمى الوظيفي:</span>
+                      <span className="voucher-info-val">
+                        {voucherModal.data.employee?.jobname || "موظف"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-12">
+                    <div className="voucher-info-item">
+                      <span className="voucher-info-label">الآيبان البنكي (IBAN):</span>
+                      <span className="voucher-info-val font-monospace">
+                        <FontAwesomeIcon icon={faCreditCard} className="ms-2 opacity-75" />
+                        {voucherModal.data.employee?.iban || "غير مسجل"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-              {/* التوقيعات الرسمية */}
-              <div className="row text-center mt-4 pt-3 border-top g-3">
-                <div className="col-4">
-                  <span className="small text-muted d-block mb-4">توقيع الموظف المستلم</span>
-                  <div style={{ borderBottom: "1px dashed #aaa", width: "80%", margin: "0 auto" }}></div>
+              {/* جدول المفردات المالية الأنيق */}
+              <div className="voucher-table-wrapper">
+                <table className="voucher-table">
+                  <thead>
+                    <tr>
+                      <th className="text-end pe-4">بند الراتب / المعاملة</th>
+                      <th className="text-center">الاستحقاقات (+)</th>
+                      <th className="text-center">الاستقطاعات (-)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="voucher-item-name text-end pe-4">الراتب الأساسي</td>
+                      <td className="text-center voucher-val-credit">{toLocal(voucherModal.data.basic || 0)} ر.س</td>
+                      <td className="text-center voucher-dash">-</td>
+                    </tr>
+                    <tr>
+                      <td className="voucher-item-name text-end pe-4">إجمالي البدلات المعتمدة</td>
+                      <td className="text-center voucher-val-credit">{toLocal(voucherModal.data.allowance || 0)} ر.س</td>
+                      <td className="text-center voucher-dash">-</td>
+                    </tr>
+                    <tr>
+                      <td className="voucher-item-name text-end pe-4">مكافآت وحوافز إضافية</td>
+                      <td className="text-center voucher-val-credit">{toLocal(voucherModal.data.additions || 0)} ر.س</td>
+                      <td className="text-center voucher-dash">-</td>
+                    </tr>
+                    <tr>
+                      <td className="voucher-item-name text-end pe-4">خصومات وجزاءات إدارية</td>
+                      <td className="text-center voucher-dash">-</td>
+                      <td className="text-center voucher-val-debit">
+                        {toLocal(Number(voucherModal.data.deductions || 0) + Number(voucherModal.data.investigations || 0))} ر.س
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="voucher-item-name text-end pe-4">خصم أيام الغياب والغياب بدون إذن</td>
+                      <td className="text-center voucher-dash">-</td>
+                      <td className="text-center voucher-val-debit">{toLocal(voucherModal.data.absence || 0)} ر.س</td>
+                    </tr>
+                    <tr>
+                      <td className="voucher-item-name text-end pe-4">حصة الموظف في التأمينات الاجتماعية</td>
+                      <td className="text-center voucher-dash">-</td>
+                      <td className="text-center voucher-val-debit">{toLocal(voucherModal.data.socialinsurance || 0)} ر.س</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* كرت صافي الراتب المميز */}
+              <div className="voucher-net-banner">
+                <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="voucher-net-icon">
+                      <FontAwesomeIcon icon={faCheckCircle} />
+                    </div>
+                    <div>
+                      <div className="voucher-net-label">صافي الراتب المستحق للصرف</div>
+                      <div className="voucher-net-sub">المبلغ النهائي المحول إلى الحساب البنكي للموظف</div>
+                    </div>
+                  </div>
+                  <div className="voucher-net-amount">
+                    {toLocal(voucherModal.data.net || 0)} <span className="voucher-currency">ر.س</span>
+                  </div>
                 </div>
-                <div className="col-4">
-                  <span className="small text-muted d-block mb-4">المحاسب المسؤول</span>
-                  <div style={{ borderBottom: "1px dashed #aaa", width: "80%", margin: "0 auto" }}></div>
-                </div>
-                <div className="col-4">
-                  <span className="small text-muted d-block mb-4">اعتماد المدير المالي</span>
-                  <div style={{ borderBottom: "1px dashed #aaa", width: "80%", margin: "0 auto" }}></div>
+              </div>
+
+              {/* التوقيعات الرسمية المعتمدة */}
+              <div className="voucher-signatures">
+                <div className="row text-center g-3">
+                  <div className="col-4">
+                    <div className="voucher-sig-card">
+                      <span className="voucher-sig-title">توقيع الموظف المستلم</span>
+                      <div className="voucher-sig-line"></div>
+                      <span className="voucher-sig-desc">إقرار بالاستلام والمراجعة</span>
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="voucher-sig-card">
+                      <span className="voucher-sig-title">المحاسب المسؤول</span>
+                      <div className="voucher-sig-line"></div>
+                      <span className="voucher-sig-desc">إعداد وتدقيق الحسابات</span>
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <div className="voucher-sig-card">
+                      <span className="voucher-sig-title">اعتماد المدير المالي</span>
+                      <div className="voucher-sig-line"></div>
+                      <span className="voucher-sig-desc">ختم واعتماد الصرف</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           )}
         </Modal.Body>
 
-        <Modal.Footer className="d-flex justify-content-between">
+        <Modal.Footer className="voucher-modal-footer d-flex justify-content-between">
           <button
             type="button"
-            className="btn btn-outline-secondary rounded-pill px-4"
+            className="voucher-btn-cancel"
             onClick={handleCloseVoucher}
           >
             إغلاق
           </button>
           <button
             type="button"
-            className="btn payroll-calc-btn d-flex align-items-center gap-2"
+            className="voucher-btn-print d-flex align-items-center gap-2"
             onClick={() => window.print()}
           >
             <FontAwesomeIcon icon={faPrint} />
-            <span>طباعة السند</span>
+            <span>طباعة السند الرسمي</span>
           </button>
         </Modal.Footer>
       </Modal>

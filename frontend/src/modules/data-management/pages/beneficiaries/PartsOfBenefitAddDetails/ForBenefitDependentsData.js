@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -9,6 +9,7 @@ import {
   faArrowRight,
   faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
 import API from "../../../../../api/axiosConfig";
 import "../BenefitAddDetailsUnified.css";
 
@@ -63,6 +64,22 @@ function ForBenefitDependentsData({ initialData, onNext, onPrev, onCompleted }) 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (hasDependents) {
+      for (let i = 0; i < dependents.length; i++) {
+        const dep = dependents[i];
+        if (!dep.name) {
+          return toast.error(`يرجى إدخال اسم التابع رقم ${i + 1}`);
+        }
+        if (!dep.relation) {
+          return toast.error(`صلة القرابة للتابع رقم ${i + 1} مطلوبة`);
+        }
+        if (!dep.nationalid) {
+          return toast.error(`رقم الهوية للتابع رقم ${i + 1} مطلوب`);
+        }
+      }
+    }
+
     setIsSubmitting(true);
     setError({});
 

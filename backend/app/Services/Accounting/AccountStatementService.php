@@ -204,7 +204,55 @@ class AccountStatementService
      */
     public function getDonorsStatement(array $filters = []): array
     {
-        return $this->getEntityStatement('donor', $filters);
+        $rows = [];
+        $idx = 1;
+
+        $shopReceipts = \App\Models\ShopTransaction::with(['donor', 'shop'])
+            ->where('transaction_type', 1)
+            ->latest('id')
+            ->get();
+
+        foreach ($shopReceipts as $tx) {
+            $rows[] = [
+                'id'            => 'S-' . $tx->id,
+                'index'         => $idx++,
+                'name'          => $tx->donor?->name ?: ($tx->shop?->title ?: 'متبرع'),
+                'invoicenumber' => $tx->invoice_number ?: ('REC-' . $tx->id),
+                'invoisnum'     => $tx->invoice_number ?: ('REC-' . $tx->id),
+                'date'          => $tx->date ? $tx->date->format('Y-m-d') : now()->toDateString(),
+                'paymenttype'   => 'تبرع حالة',
+                'amount'        => (float) $tx->amount,
+                'value'         => (float) $tx->amount,
+            ];
+        }
+
+        $projReceipts = \App\Models\ProjectTransaction::with(['donor', 'project'])
+            ->where('transaction_type', 1)
+            ->latest('id')
+            ->get();
+
+        foreach ($projReceipts as $tx) {
+            $rows[] = [
+                'id'            => 'P-' . $tx->id,
+                'index'         => $idx++,
+                'name'          => $tx->donor?->name ?: ($tx->project?->name ?: 'متبرع مشروع'),
+                'invoicenumber' => $tx->invoice_number ?: ('REC-PRJ-' . $tx->id),
+                'invoisnum'     => $tx->invoice_number ?: ('REC-PRJ-' . $tx->id),
+                'date'          => $tx->date ? $tx->date->format('Y-m-d') : now()->toDateString(),
+                'paymenttype'   => 'تبرع مشروع',
+                'amount'        => (float) $tx->amount,
+                'value'         => (float) $tx->amount,
+            ];
+        }
+
+        if (empty($rows)) {
+            return $this->getEntityStatement('donor', $filters);
+        }
+
+        return [
+            'data'  => $rows,
+            'total' => count($rows),
+        ];
     }
 
     /**
@@ -212,7 +260,55 @@ class AccountStatementService
      */
     public function getHumanCasesStatement(array $filters = []): array
     {
-        return $this->getEntityStatement('humancase', $filters);
+        $rows = [];
+        $idx = 1;
+
+        $shopPayments = \App\Models\ShopTransaction::with(['beneficiary', 'shop'])
+            ->where('transaction_type', 2)
+            ->latest('id')
+            ->get();
+
+        foreach ($shopPayments as $tx) {
+            $rows[] = [
+                'id'            => 'SP-' . $tx->id,
+                'index'         => $idx++,
+                'name'          => $tx->beneficiary?->name ?: ($tx->shop?->title ?: 'مستفيد'),
+                'invoicenumber' => $tx->invoice_number ?: ('PAY-' . $tx->id),
+                'invoisnum'     => $tx->invoice_number ?: ('PAY-' . $tx->id),
+                'date'          => $tx->date ? $tx->date->format('Y-m-d') : now()->toDateString(),
+                'paymenttype'   => 'صرف حالة',
+                'amount'        => (float) $tx->amount,
+                'value'         => (float) $tx->amount,
+            ];
+        }
+
+        $projPayments = \App\Models\ProjectTransaction::with(['beneficiary', 'project'])
+            ->where('transaction_type', 2)
+            ->latest('id')
+            ->get();
+
+        foreach ($projPayments as $tx) {
+            $rows[] = [
+                'id'            => 'PP-' . $tx->id,
+                'index'         => $idx++,
+                'name'          => $tx->beneficiary?->name ?: ($tx->project?->name ?: 'مستفيد مشروع'),
+                'invoicenumber' => $tx->invoice_number ?: ('PAY-PRJ-' . $tx->id),
+                'invoisnum'     => $tx->invoice_number ?: ('PAY-PRJ-' . $tx->id),
+                'date'          => $tx->date ? $tx->date->format('Y-m-d') : now()->toDateString(),
+                'paymenttype'   => 'صرف مشروع',
+                'amount'        => (float) $tx->amount,
+                'value'         => (float) $tx->amount,
+            ];
+        }
+
+        if (empty($rows)) {
+            return $this->getEntityStatement('humancase', $filters);
+        }
+
+        return [
+            'data'  => $rows,
+            'total' => count($rows),
+        ];
     }
 
     /**

@@ -10,6 +10,7 @@ const PaymentHistory = lazy(() => import("../pages/PaymentHistory"));
 const ShowpaymentHistory = lazy(() => import("../pages/ShowpaymentHistory"));
 const EndowmentSammary = lazy(() => import("../pages/EndowmentSammary"));
 const ViewEndowments = lazy(() => import("../pages/ViewEndowments"));
+const ReceiptVoucherEndowments = lazy(() => import("../../../pages/ReceiptVoucher/ReceiptVoucherEndowments"));
 
 const withSuspense = (Component) => (
   <Suspense fallback={<TestPreLoader />}>
@@ -33,7 +34,7 @@ export const endowmentRouteConfigs = [
   { path: "/paymentHistory", element: withSuspense(PaymentHistory) },
   { path: "/paymenthistory", element: withSuspense(PaymentHistory) },
   { path: "/showpaymentHistory/:id", element: withSuspense(ShowpaymentHistory) },
-  { path: "/endowmentsreceiptvoucher/:id", element: withSuspense(PaymentsDue) },
+  { path: "/endowmentsreceiptvoucher/:id", element: withSuspense(ReceiptVoucherEndowments) },
 
   // ── ملخص الوقف ───────────────────────────────────────────────
   { path: "/endowmentsammary", element: withSuspense(EndowmentSammary) },

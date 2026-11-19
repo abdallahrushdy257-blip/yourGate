@@ -158,7 +158,7 @@ class PayrollService
                 ? (float) $data['net_salary']
                 : ($basic + $allowance + $additions - ($deductions + $absence + $invest + $insurance));
 
-            return Payroll::updateOrCreate(
+            $payroll = Payroll::updateOrCreate(
                 [
                     'employee_id' => (int) $data['employee_id'],
                     'year'        => (int) $data['year'],
@@ -178,6 +178,19 @@ class PayrollService
                     'notes'            => $data['notes'] ?? null,
                 ]
             );
+
+            if ($net > 0 && $payroll->wasRecentlyCreated) {
+                app(\App\Services\Accounting\AccountingSyncService::class)->recordPayment([
+                    'amount'         => $net,
+                    'date'           => $payroll->payment_date?->format('Y-m-d') ?? Carbon::now()->format('Y-m-d'),
+                    'expense_code'   => '41101',
+                    'description'    => "صرف راتب الموظف ({$payroll->year}-{$payroll->month})",
+                    'reference_type' => 'payroll',
+                    'reference_id'   => $payroll->id,
+                ]);
+            }
+
+            return $payroll;
         });
     }
 

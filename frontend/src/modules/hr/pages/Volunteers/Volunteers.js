@@ -98,33 +98,6 @@ function Volunteers() {
     { label: " حذف المتطوع", route: "/volunteerWorkHours/:id" },
   ];
 
-  const dummyData = [
-    {
-      id: 1,
-      name: "أحمد السالم",
-      identification_number: "1023456789",
-      phone: "0501234567",
-      dateofhire: "2024-01-15",
-      type: "تطوع عام",
-    },
-    {
-      id: 2,
-      name: "سارة محمد",
-      identification_number: "1023456790",
-      phone: "0502345678",
-      dateofhire: "2023-09-10",
-      type: "تطوع تخصصي",
-    },
-    {
-      id: 3,
-      name: "خالد إبراهيم",
-      identification_number: "1023456791",
-      phone: "0503456789",
-      dateofhire: "2022-06-20",
-      type: "تطوع عام",
-    },
-  ];
-
   const handleSave = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -181,7 +154,6 @@ function Volunteers() {
         <TableComponent
           key={refreshKey}
           apiUrl="/volunteers"
-          data={dummyData}
           columns={columns}
           titleIcon={<FontAwesomeIcon icon={faTable} />}
           title="إدارة المتطوعين"

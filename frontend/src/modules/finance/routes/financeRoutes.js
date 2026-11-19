@@ -29,11 +29,13 @@ const withSuspense = (Component) => (
 export const financeRouteConfigs = [
   { path: "/receiptvoucher/:id", element: withSuspense(ReceiptVoucherPage) },
   { path: "/projectvoucher/:id", element: withSuspense(ReceiptVoucherProjectPage) },
+  { path: "/receiptvoucherproject/:id", element: withSuspense(ReceiptVoucherProjectPage) },
   { path: "/receiptVoucherView/:id", element: withSuspense(ReceiptVoucherViewPage) },
   { path: "/receiptVoucherViewproject/:id", element: withSuspense(ReceiptVoucherViewProjectPage) },
   { path: "/receiptvoucherendowments/:id", element: withSuspense(ReceiptVoucherEndowmentsPage) },
   { path: "/receiptvoucherloan/:id", element: withSuspense(ReceiptVoucherLoanPage) },
 
+  { path: "/paymentvoucher", element: withSuspense(PaymentVoucherPage) },
   { path: "/paymentvoucher/:id", element: withSuspense(PaymentVoucherPage) },
   { path: "/paymentvoucherGeneral/:id", element: withSuspense(PaymentVoucherGeneralPage) },
   { path: "/paymentvoucherproject/:id", element: withSuspense(PaymentVoucherProjectPage) },
