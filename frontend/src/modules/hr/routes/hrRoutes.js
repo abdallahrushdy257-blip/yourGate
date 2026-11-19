@@ -48,8 +48,6 @@ const AddEmpPaper = lazy(() => import("../pages/EmployPaper/AddEmpPaper"));
 const EditEmploypaper = lazy(() => import("../pages/EmployPaper/EditEmploypaper"));
 
 // ── الخصومات والتحقيقات ───────────────────────────────────────
-const Discounts = lazy(() => import("../pages/Discounts/Discounts"));
-const Investigations = lazy(() => import("../pages/Investigations/Investigations"));
 const EditInvestigations = lazy(() => import("../pages/Investigations/EditInvestigations"));
 
 
