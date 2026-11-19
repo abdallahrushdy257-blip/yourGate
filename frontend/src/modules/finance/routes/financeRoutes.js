@@ -41,11 +41,6 @@ export const financeRouteConfigs = [
   { path: "/paymentvoucherproject/:id", element: withSuspense(PaymentVoucherProjectPage) },
   { path: "/endowmentsVoucher/:id", element: withSuspense(EndowmentsVoucherPage) },
   { path: "/paymentvoucherloan/:id", element: withSuspense(PaymentVoucherLoanPage) },
-
-  { path: "/generalreceiptvoucher", element: withSuspense(GeneralReceiptVoucherPage) },
-  { path: "/generalreceiptvouchercash", element: withSuspense(GeneralReceiptVoucherCashPage) },
-  { path: "/generalpaymentvoucher", element: withSuspense(GeneralPaymentVoucherPage) },
-  { path: "/generalpaymentvouchercash", element: withSuspense(GeneralPaymentVoucherCashPage) },
 ];
 
 export const FinanceRoutes = (

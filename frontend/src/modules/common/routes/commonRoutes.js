@@ -26,8 +26,6 @@ const withSuspense = (Component) => (
 export const commonRouteConfigs = [
   { path: "/home", element: withSuspense(Home) },
   { path: "/commitmentcompliance", element: withSuspense(CommitmentCompliance) },
-  { path: "/terms", element: withSuspense(Terms) },
-  { path: "/privacy", element: withSuspense(Privacy) },
   { path: "/notifications", element: withSuspense(NotificationItem) },
 
   { path: "/testprint", element: withSuspense(TestPrint) },

@@ -30,8 +30,6 @@ export const projectRouteConfigs = [
   // تقارير المشاريع وحالاتها
   { path: "/projectStatus", element: withSuspense(ProjectListPage) },
   { path: "/projectstatus", element: withSuspense(ProjectListPage) },
-  { path: "/sectionsreport", element: withSuspense(SectionsReportPage) },
-  { path: "/SectionsReport", element: withSuspense(SectionsReportPage) },
   { path: "/projectpaymentreport", element: withSuspense(ProjectPaymentReportPage) },
 
   // إدارة المشاريع والتعديل
