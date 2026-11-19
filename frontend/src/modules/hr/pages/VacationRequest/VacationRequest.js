@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Spinner, Modal, Nav, Button } from "react-bootstrap";
 import API from "../../../../api/axiosConfig";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import TableComponent from "../../../../components/TableComponent";
 import { toast } from "react-toastify";
 import "./VacationRequest.css";

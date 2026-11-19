@@ -11,19 +11,19 @@ import TableComponent from "../../../../components/TableComponent";
 import { useNavigate } from "react-router-dom";
 import { showError } from "../../../../components/Toast";
 import { Modal, Button, Row, Col, Spinner, Form } from "react-bootstrap";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import NewButton from "../../../../components/NewButton";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import RegisterTextarea from "../../../../components/RegisterTextarea";
 import ProjectKPI from "../KPI/ProjectKPI";
-import ProjectAttachment from "../../../../pages/MarketingDesignProjectManagement/ProjectAttachment";
-import PaymentVoucherProject from "../../../../pages/PaymentVoucher/PaymentVoucherProject";
+import ProjectAttachment from "../MarketingDesignProjectManagement/ProjectAttachment";
+import PaymentVoucherProject from "../../../finance/pages/PaymentVoucher/PaymentVoucherProject";
 import EditProjectStatus from "./EditProjectStatus";
 import ConfirmModal from "../../../../components/ConfirmModal";
 import { toast } from "react-toastify";
 
-import { toLocal } from "../../../../Utils/toLocal";
+import { toLocal } from "../../../../shared/Utils/toLocal";
 
 function ProjectStatus() {
   const navigate = useNavigate();

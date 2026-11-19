@@ -21,7 +21,7 @@ import RegisterSelect from "../../../../components/RegisterSelect";
 import UploadInput from "../../../../components/UploadInput";
 import RegisterRadio from "../../../../components/Radio";
 import API from "../../../../api/axiosConfig";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import { useNavigate, useParams } from "react-router";
 import CustomTable from "../../../../components/CustomTable";
 import RegisterTextarea from "../../../../components/RegisterTextarea";

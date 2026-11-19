@@ -20,7 +20,7 @@ import SelectComponent from "../../../../components/SelectComponent";
 import RegisterTextarea from "../../../../components/RegisterTextarea";
 import CustomTable from "../../../../components/CustomTable";
 import API from "../../../../api/axiosConfig";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import TableComponent from "../../../../components/TableComponent";
 import RegisterSelect from "../../../../components/RegisterSelect";
 

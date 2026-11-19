@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import API from '../../../../api/axiosConfig';
 import KsaModal from './KsaModal';
-import { getCurrentPeriod } from "../../../../Utils/getCurrentPeriod";
+import { getCurrentPeriod } from "../../../../shared/Utils/getCurrentPeriod";
 import "./Ksa.css";
 
 const PRIMARY_COLOR = '#00897b';

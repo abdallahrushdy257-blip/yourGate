@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis, faList, faTable } from "@fortawesome/free-solid-svg-icons";
 import HRreports from "../HRreports";
 import API from "../../../../../api/axiosConfig";
-import TestPreLoader from "../../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../../common/pages/TestPreLoader/TestPreLoader";
 
 function LeaveNameReport() {
   const handleDownload = (selectedRows) => {

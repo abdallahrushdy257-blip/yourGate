@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./employeeCard.css";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import Logo from "../../../../logo-light.svg";
+import Logo from "../../../../assets/logo-light.svg";
 import { useState, useEffect } from "react";
 import Title from "../../../../components/title";
 import { useParams } from "react-router";

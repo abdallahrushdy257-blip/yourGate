@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import "../../../pages/CreateLoan/createLoan.css";
+﻿import React, { useState, useEffect } from "react";
+import "../../loans/pages/createLoan.css";
 import Title from "../../../components/title";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -11,7 +11,7 @@ import UploadInput from "../../../components/UploadInput";
 import API from "../../../api/axiosConfig";
 import { useNavigate } from "react-router";
 import { Spinner, Form } from "react-bootstrap";
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
 
 function Endowments() {
   const tabsBase = ["one", "three"];

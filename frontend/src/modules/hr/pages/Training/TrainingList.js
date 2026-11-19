@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import API from "../../../../api/axiosConfig";
 import TrainingForm from "./TrainingForm";
-import { getCurrentPeriod } from "../../../../Utils/getCurrentPeriod";
+import { getCurrentPeriod } from "../../../../shared/Utils/getCurrentPeriod";
 import "./Training.css";
 
 

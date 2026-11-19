@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useEffect, useState } from 'react';
 import RegisterSelect from '../../../../components/RegisterSelect';
 import API from '../../../../api/axiosConfig';
-import TestPreLoader from '../../../../pages/TestPreLoader/TestPreLoader';
+import TestPreLoader from '../../../common/pages/TestPreLoader/TestPreLoader';
 
 function EditDependentsData() {
     const navigate = useNavigate();

@@ -9,8 +9,8 @@ import RegisterSelect from "../../../../components/RegisterSelect";
 import API from "../../../../api/axiosConfig";
 import { useNavigate, useParams } from "react-router";
 import { useEffect, useState } from "react";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
-
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
+import { hrService } from "../../services/hrService";
 
 function EditJobTitle() {
   const [rows, setRows] = useState([]);

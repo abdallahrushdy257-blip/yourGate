@@ -21,9 +21,9 @@ import { useNavigate, useParams } from "react-router";
 import PrintHead from "../../../../components/PrintHead";
 import PrintFooter from "../../../../components/PrintFooter";
 import API from "../../../../api/axiosConfig";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import { color } from "highcharts";
-import riyal from "../../../../sar_symbol_dark.png"
+import riyal from "../../../../assets/sar_symbol_dark.png"
 
 const CaseDetailsChart = (props) => {
   const navigate = useNavigate();

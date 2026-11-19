@@ -1,7 +1,7 @@
 // src/components/Bsc/BscDashboard.js
 
 import { useState } from 'react';
-import { useOrgBsc, useRecalculate } from '../../hooks/useBsc';
+import { useOrgBsc, useRecalculate } from '../../shared/hooks/useBsc';
 import BscHeader       from './BscHeader';
 import PerspectiveCard from './PerspectiveCard';
 import BscRadarChart   from './BscRadarChart';

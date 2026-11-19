@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+﻿import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CustomTable from "../../../components/CustomTable";
 import { faLocationDot, faUsersBetweenLines, faPlus } from "@fortawesome/free-solid-svg-icons";
 import "../../cases/pages/CaseDetails/CaseDetails.css";
@@ -10,8 +10,8 @@ import RegisterSelect from '../../../components/RegisterSelect';
 import UploadInput from '../../../components/UploadInput';
 import Title from "../../../components/title";
 import API from '../../../api/axiosConfig';
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
-import "../../../pages/CreateLoan/createLoan.css";
+import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
+import "../../loans/pages/createLoan.css";
 import "../../data-management/pages/beneficiaries/addBeneficiary.css";
 import './endowments.css';
 import NewButton from "../../../components/NewButton";

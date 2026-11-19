@@ -1,18 +1,18 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+﻿import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../../components/title";
 import "./associationMembers.css";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { Form } from "react-bootstrap";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import CustomButton from "../../../../components/CustomButton";
-import "../../../../pages/AddNewClient/addnewclient.css";
+import "../../../../modules/partners/pages/AddNewClient/addnewclient.css";
 import UploadInput from "../../../../components/UploadInput";
 import RegisterSelect from "../../../../components/RegisterSelect";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../../../../api/axiosConfig";
 import Spinner from "react-bootstrap/Spinner";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 
 function ShowAssociationMembers() {
   const navigate = useNavigate();

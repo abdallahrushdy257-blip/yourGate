@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
 
 // ── الموظفون والإدارة ─────────────────────────────────────────
 const EmployeeListPage = lazy(() => import("../pages/EmployeeName/EmployeeName"));
@@ -48,8 +48,6 @@ const AddEmpPaper = lazy(() => import("../pages/EmployPaper/AddEmpPaper"));
 const EditEmploypaper = lazy(() => import("../pages/EmployPaper/EditEmploypaper"));
 
 // ── الخصومات والتحقيقات ───────────────────────────────────────
-const Discounts = lazy(() => import("../pages/Discounts/Discounts"));
-const Investigations = lazy(() => import("../pages/Investigations/Investigations"));
 const EditInvestigations = lazy(() => import("../pages/Investigations/EditInvestigations"));
 
 

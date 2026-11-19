@@ -27,14 +27,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import DarkLightbutton from "./DarkLightbutton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AppContext } from "../context/AuthContext";
+import { AppContext } from "../app/providers/AuthContext";
 import { useNavigate } from "react-router-dom";
 import API from "../api/axiosConfig";
+import { ThemeContext } from "../app/providers/theme-context";
+import logoLight from "../assets/logo-light.svg";
+import logoDark from "../assets/logo-dark.svg";
 
 const RightSidebar = ({ isVisible, toggleSidebar }) => {
   const [isUserMenuVisible, setUserMenuVisible] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const { user } = useContext(AppContext);
+  const { theme } = useContext(ThemeContext);
+  const defaultLogo = theme === "light" ? logoLight : logoDark;
   const navigate = useNavigate();
   const permissions = user ? user.roles : [];
 
@@ -571,7 +576,7 @@ const RightSidebar = ({ isVisible, toggleSidebar }) => {
               src={
                 user && user.organization && user.organization.logo
                   ? user.organization.logo
-                  : "../logo-dark.svg"
+                  : defaultLogo
               }
               alt="pic"
             />

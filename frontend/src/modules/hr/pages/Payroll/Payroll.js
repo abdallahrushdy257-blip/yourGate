@@ -17,7 +17,7 @@ import { Form, Modal, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import TableComponent from "../../../../components/TableComponent";
 import API from "../../../../api/axiosConfig";
-import { toLocal } from "../../../../Utils/toLocal";
+import { toLocal } from "../../../../shared/Utils/toLocal";
 import "./payroll.css";
 
 // قائمة الشهور العربية

@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import API from "../../../../api/axiosConfig";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import "./users.css";
 
 const UserProfile = () => {

@@ -20,7 +20,7 @@ import RegisterRadio from "../../../../components/Radio";
 import RegisterTextarea from "../../../../components/RegisterTextarea";
 import UploadInput from "../../../../components/UploadInput";
 import API from "../../../../api/axiosConfig";
-import { toLocal } from "../../../../Utils/toLocal";
+import { toLocal } from "../../../../shared/Utils/toLocal";
 import {
   CaseOverviewModal,
   CaseInfoCardModal,

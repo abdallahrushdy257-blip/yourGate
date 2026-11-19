@@ -9,7 +9,7 @@ import RegisterTextarea from "../../../../components/RegisterTextarea";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import UploadInput from "../../../../components/UploadInput";
 import CustomButton from "../../../../components/CustomButton";
-import TestPreLoader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import { BASE_URL } from "../../../../api/axiosConfig";
 
 import { marketingService } from "../../services/marketingService";

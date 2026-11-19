@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Title from "../../../components/title";
-import "../../../pages/MoneyReports/moneyreceiptreports.css";
+import "../../accounting/pages/MoneyReports/moneyreceiptreports.css";
 import {
 
   faFileInvoiceDollar,
@@ -13,8 +13,8 @@ import { useEffect, useRef, useState, useContext } from "react";
 import JsBarcode from "jsbarcode";
 import { useParams } from "react-router";
 import API from "../../../api/axiosConfig";
-import { AppContext } from "../../../context/AuthContext";
-import TestPreLoader from "../../../pages/TestPreLoader/TestPreLoader";
+import { AppContext } from "../../../app/providers/AuthContext";
+import TestPreLoader from "../../common/pages/TestPreLoader/TestPreLoader";
 import { toArabicWord } from 'number-to-arabic-words/dist/index-node.js';
 import PrintHead from "../../../components/PrintHead";
 import PrintFooter from "../../../components/PrintFooter";

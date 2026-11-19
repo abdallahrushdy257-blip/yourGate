@@ -4,13 +4,13 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faCircleXmark, faHome, faList } from "@fortawesome/free-solid-svg-icons";
-import { ThemeContext } from "../context/theme-context";
+import { ThemeContext } from "../app/providers/theme-context";
 import API from "../api/axiosConfig";
 import "./HomeNavbar.css";
 import DarkLightbutton from "./DarkLightbutton";
 
-import logoLight from "../logo-light.svg";
-import logoDark from "../logo-dark.svg";
+import logoLight from "../assets/logo-light.svg";
+import logoDark from "../assets/logo-dark.svg";
 
 function HomeNavbar({ size, toggleSidebar, isSidebarVisible }) {
   const { theme } = useContext(ThemeContext);

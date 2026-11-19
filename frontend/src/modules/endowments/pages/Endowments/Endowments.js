@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import Title from "../../../../components/title";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -8,7 +8,7 @@ import UploadInput from "../../../../components/UploadInput";
 import { useNavigate } from "react-router-dom";
 import { Spinner, Form } from "react-bootstrap";
 import API from "../../../../api/axiosConfig";
-import "../../../../pages/CreateLoan/createLoan.css";
+import "../../../loans/pages/createLoan.css";
 import "../../../data-management/pages/beneficiaries/addBeneficiary.css";
 import "./endowments.css";
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import "./ShowEmployee.css";
 import API from "../../../../api/axiosConfig";
-import TestPreloader from "../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreloader from "../../../common/pages/TestPreLoader/TestPreLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,

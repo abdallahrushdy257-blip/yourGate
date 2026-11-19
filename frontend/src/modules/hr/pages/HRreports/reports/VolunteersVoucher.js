@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import JsBarcode from "jsbarcode";
 import { useNavigate, useParams } from "react-router";
 import API from "../../../../../api/axiosConfig";
-import TestPreLoader from "../../../../../pages/TestPreLoader/TestPreLoader";
+import TestPreLoader from "../../../../common/pages/TestPreLoader/TestPreLoader";
 
 function VolunteersVoucher(props) {
 

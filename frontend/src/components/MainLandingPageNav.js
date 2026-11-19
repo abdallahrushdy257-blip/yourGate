@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
-import { ThemeContext } from "../context/theme-context";
+import { ThemeContext } from "../app/providers/theme-context";
 import { useNavigate } from "react-router";
 import "./MainLandingPageNav.css";
-import logoLight from "../logo-light.svg";
-import logoDark from "../logo-dark.svg";
+import logoLight from "../assets/logo-light.svg";
+import logoDark from "../assets/logo-dark.svg";
 
 function MainLandingPageNav() {
   const { theme, setTheme } = useContext(ThemeContext);
