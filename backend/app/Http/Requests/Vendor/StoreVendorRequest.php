@@ -6,6 +6,13 @@ use App\Http\Requests\BaseApiRequest;
 
 class StoreVendorRequest extends BaseApiRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('balance') && ! $this->has('opening_balance')) {
+            $this->merge(['opening_balance' => $this->input('balance')]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

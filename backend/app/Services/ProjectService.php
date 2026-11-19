@@ -501,6 +501,18 @@ class ProjectService
             ->get();
     }
 
+    public function destroyRisk(int $id): bool
+    {
+        $risk = \App\Models\ProjectRisk::find($id)
+            ?? \App\Models\ProjectRisk::withoutGlobalScopes()->find($id);
+
+        if (! $risk) {
+            return false;
+        }
+
+        return (bool) $risk->delete();
+    }
+
     // ── Dropdowns Helpers ───────────────────────────────────────
 
     public function listEmployees(): Collection

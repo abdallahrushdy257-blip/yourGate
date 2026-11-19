@@ -470,6 +470,13 @@ class ProjectController extends Controller
         );
     }
 
+    public function destroyRisk(int $id): JsonResponse
+    {
+        $this->projectService->destroyRisk($id);
+
+        return $this->successResponse(null, 'Project risk deleted successfully.');
+    }
+
     // ── Dropdowns Helpers ───────────────────────────────────────
 
     public function employees(): JsonResponse

@@ -115,6 +115,21 @@ class SystemManagementController extends Controller
         return response()->json($this->service->savePrintSettings($settings), Response::HTTP_OK);
     }
 
+    public function getSurveyQuestions(): JsonResponse
+    {
+        $questions = $this->service->getSurveyQuestions();
+
+        return response()->json(['data' => $questions], Response::HTTP_OK);
+    }
+
+    public function saveSurveyQuestions(Request $request): JsonResponse
+    {
+        $questions = (array) $request->input('questions', []);
+        $saved = $this->service->saveSurveyQuestions($questions);
+
+        return response()->json(['data' => $saved], Response::HTTP_OK);
+    }
+
     // ── Dashboard (/home) & BSC ───────────────────────────────────────
 
     public function home(): JsonResponse
@@ -196,5 +211,120 @@ class SystemManagementController extends Controller
     public function countGovernanceQuizs(): JsonResponse
     {
         return response()->json($this->service->getGovernanceCounts(), Response::HTTP_OK);
+    }
+
+    // ── Super Admin Organizations & Subscription Modules ──────────────────
+
+    public function approvedOrganizations(): JsonResponse
+    {
+        return response()->json($this->service->getOrganizations('approved'), Response::HTTP_OK);
+    }
+
+    public function pendingOrganizations(): JsonResponse
+    {
+        return response()->json($this->service->getOrganizations('pending'), Response::HTTP_OK);
+    }
+
+    public function rejectedOrganizations(): JsonResponse
+    {
+        return response()->json($this->service->getOrganizations('rejected'), Response::HTTP_OK);
+    }
+
+    public function showOrganization(int $id): JsonResponse
+    {
+        $org = $this->service->findOrganization($id);
+        return response()->json($org, Response::HTTP_OK);
+    }
+
+    public function updateOrgStatus(Request $request, int $id, ?string $action = null): JsonResponse
+    {
+        $status = match ($action) {
+            'approve' => 'approved',
+            'reject'  => 'rejected',
+            default   => $request->input('status', 'approved'),
+        };
+
+        $note = $request->input('note', $request->input('reason'));
+        $updated = $this->service->updateOrganizationStatus($id, $status, $note);
+
+        return response()->json([
+            'status'  => Response::HTTP_OK,
+            'message' => 'تم تحديث حالة الجمعية بنجاح.',
+            'data'    => $updated,
+        ], Response::HTTP_OK);
+    }
+
+    public function subscriptionModules(): JsonResponse
+    {
+        return response()->json($this->service->getSubscriptionModules(), Response::HTTP_OK);
+    }
+
+    public function storeSubscriptionModule(Request $request): JsonResponse
+    {
+        $created = $this->service->storeSubscriptionModule($request->all());
+        return response()->json([
+            'status'  => Response::HTTP_OK,
+            'message' => 'تم إضافة الموديول بنجاح.',
+            'data'    => $created,
+        ], Response::HTTP_OK);
+    }
+
+    public function destroySubscriptionModule(int $id): JsonResponse
+    {
+        $this->service->deleteSubscriptionModule($id);
+        return response()->json([
+            'status'  => Response::HTTP_OK,
+            'message' => 'تم حذف الموديول بنجاح.',
+        ], Response::HTTP_OK);
+    }
+
+    public function storeModules(int $id): JsonResponse
+    {
+        return response()->json($this->service->getStoreModules($id), Response::HTTP_OK);
+    }
+
+    public function saveStoreModule(Request $request, int $id): JsonResponse
+    {
+        $created = $this->service->storeStoreModule($id, $request->all());
+        return response()->json([
+            'status'  => Response::HTTP_OK,
+            'message' => 'تم تعيين الموديول بنجاح.',
+            'data'    => $created,
+        ], Response::HTTP_OK);
+    }
+
+    public function destroyStoreModule(int $id, ?int $moduleId = null): JsonResponse
+    {
+        $mId = $moduleId ?? $id;
+        $this->service->deleteStoreModule($id, $mId);
+        return response()->json([
+            'status'  => Response::HTTP_OK,
+            'message' => 'تم إلغاء الموديول بنجاح.',
+        ], Response::HTTP_OK);
+    }
+
+    public function storeRequests(int $id): JsonResponse
+    {
+        return response()->json($this->service->getStoreRequests($id), Response::HTTP_OK);
+    }
+
+    public function saveStoreRequest(Request $request, int $id): JsonResponse
+    {
+        $created = $this->service->storeStoreRequest($id, $request->all());
+        return response()->json([
+            'status'  => Response::HTTP_OK,
+            'message' => 'تم إرسال الطلب بنجاح.',
+            'data'    => $created,
+        ], Response::HTTP_OK);
+    }
+
+    public function destroyStoreRequest(int $id, ?int $requestId = null): JsonResponse
+    {
+        $rId = $requestId ?? $id;
+        $this->service->deleteStoreRequest($id, $rId);
+        return response()->json([
+            'status'  => Response::HTTP_OK,
+            'message' => 'تم حذف الطلب بنجاح.',
+        ], Response::HTTP_OK);
     }
 }

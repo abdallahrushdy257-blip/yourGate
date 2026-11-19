@@ -49,6 +49,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/humancasevendor/{id}/delete', [VendorController::class, 'destroy'])->whereNumber('id');
     Route::delete('/humancasevendor/{id}', [VendorController::class, 'destroy'])->whereNumber('id');
 
+    // Vendor aliases for Accounting / Purchases
+    Route::match(['get', 'post'], '/vendor', [VendorController::class, 'index']);
+    Route::get('/vendor/all', [VendorController::class, 'component']);
+    Route::get('/vendor/component', [VendorController::class, 'component']);
+    Route::post('/vendor/store', [VendorController::class, 'store']);
+    Route::post('/vendor/vendorstore', [VendorController::class, 'store']);
+    Route::post('/vendor/update', [VendorController::class, 'update']);
+    Route::get('/vendor/{id}', [VendorController::class, 'show'])->whereNumber('id');
+    Route::get('/vendor/{id}/delete', [VendorController::class, 'destroy'])->whereNumber('id');
+    Route::delete('/vendor/{id}', [VendorController::class, 'destroy'])->whereNumber('id');
+
+    // Client aliases (العملاء) for Accounting / Sales
+    Route::match(['get', 'post'], '/client', [VendorController::class, 'index']);
+    Route::get('/client/all', [VendorController::class, 'component']);
+    Route::get('/client/component', [VendorController::class, 'component']);
+    Route::post('/client/store', [VendorController::class, 'store']);
+    Route::post('/client/clientstore', [VendorController::class, 'store']);
+    Route::post('/client/update', [VendorController::class, 'update']);
+    Route::get('/client/{id}', [VendorController::class, 'show'])->whereNumber('id');
+    Route::get('/client/{id}/delete', [VendorController::class, 'destroy'])->whereNumber('id');
+    Route::delete('/client/{id}', [VendorController::class, 'destroy'])->whereNumber('id');
+
     // Beneficiaries (Human Cases) CRUD
     Route::match(['get', 'post'], '/humancases', [HumanCaseController::class, 'index']);
     Route::match(['get', 'post'], '/humancases/rejected', [HumanCaseController::class, 'rejected']);
@@ -226,6 +248,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/projectrisk/show/{id}', [\App\Http\Controllers\Api\ProjectController::class, 'showRisk'])->whereNumber('id');
     Route::post('/projectrisk/mitigation/store', [\App\Http\Controllers\Api\ProjectController::class, 'storeRiskMitigation']);
     Route::get('/projectrisk/{id}/report', [\App\Http\Controllers\Api\ProjectController::class, 'riskReport'])->whereNumber('id');
+    Route::match(['get', 'delete'], '/projectrisk/{id}/delete', [\App\Http\Controllers\Api\ProjectController::class, 'destroyRisk'])->whereNumber('id');
+    Route::delete('/projectrisk/{id}', [\App\Http\Controllers\Api\ProjectController::class, 'destroyRisk'])->whereNumber('id');
 
     Route::get('/employees/all', [\App\Http\Controllers\Api\ProjectController::class, 'employees']);
     Route::get('/volunteers/all', [\App\Http\Controllers\Api\ProjectController::class, 'volunteers']);
@@ -381,6 +405,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::match(['get', 'delete'], '/accounttree/{id}/delete', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'destroy'])->whereNumber('id');
     Route::delete('/accounttree/{id}', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'destroy'])->whereNumber('id');
     Route::match(['get', 'post'], '/warehouse/transaction/warehousecontentcode', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'entry']);
+    Route::match(['get', 'post'], '/warehouse/transaction/invoicecode', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'invoiceCode']);
+    Route::match(['get', 'post'], '/warehouse/all', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'warehouseAll']);
+
+    // Warehouse & Inventory Management Endpoints
+    Route::match(['get', 'post'], '/category', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'categories']);
+    Route::post('/category/store', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'storeCategory']);
+    Route::match(['get', 'post'], '/unit', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'units']);
+    Route::post('/unit/store', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'storeUnit']);
+    Route::match(['get', 'post'], '/warehouse', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'warehouses']);
+    Route::post('/warehouse/store', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'storeWarehouse']);
+    Route::post('/items/barcode', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'itemBarcode']);
+    Route::post('/items/store', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'storeItem']);
+    Route::post('/items/prices/store', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'storeItem']);
+    Route::post('/warehouse/transaction/purchase/store', fn (\Illuminate\Http\Request $r) => app(\App\Http\Controllers\Api\ChartOfAccountController::class)->storeWarehouseTransaction($r, 'purchase'));
+    Route::post('/warehouse/transaction/purchase/return', fn (\Illuminate\Http\Request $r) => app(\App\Http\Controllers\Api\ChartOfAccountController::class)->storeWarehouseTransaction($r, 'purchase_return'));
+    Route::post('/warehouse/transaction/selling/store', fn (\Illuminate\Http\Request $r) => app(\App\Http\Controllers\Api\ChartOfAccountController::class)->storeWarehouseTransaction($r, 'selling'));
+    Route::post('/warehouse/transaction/selling/return', fn (\Illuminate\Http\Request $r) => app(\App\Http\Controllers\Api\ChartOfAccountController::class)->storeWarehouseTransaction($r, 'selling_return'));
+    Route::post('/warehouse/transaction/details', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'warehouseTransactionDetails']);
+    Route::match(['get', 'post'], '/warehouse/report/purchase', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'purchaseReport']);
+    Route::match(['get', 'post'], '/warehouse/report/selling', [\App\Http\Controllers\Api\ChartOfAccountController::class, 'sellingReport']);
 
     // Accounting Journal Entries (/transactions & /accounting-entries)
     Route::match(['get', 'post'], '/transactions', [\App\Http\Controllers\Api\AccountingEntryController::class, 'index']);
@@ -542,6 +586,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/print', [\App\Http\Controllers\Api\SystemManagementController::class, 'getPrintSettings']);
     Route::post('/print/store', [\App\Http\Controllers\Api\SystemManagementController::class, 'savePrintSettings']);
 
+    Route::get('/settings/survey-questions', [\App\Http\Controllers\Api\SystemManagementController::class, 'getSurveyQuestions']);
+    Route::post('/settings/survey-questions', [\App\Http\Controllers\Api\SystemManagementController::class, 'saveSurveyQuestions']);
+
     Route::get('/home', [\App\Http\Controllers\Api\SystemManagementController::class, 'home']);
 
     Route::get('/bsc', [\App\Http\Controllers\Api\SystemManagementController::class, 'allBsc']);
@@ -562,6 +609,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/governances/store', [\App\Http\Controllers\Api\SystemManagementController::class, 'storeGovernance']);
     Route::get('/governances/submitted', [\App\Http\Controllers\Api\SystemManagementController::class, 'submittedGovernance']);
     Route::get('/governances/countquizs', [\App\Http\Controllers\Api\SystemManagementController::class, 'countGovernanceQuizs']);
+
+    // Super Admin Organizations & Subscription Modules
+    Route::match(['get', 'post'], '/organization/approved', [\App\Http\Controllers\Api\SystemManagementController::class, 'approvedOrganizations']);
+    Route::match(['get', 'post'], '/organization/pending', [\App\Http\Controllers\Api\SystemManagementController::class, 'pendingOrganizations']);
+    Route::match(['get', 'post'], '/organization/rejected', [\App\Http\Controllers\Api\SystemManagementController::class, 'rejectedOrganizations']);
+    Route::get('/organization/{id}', [\App\Http\Controllers\Api\SystemManagementController::class, 'showOrganization'])->whereNumber('id');
+    Route::post('/organization/{id}/update/status/approve', fn (\Illuminate\Http\Request $r, int $id) => app(\App\Http\Controllers\Api\SystemManagementController::class)->updateOrgStatus($r, $id, 'approve'))->whereNumber('id');
+    Route::post('/organization/{id}/update/status/reject', fn (\Illuminate\Http\Request $r, int $id) => app(\App\Http\Controllers\Api\SystemManagementController::class)->updateOrgStatus($r, $id, 'reject'))->whereNumber('id');
+    Route::post('/organization/{id}/update/status', [\App\Http\Controllers\Api\SystemManagementController::class, 'updateOrgStatus'])->whereNumber('id');
+
+    Route::match(['get', 'post'], '/subscription/modules', [\App\Http\Controllers\Api\SystemManagementController::class, 'subscriptionModules']);
+    Route::post('/subscription/modules/store', [\App\Http\Controllers\Api\SystemManagementController::class, 'storeSubscriptionModule']);
+    Route::match(['get', 'delete'], '/subscription/modules/{id}/delete', [\App\Http\Controllers\Api\SystemManagementController::class, 'destroySubscriptionModule'])->whereNumber('id');
+    Route::delete('/subscription/modules/{id}', [\App\Http\Controllers\Api\SystemManagementController::class, 'destroySubscriptionModule'])->whereNumber('id');
+
+    Route::match(['get', 'post'], '/organization/{id}/modules', [\App\Http\Controllers\Api\SystemManagementController::class, 'storeModules'])->whereNumber('id');
+    Route::post('/organization/{id}/modules/store', [\App\Http\Controllers\Api\SystemManagementController::class, 'saveStoreModule'])->whereNumber('id');
+    Route::match(['get', 'delete'], '/organization/modules/{id}/delete', [\App\Http\Controllers\Api\SystemManagementController::class, 'destroyStoreModule'])->whereNumber('id');
+
+    Route::match(['get', 'post'], '/organization/{id}/requests', [\App\Http\Controllers\Api\SystemManagementController::class, 'storeRequests'])->whereNumber('id');
+    Route::post('/organization/{id}/requests/store', [\App\Http\Controllers\Api\SystemManagementController::class, 'saveStoreRequest'])->whereNumber('id');
+    Route::match(['get', 'delete'], '/organization/requests/{id}/delete', [\App\Http\Controllers\Api\SystemManagementController::class, 'destroyStoreRequest'])->whereNumber('id');
 });
 
 // External Beneficiary Multi-Step Registration (Public)

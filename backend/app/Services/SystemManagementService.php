@@ -263,6 +263,27 @@ class SystemManagementService
         return $this->getPrintSettings();
     }
 
+    public function getSurveyQuestions(): array
+    {
+        $record = PrintSetting::first();
+        return $record?->settings['survey_questions'] ?? [];
+    }
+
+    public function saveSurveyQuestions(array $questions): array
+    {
+        $record = PrintSetting::first();
+        $settings = $record?->settings ?? [];
+        $settings['survey_questions'] = $questions;
+
+        if ($record) {
+            $record->update(['settings' => $settings]);
+        } else {
+            $record = PrintSetting::create(['settings' => $settings]);
+        }
+
+        return $questions;
+    }
+
     // ── Dashboard (/home) & BSC ───────────────────────────────────────
 
     public function getHomeData(): array
@@ -544,5 +565,208 @@ class SystemManagementService
             ['sid' => 2, 'answered_count' => 9, 'question_count' => 10],
             ['sid' => 3, 'answered_count' => 9, 'question_count' => 10],
         ];
+    }
+
+    // ── Super Admin Organizations & Subscription Modules ──────────────────
+
+    public function getOrganizations(string $status = 'approved'): array
+    {
+        $stores = Store::query()
+            ->when($status === 'approved', fn($q) => $q->whereIn('status', ['approved', 'active']))
+            ->when($status === 'pending', fn($q) => $q->where('status', 'pending'))
+            ->when($status === 'rejected', fn($q) => $q->where('status', 'rejected'))
+            ->latest('id')
+            ->get();
+
+        return $stores->map(fn($store) => [
+            'id'                  => $store->id,
+            'name'                => $store->name,
+            'registration_number' => $store->settings['registration_number'] ?? ('REG-' . $store->id),
+            'address'             => $store->settings['address'] ?? 'الرياض، المملكة العربية السعودية',
+            'phone'               => $store->settings['phone'] ?? '0500000000',
+            'email'               => $store->settings['email'] ?? ($store->slug . '@example.com'),
+            'representative'      => $store->settings['representative'] ?? 'المشرف العام',
+            'status'              => $store->status,
+            'note'                => $store->settings['note'] ?? '',
+        ])->all();
+    }
+
+    public function findOrganization(int $id): array
+    {
+        $store = Store::find($id) ?? Store::first();
+        if (!$store) {
+            return [];
+        }
+
+        return [
+            'id'                  => $store->id,
+            'name'                => $store->name,
+            'registration_number' => $store->settings['registration_number'] ?? ('REG-' . $store->id),
+            'address'             => $store->settings['address'] ?? 'الرياض، المملكة العربية السعودية',
+            'phone'               => $store->settings['phone'] ?? '0500000000',
+            'email'               => $store->settings['email'] ?? ($store->slug . '@example.com'),
+            'representative'      => $store->settings['representative'] ?? 'المشرف العام',
+            'status'              => $store->status,
+            'note'                => $store->settings['note'] ?? '',
+        ];
+    }
+
+    public function updateOrganizationStatus(int $id, string $status, ?string $note = null): array
+    {
+        $store = Store::findOrFail($id);
+        $settings = $store->settings ?? [];
+        if ($note !== null) {
+            $settings['note'] = $note;
+        }
+
+        $store->update([
+            'status'   => $status,
+            'settings' => $settings,
+        ]);
+
+        return $this->findOrganization($id);
+    }
+
+    public function getSubscriptionModules(): array
+    {
+        $record = PrintSetting::first();
+        $custom = $record?->settings['subscription_modules'] ?? [];
+        if (!empty($custom)) {
+            return $custom;
+        }
+
+        return [
+            ['id' => 1, 'name' => 'المحاسبة المالية والمستودعات', 'price_peryear' => 1500, 'price_perthreeyears' => 3800, 'price_perfiveyears' => 5500],
+            ['id' => 2, 'name' => 'إدارة الحالات الإنسانية والمستفيدين', 'price_peryear' => 1200, 'price_perthreeyears' => 3000, 'price_perfiveyears' => 4500],
+            ['id' => 3, 'name' => 'إدارة المشاريع التنموية', 'price_peryear' => 1800, 'price_perthreeyears' => 4500, 'price_perfiveyears' => 6500],
+            ['id' => 4, 'name' => 'الموارد البشرية والرواتب', 'price_peryear' => 1000, 'price_perthreeyears' => 2500, 'price_perfiveyears' => 3800],
+            ['id' => 5, 'name' => 'إدارة الجمعية العمومية واللجان', 'price_peryear' => 900, 'price_perthreeyears' => 2200, 'price_perfiveyears' => 3200],
+            ['id' => 6, 'name' => 'إدارة الأوقاف والوصايا', 'price_peryear' => 1100, 'price_perthreeyears' => 2800, 'price_perfiveyears' => 4000],
+        ];
+    }
+
+    public function storeSubscriptionModule(array $data): array
+    {
+        $record = PrintSetting::first();
+        $settings = $record?->settings ?? [];
+        $modules = $settings['subscription_modules'] ?? $this->getSubscriptionModules();
+
+        $newId = count($modules) ? (max(array_column($modules, 'id')) + 1) : 1;
+        $newItem = [
+            'id'                   => $newId,
+            'name'                 => $data['name'] ?? 'موديول جديد',
+            'price_peryear'        => $data['price_peryear'] ?? 0,
+            'price_perthreeyears'  => $data['price_perthreeyears'] ?? 0,
+            'price_perfiveyears'   => $data['price_perfiveyears'] ?? 0,
+        ];
+        $modules[] = $newItem;
+
+        $settings['subscription_modules'] = $modules;
+        if ($record) {
+            $record->update(['settings' => $settings]);
+        } else {
+            PrintSetting::create(['settings' => $settings]);
+        }
+
+        return $newItem;
+    }
+
+    public function deleteSubscriptionModule(int $id): bool
+    {
+        $record = PrintSetting::first();
+        if (!$record) return true;
+        $settings = $record->settings ?? [];
+        $modules = $settings['subscription_modules'] ?? $this->getSubscriptionModules();
+        $filtered = array_values(array_filter($modules, fn($m) => (int)$m['id'] !== $id));
+        $settings['subscription_modules'] = $filtered;
+        $record->update(['settings' => $settings]);
+        return true;
+    }
+
+    public function getStoreModules(int $storeId): array
+    {
+        $store = Store::find($storeId);
+        $modules = $store?->settings['assigned_modules'] ?? [];
+        if (empty($modules)) {
+            return [
+                ['id' => 1, 'module_name' => 'المحاسبة المالية والمستودعات', 'start_date' => now()->startOfYear()->toDateString(), 'end_date' => now()->addYear()->toDateString()],
+                ['id' => 2, 'module_name' => 'إدارة الحالات الإنسانية', 'start_date' => now()->startOfYear()->toDateString(), 'end_date' => now()->addYear()->toDateString()],
+            ];
+        }
+        return $modules;
+    }
+
+    public function storeStoreModule(int $storeId, array $data): array
+    {
+        $store = Store::findOrFail($storeId);
+        $settings = $store->settings ?? [];
+        $modules = $settings['assigned_modules'] ?? $this->getStoreModules($storeId);
+
+        $newId = count($modules) ? (max(array_column($modules, 'id')) + 1) : 1;
+        $newItem = [
+            'id'          => $newId,
+            'module_name' => $data['module_name'] ?? ($data['name'] ?? 'موديول'),
+            'start_date'  => $data['start_date'] ?? ($data['from'] ?? now()->toDateString()),
+            'end_date'    => $data['end_date'] ?? ($data['to'] ?? now()->addYear()->toDateString()),
+        ];
+        $modules[] = $newItem;
+        $settings['assigned_modules'] = $modules;
+        $store->update(['settings' => $settings]);
+        return $newItem;
+    }
+
+    public function deleteStoreModule(int $storeId, int $moduleId): bool
+    {
+        $store = Store::find($storeId);
+        if (!$store) return true;
+        $settings = $store->settings ?? [];
+        $modules = $settings['assigned_modules'] ?? [];
+        $settings['assigned_modules'] = array_values(array_filter($modules, fn($m) => (int)$m['id'] !== $moduleId));
+        $store->update(['settings' => $settings]);
+        return true;
+    }
+
+    public function getStoreRequests(int $storeId): array
+    {
+        $store = Store::find($storeId);
+        $reqs = $store?->settings['requests'] ?? [];
+        if (empty($reqs)) {
+            return [
+                ['id' => 1, 'code' => 'REQ-101', 'title' => 'طلب ترقية باقة التخزين', 'description' => 'طلب مساحة تخزينية إضافية للمرفقات', 'date' => now()->toDateString(), 'status' => 'مكتمل'],
+            ];
+        }
+        return $reqs;
+    }
+
+    public function storeStoreRequest(int $storeId, array $data): array
+    {
+        $store = Store::findOrFail($storeId);
+        $settings = $store->settings ?? [];
+        $reqs = $settings['requests'] ?? $this->getStoreRequests($storeId);
+
+        $newId = count($reqs) ? (max(array_column($reqs, 'id')) + 1) : 1;
+        $newItem = [
+            'id'          => $newId,
+            'code'        => 'REQ-' . rand(100, 999),
+            'title'       => $data['title'] ?? 'طلب خدمة',
+            'description' => $data['description'] ?? '',
+            'date'        => now()->toDateString(),
+            'status'      => 'قيد المراجعة',
+        ];
+        $reqs[] = $newItem;
+        $settings['requests'] = $reqs;
+        $store->update(['settings' => $settings]);
+        return $newItem;
+    }
+
+    public function deleteStoreRequest(int $storeId, int $requestId): bool
+    {
+        $store = Store::find($storeId);
+        if (!$store) return true;
+        $settings = $store->settings ?? [];
+        $reqs = $settings['requests'] ?? [];
+        $settings['requests'] = array_values(array_filter($reqs, fn($r) => (int)$r['id'] !== $requestId));
+        $store->update(['settings' => $settings]);
+        return true;
     }
 }
