@@ -66,28 +66,40 @@ function HRLanding() {
 
       <div className="section1Container" id="mainLandingsec1">
         <div className="homeCover">
-          <h3>
-            الموارد البشرية
-          </h3>
+          <div className="portalSectionBadge">
+            <span className="badgeDot"></span>
+            <span>بوابة متخصصة متكاملة | HR & Payroll Suite</span>
+          </div>
+          <h3>الموارد البشرية والرواتب</h3>
           <p>
-            نُوفر خدمات متخصصة في إدارة الموارد البشرية لجمعيتك لضمان كفاءة تنظيم الأفراد ونجاح الأعمال الخيرية.
+            نُوفر خدمات متخصصة في إدارة الموارد البشرية لجمعيتك لضمان كفاءة تنظيم الأفراد، ضبط الحضور والانصراف، ومسيرات الرواتب المتوافقة مع الأنظمة.
           </p>
           <span className="lineLand"> </span>
+          <div className="heroPortalCtaRow">
+            <a href="/login" className="heroPortalPrimaryCta">
+              <span>طلب تجربة مجانية</span>
+              <span className="ctaArrow">←</span>
+            </a>
+            <a href="#plans" className="heroPortalSecondaryCta">
+              <span>خطط الاشتراك</span>
+            </a>
+          </div>
         </div>
 
-
         <Hr />
-
       </div>
+
       <div className="starsContainer">
         <Stars />
 
         <LandingInfo
           text={textData}
-          title="ابدأ الآن بتحسين وإدارة الموارد البشرية في مشروعك باستخدام أدوات مبتكرة "
+          title="ابدأ الآن بتحسين وإدارة الموارد البشرية في مشروعك باستخدام أدوات مبتكرة"
         />
 
-        <OurSystemContainer items={cardItems} />
+        <div id="plans">
+          <OurSystemContainer items={cardItems} title="نظام وباقات الموارد البشرية" />
+        </div>
 
         <BenefitsConatiner
           title="أساليب مبتكرة ومُلهمة لتعزيز التواصل، التفاعل، والإنتاجية."

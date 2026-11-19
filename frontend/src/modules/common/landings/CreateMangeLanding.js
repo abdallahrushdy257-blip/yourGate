@@ -66,17 +66,27 @@ function CreateMangeLanding() {
 
       <div className="section1Container" id="mainLandingsec1">
         <div className="homeCover">
-          <h3>
-               الإنشاء و الإدارة
-          </h3>
+          <div className="portalSectionBadge">
+            <span className="badgeDot"></span>
+            <span>بوابة متخصصة متكاملة | Cases & Operations</span>
+          </div>
+          <h3>الإنشاء و الإدارة</h3>
           <p>
-يمكنك الاستفادة من خدماتنا المتخصصة التي تشمل إدارة الحالات الخاصة بجمعيتك. نحن نركز على تلبية احتياجاتك بأعلى مستوى من الكفاءة والاحترافية لضمان نجاح أعمال الجمعيات الأهلية والخيرية.          </p>
+            يمكنك الاستفادة من خدماتنا المتخصصة التي تشمل إدارة الحالات الخاصة بجمعيتك. نحن نركز على تلبية احتياجاتك بأعلى مستوى من الكفاءة والاحترافية لضمان نجاح أعمال الجمعيات الأهلية والخيرية.
+          </p>
           <span className="lineLand"> </span>
+          <div className="heroPortalCtaRow">
+            <a href="/login" className="heroPortalPrimaryCta">
+              <span>طلب تجربة مجانية</span>
+              <span className="ctaArrow">←</span>
+            </a>
+            <a href="#plans" className="heroPortalSecondaryCta">
+              <span>خطط الاشتراك</span>
+            </a>
+          </div>
         </div>
 
-
         <CreateManage />
-
       </div>
 
       <div className="starsContainer">
@@ -84,7 +94,9 @@ function CreateMangeLanding() {
 
         <LandingInfo text={textData} title="ماذا عن الإنشاء و الإدارة؟" />
 
-        <OurSystemContainer items={cardItems} title='نظام الإنشاء و الإدارة' />
+        <div id="plans">
+          <OurSystemContainer items={cardItems} title="نظام الإنشاء و الإدارة" />
+        </div>
 
         <BenefitsConatiner
           title="أساليب مبتكرة ومُلهمة لتعزيز التواصل، التفاعل، والإنتاجية"

@@ -1,60 +1,28 @@
-<<<<<<< HEAD:frontend/src/modules/common/landings/MainLanding.js
-import React, { useEffect, useState, useRef } from "react";
-import "./mainLanding.css";
-import Title from "../../../components/title";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faCalculator,
-  faChartSimple,
-  faComment,
-  faDatabase,
-  faFileShield,
-  faGlobe,
-  faHome,
-  faLandmark,
-  faLayerGroup,
-  faList,
-  faListCheck,
-  faMoneyBillTransfer,
-  faShield,
-} from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import LandingFooter from "../../../components/LandingFooter";
-import MainLandingPageNav from "../../../components/MainLandingPageNav";
-import MainLandingCover from "./images/mainlandingv2.svg?react";
-import Main1 from "./images/main1.svg?react";
-import Main2 from "./images/main2.svg?react";
-import API from "../../../api/axiosConfig";
-=======
-import React, { useEffect, useRef, Suspense, lazy } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { MotionPathPlugin } from "gsap/MotionPathPlugin";
->>>>>>> 6dd3331de590899fc05b1df69047e8f83980c401:frontend/src/landings/MainLanding.js
+import React, { useCallback, useRef, Suspense, lazy } from "react";
 
 import "./main-3d/mainLanding3D.css";
 import { landingTranslations } from "./main-3d/translations";
-import { useLandingLanguage, useReducedMotion, useIsMobile } from "./main-3d/hooks";
+import { useReducedMotion, useIsMobile } from "./main-3d/hooks";
 
 import LandingNav3D from "./main-3d/LandingNav3D";
 import Hero3DGate from "./main-3d/Hero3DGate";
-import DonationJourney3D from "./main-3d/DonationJourney3D";
-import ModulesCarousel3D from "./main-3d/ModulesCarousel3D";
-import GovernanceStrip from "./main-3d/GovernanceStrip";
-import LiveImpactShowcase from "./main-3d/LiveImpactShowcase";
-import LandingCtaFooter from "./main-3d/LandingCtaFooter";
 
-gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
+const DonationJourney3D = lazy(() => import("./main-3d/DonationJourney3D"));
+const ModulesCarousel3D = lazy(() => import("./main-3d/ModulesCarousel3D"));
+const GovernanceStrip = lazy(() => import("./main-3d/GovernanceStrip"));
+const LiveImpactShowcase = lazy(() => import("./main-3d/LiveImpactShowcase"));
+const LandingCtaFooter = lazy(() => import("./main-3d/LandingCtaFooter"));
+
+const SectionFallback = () => (
+  <div style={{ minHeight: "420px" }} aria-hidden="true" />
+);
 
 /**
  * MainLanding Component — Cinematic 3D Scroll Experience for YourGate
  *
  * Story Progression:
- * 0. Fixed Navbar (Glassmorphic blur on scroll, AR/EN toggle, Light/Dark toggle)
- * 1. Hero — The 3D Gate (Pinned & Scrubbed, rotating gate leaves, light leaks & tunnel)
+ * 0. Fixed Navbar (Glassmorphic blur on scroll, Light/Dark toggle)
+ * 1. Hero — The 3D Gate (Canvas animation, rotating gate leaves, light leaks & tunnel)
  * 2. Donation Journey (7 Milestones, traveling gold coin orb along SVG path, certified receipt generation)
  * 3. Platform Modules (16 Modules on a 3D cylindrical carousel, draggable & filtered by category)
  * 4. Governance & Security (Multi-Tenancy store_id, Spatie permissions, immutable audit trail)
@@ -66,52 +34,16 @@ export default function MainLanding() {
   const reducedMotion = useReducedMotion();
   const isMobile = useIsMobile();
 
-  const lang = "ar";
   const isRTL = true;
   const dir = "rtl";
   const t = landingTranslations.ar;
 
-  // Initialize GSAP ScrollTrigger Context and Counter animations
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Refresh ScrollTrigger after DOM & images settle
-      ScrollTrigger.refresh();
-
-      // Number counter animation trigger
-      if (!reducedMotion) {
-        gsap.utils.toArray(".counterNumber").forEach((counter) => {
-          const rawTarget = counter.getAttribute("data-target");
-          const targetNum = parseInt(rawTarget, 10);
-          if (!isNaN(targetNum)) {
-            gsap.fromTo(
-              counter,
-              { innerText: 0 },
-              {
-                innerText: targetNum,
-                duration: 2.2,
-                snap: { innerText: 1 },
-                ease: "power2.out",
-                scrollTrigger: {
-                  trigger: counter,
-                  start: "top 90%",
-                  once: true,
-                },
-              }
-            );
-          }
-        });
-      }
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, [reducedMotion]);
-
-  const handleExploreClick = () => {
+  const handleExploreClick = useCallback(() => {
     const journeyEl = document.getElementById("donationJourney");
     if (journeyEl) {
-      journeyEl.scrollIntoView({ behavior: "smooth" });
+      journeyEl.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
     }
-  };
+  }, [reducedMotion]);
 
   return (
     <div
@@ -121,11 +53,7 @@ export default function MainLanding() {
       lang="ar"
     >
       {/* 0. Fixed Glassmorphic Navigation Bar */}
-      <LandingNav3D
-        t={t}
-        dir={dir}
-        isRTL={isRTL}
-      />
+      <LandingNav3D t={t} dir={dir} isRTL={isRTL} />
 
       {/* 1. Hero: Pinned 3D Gate Opening & Golden Particle Atmosphere */}
       <Hero3DGate
@@ -133,43 +61,48 @@ export default function MainLanding() {
         dir={dir}
         isRTL={isRTL}
         reducedMotion={reducedMotion}
+        isMobile={isMobile}
         onExploreClick={handleExploreClick}
       />
 
       {/* 2. Donation Journey: 7 Milestones, Traveling Coin, Certified Receipt Simulation */}
-      <DonationJourney3D
-        t={t}
-        dir={dir}
-        isRTL={isRTL}
-        isMobile={isMobile}
-      />
+      <Suspense fallback={<SectionFallback />}>
+        <DonationJourney3D
+          t={t}
+          dir={dir}
+          isRTL={isRTL}
+          isMobile={isMobile}
+        />
+      </Suspense>
 
       {/* 3. 16 Modules 3D Cylindrical Carousel */}
-      <ModulesCarousel3D
-        t={t}
-        dir={dir}
-        isRTL={isRTL}
-        isMobile={isMobile}
-      />
+      <Suspense fallback={<SectionFallback />}>
+        <ModulesCarousel3D
+          t={t}
+          dir={dir}
+          isRTL={isRTL}
+          isMobile={isMobile}
+        />
+      </Suspense>
 
       {/* 4. Governance, Multi-Tenancy & Security Strip */}
-      <GovernanceStrip
-        t={t}
-        dir={dir}
-      />
+      <Suspense fallback={<SectionFallback />}>
+        <GovernanceStrip t={t} dir={dir} />
+      </Suspense>
 
       {/* 5. Live Impact Counters & Dual Theme Interactive Showcase */}
-      <LiveImpactShowcase
-        t={t}
-        dir={dir}
-      />
+      <Suspense fallback={<SectionFallback />}>
+        <LiveImpactShowcase
+          t={t}
+          dir={dir}
+          reducedMotion={reducedMotion}
+        />
+      </Suspense>
 
       {/* 6. Pricing, Grand Call To Action & Footer */}
-      <LandingCtaFooter
-        t={t}
-        dir={dir}
-        isRTL={isRTL}
-      />
+      <Suspense fallback={<SectionFallback />}>
+        <LandingCtaFooter t={t} dir={dir} isRTL={isRTL} />
+      </Suspense>
     </div>
   );
 }

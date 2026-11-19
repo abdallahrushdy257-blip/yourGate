@@ -64,27 +64,40 @@ function DataManagementLanding() {
 
       <div className="section1Container" id="mainLandingsec1">
         <div className="homeCover">
-          <h3>
-          إدارة البيانات
-          </h3>
+          <div className="portalSectionBadge">
+            <span className="badgeDot"></span>
+            <span>بوابة متخصصة متكاملة | Master Data Hub</span>
+          </div>
+          <h3>إدارة البيانات المركزية</h3>
           <p>
-          الحصول علي بيانات المستفدين و المانحين  والأعضاء بطريقة سلسة وفعالة.          </p>
+            حصر وتنظيم بيانات المستفيدين، المانحين، أعضاء مجلس الإدارة، وأعضاء الجمعية العمومية والكفلاء بطريقة مركزية سلسة وآمنة.
+          </p>
           <span className="lineLand"> </span>
+          <div className="heroPortalCtaRow">
+            <a href="/login" className="heroPortalPrimaryCta">
+              <span>طلب تجربة مجانية</span>
+              <span className="ctaArrow">←</span>
+            </a>
+            <a href="#plans" className="heroPortalSecondaryCta">
+              <span>خطط الاشتراك</span>
+            </a>
+          </div>
         </div>
 
-
         <Data />
-
       </div>
+
       <div className="starsContainer">
         <Stars />
 
         <LandingInfo
           text={textData}
-          title="تنظيم إدارة البيانات بذكاء"
+          title="تنظيم وإدارة البيانات بذكاء وأمان عالي"
         />
 
-        <OurSystemContainer items={cardItems} />
+        <div id="plans">
+          <OurSystemContainer items={cardItems} title="نظام وباقات إدارة البيانات" />
+        </div>
 
 
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faShieldHalved,
@@ -8,33 +8,20 @@ import {
   faServer,
 } from "@fortawesome/free-solid-svg-icons";
 
+const PILLAR_ICONS = [faServer, faKey, faFileContract];
+
 /**
  * GovernanceStrip Component
- * 3 Pillars with count-in animation:
+ * 3 Pillars:
  * 1. Multi-Tenant data isolation (store_id)
  * 2. Granular roles & permissions per screen/button
  * 3. Immutable audit trail & board approvals
  */
 export default function GovernanceStrip({ t, dir }) {
-  const [hoveredIdx, setHoveredIdx] = useState(null);
-
   const pillars = t.governance.pillars;
 
-  const getPillarIcon = (idx) => {
-    switch (idx) {
-      case 0:
-        return faServer;
-      case 1:
-        return faKey;
-      case 2:
-        return faFileContract;
-      default:
-        return faShieldHalved;
-    }
-  };
-
   return (
-    <section className="governanceSection" id="governanceSecurity" dir={dir}>
+    <div className="governanceSection" id="governanceSecurity" dir={dir}>
       <div className="governanceInnerContainer">
         <div className="governanceHeader text-center">
           <div className="sectionBadge">
@@ -47,15 +34,10 @@ export default function GovernanceStrip({ t, dir }) {
 
         <div className="governanceCardsGrid">
           {pillars.map((pillar, idx) => (
-            <div
-              key={idx}
-              className={`governanceCard ${hoveredIdx === idx ? "cardHovered" : ""}`}
-              onMouseEnter={() => setHoveredIdx(idx)}
-              onMouseLeave={() => setHoveredIdx(null)}
-            >
+            <div key={idx} className="governanceCard">
               <div className="govCardTop">
                 <div className="govIconBox">
-                  <FontAwesomeIcon icon={getPillarIcon(idx)} />
+                  <FontAwesomeIcon icon={PILLAR_ICONS[idx] || faShieldHalved} />
                 </div>
                 <div className="govStatBadge">
                   <span className="govStatValue">{pillar.stat}</span>
@@ -75,6 +57,6 @@ export default function GovernanceStrip({ t, dir }) {
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

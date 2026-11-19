@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSun,
-  faMoon,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
 
 /**
  * LiveImpactShowcase Component
- * - Live statistical impact counters with GSAP
- * - In-page dual-theme interactive wipe showcase
+ * - Lightweight IntersectionObserver + rAF KPI counters (no GSAP overhead)
+ * - In-page dual-theme interactive wipe showcase using CSS custom property (--split-pos)
+ *   for zero React re-renders while dragging
  */
-export default function LiveImpactShowcase({ t, dir }) {
-  const [sliderPos, setSliderPos] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
+export default function LiveImpactShowcase({ t, dir, reducedMotion }) {
+  const metricsGridRef = useRef(null);
+  const stageRef = useRef(null);
+  const draggingRef = useRef(false);
+  const stageRectRef = useRef(null);
+  const splitPosRef = useRef(50);
 
-  // Safely fallback to stats or empty array
   const statsList = t?.impact?.stats || [
     { key: "donations", value: 48500000, suffix: " ر.س", label: "إجمالي التبرعات المدارة عبر المنظومة" },
     { key: "cases", value: 12450, suffix: "+", label: "حالة اجتماعية مخدومة ومستفيدة" },
@@ -27,20 +27,105 @@ export default function LiveImpactShowcase({ t, dir }) {
     desc: "تم تصميم المنصة لتمنح عينيك الراحة الفائقة سواءً في ضوء النهار الطبيعي أو خلال ساعات العمل المسائية الهادئة.",
   };
 
-  const handleMouseMove = (e) => {
-    if (!isDragging) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const pct = Math.max(10, Math.min(90, (x / rect.width) * 100));
-    setSliderPos(pct);
+  // Native IntersectionObserver + rAF KPI Counter (replaces GSAP ScrollTrigger)
+  useEffect(() => {
+    const gridEl = metricsGridRef.current;
+    if (!gridEl || reducedMotion) return;
+
+    const counters = Array.from(gridEl.querySelectorAll(".counterNumber"));
+    if (!counters.length) return;
+
+    let animIds = [];
+    let hasAnimated = false;
+
+    const animateCounters = () => {
+      if (hasAnimated) return;
+      hasAnimated = true;
+
+      const duration = 1800;
+      const startTime = performance.now();
+
+      const step = (now) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        // power2.out easing
+        const eased = 1 - Math.pow(1 - progress, 2);
+
+        for (let i = 0; i < counters.length; i++) {
+          const el = counters[i];
+          const target = parseInt(el.getAttribute("data-target"), 10);
+          if (!isNaN(target)) {
+            el.textContent = Math.round(target * eased).toLocaleString("en-US");
+          }
+        }
+
+        if (progress < 1) {
+          animIds.push(requestAnimationFrame(step));
+        }
+      };
+
+      animIds.push(requestAnimationFrame(step));
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          animateCounters();
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+    observer.observe(gridEl);
+
+    return () => {
+      observer.disconnect();
+      animIds.forEach((id) => cancelAnimationFrame(id));
+    };
+  }, [reducedMotion]);
+
+  const applySplitPosition = (pct) => {
+    const clamped = Math.max(10, Math.min(90, pct));
+    splitPosRef.current = clamped;
+    if (stageRef.current) {
+      stageRef.current.style.setProperty("--split-pos", `${clamped.toFixed(2)}%`);
+      stageRef.current.setAttribute("aria-valuenow", String(Math.round(clamped)));
+    }
   };
 
-  const handleTouchMove = (e) => {
-    if (!isDragging || !e.touches[0]) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.touches[0].clientX - rect.left;
-    const pct = Math.max(10, Math.min(90, (x / rect.width) * 100));
-    setSliderPos(pct);
+  const startDrag = (clientX) => {
+    draggingRef.current = true;
+    if (stageRef.current) {
+      stageRectRef.current = stageRef.current.getBoundingClientRect();
+      if (typeof clientX === "number") {
+        const pct =
+          ((clientX - stageRectRef.current.left) / stageRectRef.current.width) *
+          100;
+        applySplitPosition(pct);
+      }
+    }
+  };
+
+  const stopDrag = () => {
+    draggingRef.current = false;
+  };
+
+  const updateFromClientX = (clientX) => {
+    if (!draggingRef.current) return;
+    const rect = stageRectRef.current || stageRef.current?.getBoundingClientRect();
+    if (!rect || rect.width <= 0) return;
+    const pct = ((clientX - rect.left) / rect.width) * 100;
+    applySplitPosition(pct);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      applySplitPosition(splitPosRef.current - 5);
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      applySplitPosition(splitPosRef.current + 5);
+    }
   };
 
   return (
@@ -57,12 +142,12 @@ export default function LiveImpactShowcase({ t, dir }) {
         </div>
 
         {/* 4 Animated KPI Stat Counters */}
-        <div className="impactMetricsGrid">
-          {statsList.map((m, idx) => (
-            <div key={idx} className="metricCard">
+        <div ref={metricsGridRef} className="impactMetricsGrid">
+          {statsList.map((m) => (
+            <div key={m.key} className="metricCard">
               <div className="metricValueRow">
                 <span className="counterNumber" data-target={m.value}>
-                  {m.value}
+                  {m.value.toLocaleString("en-US")}
                 </span>
                 <span className="metricSuffix">{m.suffix}</span>
               </div>
@@ -79,14 +164,25 @@ export default function LiveImpactShowcase({ t, dir }) {
           </div>
 
           <div
+            ref={stageRef}
             className="themeSplitStage"
-            onMouseDown={() => setIsDragging(true)}
-            onMouseUp={() => setIsDragging(false)}
-            onMouseLeave={() => setIsDragging(false)}
-            onMouseMove={handleMouseMove}
-            onTouchStart={() => setIsDragging(true)}
-            onTouchEnd={() => setIsDragging(false)}
-            onTouchMove={handleTouchMove}
+            role="slider"
+            tabIndex={0}
+            aria-label={themeShowcase.title}
+            aria-valuemin={10}
+            aria-valuemax={90}
+            aria-valuenow={50}
+            style={{ "--split-pos": "50%" }}
+            onKeyDown={handleKeyDown}
+            onMouseDown={(e) => startDrag(e.clientX)}
+            onMouseUp={stopDrag}
+            onMouseLeave={stopDrag}
+            onMouseMove={(e) => updateFromClientX(e.clientX)}
+            onTouchStart={(e) => startDrag(e.touches[0]?.clientX)}
+            onTouchEnd={stopDrag}
+            onTouchMove={(e) =>
+              e.touches[0] && updateFromClientX(e.touches[0].clientX)
+            }
           >
             {/* Dark Theme Side */}
             <div className="themeLayer themeDarkLayer">
@@ -113,13 +209,8 @@ export default function LiveImpactShowcase({ t, dir }) {
               </div>
             </div>
 
-            {/* Light Theme Side (Clipped via slider position) */}
-            <div
-              className="themeLayer themeLightLayer"
-              style={{
-                clipPath: `polygon(0 0, ${sliderPos}% 0, ${sliderPos}% 100%, 0 100%)`,
-              }}
-            >
+            {/* Light Theme Side (Clipped via --split-pos CSS variable) */}
+            <div className="themeLayer themeLightLayer">
               <div className="themeWatermark light">
                 <FontAwesomeIcon icon={faSun} />
                 <span>الوضع النهاري المريح (Light Mode)</span>
@@ -144,10 +235,7 @@ export default function LiveImpactShowcase({ t, dir }) {
             </div>
 
             {/* Draggable Divider Handle */}
-            <div
-              className="themeDividerHandle"
-              style={{ left: `${sliderPos}%` }}
-            >
+            <div className="themeDividerHandle">
               <div className="handleKnob">
                 <span>⇆</span>
               </div>

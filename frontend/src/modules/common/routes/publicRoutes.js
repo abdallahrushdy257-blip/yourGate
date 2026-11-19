@@ -4,14 +4,9 @@ import TestPreLoader from "../pages/TestPreLoader/TestPreLoader";
 import GuestRoute from "../../../app/providers/GuestRoute";
 
 // Authentication & Registration
-<<<<<<< HEAD
 const Login = lazy(() => import("../pages/Login/Login"));
-const Verify = lazy(() => import("../pages/Verify/Verify"));
-=======
-const Login = lazy(() => import("../../../pages/Login/Login"));
 const AdminLogin = lazy(() => import("../../../admin/Login/AdminLogin"));
-const Verify = lazy(() => import("../../../pages/Verify/Verify"));
->>>>>>> 6dd3331de590899fc05b1df69047e8f83980c401
+const Verify = lazy(() => import("../pages/Verify/Verify"));
 const CharityRegistration = lazy(() =>
   import("../pages/CharityRegistration/CharityRegistration")
 );
@@ -100,12 +95,17 @@ export const publicRouteConfigs = [
     element: withSuspense(CreateMangeLanding),
   },
   {
+    path: "/createManageLanding",
+    element: withSuspense(CreateMangeLanding),
+  },
+  {
     path: "/designmarketinglanding",
     element: withSuspense(DesignMarketingLanding),
   },
   { path: "/hrlanding", element: withSuspense(HRLanding) },
   { path: "/landingStore", element: withSuspense(LandingStore) },
   { path: "/loanslanding", element: withSuspense(LoansLanding) },
+  { path: "/loansLanding", element: withSuspense(LoansLanding) },
   {
     path: "/dataManagementLanding",
     element: withSuspense(DataManagementLanding),

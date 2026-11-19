@@ -47,6 +47,9 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks(id) {
+            if (id.includes("commonjsHelpers") || id.includes("vite/preload-helper")) {
+              return "vendor-helpers";
+            }
             if (id.includes("node_modules")) {
               if (
                 id.includes("@mui") ||
@@ -57,13 +60,19 @@ export default defineConfig(({ mode }) => {
               ) {
                 return "vendor-ui";
               }
-              if (id.includes("highcharts") || id.includes("recharts")) {
+              if (
+                id.includes("highcharts") ||
+                id.includes("recharts")
+              ) {
                 return "vendor-charts";
               }
               if (
-                id.includes("jspdf") ||
-                id.includes("html2canvas") ||
-                id.includes("xlsx")
+                id.includes("node_modules/jspdf") ||
+                id.includes("node_modules\\jspdf") ||
+                id.includes("node_modules/html2canvas") ||
+                id.includes("node_modules\\html2canvas") ||
+                id.includes("node_modules/xlsx") ||
+                id.includes("node_modules\\xlsx")
               ) {
                 return "vendor-docs";
               }

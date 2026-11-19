@@ -61,28 +61,40 @@ function ArchivesLanding() {
 
       <div className="section1Container" id="mainLandingsec1">
         <div className="homeCover">
-          <h3>
-            الارشيف
-          </h3>
+          <div className="portalSectionBadge">
+            <span className="badgeDot"></span>
+            <span>بوابة متخصصة متكاملة | Electronic Records & Archive</span>
+          </div>
+          <h3>الأرشيف الرقمي وإدارة الوثائق</h3>
           <p>
-            نُمكنك من تنظيم أرشيف الجمعية الخيرية بكفاءة لضمان الوصول السريع والدقيق.
+            نُمكنك من تنظيم وحفظ وثائق وأرشيف الجمعية الخيرية إلكترونياً بأعلى معايير الأمان والتصنيف للوصول السريع والفوري للمستندات والقرارات.
           </p>
           <span className="lineLand"> </span>
+          <div className="heroPortalCtaRow">
+            <a href="/login" className="heroPortalPrimaryCta">
+              <span>طلب تجربة مجانية</span>
+              <span className="ctaArrow">←</span>
+            </a>
+            <a href="#plans" className="heroPortalSecondaryCta">
+              <span>خطط الاشتراك</span>
+            </a>
+          </div>
         </div>
 
-
         <Archives />
-
       </div>
+
       <div className="starsContainer">
         <Stars />
 
         <LandingInfo
           text={textData}
-          title="تنظيم إدارة الاوقاف"
+          title="تنظيم وإدارة الأرشيف الرقمي والوثائق"
         />
 
-        <OurSystemContainer items={cardItems} />
+        <div id="plans">
+          <OurSystemContainer items={cardItems} title="نظام وباقات الأرشيف الرقمي" />
+        </div>
 
 
 

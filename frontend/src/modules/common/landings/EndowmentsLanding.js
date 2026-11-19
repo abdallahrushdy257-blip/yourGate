@@ -61,28 +61,40 @@ function EndowmentsLanding() {
 
       <div className="section1Container" id="mainLandingsec1">
         <div className="homeCover">
-          <h3>
-            إدارة الاوقاف
-          </h3>
+          <div className="portalSectionBadge">
+            <span className="badgeDot"></span>
+            <span>بوابة متخصصة متكاملة | Waqf & Endowments</span>
+          </div>
+          <h3>إدارة الأوقاف والوصايا</h3>
           <p>
-            نُمكنك من ادارة اوقاف الجمعية الخيرية بطريقة صحيحة وفعالة.
+            نُمكنك من إدارة أصول أوقاف الجمعية الخيرية ومصارف ريعها ومتابعة تقاريرها الدورية وحصر أملاكها بطريقة حوكمية دقيقة ومستدامة.
           </p>
           <span className="lineLand"> </span>
+          <div className="heroPortalCtaRow">
+            <a href="/login" className="heroPortalPrimaryCta">
+              <span>طلب تجربة مجانية</span>
+              <span className="ctaArrow">←</span>
+            </a>
+            <a href="#plans" className="heroPortalSecondaryCta">
+              <span>خطط الاشتراك</span>
+            </a>
+          </div>
         </div>
 
-
         <Endowments />
-
       </div>
+
       <div className="starsContainer">
         <Stars />
 
         <LandingInfo
           text={textData}
-          title="نظام إدارة الاوقاف"
+          title="نظام إدارة وحوكمة الأوقاف"
         />
 
-        <OurSystemContainer items={cardItems} />
+        <div id="plans">
+          <OurSystemContainer items={cardItems} title="نظام وباقات إدارة الأوقاف" />
+        </div>
 
 
 

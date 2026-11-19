@@ -8,15 +8,21 @@ export default function AppProvider({ children }) {
   const [user, setUser] = useState(null);
 
   async function getUser() {
-    const res = await API.get("/user", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const data = await res;
+    try {
+      const res = await API.get("/user", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (res.status === 200) {
-      setUser(data.data);
+      if (res.status === 200) {
+        setUser(res.data);
+      }
+    } catch (err) {
+      if (err?.response?.status === 401) {
+        localStorage.removeItem("token");
+        setToken(null);
+      }
     }
   }
 
