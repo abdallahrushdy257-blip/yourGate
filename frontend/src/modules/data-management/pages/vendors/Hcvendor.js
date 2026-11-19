@@ -17,6 +17,7 @@ function Hcvendor(props) {
     { name: "رقم الجوال", key: "phone" },
     { name: "البريد الالكتروني", key: "email" },
     { name: "النوع", key: "type_string" },
+    { name: "الرصيد الإفتتاحي", key: "opening_balance" },
     { name: "", key: "actions" },
   ];
 
@@ -57,6 +58,9 @@ function Hcvendor(props) {
   const [description, setDescription] = useState(
     () => sessionStorage.getItem("vendor_description") || "",
   );
+  const [opening_balance, setOpening_balance] = useState(
+    () => sessionStorage.getItem("vendor_opening_balance") || "",
+  );
 
   const resetForm = () => {
     setName("");
@@ -68,6 +72,7 @@ function Hcvendor(props) {
     setIdentification_description("");
     setRegion("");
     setDescription("");
+    setOpening_balance("");
     setError({});
     sessionStorage.removeItem("vendor_name");
     sessionStorage.removeItem("vendor_address");
@@ -78,6 +83,7 @@ function Hcvendor(props) {
     sessionStorage.removeItem("vendor_identification_description");
     sessionStorage.removeItem("vendor_region");
     sessionStorage.removeItem("vendor_description");
+    sessionStorage.removeItem("vendor_opening_balance");
   };
 
   const handleClose = () => {
@@ -98,6 +104,11 @@ function Hcvendor(props) {
     setDescription(record.description || "");
     setIdentification_number(record.identification_number || "");
     setIdentification_description(record.identification_description || "");
+    setOpening_balance(
+      record.opening_balance !== undefined && record.opening_balance !== null
+        ? String(record.opening_balance)
+        : "",
+    );
     setShowModal(true);
 
     try {
@@ -115,6 +126,8 @@ function Hcvendor(props) {
           setIdentification_number(data.identification_number || "");
         if (data.identification_description !== undefined)
           setIdentification_description(data.identification_description || "");
+        if (data.opening_balance !== undefined && data.opening_balance !== null)
+          setOpening_balance(String(data.opening_balance));
       }
     } catch (err) {
       console.error(err);
@@ -140,6 +153,7 @@ function Hcvendor(props) {
     mForm.append("identification_number", identification_number);
     mForm.append("identification_description", identification_description);
     mForm.append("region", region);
+    mForm.append("opening_balance", opening_balance);
     try {
       const endpoint = editingId
         ? "/humancasevendor/update"
@@ -371,6 +385,19 @@ function Hcvendor(props) {
                 }}
                 value={type}
                 error={error.type}
+              />
+            </Col>
+            <Col md={6}>
+              <RegisterTextbox
+                id="vendor-opening-balance"
+                label="الرصيد الإفتتاحي"
+                type="number"
+                value={opening_balance}
+                onChange={(e) => {
+                  setOpening_balance(e.target.value);
+                  sessionStorage.setItem("vendor_opening_balance", e.target.value);
+                }}
+                error={error.opening_balance}
               />
             </Col>
           </Row>

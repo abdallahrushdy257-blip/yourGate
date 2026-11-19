@@ -82,13 +82,16 @@
   color: #000;
   
 }
-  html, body {
+  html, body,
+  body.dark-mode,
+  .dark-mode {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     overflow: visible !important;
     height: auto !important;
     background: #ffffff !important;
+    background-color: #ffffff !important;
     color: #000000 !important;
   }
   .mainTitle {
@@ -96,21 +99,39 @@
     font-size: 24px; */
     display: none;
   }
-  /* ✅ تحسين عرض الجدول */
-  .table-scroll {
+  /* ✅ تحسين عرض الجدول وإلغاء الخلفيات عند الطباعة */
+  .table-scroll,
+  .dark-mode .table-scroll,
+  .printTabel-container,
+  .dark-mode .printTabel-container,
+  .printContainer,
+  .dark-mode .printContainer {
     overflow: visible !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
   }
   .printTabel-container {
     width: 95%;
     margin: auto;
   }
-  table.printTabel {
+  table.printTabel,
+  .dark-mode table.printTabel,
+  .dark-mode table.printTabel thead,
+  .dark-mode table.printTabel tbody,
+  .dark-mode table.printTabel tfoot,
+  .dark-mode table.printTabel tr,
+  .dark-mode table.printTabel thead tr.printTabelHead,
+  .dark-mode table.printTabel tbody tr:hover,
+  .dark-mode table.printTabel tbody tr:hover td {
     width: 100%;
     border-collapse: collapse;
     page-break-inside: auto; /* يمنع تقطيع الجدول بين الصفحات */
     font-size: 12px;
     table-layout: auto !important; /* ← ده الأساس */
-    
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
   }
   thead {
     display: table-header-group;
@@ -121,7 +142,11 @@
   }
 
   th,
-  td {
+  td,
+  table.printTabel th,
+  table.printTabel td,
+  .dark-mode table.printTabel th,
+  .dark-mode table.printTabel td {
     border: 1px solid #000;
     padding: 6px 8px;
     text-align: center;
@@ -129,12 +154,20 @@
     word-break: break-word; /* يكسر الكلمة الطويلة */
     white-space: normal; /* يخلي الكلام يلف */
     max-width: 180px; /* تمنع الخلية من التمدد الزايد */
+    background: transparent !important;
+    background-color: transparent !important;
+    color: black !important;
   }
-  table.printTabel .printTabelHead th {
-   word-break: normal; /* يكسر الكلمة الطويلة */
-   white-space: normal; /* يخلي الكلام يلف */
-  font-size: 12px;
- }
+  table.printTabel .printTabelHead th,
+  .dark-mode table.printTabel .printTabelHead th,
+  .dark-mode table.printTabel thead th {
+    word-break: normal; /* يكسر الكلمة الطويلة */
+    white-space: normal; /* يخلي الكلام يلف */
+    font-size: 12px;
+    background: transparent !important;
+    background-color: transparent !important;
+    color: black !important;
+  }
   tbody *,
   thead *,
   tfoot * {

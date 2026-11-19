@@ -1,9 +1,10 @@
-﻿import "./setting.css";
+import "./setting.css";
 import { useState, useEffect } from "react";
 import { settingsService } from "../../../../modules/settings";
 import { Form, Spinner } from "react-bootstrap";
 import CustomButton from "../../../../components/CustomButton";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
+import SelectComponent from "../../../../components/SelectComponent";
 import SettingTabs from "./SettingTabs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -483,16 +484,28 @@ function GenSetting() {
                                 {printSettings[key].label}
                               </span>
                             </div>
-                            <select
-                              className="form-select form-select-sm print-select"
-                              value={printSettings[key].position}
-                              onChange={(e) =>
-                                changePrintPosition(key, e.target.value)
-                              }
-                            >
-                              <option value="head">رأس الفاتورة</option>
-                              <option value="tail">ذيل الفاتورة</option>
-                            </select>
+                            <div style={{ width: "160px", flexShrink: 0 }}>
+                              <SelectComponent
+                                options={[
+                                  { value: "head", label: "رأس الفاتورة" },
+                                  { value: "tail", label: "ذيل الفاتورة" },
+                                ]}
+                                value={printSettings[key].position}
+                                onChange={(opt) =>
+                                  changePrintPosition(key, opt?.value || "head")
+                                }
+                                isSearchable={false}
+                                selectStyle={{
+                                  borderRadius: "10px",
+                                  border: "1.5px solid var(--border-color, #d8cbba)",
+                                  minHeight: "36px",
+                                  height: "36px",
+                                  fontSize: "12.5px",
+                                  marginTop: "0",
+                                  backgroundColor: "var(--surface-color, #ffffff)",
+                                }}
+                              />
+                            </div>
                           </div>
                         </div>
                       )
@@ -649,32 +662,33 @@ function GenSetting() {
                           </div>
 
                           <div>
-                            <label
-                              style={{
+                            <SelectComponent
+                              label="نوع الإجابة:"
+                              placeholder="اختر نوع الإجابة"
+                              options={[
+                                { value: "choice", label: "اختيار من متعدد" },
+                                { value: "text", label: "إجابة نصية / تعليق" },
+                              ]}
+                              value={q.type}
+                              onChange={(opt) =>
+                                handleQuestionTypeChange(q.id, opt?.value || "choice")
+                              }
+                              isSearchable={false}
+                              selectStyle={{
+                                minHeight: "40px",
+                                height: "40px",
+                                marginTop: "0",
+                                fontSize: "13.5px",
+                                backgroundColor: "var(--surface-color, #ffffff)",
+                              }}
+                              labelStyle={{
                                 fontSize: "13px",
                                 fontWeight: "600",
                                 marginBottom: "6px",
                                 display: "block",
+                                color: "var(--text-color, #544634)",
                               }}
-                            >
-                              نوع الإجابة:
-                            </label>
-                            <select
-                              className="form-select"
-                              style={{
-                                borderRadius: "10px",
-                                border: "1.5px solid #d8cbba",
-                                padding: "8px 12px",
-                                fontSize: "13.5px",
-                              }}
-                              value={q.type}
-                              onChange={(e) =>
-                                handleQuestionTypeChange(q.id, e.target.value)
-                              }
-                            >
-                              <option value="choice">اختيار من متعدد</option>
-                              <option value="text">إجابة نصية / تعليق</option>
-                            </select>
+                            />
                           </div>
                         </div>
 

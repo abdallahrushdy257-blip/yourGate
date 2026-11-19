@@ -1,1 +1,0 @@
-import{$ as e}from"./vendor-ui-CFXWyGvy.js";import"./vendor-helpers-D-Es2Tlf.js";function a(){return e.jsx(e.Fragment,{children:e.jsx("div",{className:"attendancedeparturereport"})})}export{a as default};

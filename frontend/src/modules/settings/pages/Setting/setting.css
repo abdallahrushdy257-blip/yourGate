@@ -247,3 +247,16 @@ input:checked+.slider:before {
 .settings-nav-icon {
     font-size: 15px;
 }
+
+.survey-type-select {
+    direction: rtl !important;
+    text-align: right !important;
+    background-position: left 0.75rem center !important;
+    padding: 8px 14px 8px 38px !important;
+}
+
+.dark-mode .survey-type-select {
+    background-color: var(--surface-color, #1e1b18) !important;
+    color: var(--text-color, #f0d9b5) !important;
+    border-color: var(--border-color, #4a2e14) !important;
+}

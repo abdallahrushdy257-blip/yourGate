@@ -22,6 +22,7 @@ function Addhcvendor() {
     const [interests, setInterests] = useState([]);
     const [region, setRegion] = useState('');
     const [description, setDescription] = useState('');
+    const [opening_balance, setOpening_balance] = useState(() => sessionStorage.getItem('vendor_opening_balance') || '');
     const [error, setError] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,6 +41,7 @@ function Addhcvendor() {
         mForm.append('identification_number', identification_number);
         mForm.append('identification_description', identification_description);
         mForm.append('region', region);
+        mForm.append('opening_balance', opening_balance);
         try {
             const res = await API.post('/humancasevendor/store', mForm);
             const data = await res;
@@ -52,6 +54,7 @@ function Addhcvendor() {
                 sessionStorage.removeItem('vendor_identification_number');
                 sessionStorage.removeItem('vendor_identification_description');
                 sessionStorage.removeItem('vendor_interests');
+                sessionStorage.removeItem('vendor_opening_balance');
                 navigate('/hcvendor');
             } else {
                 setError(data.data.errors);
@@ -216,7 +219,20 @@ function Addhcvendor() {
 
                     </div>
                     <div className='vendorRow'>
-                        
+                         <RegisterTextbox
+                            parentStyle={{ width: "30%" }}
+                            id="opening_balance"
+                            label='الرصيد الإفتتاحي'
+                            type="number"
+                            stylee={{ width: "45%" }}
+                            value={opening_balance}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setOpening_balance(value);
+                                sessionStorage.setItem('vendor_opening_balance', value);
+                            }}
+                            error={error.opening_balance}
+                        />
                          <RegisterTextbox
                             parentStyle={{ width: "30%" }}
                             id="description"

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SettingTabs from "./SettingTabs";
 import "./setting.css";
+import SelectComponent from "../../../../components/SelectComponent";
 import { Form, Spinner } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -298,23 +299,35 @@ function SurveySetting() {
                         </div>
 
                         <div>
-                          <label style={{ fontSize: "13px", fontWeight: "600", color: "#544634", marginBottom: "6px", display: "block" }}>
-                            نوع الإجابة:
-                          </label>
-                          <select
-                            className="form-select"
-                            style={{
-                              borderRadius: "10px",
-                              border: "1.5px solid #d8cbba",
-                              padding: "8px 12px",
-                              fontSize: "13.5px",
-                            }}
+                          <SelectComponent
+                            label="نوع الإجابة:"
+                            placeholder="اختر نوع الإجابة"
+                            options={[
+                              { value: "choice", label: "اختيار من متعدد" },
+                              { value: "text", label: "إجابة نصية / تعليق" },
+                            ]}
                             value={q.type}
-                            onChange={(e) => handleQuestionTypeChange(q.id, e.target.value)}
-                          >
-                            <option value="choice">اختيار من متعدد</option>
-                            <option value="text">إجابة نصية / تعليق</option>
-                          </select>
+                            onChange={(opt) =>
+                              handleQuestionTypeChange(q.id, opt?.value || "choice")
+                            }
+                            isSearchable={false}
+                            selectStyle={{
+                              borderRadius: "10px",
+                              border: "1.5px solid var(--border-color, #d8cbba)",
+                              minHeight: "40px",
+                              height: "40px",
+                              marginTop: "0",
+                              fontSize: "13.5px",
+                              backgroundColor: "var(--surface-color, #ffffff)",
+                            }}
+                            labelStyle={{
+                              fontSize: "13px",
+                              fontWeight: "600",
+                              marginBottom: "6px",
+                              display: "block",
+                              color: "var(--text-color, #544634)",
+                            }}
+                          />
                         </div>
                       </div>
 

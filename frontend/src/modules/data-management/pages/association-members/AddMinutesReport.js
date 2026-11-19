@@ -17,6 +17,7 @@ import { Modal, Row, Col, Button, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import RegisterTextbox from "../../../../components/RegisterTextBox";
 import RegisterSelect from "../../../../components/RegisterSelect";
+import SelectComponent from "../../../../components/SelectComponent";
 import RegisterTextarea from "../../../../components/RegisterTextarea";
 import UploadInput from "../../../../components/UploadInput";
 import "./addMinutes.css";
@@ -131,6 +132,30 @@ function AddMinutesReport() {
 
   const handleCommitteeChange = (index, value) => {
     setCommittees((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, value } : item))
+    );
+  };
+
+  const addEditRow = () => {
+    setEditAttendees([...editAttendees, { value: "" }]);
+    setEditCommittees([...editCommittees, { value: "" }]);
+  };
+
+  const removeEditRow = () => {
+    if (editAttendees.length > 1) {
+      setEditAttendees(editAttendees.slice(0, -1));
+      setEditCommittees(editCommittees.slice(0, -1));
+    }
+  };
+
+  const handleEditNamesChange = (index, value) => {
+    setEditAttendees((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, value } : item))
+    );
+  };
+
+  const handleEditCommitteeChange = (index, value) => {
+    setEditCommittees((prev) =>
       prev.map((item, i) => (i === index ? { ...item, value } : item))
     );
   };
@@ -463,33 +488,30 @@ function AddMinutesReport() {
 
           <Row className="mb-2">
             <Col md={6}>
-              <RegisterSelect
+              <SelectComponent
                 id="min-type"
                 label="نوع الاجتماع *"
+                placeholder="اختر نوع الاجتماع"
                 options={[
-                  { value: "", label: "اختر نوع الاجتماع" },
                   { value: "1", label: "جمعية عمومية" },
                   { value: "2", label: "مجلس إدارة" },
                 ]}
                 value={type}
-                onChange={(e) => {
-                  setType(e.target.value);
+                onChange={(opt) => {
+                  setType(opt?.value || "");
                   setReason("");
                 }}
                 error={error.type}
               />
             </Col>
             <Col md={6}>
-              <RegisterSelect
+              <SelectComponent
                 id="min-reason"
                 label="غرض الاجتماع *"
-                options={
-                  minutesreason[type] || [
-                    { value: "", label: "إختر نوع المحضر" },
-                  ]
-                }
+                placeholder="إختر نوع المحضر"
+                options={minutesreason[type] || []}
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={(opt) => setReason(opt?.value || "")}
                 error={error.reason}
                 disabled={!type}
               />
@@ -530,33 +552,29 @@ function AddMinutesReport() {
             {attendees.map((row, idx) => (
               <Row key={idx} style={{ marginBottom: "10px" }}>
                 <Col md={6}>
-                  <RegisterSelect
+                  <SelectComponent
                     id={`min-member-${idx}`}
                     label={`اسم العضو (${idx + 1})`}
-                    options={[
-                      { value: "", label: "اختر العضو الحاضر" },
-                      ...membership.map((m) => ({
-                        value: m.id,
-                        label: `${m.name} ${m.membership_serial ? `(${m.membership_serial})` : ""}`,
-                      })),
-                    ]}
+                    placeholder="اختر العضو الحاضر"
+                    options={membership.map((m) => ({
+                      value: m.id,
+                      label: `${m.name} ${m.membership_serial ? `(${m.membership_serial})` : ""}`,
+                    }))}
                     value={attendees[idx]?.value}
-                    onChange={(e) => handleNamesChange(idx, e.target.value)}
+                    onChange={(opt) => handleNamesChange(idx, opt?.value || "")}
                   />
                 </Col>
                 <Col md={6}>
-                  <RegisterSelect
+                  <SelectComponent
                     id={`min-comm-${idx}`}
                     label="اللجنة التابع لها (اختياري)"
-                    options={[
-                      { value: "", label: "اختر اللجنة" },
-                      ...committee.map((c) => ({
-                        value: c.id,
-                        label: c.name,
-                      })),
-                    ]}
+                    placeholder="اختر اللجنة"
+                    options={committee.map((c) => ({
+                      value: c.id,
+                      label: c.name,
+                    }))}
                     value={committees[idx]?.value}
-                    onChange={(e) => handleCommitteeChange(idx, e.target.value)}
+                    onChange={(opt) => handleCommitteeChange(idx, opt?.value || "")}
                   />
                 </Col>
               </Row>
@@ -640,33 +658,30 @@ function AddMinutesReport() {
 
           <Row className="mb-2">
             <Col md={6}>
-              <RegisterSelect
+              <SelectComponent
                 id="edit-min-type"
                 label="نوع الاجتماع *"
+                placeholder="اختر نوع الاجتماع"
                 options={[
-                  { value: "", label: "اختر نوع الاجتماع" },
                   { value: "1", label: "جمعية عمومية" },
                   { value: "2", label: "مجلس إدارة" },
                 ]}
                 value={editType}
-                onChange={(e) => {
-                  setEditType(e.target.value);
+                onChange={(opt) => {
+                  setEditType(opt?.value || "");
                   setEditReason("");
                 }}
                 error={editError.type}
               />
             </Col>
             <Col md={6}>
-              <RegisterSelect
+              <SelectComponent
                 id="edit-min-reason"
                 label="غرض الاجتماع *"
-                options={
-                  minutesreason[editType] || [
-                    { value: "", label: "إختر نوع المحضر" },
-                  ]
-                }
+                placeholder="إختر نوع المحضر"
+                options={minutesreason[editType] || []}
                 value={editReason}
-                onChange={(e) => setEditReason(e.target.value)}
+                onChange={(opt) => setEditReason(opt?.value || "")}
                 error={editError.reason}
                 disabled={!editType}
               />
@@ -681,6 +696,58 @@ function AddMinutesReport() {
               onChange={(e) => setEditNote(e.target.value)}
               error={editError.note}
             />
+          </div>
+
+          {/* Dynamic Attendees Section in Edit Modal */}
+          <div className="minutes-attendees-box">
+            <div className="attendees-box-header">
+              <span className="attendees-box-title">
+                أعضاء ولجان الحضور ({editAttendees.length})
+              </span>
+              <div className="attendees-box-actions">
+                <button type="button" className="btn-add-row" onClick={addEditRow}>
+                  <FontAwesomeIcon icon={faPlus} />
+                  <span>إضافة سطر</span>
+                </button>
+                {editAttendees.length > 1 && (
+                  <button type="button" className="btn-remove-row" onClick={removeEditRow}>
+                    <FontAwesomeIcon icon={faMinus} />
+                    <span>حذف سطر</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {editAttendees.map((row, idx) => (
+              <Row key={idx} style={{ marginBottom: "10px" }}>
+                <Col md={6}>
+                  <SelectComponent
+                    id={`edit-min-member-${idx}`}
+                    label={`اسم العضو (${idx + 1})`}
+                    placeholder="اختر العضو الحاضر"
+                    options={membership.map((m) => ({
+                      value: m.id,
+                      label: `${m.name} ${m.membership_serial ? `(${m.membership_serial})` : ""}`,
+                    }))}
+                    value={editAttendees[idx]?.value}
+                    onChange={(opt) => handleEditNamesChange(idx, opt?.value || "")}
+                  />
+                </Col>
+                <Col md={6}>
+                  <SelectComponent
+                    id={`edit-min-comm-${idx}`}
+                    label="اللجنة التابع لها (اختياري)"
+                    placeholder="اختر اللجنة"
+                    options={committee.map((c) => ({
+                      value: c.id,
+                      label: c.name,
+                    }))}
+                    value={editCommittees[idx]?.value}
+                    onChange={(opt) => handleEditCommitteeChange(idx, opt?.value || "")}
+                  />
+                </Col>
+              </Row>
+            ))}
           </div>
 
           <div className="mb-2">

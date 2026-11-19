@@ -511,8 +511,11 @@ table.printTabel tfoot td {
 
 /* ── Print Media ─────────────────────────────────────────────── */
 @media print {
-  body {
+  body,
+  body.dark-mode,
+  .dark-mode {
     background-color: white !important;
+    background: white !important;
     color: black !important;
   }
 
@@ -526,33 +529,59 @@ table.printTabel tfoot td {
     display: none !important;
   }
 
-  .printTabel-container {
+  .printTabel-container,
+  .dark-mode .printTabel-container {
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
   }
 
-  table.printTabel {
+  .table-scroll,
+  .dark-mode .table-scroll {
+    border: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  table.printTabel,
+  .dark-mode table.printTabel,
+  .dark-mode table.printTabel thead,
+  .dark-mode table.printTabel tbody,
+  .dark-mode table.printTabel tfoot,
+  .dark-mode table.printTabel tr,
+  .dark-mode table.printTabel thead tr.printTabelHead,
+  .dark-mode table.printTabel tbody tr:hover,
+  .dark-mode table.printTabel tbody tr:hover td {
     width: 100% !important;
     border-collapse: collapse !important;
     font-size: 12px !important;
-  }
-  .table-scroll{
-    border: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
   }
 
   table.printTabel th,
-  table.printTabel td {
+  table.printTabel td,
+  .dark-mode table.printTabel th,
+  .dark-mode table.printTabel td {
     border: 1px solid #000 !important;
     padding: 8px !important;
     text-align: center !important;
     color: black !important;
+    background: transparent !important;
     background-color: transparent !important;
   }
 
-  .printTabelHead th {
-    background-color: #f2f2f2 !important;
+  .printTabelHead th,
+  .dark-mode .printTabelHead th,
+  .dark-mode table.printTabel thead th {
+    background: transparent !important;
+    background-color: transparent !important;
     font-weight: bold !important;
+    color: black !important;
   }
 
   .theader,

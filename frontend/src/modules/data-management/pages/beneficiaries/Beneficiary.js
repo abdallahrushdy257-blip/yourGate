@@ -259,7 +259,7 @@ function Beneficiary(props) {
       },
     },
     {
-      label: "دراسة حالة",
+      label: "قرار دراسة الحالة",
       action: (id, record) => setActivePopup({ type: "casestudy", id, record, title: "دراسة حالة" }),
     },
     {

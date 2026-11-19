@@ -1,7 +1,8 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import CustomButton from "../../../../components/CustomButton";
 import SettingTabs from "./SettingTabs";
 import { Form } from "react-bootstrap";
+import SelectComponent from "../../../../components/SelectComponent";
 import { settingsService } from "../../../../modules/settings";
 import { text } from "@fortawesome/fontawesome-svg-core";
 
@@ -142,14 +143,26 @@ function PrintSetting() {
               </label>
 
               {/* Select Position */}
-              <Form.Select
-                style={{ width: "150px", marginLeft: "10px" }}
-                value={settings[key].position}
-                onChange={(e) => changePosition(key, e.target.value)}
-              >
-                <option value="head">رأس الفاتورة</option>
-                <option value="tail">ذيل الفاتورة</option>
-              </Form.Select>
+              <div style={{ width: "160px", marginLeft: "10px", flexShrink: 0 }}>
+                <SelectComponent
+                  options={[
+                    { value: "head", label: "رأس الفاتورة" },
+                    { value: "tail", label: "ذيل الفاتورة" },
+                  ]}
+                  value={settings[key]?.position || "head"}
+                  onChange={(opt) => changePosition(key, opt?.value || opt)}
+                  isSearchable={false}
+                  selectStyle={{
+                    borderRadius: "10px",
+                    border: "1.5px solid var(--border-color, #d8cbba)",
+                    minHeight: "38px",
+                    height: "38px",
+                    fontSize: "13px",
+                    marginTop: "0",
+                    backgroundColor: "var(--surface-color, #ffffff)",
+                  }}
+                />
+              </div>
             </div>
           ))}
           <div

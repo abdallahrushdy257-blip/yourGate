@@ -34,6 +34,7 @@ function Edithcvendor() {
         mForm.append('identification_number', hcvendor.identification_number);
         mForm.append('identification_description', hcvendor.identification_description);
         mForm.append('region', hcvendor.region);
+        mForm.append('opening_balance', hcvendor.opening_balance ?? '');
         mForm.append('id', id);
         try {
             const res = await API.post('/humancasevendor/update', mForm);
@@ -209,7 +210,18 @@ function Edithcvendor() {
 
                     </div>
                     <div className='vendorRow'>
-                        
+                         <RegisterTextbox
+                            parentStyle={{ width: "30%" }}
+                            id="opening_balance"
+                            label='الرصيد الإفتتاحي'
+                            type="number"
+                            stylee={{ width: "45%" }}
+                            value={hcvendor.opening_balance ?? ''}
+                            onChange={(e) => {
+                                setHcvendor({...hcvendor , opening_balance: e.target.value});
+                            }}
+                            error={error.opening_balance}
+                        />
                          <RegisterTextbox
                             parentStyle={{ width: "30%" }}
                             id="description"
