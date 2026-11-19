@@ -41,27 +41,40 @@ function WebsiteLanding() {
 
       <div className="section1Container" id="mainLandingsec1">
         <div className="homeCover">
-          <h3>
-            انشي موقعك الالكتروني
-          </h3>
+          <div className="portalSectionBadge">
+            <span className="badgeDot"></span>
+            <span>بوابة متخصصة متكاملة | Charity Store & Portal Builder</span>
+          </div>
+          <h3>إنشاء المتجر والموقع الإلكتروني</h3>
           <p>
-            نُمكنك من إنشاء موقع إلكتروني للجمعية الخيرية يعكس أهدافها ويعزز حضورها الرقمي.          </p>
+            نُمكنك من إنشاء وتخصيص المتجر الإلكتروني والموقع الرسمي للجمعية الخيرية بدون تعقيد برمجى، لاستقبال التبرعات وعرض المشاريع بمرونة تامة.
+          </p>
           <span className="lineLand"> </span>
+          <div className="heroPortalCtaRow">
+            <a href="/login" className="heroPortalPrimaryCta">
+              <span>طلب استشارة وإنشاء متجر</span>
+              <span className="ctaArrow">←</span>
+            </a>
+            <a href="#plans" className="heroPortalSecondaryCta">
+              <span>تفاصيل الباقة</span>
+            </a>
+          </div>
         </div>
 
-
         <Loans />
-
       </div>
+
       <div className="starsContainer">
         <Stars />
 
         <LandingInfo
           text={textData}
-          title="أنشئ موقع جمعيتك الإلكتروني بسهولة واحترافية"
+          title="أنشئ موقع ومتجر جمعيتك الإلكتروني بسهولة واحترافية"
         />
 
-        <OurSystemContainer items={cardItems} />
+        <div id="plans">
+          <OurSystemContainer items={cardItems} title="باقة إنشاء وتخصيص المتجر والموقع" />
+        </div>
 
 
 

@@ -65,19 +65,29 @@ function LoansLanding() {
 
       <div className="section1Container" id="mainLandingsec1">
         <div className="homeCover">
-          <h3>
-            القروض و الاقساط
-          </h3>
+          <div className="portalSectionBadge">
+            <span className="badgeDot"></span>
+            <span>بوابة متخصصة متكاملة | Micro-finance & Installments</span>
+          </div>
+          <h3>إدارة القروض والأقساط</h3>
           <p>
-            نُوفر خدمات متخصصة في إدارة القروض والأقساط لجمعيتك لضمان تنظيم مالي فعّال ودعم استدامة الأعمال الخيرية.
+            نُوفر خدمات متخصصة في إدارة القروض التنموية والأقساط لجمعيتك لضمان تنظيم مالي دقيق، دراسات جدوى شاملة، ومتابعة السداد المنتظم.
           </p>
           <span className="lineLand"> </span>
+          <div className="heroPortalCtaRow">
+            <a href="/login" className="heroPortalPrimaryCta">
+              <span>طلب تجربة مجانية</span>
+              <span className="ctaArrow">←</span>
+            </a>
+            <a href="#plans" className="heroPortalSecondaryCta">
+              <span>خطط الاشتراك</span>
+            </a>
+          </div>
         </div>
 
-
         <Loans />
-
       </div>
+
       <div className="starsContainer">
         <Stars />
 
@@ -86,7 +96,9 @@ function LoansLanding() {
           title="إدارة القروض والأقساط: ضمان سداد مرن وفعّال"
         />
 
-        <OurSystemContainer items={cardItems} />
+        <div id="plans">
+          <OurSystemContainer items={cardItems} title="نظام وباقات إدارة القروض والأقساط" />
+        </div>
 
 
 

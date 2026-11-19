@@ -1,13 +1,114 @@
+/* ==========================================================================
+   LandingNav - Luxury Floating Glass Navigation
+   ========================================================================== */
+
+.landingPageNav {
+  position: sticky !important;
+  top: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+  padding: 10px 40px !important;
+  min-height: 64px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  direction: rtl !important;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.08)) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid var(--border-color, rgba(200, 146, 74, 0.22)) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  box-sizing: border-box !important;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.dark-mode .landingPageNav {
+  background: rgba(26, 15, 7, 0.88) !important;
+}
+
+.light-mode .landingPageNav {
+  background: rgba(245, 237, 224, 0.90) !important;
+}
+
+.landingPageNav .navbar-brand {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.landingPageNav .navbar-brand:hover {
+  transform: scale(1.05);
+}
+
+.navlinksColla {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.navlinksCon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mainNavLink {
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-color) !important;
+  text-decoration: none !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.mainNavLink:hover {
+  color: var(--primary-color, #c8924a) !important;
+  background: rgba(200, 146, 74, 0.12);
+  transform: translateY(-1px);
+}
+
 .themeToggleBtn {
-  background: none;
-  border: none;
-  color: inherit;
-  font-size: 20px;
-  margin-left: 15px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--glass-bg, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--border-color, rgba(200, 146, 74, 0.3));
+  color: var(--primary-color, #c8924a);
+  font-size: 16px;
+  margin-right: 12px;
   cursor: pointer;
-  transition: transform 0.3s ease, color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
 .themeToggleBtn:hover {
-  transform: rotate(20deg) scale(1.1);
+  transform: rotate(25deg) scale(1.08);
+  background: rgba(200, 146, 74, 0.18);
+}
+
+@media (max-width: 992px) {
+  .landingPageNav {
+    padding: 10px 20px !important;
+  }
+
+  .navlinksCon {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 15px 0;
+    gap: 6px;
+  }
+
+  .mainNavLink {
+    padding: 10px 14px;
+  }
+
+  .themeToggleBtn {
+    margin-right: 0;
+    margin-top: 10px;
+    align-self: flex-start;
+  }
 }

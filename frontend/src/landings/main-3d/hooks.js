@@ -30,7 +30,11 @@ export function useReducedMotion() {
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return undefined;
+    }
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!mq) return undefined;
     setReduced(mq.matches);
     const handler = (e) => setReduced(e.matches);
     mq.addEventListener("change", handler);

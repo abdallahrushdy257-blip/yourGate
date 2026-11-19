@@ -3,8 +3,6 @@
    Strict adherence to color tokens, Cairo font, dual-theme & RTL
    ═══════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
-
 :root {
   --primary-color: #c8924a;
   --gold-gradient: linear-gradient(135deg, #f0c378 0%, #c8924a 50%, #9c6c2e 100%);
@@ -305,7 +303,7 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  transition: transform 0.1s linear, opacity 0.1s linear;
+  will-change: transform, opacity;
 }
 
 .heroBadge,
@@ -454,9 +452,15 @@
 }
 
 .gateProgressBar {
+  width: 100%;
   height: 100%;
   background: var(--gold-gradient);
-  transition: width 0.1s ease;
+  transform-origin: right center;
+  will-change: transform;
+}
+
+[dir="ltr"] .gateProgressBar {
+  transform-origin: left center;
 }
 
 .gateStatusInfo {
@@ -541,6 +545,8 @@
 
 .travelingGoldOrb {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -549,9 +555,10 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 25px rgba(240, 195, 120, 0.8), 0 0 45px rgba(200, 146, 74, 0.5);
-  transform: translate(-50%, -50%);
+  transform: translate3d(0, 0, 0) translate(-50%, -50%);
+  will-change: transform;
   z-index: 10;
-  transition: left 0.1s linear, right 0.1s linear, top 0.1s linear;
+  pointer-events: none;
 }
 
 .coinSymbol {
@@ -589,6 +596,10 @@
   gap: 8px;
   cursor: pointer;
   user-select: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: inherit;
 }
 
 .nodeMarker {
@@ -655,6 +666,18 @@
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
+  animation: journeyCardReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes journeyCardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .journeyGlassCard.cardHidden {
@@ -781,6 +804,8 @@
   padding: 80px 0;
   position: relative;
   overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 780px;
 }
 
 .modulesInnerContainer {
@@ -854,6 +879,7 @@
   box-shadow: var(--shadow-ambient);
   cursor: pointer;
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease, box-shadow 0.3s ease;
+  will-change: transform, opacity;
   user-select: none;
 }
 
@@ -864,7 +890,7 @@
 }
 
 .card3DSide {
-  filter: blur(0.5px);
+  filter: none;
 }
 
 .card3DSide:hover {
@@ -1033,6 +1059,8 @@
 .carouselDot {
   width: 8px;
   height: 8px;
+  padding: 0;
+  border: none;
   border-radius: 50%;
   background: var(--border-color);
   cursor: pointer;
@@ -1050,6 +1078,8 @@
 .governanceSection {
   padding: 80px 0;
   background: radial-gradient(circle at 50% 50%, rgba(200, 146, 74, 0.05) 0%, transparent 70%);
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 600px;
 }
 
 .governanceInnerContainer {
@@ -1151,6 +1181,8 @@
 .impactSection {
   padding: 80px 0;
   position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 860px;
 }
 
 .impactInnerContainer {
@@ -1279,7 +1311,6 @@
 }
 
 .themeDarkLayer {
-  background: #181c24;
   color: #f1f3f7;
   z-index: 1;
 }
@@ -1288,7 +1319,8 @@
   background: #fbf8f3;
   color: #3d2000;
   z-index: 2;
-  transition: clip-path 0.05s linear;
+  clip-path: polygon(0 0, var(--split-pos, 50%) 0, var(--split-pos, 50%) 100%, 0 100%);
+  will-change: clip-path;
 }
 
 .themeWatermark {
@@ -1330,10 +1362,6 @@
   gap: 10px;
 }
 
-.simDashSidebar.dark {
-  background: #13161c;
-}
-
 .simDashSidebar.light {
   background: #f2ece1;
 }
@@ -1367,10 +1395,6 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-.simDashMain.dark {
-  background: #1a1e27;
 }
 
 .simDashMain.light {
@@ -1426,6 +1450,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
+  left: var(--split-pos, 50%);
   width: 4px;
   background: var(--primary-color);
   z-index: 10;
@@ -1458,6 +1483,8 @@
   background: var(--surface-color);
   border-top: 1px solid var(--border-color);
   position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 1100px;
 }
 
 .pricingContainer {
@@ -1911,5 +1938,18 @@
   }
   .card3DItem {
     width: 90vw;
+  }
+}
+
+/* Reduce GPU blur compositing overhead on mobile devices */
+@media (max-width: 768px) {
+  .journeyGlassCard,
+  .card3DItem,
+  .governanceCard,
+  .metricCard,
+  .themeComparisonContainer {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--card--background);
   }
 }

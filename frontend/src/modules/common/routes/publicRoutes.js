@@ -92,18 +92,24 @@ export const publicRouteConfigs = [
     element: withSuspense(CreateMangeLanding),
   },
   {
+    path: "/createManageLanding",
+    element: withSuspense(CreateMangeLanding),
+  },
+  {
     path: "/designmarketinglanding",
     element: withSuspense(DesignMarketingLanding),
   },
   { path: "/hrlanding", element: withSuspense(HRLanding) },
   { path: "/landingStore", element: withSuspense(LandingStore) },
   { path: "/loanslanding", element: withSuspense(LoansLanding) },
+  { path: "/loansLanding", element: withSuspense(LoansLanding) },
   {
     path: "/dataManagementLanding",
     element: withSuspense(DataManagementLanding),
   },
   { path: "/archivesLanding", element: withSuspense(ArchivesLanding) },
   { path: "/websideLanding", element: withSuspense(WebsiteLanding) },
+  { path: "/websiteLanding", element: withSuspense(WebsiteLanding) },
   {
     path: "/endowmentsLanding",
     element: withSuspense(EndowmentsLanding),
