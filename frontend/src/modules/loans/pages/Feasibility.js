@@ -121,7 +121,6 @@ function Feasibility() {
                 <TableComponent
                     apiUrl={`/feasibilitystudies`}
                     columns={columns}
-                    data={rows}
                     onDownload={handleDownload}
                     dropdownOptions={dropdownOptions}
                     searchDate = {false}

@@ -1,0 +1,6 @@
+{
+  "name": "project-kit",
+  "displayName": "Universal Project Kit",
+  "version": "1.0.0",
+  "description": "Portable engineering rules, auto-discovery discipline, and specialized subagents (codebase-mapper, strict-reviewer, db-architect) for any repository."
+}

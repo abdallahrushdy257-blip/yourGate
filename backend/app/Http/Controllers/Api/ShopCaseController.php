@@ -206,4 +206,36 @@ class ShopCaseController extends Controller
 
         return response()->json($data, Response::HTTP_OK);
     }
+
+    /**
+     * Show shop receipt voucher details.
+     */
+    public function showReceiptVoucher(int $id): JsonResponse
+    {
+        return response()->json($this->shopCaseService->showVoucher($id, 'shop'), Response::HTTP_OK);
+    }
+
+    /**
+     * Show project receipt voucher details.
+     */
+    public function showProjectReceiptVoucher(int $id): JsonResponse
+    {
+        return response()->json($this->shopCaseService->showVoucher($id, 'project'), Response::HTTP_OK);
+    }
+
+    /**
+     * Show assembly member voucher details.
+     */
+    public function showAssemblyVoucher(int $id): JsonResponse
+    {
+        return response()->json($this->shopCaseService->showVoucher($id, 'assembly'), Response::HTTP_OK);
+    }
+
+    /**
+     * Show beneficiary payment voucher details.
+     */
+    public function showHumanCaseVoucher(int $id): JsonResponse
+    {
+        return response()->json($this->shopCaseService->showVoucher($id, 'humancase'), Response::HTTP_OK);
+    }
 }

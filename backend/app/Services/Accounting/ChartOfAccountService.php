@@ -25,7 +25,7 @@ class ChartOfAccountService
     {
         $accounts = $this->allForCurrentStore();
 
-        if ($accounts->isEmpty() && $this->currentStoreId()) {
+        if ($accounts->where('level', 1)->count() < 4 && $this->currentStoreId()) {
             $this->templates->seedForStore($this->currentStoreId());
             $accounts = $this->allForCurrentStore();
         }

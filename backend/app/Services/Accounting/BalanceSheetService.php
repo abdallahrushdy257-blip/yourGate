@@ -191,6 +191,74 @@ class BalanceSheetService
         ];
     }
 
+    /**
+     * Compute Income / Activities Statement (قائمة الأنشطة / الدخل).
+     */
+    public function getIncomeStatement(?string $asOfDate = null): array
+    {
+        $asOfDate = $asOfDate ?: now()->toDateString();
+        $storeId = $this->currentStoreId();
+
+        $accounts = ChartOfAccount::query()->where('is_payable', true)->orderBy('code')->get();
+        $movements = DB::table('journal_entry_lines')
+            ->join('journal_entries', 'journal_entries.id', '=', 'journal_entry_lines.journal_entry_id')
+            ->where('journal_entries.status', JournalEntry::STATUS_POSTED)
+            ->whereNull('journal_entries.deleted_at')
+            ->whereDate('journal_entries.date', '<=', $asOfDate)
+            ->when($storeId, fn ($q) => $q->where('journal_entries.store_id', $storeId))
+            ->selectRaw('chart_of_account_id, SUM(debit) as total_debit, SUM(credit) as total_credit')
+            ->groupBy('chart_of_account_id')
+            ->get()
+            ->keyBy('chart_of_account_id');
+
+        $getBalance = function (ChartOfAccount $acc) use ($movements) {
+            $mov = $movements->get($acc->id);
+            $d = (float) ($mov->total_debit ?? 0);
+            $c = (float) ($mov->total_credit ?? 0);
+            $open = (float) $acc->opening_balance;
+            return $acc->nature === ChartOfAccount::NATURE_DEBIT ? ($open + $d - $c) : ($open + $c - $d);
+        };
+
+        $revenues = [];
+        $expenses = [];
+        $totalRevenues = 0.0;
+        $totalExpenses = 0.0;
+
+        foreach ($accounts as $acc) {
+            $bal = round($getBalance($acc), 2);
+            if (str_starts_with($acc->code, '3')) {
+                $totalRevenues += $bal;
+                $revenues[] = [
+                    'id'      => $acc->id,
+                    'code'    => $acc->code,
+                    'name'    => $acc->name,
+                    'balance' => $bal,
+                ];
+            } elseif (str_starts_with($acc->code, '4')) {
+                $totalExpenses += $bal;
+                $expenses[] = [
+                    'id'      => $acc->id,
+                    'code'    => $acc->code,
+                    'name'    => $acc->name,
+                    'balance' => $bal,
+                ];
+            }
+        }
+
+        $store = Store::find($storeId);
+        $netSurplus = round($totalRevenues - $totalExpenses, 2);
+
+        return [
+            'as_of_date'        => $asOfDate,
+            'organization_name' => $store?->name ?? 'جمعية خيرية',
+            'revenues'          => $revenues,
+            'expenses'          => $expenses,
+            'total_revenues'    => round($totalRevenues, 2),
+            'total_expenses'    => round($totalExpenses, 2),
+            'net_surplus'       => $netSurplus,
+        ];
+    }
+
     protected function currentStoreId(): ?int
     {
         if (app()->has('current_store_id')) {

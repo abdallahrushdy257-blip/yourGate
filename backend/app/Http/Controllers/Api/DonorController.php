@@ -80,4 +80,22 @@ class DonorController extends Controller
             'message' => 'تم حذف المانح بنجاح',
         ], Response::HTTP_OK);
     }
+
+    /**
+     * Store a direct receipt voucher for a donor.
+     */
+    public function storeReceipt(Request $request): JsonResponse
+    {
+        $request->validate([
+            'amount' => ['required', 'numeric', 'min:0.01'],
+        ]);
+
+        $receipt = $this->donorService->storeReceipt($request->all());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم تسجيل سند القبض بنجاح',
+            'data'    => $receipt,
+        ], Response::HTTP_OK);
+    }
 }

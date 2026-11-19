@@ -1,0 +1,6 @@
+هئ بيئة Antigravity على هذا الجهاز باستخدام مجلد `.agents/` الموجود في المشروع الحالي كالتالي:
+1. انسخ كل المهارات من `.agents/skills/*` إلى `~/.gemini/config/skills/` وانسخ `.agents/plugins/project-kit` إلى `~/.gemini/config/plugins/project-kit` لتعمل عالمياً في كل المشاريع.
+2. اقرأ `.agents/mcp.json` وادمج خوادم الـ `mcpServers` (`playwright`, `context7`, `sequential-thinking`, `memory`, `git`) في `~/.gemini/config/mcp_config.json` بدون مسح أي سيرفرات موجودة مسبقاً (وتأكد أن `node`/`npx` متاحين). لا تعدّل `config.json` يدوياً.
+3. بالنسبة لمجلد `.agents/plugins/yourgates-mysql`: احذفه إذا لم يكن المشروع الحالي يستخدم MySQL، أو اسألني لتحديث اسم قاعدة البيانات وبيانات الاتصال في `mcp_config.json`.
+4. تحقق عبر `search_marketplace` من إضافة `antigravity-plugins-official/plugin/chrome-devtools-plugin`؛ وإذا لم تكن مثبتة، اعرض كارت تثبيتها.
+5. في النهاية تحقق أن كل من `GetAllPlugins` و`GetAllSkills` يرصدان `project-kit` والـ skills بدون أخطاء، وأخبرني بالملخص فقط وضرورة عمل Reload للـ IDE لتفعيل الـ MCPs.

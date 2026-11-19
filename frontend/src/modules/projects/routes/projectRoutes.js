@@ -81,4 +81,3 @@ export const ProjectRoutes = (
 );
 
 export default ProjectRoutes;
-

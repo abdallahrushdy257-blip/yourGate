@@ -142,4 +142,40 @@ class AssemblyMemberController extends Controller
 
         return response()->json($data, Response::HTTP_OK);
     }
+
+    /**
+     * Store assembly member subscription receipt.
+     */
+    public function storeReceipt(Request $request): JsonResponse
+    {
+        $request->validate([
+            'amount' => ['required', 'numeric', 'min:0.01'],
+        ]);
+
+        $receipt = $this->assemblyMemberService->storeReceipt($request->all());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم تسجيل سند القبض بنجاح',
+            'data'    => $receipt,
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * Store assembly member reward payment.
+     */
+    public function storePayment(Request $request): JsonResponse
+    {
+        $request->validate([
+            'amount' => ['required', 'numeric', 'min:0.01'],
+        ]);
+
+        $payment = $this->assemblyMemberService->storePayment($request->all());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم تسجيل سند الصرف بنجاح',
+            'data'    => $payment,
+        ], Response::HTTP_OK);
+    }
 }

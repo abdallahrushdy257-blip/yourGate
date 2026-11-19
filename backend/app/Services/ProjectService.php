@@ -183,7 +183,7 @@ class ProjectService
             $amount = (float) $data['amount'];
             $invoiceNumber = 'PAY-PRJ-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
 
-            return ProjectTransaction::create([
+            $transaction = ProjectTransaction::create([
                 'project_id'       => $project->id,
                 'human_cases_id'   => $data['selhuman'] ?? $data['human_cases_id'] ?? null,
                 'invoice_number'   => $invoiceNumber,
@@ -195,6 +195,17 @@ class ProjectService
                 'balanceid'        => $data['balanceid'] ?? null,
                 'notes'            => $data['notes'] ?? null,
             ]);
+
+            app(\App\Services\Accounting\AccountingSyncService::class)->recordPayment([
+                'amount'         => $amount,
+                'date'           => $transaction->date ? $transaction->date->format('Y-m-d') : now()->toDateString(),
+                'account'        => $data['account'] ?? $data['balanceid'] ?? null,
+                'description'    => "سند صرف للمشروع ({$project->name}) رقم {$invoiceNumber}",
+                'reference_type' => 'project_payment',
+                'reference_id'   => $transaction->id,
+            ]);
+
+            return $transaction;
         });
     }
 
@@ -225,6 +236,15 @@ class ProjectService
 
             // Update project collected amount
             $project->increment('amount', $amount);
+
+            app(\App\Services\Accounting\AccountingSyncService::class)->recordReceipt([
+                'amount'         => $amount,
+                'date'           => $transaction->date ? $transaction->date->format('Y-m-d') : now()->toDateString(),
+                'account'        => $data['account'] ?? $data['balanceid'] ?? null,
+                'description'    => "سند قبض للمشروع ({$project->name}) رقم {$invoiceNumber}",
+                'reference_type' => 'project_receipt',
+                'reference_id'   => $transaction->id,
+            ]);
 
             return $transaction->load(['donor', 'project']);
         });

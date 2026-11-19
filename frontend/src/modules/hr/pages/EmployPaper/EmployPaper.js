@@ -68,7 +68,7 @@ function EmployPaper() {
 
   const modifyRow = (row) => {
     let newRow = { ...row };
-    newRow.note = row.note === 1 ? "إلزامي" : "إضافي";
+    newRow.note = row.note == 1 ? "إلزامي" : "إضافي";
     return newRow;
   };
 
@@ -86,7 +86,6 @@ function EmployPaper() {
           addBtn={true}
           onAddClick={() => setShowModal(true)}
           apiUrl="/employeepapers"
-          data={dummyData}
           columns={columns}
           transformRowFn={modifyRow}
           triggerReload={tableReloadKey}

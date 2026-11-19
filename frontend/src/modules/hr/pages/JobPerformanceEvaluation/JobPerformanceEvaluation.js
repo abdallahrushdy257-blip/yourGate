@@ -7,6 +7,7 @@ import "./jobPerformanceEvaluation.css";
 
 function JobPerformanceEvaluation() {
   const [showModal, setShowModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const columns = [
     { name: "إسم الموظف", key: "employee" },
@@ -18,8 +19,8 @@ function JobPerformanceEvaluation() {
 
   const modifyRow = (row) => {
     let newRow = { ...row };
-    newRow.employee = row.employee ? row.employee.name : "";
-    newRow.average_grade = row.average_grade ? row.average_grade.toFixed(2) : "0.00";
+    newRow.employee = row.employee ? (typeof row.employee === "object" ? row.employee.name : row.employee) : "";
+    newRow.average_grade = row.average_grade ? Number(row.average_grade).toFixed(2) : "0.00";
     newRow.reason =
       row.reason == 1
         ? "تقييم دوري"
@@ -31,7 +32,7 @@ function JobPerformanceEvaluation() {
         ? " علاوة"
         : row.reason == 5
         ? row.description || "أخرى"
-        : "غير محدد";
+        : row.reason || "غير محدد";
     return newRow;
   };
 
@@ -42,30 +43,11 @@ function JobPerformanceEvaluation() {
     },
   ];
 
-  const dummyData = [
-    {
-      id: 1,
-      employee: { name: "أحمد السالم" },
-      date: "2026-07-20",
-      reason: 1,
-      average_grade: 4.5,
-      description: "تقييم دوري",
-    },
-    {
-      id: 2,
-      employee: { name: "سارة محمد" },
-      date: "2026-07-15",
-      reason: 2,
-      average_grade: 3.8,
-      description: "فترة تجربة",
-    },
-  ];
-
   return (
     <div className="JobPerformanceEvaluation">
       <TableComponent
+        key={refreshKey}
         apiUrl={"evaluation/kpireport"}
-        data={dummyData}
         title="إدارة التقييمات"
         titleIcon={<FontAwesomeIcon icon={faTable} />}
         columns={columns}
@@ -78,7 +60,10 @@ function JobPerformanceEvaluation() {
 
       <JobPerformanceEvaluationModal
         show={showModal}
-        handleClose={() => setShowModal(false)}
+        handleClose={() => {
+          setShowModal(false);
+          setRefreshKey((prev) => prev + 1);
+        }}
       />
     </div>
   );

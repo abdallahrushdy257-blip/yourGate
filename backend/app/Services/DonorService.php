@@ -123,4 +123,57 @@ class DonorService
             return (bool) $donor->delete();
         });
     }
+
+    /**
+     * Store a direct receipt voucher from a donor.
+     */
+    public function storeReceipt(array $data): array
+    {
+        return DB::transaction(function () use ($data) {
+            $donorId = (int) ($data['id'] ?? $data['donor_id'] ?? 0);
+            $donor = $donorId > 0 ? Donor::find($donorId) : Donor::first();
+            $amount = (float) ($data['amount'] ?? 0);
+            $date = $data['date'] ?? now()->toDateString();
+            $invoiceNumber = 'DNR-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
+            $description = $data['description'] ?? ('سند قبض تبرع من المانح ' . ($donor?->name ?? 'فاعل خير'));
+
+            $shop = \App\Models\Shop::first();
+            $txId = null;
+            if ($shop && $amount > 0) {
+                $tx = \App\Models\ShopTransaction::create([
+                    'shop_id'          => $shop->id,
+                    'donor_id'         => $donor?->id,
+                    'invoice_number'   => $invoiceNumber,
+                    'transaction_type' => 1,
+                    'type'             => (string) ($data['type'] ?? '1'),
+                    'amount'           => $amount,
+                    'date'             => $date,
+                    'account'          => $data['account'] ?? null,
+                    'notes'            => $description,
+                ]);
+                $txId = $tx->id;
+            }
+
+            if ($amount > 0) {
+                app(\App\Services\Accounting\AccountingSyncService::class)->recordReceipt([
+                    'amount'         => $amount,
+                    'date'           => $date,
+                    'account'        => $data['account'] ?? null,
+                    'revenue_code'   => $data['code'] ?? null,
+                    'description'    => $description,
+                    'reference_type' => 'donor_receipt',
+                    'reference_id'   => $txId ?? $donor?->id,
+                ]);
+            }
+
+            return [
+                'id'             => $txId ?? ($donor?->id ?? 1),
+                'donor_id'       => $donor?->id,
+                'invoice_number' => $invoiceNumber,
+                'amount'         => $amount,
+                'date'           => $date,
+                'description'    => $description,
+            ];
+        });
+    }
 }

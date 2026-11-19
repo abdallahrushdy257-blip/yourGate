@@ -5,6 +5,7 @@ import GuestRoute from "../../../context/GuestRoute";
 
 // Authentication & Registration
 const Login = lazy(() => import("../../../pages/Login/Login"));
+const AdminLogin = lazy(() => import("../../../admin/Login/AdminLogin"));
 const Verify = lazy(() => import("../../../pages/Verify/Verify"));
 const CharityRegistration = lazy(() =>
   import("../../../pages/CharityRegistration/CharityRegistration")
@@ -77,12 +78,14 @@ const withGuest = (Component) => (
 export const publicRouteConfigs = [
   // Authentication & Registration (Guest Only)
   { path: "/login", element: withGuest(Login) },
+  { path: "/ibgates/adminlogin", element: withGuest(AdminLogin) },
   { path: "/:id/verify", element: withGuest(Verify) },
   {
     path: "/charityregistration",
     element: withGuest(CharityRegistration),
   },
   { path: "/forgotpassword", element: withGuest(ForgotPassword) },
+  { path: "/forgot-password", element: withGuest(ForgotPassword) },
   { path: "/setnewpassword", element: withGuest(SetnewPassword) },
 
   // Main Landing & Landing Pages
@@ -126,6 +129,7 @@ export const publicRouteConfigs = [
 
   // رابط إضافة مستفيد خارجي (عام)
   { path: "/benefitadddetails/:id", element: withSuspense(BenefitAddDetails) },
+  { path: "/beneficiaryAddDetails/:id", element: withSuspense(BenefitAddDetails) },
   { path: "/benefitadddetails", element: withSuspense(BenefitAddDetails) },
 ];
 

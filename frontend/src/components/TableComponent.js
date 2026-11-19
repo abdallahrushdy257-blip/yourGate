@@ -82,7 +82,7 @@ function TableComponent({
 
   const fetchData = useCallback(
     async (targetPage = 1, isReset = false) => {
-      if (!apiUrl || localData) return;
+      if (!apiUrl) return;
       if (!isReset && isFetchingRef.current) return;
 
       if (abortControllerRef.current) {
@@ -168,17 +168,19 @@ function TableComponent({
     };
   }, []);
 
-  // 1. Handle localData if provided
+  // 1. Handle localData if provided when no apiUrl is set
   useEffect(() => {
-    if (localData) {
+    if (!apiUrl && localData) {
       setData(localData);
       setTotalRecords(localData.length);
+      setHasMore(false);
+      setLoading(false);
     }
-  }, [localData]);
+  }, [apiUrl, localData]);
 
   // 2. Fetch on initial mount or when search text / id changes (resets to page 1)
   useEffect(() => {
-    if (localData) return;
+    if (!apiUrl) return;
     setPage(1);
     fetchData(1, true);
   }, [apiUrl, debouncedSearchText, id, refreshData, fetchData, localData]);
