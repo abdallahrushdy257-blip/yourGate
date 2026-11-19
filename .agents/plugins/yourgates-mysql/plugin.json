@@ -1,0 +1,6 @@
+{
+  "name": "yourgates-mysql",
+  "displayName": "yourGates MySQL (Read-Only)",
+  "version": "1.0.0",
+  "description": "Read-only MySQL MCP connection for the local yourgates database. Delete or edit this folder when copying .agents to another project."
+}

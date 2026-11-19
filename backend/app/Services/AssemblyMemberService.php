@@ -133,6 +133,76 @@ class AssemblyMemberService
     }
 
     /**
+     * Store subscription receipt for an assembly member.
+     */
+    public function storeReceipt(array $data): array
+    {
+        return DB::transaction(function () use ($data) {
+            $memberId = (int) ($data['id'] ?? 0);
+            $member = $memberId > 0 ? AssemblyMember::find($memberId) : AssemblyMember::first();
+            $amount = (float) ($data['amount'] ?? 0);
+            $date = $data['date'] ?? now()->toDateString();
+            $description = $data['description'] ?? ('سداد اشتراك عضوية - ' . ($member?->name ?? 'عضو جمعية'));
+
+            if ($member && $amount > 0) {
+                $member->update([
+                    'subscription_fees' => (float) ($member->subscription_fees ?? 0) + $amount,
+                ]);
+            }
+
+            if ($amount > 0) {
+                app(\App\Services\Accounting\AccountingSyncService::class)->recordReceipt([
+                    'amount'         => $amount,
+                    'date'           => $date,
+                    'account'        => $data['account'] ?? null,
+                    'description'    => $description,
+                    'reference_type' => 'assembly_receipt',
+                    'reference_id'   => $member?->id,
+                ]);
+            }
+
+            return [
+                'id'          => $member?->id ?? 1,
+                'amount'      => $amount,
+                'date'        => $date,
+                'description' => $description,
+            ];
+        });
+    }
+
+    /**
+     * Store reward / attendance payment for an assembly member.
+     */
+    public function storePayment(array $data): array
+    {
+        return DB::transaction(function () use ($data) {
+            $memberId = (int) ($data['id'] ?? 0);
+            $member = $memberId > 0 ? AssemblyMember::find($memberId) : AssemblyMember::first();
+            $amount = (float) ($data['amount'] ?? 0);
+            $date = $data['date'] ?? now()->toDateString();
+            $description = $data['description'] ?? ('صرف مكافأة حضور اجتماع - ' . ($member?->name ?? 'عضو جمعية'));
+
+            if ($amount > 0) {
+                app(\App\Services\Accounting\AccountingSyncService::class)->recordPayment([
+                    'amount'         => $amount,
+                    'date'           => $date,
+                    'account'        => $data['account'] ?? null,
+                    'description'    => $description,
+                    'reference_type' => 'assembly_payment',
+                    'reference_id'   => $member?->id,
+                ]);
+            }
+
+            return [
+                'id'          => $member?->id ?? 1,
+                'amount'      => $amount,
+                'date'        => $date,
+                'description' => $description,
+            ];
+        });
+    }
+
+    /**
      * Normalize frontend aliases into model columns.
      */
     protected function normalizeAttributes(array $data): array

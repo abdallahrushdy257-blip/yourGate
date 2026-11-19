@@ -110,6 +110,28 @@ class HumanCaseDetailController extends Controller
     }
 
     /**
+     * Get single health record for editing.
+     */
+    public function showSingleHealth(int $id): JsonResponse
+    {
+        return response()->json($this->humanCaseService->showSingleHealth($id), Response::HTTP_OK);
+    }
+
+    /**
+     * Update single health record.
+     */
+    public function updateSingleHealth(Request $request, int $id): JsonResponse
+    {
+        $updated = $this->humanCaseService->updateSingleHealth($id, $request->all(), $request->file('upload'));
+
+        return response()->json([
+            'status'  => 200,
+            'message' => 'تم تحديث البيانات الصحية بنجاح',
+            'data'    => $updated,
+        ], Response::HTTP_OK);
+    }
+
+    /**
      * Store dependent for beneficiary.
      */
     public function storeDependants(Request $request): JsonResponse
@@ -131,6 +153,28 @@ class HumanCaseDetailController extends Controller
         $dependents = $this->humanCaseService->showDependantsData($id);
 
         return response()->json($dependents, Response::HTTP_OK);
+    }
+
+    /**
+     * Get single dependent record for editing.
+     */
+    public function showSingleDependent(int $id): JsonResponse
+    {
+        return response()->json($this->humanCaseService->showSingleDependent($id), Response::HTTP_OK);
+    }
+
+    /**
+     * Update single dependent record.
+     */
+    public function updateSingleDependent(Request $request, int $id): JsonResponse
+    {
+        $updated = $this->humanCaseService->updateSingleDependent($id, $request->all());
+
+        return response()->json([
+            'status'  => 200,
+            'message' => 'تم تحديث بيانات التابع بنجاح',
+            'data'    => $updated,
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -161,10 +205,10 @@ class HumanCaseDetailController extends Controller
     /**
      * Store voucher for beneficiary.
      */
-    public function storeVoucher(Request $request): JsonResponse
+    public function storeVoucher(Request $request, ?int $id = null): JsonResponse
     {
-        $id = (int) $request->input('id');
-        $this->humanCaseService->storeVoucher($id, $request->all());
+        $targetId = $id ?? (int) $request->input('id');
+        $this->humanCaseService->storeVoucher($targetId, $request->all());
 
         return response()->json([
             'status'  => 200,

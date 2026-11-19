@@ -38,4 +38,33 @@ class BalanceSheetController extends Controller
             'data'              => $data,
         ], Response::HTTP_OK);
     }
+
+    /**
+     * Get Income / Activities Statement (/incomestatement, /reports/incomestatement).
+     */
+    public function incomeStatement(Request $request): JsonResponse
+    {
+        $asOfDate = $request->input('date') ?? $request->input('as_of_date') ?? null;
+        $data = $this->balanceSheetService->getIncomeStatement($asOfDate);
+
+        return response()->json([
+            'status'            => Response::HTTP_OK,
+            'success'           => true,
+            'message'           => 'تم استخراج قائمة الأنشطة بنجاح.',
+            'as_of_date'        => $data['as_of_date'],
+            'organization_name' => $data['organization_name'],
+            'revenues'          => $data['revenues'],
+            'expenses'          => $data['expenses'],
+            'total_revenues'    => $data['total_revenues'],
+            'total_expenses'    => $data['total_expenses'],
+            'net_surplus'       => $data['net_surplus'],
+            'summary'           => [
+                'total_revenues' => $data['total_revenues'],
+                'total_expenses' => $data['total_expenses'],
+                'net_income'     => $data['net_surplus'],
+                'net_surplus'    => $data['net_surplus'],
+            ],
+            'data'              => $data,
+        ], Response::HTTP_OK);
+    }
 }
